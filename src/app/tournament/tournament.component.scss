@@ -1,0 +1,53 @@
+@import '/src/styles/variables.scss';
+
+:host {
+  display: flex;
+  overflow-x: hidden;
+  height: 100%;
+
+  .input-container {
+    width: 25%;
+    display: flex;
+    flex-direction: column;
+    gap: $gap;
+    margin: $gap;
+
+    textarea {
+      display: flex;
+      flex: 1;
+      align-items: center;
+      color: var(--color-text);
+      overflow-wrap: anywhere;
+      border-radius: $gap * 0.5;
+      box-sizing: border-box;
+      border: 1px solid var(--color-border);
+      font-family: inherit;
+      font-size: inherit;
+      min-width: 50px;
+      background-color: transparent;
+      resize: none;
+      padding: 0.5 * $gap $gap;
+
+      &:focus-visible {
+        outline: initial;
+      }
+    }
+
+    .button {
+      width: 100%;
+    }
+  }
+
+  .comparison {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 3;
+    overflow: hidden;
+    gap: $gap;
+
+    @media screen and (max-width:768px) {
+      aspect-ratio: 2;
+    }
+  }
+}

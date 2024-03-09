@@ -1,0 +1,38 @@
+@import '/src/styles/variables.scss';
+
+:host {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+img,
+svg {
+  width: 18px;
+  height: 18px;
+}
+
+.sign-in-button {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  gap: 8px;
+  padding: 0 12px;
+  cursor: pointer;
+  background-color: white;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+
+  &:hover {
+    background: #f8faff;
+    border-color: #d2e3fc;
+  }
+}
+
+.sign-in-text {
+  color: #3c4043;
+  font-family: "Google Sans", arial, sans-serif;
+  font-size: 14px;
+  letter-spacing: 0.25px;
+}

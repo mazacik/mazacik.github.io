@@ -1,0 +1,12 @@
+<div class="header">
+  <span>{{ contentInstance?.configuration.title }}</span>
+  <i class="icon-button fa-solid fa-times" (click)="close()"></i>
+</div>
+<div class="content">
+  <ng-container #content></ng-container>
+</div>
+<div class="buttons">
+  <ng-container *ngFor="let button of contentInstance?.configuration.buttons">
+    <div *ngIf="!button.hidden || !button.hidden()" class="button" [class.disabled]="button.disable && button.disable()" (click)="button.click && button.click()">{{ button.text() }}</div>
+  </ng-container>
+</div>

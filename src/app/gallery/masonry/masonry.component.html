@@ -1,0 +1,19 @@
+<!-- TODO Always render, reduce image resolution when reduceBandwidth -->
+<ng-container *ngIf="!applicationService.reduceBandwidth">
+  <div class="masonry-scroll-container">
+    <div *ngIf="stateService.filter" class="masonry-container" (onCreate)="onMasonryElementCreate($event)">
+      <!-- TODO split styles -->
+      <div *ngFor="let image of stateService.filter()" @leave class="masonry-brick" [style]="'width: ' + image.width + 'px; top: ' + image.top + 'px; left: ' + image.left + 'px; '" (click)="onImageClick(image)">
+        <img [src]="image.thumbnailLink" [style.aspect-ratio]="image.aspectRatio" (onCreate)="onBrickCreate($event, image)" #imageElement (load)="imageElement.style.opacity = '1'">
+        <div class="brick-header">
+          <i class="icon-button fa-heart" [ngClass]="image.heart ? 'fa-solid active' : 'fa-regular'" tippy="Favorite" (click)="onHeartClick($event, image)"></i>
+          <i class="icon-button fa-bookmark" [ngClass]="image.bookmark ? 'fa-solid active' : 'fa-regular'" tippy="Bookmark" (click)="onBookmarkClick($event, image)"></i>
+          <ng-container *ngIf="image.hasGroup()">
+            <i class="icon-button fa-solid" [ngClass]="image.group.open ? 'fa-square-minus' : 'fa-square-plus'" [tippy]="image.group.open ? 'Collapse Group' : 'Expand Group'" (click)="onGroupToggleClick($event, image)"></i>
+            <i *ngIf="image.group.open" class="icon-button fa-star" [ngClass]="image == image.group.star ? 'fa-solid active no-hover' : 'fa-regular'" tippy="Star" (click)="onStarClick($event, image)"></i>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>

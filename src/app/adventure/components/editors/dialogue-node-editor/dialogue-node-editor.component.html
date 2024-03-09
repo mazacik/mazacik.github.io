@@ -1,0 +1,31 @@
+<!-- Description -->
+<div class="section-header">
+  <span class="section-title">Description</span>
+</div>
+<input [(ngModel)]="editableNode.description" />
+<!-- Lines -->
+<div class="h-separator"></div>
+<div class="section-header">
+  <span class="section-title">Lines</span>
+  <i class="icon-button fa-solid fa-plus" tippy="Create Dialogue Line" (click)="openDialogueLineEditor()"></i>
+</div>
+<div *ngFor="let line of editableNode.lines" class="list-container">
+  <span class="list-element">{{ stateService.getCharacter(line.characterId).id }}: {{ line.text }}</span>
+  <div class="section-buttons">
+    <i class="icon-button fa-solid fa-pen-to-square" tippy="Edit Dialogue Line" (click)="openDialogueLineEditor(line)"></i>
+    <i class="icon-button fa-solid fa-trash" tippy="Remove Dialogue Line" (click)="deleteDialogueLine(line)"></i>
+  </div>
+</div>
+<!-- Buttons -->
+<div class="h-separator"></div>
+<div class="section-header">
+  <span class="section-title">Buttons</span>
+  <i class="icon-button fa-solid fa-plus" tippy="Create Button" (click)="openButtonEditor()"></i>
+</div>
+<div *ngFor="let buttonId of editableNode.buttonIds" class="list-container">
+  <span class="list-element">{{ stateService.getButton(buttonId).text }}</span>
+  <div class="section-buttons">
+    <i class="icon-button fa-solid fa-pen-to-square" tippy="Edit Button" (click)="openButtonEditor(buttonId)"></i>
+    <i class="icon-button fa-solid fa-trash" tippy="Remove Button" (click)="deleteButton(buttonId)"></i>
+  </div>
+</div>

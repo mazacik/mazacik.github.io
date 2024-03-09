@@ -1,0 +1,61 @@
+@import '/src/styles/variables.scss';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-background);
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  border-radius: $gap * 1.5;
+  overflow: hidden;
+  z-index: 200;
+  transition: filter 250ms;
+
+  @media screen and (max-width:768px) {
+    max-width: calc(100% - $gap * 4);
+    max-height: calc(100% - $gap * 4);
+  }
+
+  @media screen and (min-width:768px) {
+    max-width: 80%;
+    max-height: 80%;
+  }
+
+  &:not(.active) {
+    filter: blur(3px);
+    pointer-events: none;
+  }
+
+  .content {
+    display: flex;
+    overflow: auto;
+    border: 1px solid var(--color-border);
+    border-radius: $gap;
+    margin: 0 $gap;
+  }
+}
+
+.header {
+  height: $header-height;
+  padding: $gap $gap $gap $gap * 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.buttons {
+  gap: $gap;
+  padding: $gap;
+  height: $header-height;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.button {
+  flex: 1;
+  transition: $transition-duration; // TODO specify
+}

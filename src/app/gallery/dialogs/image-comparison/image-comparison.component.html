@@ -1,0 +1,15 @@
+<div class="comparison" *ngIf="tournament.comparison">
+  <div class="image-container" (click)="onImageClick(tournament.comparison[0], tournament.comparison[1])">
+    <img class="image" [src]="tournament.comparison[0].thumbnailLink">
+  </div>
+  <div class="v-separator"></div>
+  <div class="image-container" (click)="onImageClick(tournament.comparison[1], tournament.comparison[0])">
+    <img class="image" [src]="tournament.comparison[1].thumbnailLink">
+  </div>
+</div>
+<div class="h-separator"></div>
+<div class="results">
+  <div *ngFor="let image of tournament.outcome" class="image-container">
+    <img class="image" [src]="image.thumbnailLink">
+  </div>
+</div>

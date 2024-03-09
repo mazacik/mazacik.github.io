@@ -1,0 +1,22 @@
+@import '/src/styles/variables.scss';
+
+:host {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  row-gap: $gap;
+  column-gap: $gap;
+  padding: $gap * 3;
+  border-radius: $gap;
+  border: 1px solid var(--color-border);
+
+  .element-label {
+    align-self: center;
+
+    .element {
+      flex: 1;
+      height: $header-height;
+      box-sizing: border-box;
+    }
+  }
+}

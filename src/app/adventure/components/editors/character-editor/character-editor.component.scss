@@ -1,0 +1,27 @@
+@import 'src/styles/variables.scss';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  min-width: 500px;
+  padding: $gap;
+  gap: $gap;
+
+  span {
+    padding-left: $gap;
+  }
+
+  input {
+    width: 100%;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+
+    .section-title {
+      font-weight: bold;
+      align-self: center;
+    }
+  }
+}

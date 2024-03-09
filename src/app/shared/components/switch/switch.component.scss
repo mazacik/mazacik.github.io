@@ -1,0 +1,14 @@
+.container {
+  cursor: pointer;
+  margin-left: 1px;
+
+  &.tri {
+    >.negative {
+      color: firebrick;
+    }
+  }
+
+  >.positive {
+    color: forestgreen;
+  }
+}

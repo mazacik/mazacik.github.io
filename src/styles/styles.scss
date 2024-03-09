@@ -1,1 +1,318 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap');
+
+@import '~@fortawesome/fontawesome-free/css/fontawesome.css';
+@import '~@fortawesome/fontawesome-free/css/regular.css';
+@import '~@fortawesome/fontawesome-free/css/solid.css';
+
+@import '~tippy.js/dist/tippy.css';
+
+@import './variables.scss';
+
+// scrollbar
+@media screen and (min-width:768px) {
+  * {
+    &::-webkit-scrollbar-track {
+      // margin: -$gap;
+    }
+
+    &::-webkit-scrollbar {
+      width: $gap * 2;
+      height: $gap * 2;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-clip: padding-box;
+      border: solid transparent;
+      border-width: $gap $gap $gap 0;
+      background-color: var(--color-border);
+      min-width: 100px;
+      min-height: 100px;
+    }
+  }
+}
+
+// tippy
+@media screen and (max-width:768px) {
+  body>[data-tippy-root] {
+    display: none;
+  }
+}
+
+// desktop
+@media screen and (min-width:768px) {
+  .desktop-hidden {
+    display: none !important;
+  }
+
+  .desktop-flex-0 {
+    flex: 0 !important;
+  }
+}
+
+// mobile
+@media screen and (max-width:768px) {
+  .mobile-hidden {
+    display: none !important;
+  }
+
+  .mobile-flex-0 {
+    flex: 0 !important;
+  }
+}
+
+.absolute {
+  position: absolute !important;
+}
+
+.top {
+  top: 0;
+}
+
+.right {
+  right: 0;
+}
+
+.bottom {
+  bottom: 0;
+}
+
+.left {
+  left: 0;
+}
+
+.h-separator {
+  border-top: 1px solid var(--color-border);
+
+  &.gap {
+    margin: $gap 0;
+  }
+
+  &.margins {
+    width: calc(100% - 2 * $gap);
+    align-self: center;
+  }
+}
+
+.v-separator {
+  border-right: 1px solid var(--color-border);
+
+  &.gap {
+    margin: 0 $gap;
+  }
+
+  &.margins {
+    height: calc(100% - 2 * $gap);
+    align-self: center;
+  }
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  font-family: system-ui;
+}
+
+body {
+  margin: 0;
+}
+
+input,
+textarea {
+  min-width: 50px;
+  height: 30px;
+  padding: 0 $gap;
+  border: 0;
+  color: var(--color-text);
+  background-color: transparent;
+
+  &:focus-visible {
+    outline: initial;
+  }
+}
+
+select {
+  padding: 2.2px 2.2px;
+  background-color: transparent;
+
+  >option {
+    color: var(--color-text);
+    background-color: var(--color-background);
+  }
+}
+
+input,
+select,
+textarea {
+  height: 30px;
+  display: flex;
+  align-items: center;
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+  border-radius: $gap * 0.5;
+  box-sizing: border-box;
+  border: 1px solid var(--color-border);
+  font-family: inherit;
+  font-size: inherit;
+
+  &:focus-visible {
+    outline: initial;
+  }
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.display-none {
+  display: none !important;
+}
+
+.transparent {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.opacity-0 {
+  opacity: 0 !important;
+}
+
+.opacity-1 {
+  opacity: 1 !important;
+}
+
+.disabled {
+  opacity: 0.25 !important;
+  pointer-events: none !important;
+}
+
+.flex-0 {
+  flex: 0 !important;
+}
+
+hr {
+  margin: 0;
+  border-color: var(--color-text);
+  border-style: solid;
+  border-width: 2px;
+  border-bottom: 0;
+  border-left: 0;
+}
+
+.highlight {
+  color: var(--color-highlight);
+  font-weight: bold;
+}
+
+.button {
+  width: fit-content;
+  height: 30px;
+  min-width: 30px;
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $gap;
+  cursor: pointer;
+  user-select: none;
+  padding: 0 $gap;
+  box-sizing: border-box;
+
+  background-color: var(--color-hover);
+  text-shadow: -0.5px 0 var(--color-text-shadow), 0 0.5px var(--color-text-shadow), 0.5px 0 var(--color-text-shadow), 0 -0.5px var(--color-text-shadow);
+
+  transition-property: background-color;
+  transition-duration: $transition-duration * 0.5;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.3) !important;
+  }
+}
+
+.icon-button {
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $gap;
+  text-shadow: -1px 0 var(--color-text-shadow), 0 1px var(--color-text-shadow), 1px 0 var(--color-text-shadow), 0 -1px var(--color-text-shadow);
+  box-sizing: border-box;
+
+  @media screen and (min-width:768px) {
+    cursor: pointer;
+    border: 1px solid transparent;
+
+    transition-property: border-color, background-color;
+    transition-duration: $transition-duration * 0.5;
+
+    &:hover {
+      border-color: rgba(0, 0, 0, 0.3);
+      background-color: rgba(255, 255, 255, 0.3) !important;
+    }
+  }
+}
+
+.dragging {
+  opacity: 0.5;
+}
+
+.x-scrollbar-container {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.y-scrollbar-container {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.flex {
+  display: flex;
+}
+
+.row {
+  flex-direction: row;
+}
+
+.column {
+  flex-direction: column;
+}
+
+.center {
+  align-items: center;
+  justify-content: center;
+}
+
+.blur {
+  backdrop-filter: blur(3px);
+}
+
+.flowchart {
+  text-align: center;
+  overflow: hidden;
+
+  &.hidden {
+    width: 0;
+    height: 0;
+  }
+
+  svg {
+    height: 100%;
+  }
+}

@@ -1,0 +1,14 @@
+<!-- Character -->
+<div class="section-header">
+  <span class="section-title">Character</span>
+  <i class="icon-button fa-solid fa-plus" tippy="Create Character" (click)="openCharacterEditor()"></i>
+</div>
+<select [(ngModel)]="editableLine.characterId">
+  <option *ngFor="let character of getCharacters()" [ngValue]="character.id">{{ character.id }} ({{ character.name }})</option>
+</select>
+<!-- Text -->
+<div class="h-separator"></div>
+<div class="section-header">
+  <span class="section-title">Text</span>
+</div>
+<input [(ngModel)]="editableLine.text" />

@@ -1,0 +1,82 @@
+<div class="sidebar-visibility-container" [class.visible]="stateService.sidebarVisible">
+  <div *ngVar="stateService.target() as target" class="sidebar-content">
+    <div class="sidebar-half sidebar-half-top">
+      <div class="sidebar-preview-container">
+        <img class="sidebar-preview" [src]="target?.thumbnailLink" (click)="onPreviewClick()">
+      </div>
+      <div class="sidebar-preview-group-container" [class.display-none]="!target?.hasGroup()">
+        <div class="sidebar-preview-group-scroll-container">
+          <div class="sidebar-preview-group-border-container">
+            <img *ngFor="let groupImage of target?.getGroupImages()" class="sidebar-preview-group-image" [style.aspect-ratio]="groupImage.aspectRatio" [src]="groupImage.thumbnailLink" [draggable]="false" (onCreate)="onGroupPreviewCreate($event, groupImage)" (load)="onGroupPreviewLoad(groupImage)" (click)="onGroupPreviewClick($event, groupImage)" (dblclick)="onGroupPreviewDoubleClick($event, groupImage)">
+          </div>
+        </div>
+      </div>
+      <div class="absolute top left">
+        <i class="icon-button fa-solid fa-y" tippy="Yandex Reverse Image Search" (click)="openYandexReverseImageSearch($event)"></i>
+        <i class="icon-button fa-solid fa-code-compare" tippy="Pairwise Comparison" (click)="startImageComparison()"></i>
+        <i class="icon-button fa-solid" [ngClass]="applicationService.isDarkTheme() ? 'fa-moon' : 'fa-sun'" tippy="Toggle Brightness Mode" (click)="applicationService.toggleTheme()"></i>
+      </div>
+      <div class="absolute top right">
+        <i *ngIf="!applicationService.reduceBandwidth" class="icon-button fa-solid fa-xmark desktop-hidden" (click)="stateService.sidebarVisible = false"></i>
+        <i class="icon-button fa-heart" [ngClass]="target?.heart ? 'fa-solid' : 'fa-regular'" tippy="Favorite" (click)="stateService.toggleHeart(target)"></i>
+        <i class="icon-button fa-bookmark" [ngClass]="target?.bookmark ? 'fa-solid' : 'fa-regular'" tippy="Bookmark" (click)="stateService.toggleBookmark(target)"></i>
+      </div>
+      <div class="absolute bottom left">
+
+      </div>
+      <div class="absolute bottom right">
+        <i class="icon-button fa-solid fa-cloud-arrow-down" tippy="Copy base64 data" (click)="copyTargetBase64()"></i>
+        <i class="icon-button fa-solid fa-folder-open" tippy="Open in Google Drive" (click)="openTargetInGoogleDrive()"></i>
+        <i class="icon-button fa-solid fa-trash" tippy="Trash" (click)="stateService.moveTargetToTrash()"></i>
+      </div>
+    </div>
+    <div class="sidebar-half" style="position: relative;">
+      <div class="sidebar-filter-header">
+        <div class="flex" style="justify-content: start;">
+          <i class="icon-button fa-regular" [ngClass]="stateService.targetEntireGroup ? 'fa-images' : 'fa-image'" tippy="Group Mode" (click)="stateService.targetEntireGroup = !stateService.targetEntireGroup"></i>
+          <i class="icon-button fa-solid fa-hashtag" tippy="Group Size Filter Configuration" (click)="openGroupSizeFilterDialog()"></i>
+        </div>
+        <div class="flex" style="justify-content: center;">
+          <i class="icon-button fa-solid fa-arrows-spin" [class.disabled]="!target?.hasGroup()" (click)="stateService.setRandomGroupTarget()"></i>
+          <i class="icon-button fa-solid fa-shuffle" (click)="stateService.setRandomTarget()"></i>
+        </div>
+        <div class="flex" style="justify-content: end;">
+          <i class="icon-button fa-solid fa-plus" tippy="Tag Editor" (click)="openTagEditor()"></i>
+        </div>
+      </div>
+      <div class="taglist-scrollbar-container">
+        <div class="sidebar-filter-list">
+          <div class="sidebar-item">
+            <app-switch [tri]="true" [state]="stateService.heartsFilter" (stateChange)="onLikesStateChange($event)"></app-switch>
+            <div>
+              <i class="fa-solid fa-heart"></i>
+              <span class="sidebar-item-label">{{ ' ('+ (stateService.tagCounts['_heart'] || 0) +')' }}</span>
+            </div>
+            <app-switch [state]="target?.heart ? 1 : -1" (stateChange)="stateService.toggleHeart(target)"></app-switch>
+          </div>
+          <div class="sidebar-item">
+            <app-switch [tri]="true" [state]="stateService.bookmarksFilter" (stateChange)="onBookmarksStateChange($event)"></app-switch>
+            <div>
+              <i class="fa-solid fa-bookmark"></i>
+              <span class="sidebar-item-label">{{ ' ('+ (stateService.tagCounts['_bookmark'] || 0) +')' }}</span>
+            </div>
+            <app-switch [state]="target?.bookmark ? 1 : -1" (stateChange)="stateService.toggleBookmark(target)"></app-switch>
+          </div>
+          <div *ngFor="let group of stateService.tagGroups" class="sidebar-group">
+            <div class="h-separator"></div>
+            <div class="sidebar-item">
+              <app-switch [tri]="true" [state]="group.state" (stateChange)="onFilterStateChange(group, $event)"></app-switch>
+              <span class="sidebar-group-header sidebar-item-label" (click)="openGroupEditor($event, group)">{{ group.name }}</span>
+              <app-switch [state]="0" style="visibility: hidden;"></app-switch>
+            </div>
+            <div *ngFor="let tag of group.tags" class="sidebar-item">
+              <app-switch [tri]="true" [state]="tag.state" (stateChange)="onFilterStateChange(tag, $event)"></app-switch>
+              <span class="sidebar-item-label" (click)="openTagEditor($event, group, tag)">{{ tag.name + ' (' + (stateService.tagCounts[tag.id] || 0) + ')' }}</span>
+              <app-switch [state]="target?.tags.includes(tag.id) ? 1 : -1" (stateChange)="stateService.toggleTag(target, tag.id)"></app-switch>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

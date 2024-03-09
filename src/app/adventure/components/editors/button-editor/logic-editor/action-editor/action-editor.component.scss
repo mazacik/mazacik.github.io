@@ -1,0 +1,73 @@
+@import '/src/styles/variables.scss';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: $gap;
+  border: 1px solid var(--color-border);
+  border-radius: $gap;
+  padding: $gap;
+
+  span {
+    padding-left: $gap;
+  }
+
+  input {
+    width: 100%;
+  }
+  
+  input[type=number] {
+    border: 1px solid var(--color-border);
+    border-radius: $gap;
+    padding: $gap;
+    outline: none;
+    color: var(--color-text);
+    background-color: transparent;
+    font-size: inherit;
+    font-weight: inherit;
+    font-family: inherit;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+
+    .section-title {
+      font-weight: bold;
+      align-self: center;
+    }
+  }
+
+  .section-container {
+    display: flex;
+    gap: $gap;
+  }
+}
+
+select {
+  width: 100%;
+  border-color: var(--color-border);
+  border-radius: $gap;
+  color: var(--color-text);
+  padding: 2.2px 2.2px;
+  background-color: transparent;
+  font-family: inherit;
+  font-size: inherit;
+
+  >option {
+    color: var(--color-text);
+    background-color: var(--color-background);
+  }
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}

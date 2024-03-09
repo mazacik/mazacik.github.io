@@ -1,0 +1,14 @@
+<span class="element-label">Group</span>
+<div class="element-container">
+  <select class="element" [(ngModel)]="currentGroup">
+    <option *ngFor="let _group of stateService.tagGroups" [ngValue]="_group">{{ _group.name }}</option>
+  </select>
+  <div class="flex">
+    <i class="icon-button fa-solid fa-edit" tippy="Edit Group" [class.disabled]="!currentGroup" (click)="editGroup(currentGroup)"></i>
+    <i class="icon-button fa-solid fa-plus" tippy="Create Group" (click)="editGroup()"></i>
+  </div>
+</div>
+<span class="element-label">Name</span>
+<div class="element-container">
+  <input class="element" [(ngModel)]="tagName">
+</div>

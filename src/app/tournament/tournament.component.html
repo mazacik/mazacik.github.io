@@ -1,0 +1,10 @@
+<div class="input-container">
+  <textarea [placeholder]="tournament ? 'Leaderboard' : 'Entries'" [(ngModel)]="text" [readOnly]="tournament"></textarea>
+  <span *ngIf="!tournament" class="button" (click)="parseText()">Parse</span>
+</div>
+<ng-container *ngIf="tournament">
+  <div class="comparison" *ngIf="tournament.comparison">
+    <span class="button" (click)="onEntryClick(tournament.comparison[0], tournament.comparison[1])">{{ tournament.comparison[0] }}</span>
+    <span class="button" (click)="onEntryClick(tournament.comparison[1], tournament.comparison[0])">{{ tournament.comparison[1] }}</span>
+  </div>
+</ng-container>

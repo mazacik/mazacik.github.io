@@ -1,0 +1,126 @@
+@import '/src/styles/variables.scss';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.content-container {
+  display: flex;
+  flex-direction: column;
+  padding: $gap;
+  flex: 1;
+
+  .scenario-container {
+    display: flex;
+    flex-direction: column;
+
+    &:not(:first-child) {
+      padding-top: $gap * 0.5;
+    }
+
+    &:not(:last-child) {
+      padding-bottom: $gap * 0.5;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .scenario-label-container {
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      line-height: 30px;
+      border-radius: $gap;
+
+      &:hover {
+        background-color: var(--color-hover);
+
+        .scenario-notes-word-count {
+          display: none;
+        }
+
+        .scenario-buttons {
+          display: flex !important;
+        }
+      }
+
+      .scenario-label {
+        margin: 0 $gap;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+
+      .scenario-info {
+        text-align: end;
+
+        .scenario-notes-word-count {
+          margin: 0 $gap;
+        }
+
+        .scenario-buttons {
+          display: none;
+        }
+      }
+    }
+  }
+
+  .scenario-notes-container {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    .note-container {
+      display: flex;
+      cursor: pointer;
+      justify-content: space-between;
+      line-height: 30px;
+      border-radius: $gap;
+
+      &:hover {
+        background-color: var(--color-hover);
+
+        .note-word-count {
+          display: none;
+        }
+
+        .note-buttons {
+          display: flex !important;
+        }
+      }
+
+      .navigation-note-label {
+        width: 100%;
+      }
+
+      .note-label {
+        margin: 0 $gap;
+        padding-left: $gap * 3;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+
+      .note-info {
+        text-align: end;
+
+        .note-word-count {
+          margin: 0 $gap;
+        }
+
+        .note-buttons {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  padding: $gap 0;
+  gap: $gap;
+}
