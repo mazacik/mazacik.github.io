@@ -1,0 +1,16 @@
+# dependencies
+/node_modules
+
+# IDE
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+
+# misc
+/.angular/cache
+
+# custom
+cmd-here.bat
