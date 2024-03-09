@@ -1,7 +1,7 @@
 <!-- Character -->
 <div class="section-header">
   <span class="section-title">Character</span>
-  <i class="icon-button fa-solid fa-plus" tippy="Create Character" (click)="openCharacterEditor()"></i>
+  <i class="icon-button fa-solid fa-plus" tp="Create Character" (click)="openCharacterEditor()"></i>
 </div>
 <select [(ngModel)]="editableLine.characterId">
   <option *ngFor="let character of getCharacters()" [ngValue]="character.id">{{ character.id }} ({{ character.name }})</option>

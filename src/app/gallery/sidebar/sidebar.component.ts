@@ -1,7 +1,11 @@
+import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, effect } from '@angular/core';
 import { TippyService } from '@ngneat/helipopper';
 import { GalleryGoogleDriveService } from 'src/app/gallery/services/gallery-google-drive.service';
+import { SwitchComponent } from 'src/app/shared/components/switch/switch.component';
 import { SwitchEvent } from 'src/app/shared/components/switch/switch.event';
+import { OnCreateDirective } from 'src/app/shared/directives/on-create.directive';
+import { VariableDirective } from 'src/app/shared/directives/variable.directive';
 import { ApplicationService } from 'src/app/shared/services/application.service';
 import { DialogService } from 'src/app/shared/services/dialog.service';
 import { ScreenUtils } from '../../shared/utils/screen.utils';
@@ -16,6 +20,13 @@ import { GalleryStateService } from '../services/gallery-state.service';
 
 @Component({
   selector: 'app-sidebar',
+  standalone: true,
+  imports: [
+    CommonModule,
+    SwitchComponent,
+    OnCreateDirective,
+    VariableDirective
+  ],
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss']
 })

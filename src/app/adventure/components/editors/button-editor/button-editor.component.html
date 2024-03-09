@@ -13,6 +13,6 @@
 <div class="h-separator"></div>
 <div class="section-header">
   <span class="section-title">Logic</span>
-  <i class="icon-button fa-solid fa-plus" tippy="Create Logic" (click)="createLogicEntry()"></i>
+  <i class="icon-button fa-solid fa-plus" tp="Create Logic" (click)="createLogicEntry()"></i>
 </div>
 <app-logic-editor *ngFor="let logic of editableButton.logic; let i = index;" [logic]="logic" [removable]="i > 0" (removeLogic)="onRemoveLogic($event)"></app-logic-editor>

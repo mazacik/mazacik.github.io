@@ -17,7 +17,7 @@ export class AdventureGoogleDriveService extends BaseGoogleDriveService {
   private readonly FILE_ID: string = '1l3MbDnNr9VKc1aADVATWCYe1tMwLUTp-';
 
   constructor(
-    protected http: HttpClient,
+    override http: HttpClient,
     private injector: Injector,
     private applicationService: ApplicationService,
     private stateService: AdventureStateService

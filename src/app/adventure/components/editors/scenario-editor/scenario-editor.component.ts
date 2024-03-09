@@ -1,7 +1,10 @@
+import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Character } from 'src/app/adventure/models/components/character.interface';
 import { DialogConfiguration } from 'src/app/shared/components/dialog/dialog-configuration.class';
 import { DialogContent } from 'src/app/shared/components/dialog/dialog-content.class';
+import { DragDropDirective } from 'src/app/shared/directives/dragdrop.directive';
 import { DialogService } from 'src/app/shared/services/dialog.service';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 import { StringUtils } from 'src/app/shared/utils/string.utils';
@@ -15,6 +18,12 @@ import { AdventureFactory } from '../../../utils/adventure.factory';
 
 @Component({
   selector: 'app-scenario-editor',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    DragDropDirective
+  ],
   templateUrl: './scenario-editor.component.html',
   styleUrls: ['./scenario-editor.component.scss']
 })

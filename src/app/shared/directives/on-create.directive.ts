@@ -1,7 +1,8 @@
 import { Directive, ElementRef, Output, EventEmitter } from '@angular/core';
 
 @Directive({
-  selector: '[onCreate]'
+  selector: '[onCreate]',
+  standalone: true
 })
 export class OnCreateDirective {
 

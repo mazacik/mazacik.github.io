@@ -1,4 +1,6 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 import { Delay } from './shared/classes/delay.class';
 import { fade } from './shared/consntants/animations.constants';
 import { ApplicationService } from './shared/services/application.service';
@@ -6,6 +8,11 @@ import { DialogService } from './shared/services/dialog.service';
 
 @Component({
   selector: 'app-root',
+  standalone: true,
+  imports: [
+    CommonModule,
+    RouterOutlet
+  ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
   animations: [fade]

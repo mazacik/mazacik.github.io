@@ -1,9 +1,14 @@
+import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ScreenUtils } from '../../utils/screen.utils';
 import { SwitchEvent } from './switch.event';
 
 @Component({
   selector: 'app-switch',
+  standalone: true,
+  imports: [
+    CommonModule
+  ],
   templateUrl: './switch.component.html',
   styleUrls: ['./switch.component.scss']
 })

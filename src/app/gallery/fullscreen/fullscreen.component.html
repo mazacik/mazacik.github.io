@@ -5,9 +5,9 @@
     </div>
     <div>
       <i class="icon-button fa-solid fa-xmark" (click)="stateService.fullscreenVisible.set(false)"></i>
-      <i class="icon-button fa-heart" [ngClass]="target?.heart ? 'fa-solid' : 'fa-regular'" tippy="Favorite" (click)="stateService.toggleHeart(target)"></i>
-      <i class="icon-button fa-bookmark" [ngClass]="target?.bookmark ? 'fa-solid' : 'fa-regular'" tippy="Bookmark" (click)="stateService.toggleBookmark(target)"></i>
-      <!-- <i *ngIf="video" class="icon-button fa-regular fa-image" tippy="Snapshot" (click)="snapshot()"></i> -->
+      <i class="icon-button fa-heart" [ngClass]="target?.heart ? 'fa-solid' : 'fa-regular'" tp="Favorite" (click)="stateService.toggleHeart(target)"></i>
+      <i class="icon-button fa-bookmark" [ngClass]="target?.bookmark ? 'fa-solid' : 'fa-regular'" tp="Bookmark" (click)="stateService.toggleBookmark(target)"></i>
+      <!-- <i *ngIf="video" class="icon-button fa-regular fa-image" tp="Snapshot" (click)="snapshot()"></i> -->
     </div>
   </div>
   <div class="fullscreen-footer desktop-hidden">
@@ -19,7 +19,7 @@
       <i class="icon-button fa-solid fa-shuffle" (click)="stateService.setRandomTarget()"></i>
     </div>
     <div style="justify-content: end;">
-      <i class="icon-button fa-solid fa-trash" tippy="Trash" (click)="stateService.moveTargetToTrash()"></i>
+      <i class="icon-button fa-solid fa-trash" tp="Trash" (click)="stateService.moveTargetToTrash()"></i>
     </div>
   </div>
   <div *ngFor="let image of crossfadeHelper" @fade class="fullscreen-crossfade">

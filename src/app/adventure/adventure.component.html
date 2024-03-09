@@ -1,13 +1,13 @@
 <div class="header">
   <div class="header-left">
-    <i class="icon-button fa-solid fa-bars" tippy="Sidebar" (click)="editorService.sidebarVisible.toggle()"></i>
-    <!-- <i class="icon-button fa-solid fa-book" tippy="Story" (click)="adventureService.storyVisible = !adventureService.storyVisible"></i> -->
-    <!-- <i class="icon-button fa-solid fa-diagram-next" tippy="Flowchart" (click)="adventureService.flowchartVisible = !adventureService.flowchartVisible"></i> -->
-    <!-- <i class="icon-button fa-solid fa-file-import" tippy="Import Data" (click)="import()"></i> -->
-    <!-- <i class="icon-button fa-solid fa-file-export" tippy="Export Data" (click)="export()"></i> -->
+    <i class="icon-button fa-solid fa-bars" tp="Sidebar" (click)="editorService.sidebarVisible.toggle()"></i>
+    <!-- <i class="icon-button fa-solid fa-book" tp="Story" (click)="adventureService.storyVisible = !adventureService.storyVisible"></i> -->
+    <!-- <i class="icon-button fa-solid fa-diagram-next" tp="Flowchart" (click)="adventureService.flowchartVisible = !adventureService.flowchartVisible"></i> -->
+    <!-- <i class="icon-button fa-solid fa-file-import" tp="Import Data" (click)="import()"></i> -->
+    <!-- <i class="icon-button fa-solid fa-file-export" tp="Export Data" (click)="export()"></i> -->
   </div>
   <div class="header-right">
-    <i class="icon-button fa-solid" [ngClass]="applicationService.isDarkTheme() ? 'fa-moon' : 'fa-sun'" tippy="Toggle Brightness Mode" (click)="applicationService.toggleTheme()"></i>
+    <i class="icon-button fa-solid" [ngClass]="applicationService.isDarkTheme() ? 'fa-moon' : 'fa-sun'" tp="Toggle Brightness Mode" (click)="applicationService.toggleTheme()"></i>
   </div>
 </div>
 <div class="content">
@@ -30,9 +30,9 @@
           <span>{{ stateService.getCurrentNode().description }}</span>
           <div class="node-buttons-container">
             <ng-container *ngFor="let button of stateService.getButtonsForNode()">
-              <span *ngIf="!actionService.evaluate(button.hidden)" class="button" (click)="actionService.executeButton(button)" [tippy]="button.tooltip">{{ button.text }}</span>
+              <span *ngIf="!actionService.evaluate(button.hidden)" class="button" (click)="actionService.executeButton(button)" [tp]="button.tooltip">{{ button.text }}</span>
             </ng-container>
-            <!-- <i class="button node-button fa-solid fa-shuffle" [tippy]="'Random'" (click)="actionService.executeRandomButton()"></i> -->
+            <!-- <i class="button node-button fa-solid fa-shuffle" [tp]="'Random'" (click)="actionService.executeRandomButton()"></i> -->
           </div>
         </div>
       </ng-container>

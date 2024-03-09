@@ -2,6 +2,7 @@ import { Directive, Input, TemplateRef, ViewContainerRef } from '@angular/core';
 
 @Directive({
   selector: '[ngVar]',
+  standalone: true
 })
 export class VariableDirective<T> {
 

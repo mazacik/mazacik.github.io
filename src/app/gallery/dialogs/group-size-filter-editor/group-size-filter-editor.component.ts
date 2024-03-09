@@ -1,10 +1,17 @@
+import { CommonModule } from '@angular/common';
 import { Component, HostListener, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { DialogConfiguration } from 'src/app/shared/components/dialog/dialog-configuration.class';
 import { DialogContent } from 'src/app/shared/components/dialog/dialog-content.class';
 import { GalleryStateService } from '../../services/gallery-state.service';
 
 @Component({
   selector: 'app-group-size-filter-editor',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule
+  ],
   templateUrl: './group-size-filter-editor.component.html',
   styleUrls: ['./group-size-filter-editor.component.scss'],
 })

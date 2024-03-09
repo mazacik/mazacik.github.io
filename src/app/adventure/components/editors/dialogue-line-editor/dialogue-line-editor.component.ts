@@ -1,4 +1,6 @@
+import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Character } from 'src/app/adventure/models/components/character.interface';
 import { DialogueLine } from 'src/app/adventure/models/components/dialogue-line.interface';
 import { DialogConfiguration } from 'src/app/shared/components/dialog/dialog-configuration.class';
@@ -10,6 +12,11 @@ import { AdventureFactory } from '../../../utils/adventure.factory';
 
 @Component({
   selector: 'app-dialogue-line-editor',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule
+  ],
   templateUrl: './dialogue-line-editor.component.html',
   styleUrls: ['./dialogue-line-editor.component.scss']
 })

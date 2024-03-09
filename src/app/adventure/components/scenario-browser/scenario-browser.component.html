@@ -5,9 +5,9 @@
       <div class="scenario-info">
         <span class="scenario-notes-word-count">{{ getNotesWordCount(scenario) }}</span>
         <div class="scenario-buttons">
-          <i class="icon-button fa-solid fa-plus" tippy="Create Note" (click)="createNote(scenario)"></i>
-          <i class="icon-button fa-solid fa-pen-to-square" tippy="Edit Scenario" (click)="openScenarioEditor(scenario)"></i>
-          <i class="icon-button fa-solid fa-times" tippy="Remove Scenario" (click)="removeScenario(scenario)"></i>
+          <i class="icon-button fa-solid fa-plus" tp="Create Note" (click)="createNote(scenario)"></i>
+          <i class="icon-button fa-solid fa-pen-to-square" tp="Edit Scenario" (click)="openScenarioEditor(scenario)"></i>
+          <i class="icon-button fa-solid fa-times" tp="Remove Scenario" (click)="removeScenario(scenario)"></i>
         </div>
       </div>
     </div>
@@ -17,7 +17,7 @@
         <div class="note-info">
           <span class="note-word-count">{{ note.wordCount }}</span>
           <div class="note-buttons">
-            <i class="icon-button fa-solid fa-times" tippy="Remove Note" (click)="removeNote(scenario, note)"></i>
+            <i class="icon-button fa-solid fa-times" tp="Remove Note" (click)="removeNote(scenario, note)"></i>
           </div>
         </div>
       </div>
@@ -26,6 +26,6 @@
 </div>
 <div class="h-separator margins"></div>
 <div class="button-container">
-  <i class="icon-button fa-solid fa-plus" tippy="Create Scenario" (click)="openScenarioEditor()"></i>
-  <i class="icon-button fa-solid fa-shuffle" tippy="Select Random Scenario and Note" (click)="setRandom()"></i>
+  <i class="icon-button fa-solid fa-plus" tp="Create Scenario" (click)="openScenarioEditor()"></i>
+  <i class="icon-button fa-solid fa-shuffle" tp="Select Random Scenario and Note" (click)="setRandom()"></i>
 </div>

@@ -1,6 +1,8 @@
+import { CommonModule } from '@angular/common';
 import { Component, effect } from '@angular/core';
 import { SafeUrl } from '@angular/platform-browser';
 import { fade } from 'src/app/shared/consntants/animations.constants';
+import { VariableDirective } from 'src/app/shared/directives/variable.directive';
 import { ApplicationService } from 'src/app/shared/services/application.service';
 import { GoogleFileUtils } from 'src/app/shared/utils/google-file.utils';
 import { GalleryImage } from '../model/gallery-image.class';
@@ -8,6 +10,11 @@ import { GalleryStateService } from '../services/gallery-state.service';
 
 @Component({
   selector: 'app-fullscreen',
+  standalone: true,
+  imports: [
+    CommonModule,
+    VariableDirective
+  ],
   templateUrl: './fullscreen.component.html',
   styleUrls: ['./fullscreen.component.scss'],
   animations: [fade]

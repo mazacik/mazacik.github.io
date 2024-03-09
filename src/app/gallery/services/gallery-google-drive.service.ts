@@ -1,5 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable, Injector } from "@angular/core";
+import { lastValueFrom } from "rxjs";
 import { Delay } from "src/app/shared/classes/delay.class";
 import { GoogleMetadata } from "src/app/shared/classes/google-api/google-metadata.class";
 import { ApplicationService } from "../../shared/services/application.service";
@@ -16,7 +17,7 @@ export class GalleryGoogleDriveService extends BaseGoogleDriveService {
   private delay: Delay = new Delay(5000);
 
   constructor(
-    protected http: HttpClient,
+    override http: HttpClient,
     private applicationService: ApplicationService,
     private injector: Injector
   ) {
@@ -78,7 +79,7 @@ export class GalleryGoogleDriveService extends BaseGoogleDriveService {
     const dataFileId: string = sessionStorage.getItem('dataFileId');
     if (dataFileId) {
       const url: string = 'https://www.googleapis.com/drive/v3/files/' + dataFileId;
-      return await this.http.get<Data>(url, { params: { 'alt': 'media' }, responseType: 'json' }).toPromise();
+      return await lastValueFrom(this.http.get<Data>(url, { params: { 'alt': 'media' }, responseType: 'json' })).catch(error => error);
     }
   }
 

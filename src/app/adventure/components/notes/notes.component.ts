@@ -1,4 +1,8 @@
+import { CommonModule } from '@angular/common';
 import { Component, ElementRef, HostBinding, HostListener, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { OnCreateDirective } from 'src/app/shared/directives/on-create.directive';
+import { VariableDirective } from 'src/app/shared/directives/variable.directive';
 import { ApplicationService } from 'src/app/shared/services/application.service';
 import { StringUtils } from 'src/app/shared/utils/string.utils';
 import { Note } from '../../models/components/note.interface';
@@ -9,6 +13,13 @@ import { GraphRendererService } from '../../services/graph-renderer.service';
 
 @Component({
   selector: 'app-notes',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    OnCreateDirective,
+    VariableDirective
+  ],
   templateUrl: './notes.component.html',
   styleUrls: ['./notes.component.scss']
 })

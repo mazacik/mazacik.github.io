@@ -4,6 +4,6 @@
     <span *ngFor="let folder of folders" (click)="onFolderClick(folder)">{{ folder.name }}</span>
   </div>
   <div class="buttons-container">
-    <i class="icon-button fa-solid" [ngClass]="applicationService.reduceBandwidth ? 'fa-signal' : 'fa-wifi'" tippy="Toggle Low Bandwidth Mode" (click)="applicationService.reduceBandwidth = !applicationService.reduceBandwidth"></i>
+    <i class="icon-button fa-solid" [ngClass]="applicationService.reduceBandwidth ? 'fa-signal' : 'fa-wifi'" tp="Toggle Low Bandwidth Mode" (click)="applicationService.reduceBandwidth = !applicationService.reduceBandwidth"></i>
   </div>
 </div>

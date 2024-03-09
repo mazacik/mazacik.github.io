@@ -1,4 +1,6 @@
+import { CommonModule } from '@angular/common';
 import { Component, HostListener, Input, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { TagGroup } from 'src/app/gallery/model/tag-group.interface';
 import { GalleryGoogleDriveService } from 'src/app/gallery/services/gallery-google-drive.service';
 import { DialogConfiguration } from 'src/app/shared/components/dialog/dialog-configuration.class';
@@ -10,6 +12,11 @@ import { GalleryStateService } from '../../services/gallery-state.service';
 
 @Component({
   selector: 'app-gallery-tag-group-editor',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule
+  ],
   templateUrl: './gallery-tag-group-editor.component.html',
   styleUrls: ['./gallery-tag-group-editor.component.scss'],
 })

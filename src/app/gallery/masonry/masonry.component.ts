@@ -1,14 +1,23 @@
+import { CommonModule } from '@angular/common';
 import { Component, ElementRef, HostListener, effect } from '@angular/core';
 import { GalleryImage } from 'src/app/gallery/model/gallery-image.class';
 import { leave } from 'src/app/shared/consntants/animations.constants';
+import { OnCreateDirective } from 'src/app/shared/directives/on-create.directive';
 import { ApplicationService } from 'src/app/shared/services/application.service';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 import { ScreenUtils } from '../../shared/utils/screen.utils';
 import { GalleryGoogleDriveService } from '../services/gallery-google-drive.service';
 import { GalleryStateService } from '../services/gallery-state.service';
+import { TippyDirective } from '@ngneat/helipopper';
 
 @Component({
   selector: 'app-masonry',
+  standalone: true,
+  imports: [
+    CommonModule,
+    OnCreateDirective,
+    TippyDirective
+  ],
   templateUrl: './masonry.component.html',
   styleUrls: ['./masonry.component.scss'],
   animations: [leave]

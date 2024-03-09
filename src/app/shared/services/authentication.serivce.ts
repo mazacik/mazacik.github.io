@@ -1,12 +1,15 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
+import { firstValueFrom } from "rxjs";
 import { environment } from "src/environments/environment";
-import { StringUtils } from "../utils/string.utils";
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthenticationService {
+
+  private readonly CLIENT_ID: string = '692582629035-s6vftm7t7erhlblg9iekl0fhfhdskq25.apps.googleusercontent.com';
+  private readonly CLIENT_SECRET: string = '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';
 
   private accessToken: string;
   private refreshToken: string;
@@ -26,7 +29,7 @@ export class AuthenticationService {
     const url: string = "https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=" + redirect_uri
       + "&prompt=consent&response_type=code&client_id=" + clientId + "&scope=" + scope
       + "&access_type=offline";
-    window.location = url as any;
+    window.location = url as unknown as Location;
   }
 
   async requestTokens(code: string): Promise<void> {
@@ -35,19 +38,19 @@ export class AuthenticationService {
       'content-type': 'form-data',
       'grant_type': 'authorization_code',
       'code': code,
-      'client_id': '692582629035-s6vftm7t7erhlblg9iekl0fhfhdskq25.apps.googleusercontent.com',
-      'client_secret': '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',
+      'client_id': this.CLIENT_ID,
+      'client_secret': this.CLIENT_SECRET,
       'redirect_uri': environment.redirect_uri,
       'plugin_name': 'TagalleryWeb'
     };
 
-    await this.http.post<{ access_token: string, refresh_token: string }>(url, body).toPromise().then(response => {
+    await firstValueFrom(this.http.post<{ access_token: string, refresh_token: string }>(url, body)).then(response => {
       if (response) {
         this.accessToken = response.access_token;
         this.refreshToken = response.refresh_token;
         window.localStorage.setItem('googleRefreshToken', this.refreshToken);
       }
-    });
+    }).catch(error => error);
   }
 
   async requestAccessToken(): Promise<string> {
@@ -55,10 +58,16 @@ export class AuthenticationService {
     const body = {
       'grant_type': 'refresh_token',
       'refresh_token': this.getRefreshToken(),
-      'client_id': '692582629035-s6vftm7t7erhlblg9iekl0fhfhdskq25.apps.googleusercontent.com',
-      'client_secret': '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'
+      'client_id': this.CLIENT_ID,
+      'client_secret': this.CLIENT_SECRET
     };
-    await this.http.post<{ access_token: string }>(url, body).toPromise().then(response => this.accessToken = response?.access_token);
+
+    await firstValueFrom(this.http.post<{ access_token: string }>(url, body)).then(response => {
+      if (response) {
+        this.accessToken = response.access_token;
+      }
+    }).catch(error => error);
+
     return this.accessToken;
   }
 

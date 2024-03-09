@@ -1,9 +1,10 @@
 import { Directive, Input, ViewContainerRef } from "@angular/core";
 
 @Directive({
-  selector: '[dragdrop]'
+  selector: '[dragdrop]',
+  standalone: true
 })
-export class DragdropDirective<T> {
+export class DragDropDirective<T> {
 
   private static currentArray: unknown[];
   private static currentIndex: number;
@@ -14,9 +15,9 @@ export class DragdropDirective<T> {
   constructor(vcr: ViewContainerRef) {
     const element: HTMLElement = vcr.element.nativeElement;
     element.draggable = true;
-    element.ondragstart = () => DragdropDirective.onDragStart(this.array, this.array.indexOf(this.object));
-    element.ondragenter = () => DragdropDirective.onDragEnter(this.array, this.array.indexOf(this.object));
-    element.ondragend = () => DragdropDirective.onDragEnd(this.array);
+    element.ondragstart = () => DragDropDirective.onDragStart(this.array, this.array.indexOf(this.object));
+    element.ondragenter = () => DragDropDirective.onDragEnter(this.array, this.array.indexOf(this.object));
+    element.ondragend = () => DragDropDirective.onDragEnd(this.array);
     element.ondragover = (event) => event.preventDefault();
   }
 

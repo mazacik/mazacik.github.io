@@ -1,7 +1,9 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { AdventureGoogleDriveService } from 'src/app/adventure/services/adventure-google-drive.service';
 import { GraphRendererService } from 'src/app/adventure/services/graph-renderer.service';
 import { drawer } from 'src/app/shared/consntants/animations.constants';
+import { DragDropDirective } from 'src/app/shared/directives/dragdrop.directive';
 import { DialogService } from 'src/app/shared/services/dialog.service';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 import { ScreenUtils } from 'src/app/shared/utils/screen.utils';
@@ -13,6 +15,11 @@ import { AdventureFactory } from '../../utils/adventure.factory';
 
 @Component({
   selector: 'app-scenario-browser',
+  standalone: true,
+  imports: [
+    CommonModule,
+    DragDropDirective
+  ],
   templateUrl: './scenario-browser.component.html',
   styleUrls: ['./scenario-browser.component.scss'],
   animations: [drawer]

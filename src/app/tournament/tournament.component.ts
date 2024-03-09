@@ -1,8 +1,15 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Tournament } from 'src/app/shared/classes/tournament.class';
 
 @Component({
   selector: 'app-tournament',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule
+  ],
   templateUrl: './tournament.component.html',
   styleUrls: ['./tournament.component.scss']
 })

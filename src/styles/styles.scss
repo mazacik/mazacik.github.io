@@ -1,18 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap');
 
-@import '~@fortawesome/fontawesome-free/css/fontawesome.css';
-@import '~@fortawesome/fontawesome-free/css/regular.css';
-@import '~@fortawesome/fontawesome-free/css/solid.css';
+@import '@fortawesome/fontawesome-free/css/fontawesome.css';
+@import '@fortawesome/fontawesome-free/css/regular.css';
+@import '@fortawesome/fontawesome-free/css/solid.css';
 
-@import '~tippy.js/dist/tippy.css';
+@import 'tippy.js/dist/tippy.css';
 
-@import './variables.scss';
+@import 'src/styles/variables.scss';
 
 // scrollbar
 @media screen and (min-width:768px) {
   * {
     &::-webkit-scrollbar-track {
-      // margin: -$gap;
+      // margin: (-$gap);
     }
 
     &::-webkit-scrollbar {

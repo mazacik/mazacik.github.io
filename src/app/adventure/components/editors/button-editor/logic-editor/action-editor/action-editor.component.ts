@@ -1,4 +1,6 @@
+import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 import { DialogueNode } from '../../../../../models/components/dialogue-node.interface';
 import { Scenario } from '../../../../../models/components/scenario.interface';
@@ -11,6 +13,11 @@ import { AdventureFactory } from '../../../../../utils/adventure.factory';
 
 @Component({
   selector: 'app-action-editor',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule
+  ],
   templateUrl: './action-editor.component.html',
   styleUrls: ['./action-editor.component.scss']
 })

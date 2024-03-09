@@ -1,5 +1,9 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { TippyDirective } from '@ngneat/helipopper';
 import { ApplicationService } from '../shared/services/application.service';
+import { NotesComponent } from './components/notes/notes.component';
+import { ScenarioBrowserComponent } from './components/scenario-browser/scenario-browser.component';
 import { AdventureActionService } from './services/adventure-action.service';
 import { AdventureEditorService } from './services/adventure-editor.service';
 import { AdventureGoogleDriveService } from './services/adventure-google-drive.service';
@@ -8,6 +12,13 @@ import { GraphRendererService } from './services/graph-renderer.service';
 
 @Component({
   selector: 'app-adventure',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ScenarioBrowserComponent,
+    NotesComponent,
+    TippyDirective
+  ],
   templateUrl: './adventure.component.html',
   styleUrls: ['./adventure.component.scss']
 })

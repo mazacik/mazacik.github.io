@@ -1,4 +1,6 @@
+import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Character } from 'src/app/adventure/models/components/character.interface';
 import { DialogConfiguration } from 'src/app/shared/components/dialog/dialog-configuration.class';
 import { DialogContent } from 'src/app/shared/components/dialog/dialog-content.class';
@@ -7,6 +9,11 @@ import { AdventureFactory } from '../../../utils/adventure.factory';
 
 @Component({
   selector: 'app-character-editor',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule
+  ],
   templateUrl: './character-editor.component.html',
   styleUrls: ['./character-editor.component.scss']
 })

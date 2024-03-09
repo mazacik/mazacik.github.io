@@ -1,33 +1,27 @@
-import { Injectable } from '@angular/core';
-import { HttpInterceptor, HttpHandler, HttpRequest, HttpErrorResponse } from '@angular/common/http';
-
+import { HttpErrorResponse, HttpEvent, HttpHandlerFn, HttpInterceptorFn, HttpRequest } from '@angular/common/http';
+import { inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { catchError, switchMap } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
 import { AuthenticationService } from 'src/app/shared/services/authentication.serivce';
 
-@Injectable()
-export class GoogleDriveInterceptor implements HttpInterceptor {
+export const GoogleDriveInterceptor: HttpInterceptorFn = (
+  request: HttpRequest<unknown>,
+  next: HttpHandlerFn
+): Observable<HttpEvent<unknown>> => {
+  const authService = inject(AuthenticationService);
+  return next(getAuthorizedRequest(authService, request)).pipe(catchError((error: HttpErrorResponse) => {
+    return handleResponseError(authService, error, request, next);
+  })) as any;
+};
 
-  constructor(
-    private authService: AuthenticationService
-  ) { }
+const getAuthorizedRequest = (authService: AuthenticationService, request: HttpRequest<unknown>) => {
+  return request.url.includes('googleapis.com') ? request.clone({ headers: request.headers.set('authorization', 'Bearer ' + authService.getAccessToken()) }) : request;
+}
 
-  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<any> {
-    return next.handle(this.getAuthorizedRequest(request)).pipe(catchError((error: HttpErrorResponse) => {
-      return this.handleResponseError(error, request, next);
-    }));
-  }
-
-  getAuthorizedRequest(request: HttpRequest<any>): HttpRequest<any> {
-    return request.url.includes('googleapis.com') ? request.clone({ headers: request.headers.set('authorization', 'Bearer ' + this.authService.getAccessToken()) }) : request;
-  }
-
-  async handleResponseError(error: HttpErrorResponse, request?: HttpRequest<any>, next?: HttpHandler): Promise<void> {
-    if (!error.url.includes('accounts.google.com')) {
-      if (await this.authService.requestAccessToken()) {
-        switchMap(() => next.handle(this.getAuthorizedRequest(request)));
-      }
+const handleResponseError = async (authService: AuthenticationService, error: HttpErrorResponse, request?: HttpRequest<any>, next?: HttpHandlerFn) => {
+  if (!error.url.includes('accounts.google.com')) {
+    if (await authService.requestAccessToken()) {
+      return next(getAuthorizedRequest(authService, request));
     }
   }
-
 }

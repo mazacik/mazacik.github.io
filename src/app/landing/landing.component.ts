@@ -1,9 +1,14 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApplicationService } from '../shared/services/application.service';
 
 @Component({
   selector: 'app-landing',
+  standalone: true,
+  imports: [
+    CommonModule
+  ],
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.scss']
 })

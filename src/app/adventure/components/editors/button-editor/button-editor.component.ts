@@ -1,4 +1,6 @@
+import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { DialogConfiguration } from 'src/app/shared/components/dialog/dialog-configuration.class';
 import { DialogContent } from 'src/app/shared/components/dialog/dialog-content.class';
 import { DialogService } from 'src/app/shared/services/dialog.service';
@@ -8,9 +10,16 @@ import { Button } from '../../../models/components/button.interface';
 import { Logic } from '../../../models/logic/logic.model';
 import { Operator } from '../../../models/logic/operator.enum';
 import { AdventureFactory } from '../../../utils/adventure.factory';
+import { LogicEditorComponent } from './logic-editor/logic-editor.component';
 
 @Component({
   selector: 'app-button-editor',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    LogicEditorComponent
+  ],
   templateUrl: './button-editor.component.html',
   styleUrls: ['./button-editor.component.scss']
 })

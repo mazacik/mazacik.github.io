@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { GalleryGoogleDriveService } from 'src/app/gallery/services/gallery-google-drive.service';
@@ -8,6 +9,10 @@ import { Data } from '../model/data.interface';
 
 @Component({
   selector: 'app-folder-picker',
+  standalone: true,
+  imports: [
+    CommonModule
+  ],
   templateUrl: './folder-picker.component.html',
   styleUrls: ['./folder-picker.component.scss']
 })

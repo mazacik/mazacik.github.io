@@ -12,36 +12,36 @@
         </div>
       </div>
       <div class="absolute top left">
-        <i class="icon-button fa-solid fa-y" tippy="Yandex Reverse Image Search" (click)="openYandexReverseImageSearch($event)"></i>
-        <i class="icon-button fa-solid fa-code-compare" tippy="Pairwise Comparison" (click)="startImageComparison()"></i>
-        <i class="icon-button fa-solid" [ngClass]="applicationService.isDarkTheme() ? 'fa-moon' : 'fa-sun'" tippy="Toggle Brightness Mode" (click)="applicationService.toggleTheme()"></i>
+        <i class="icon-button fa-solid fa-y" tp="Yandex Reverse Image Search" (click)="openYandexReverseImageSearch($event)"></i>
+        <i class="icon-button fa-solid fa-code-compare" tp="Pairwise Comparison" (click)="startImageComparison()"></i>
+        <i class="icon-button fa-solid" [ngClass]="applicationService.isDarkTheme() ? 'fa-moon' : 'fa-sun'" tp="Toggle Brightness Mode" (click)="applicationService.toggleTheme()"></i>
       </div>
       <div class="absolute top right">
         <i *ngIf="!applicationService.reduceBandwidth" class="icon-button fa-solid fa-xmark desktop-hidden" (click)="stateService.sidebarVisible = false"></i>
-        <i class="icon-button fa-heart" [ngClass]="target?.heart ? 'fa-solid' : 'fa-regular'" tippy="Favorite" (click)="stateService.toggleHeart(target)"></i>
-        <i class="icon-button fa-bookmark" [ngClass]="target?.bookmark ? 'fa-solid' : 'fa-regular'" tippy="Bookmark" (click)="stateService.toggleBookmark(target)"></i>
+        <i class="icon-button fa-heart" [ngClass]="target?.heart ? 'fa-solid' : 'fa-regular'" tp="Favorite" (click)="stateService.toggleHeart(target)"></i>
+        <i class="icon-button fa-bookmark" [ngClass]="target?.bookmark ? 'fa-solid' : 'fa-regular'" tp="Bookmark" (click)="stateService.toggleBookmark(target)"></i>
       </div>
       <div class="absolute bottom left">
 
       </div>
       <div class="absolute bottom right">
-        <i class="icon-button fa-solid fa-cloud-arrow-down" tippy="Copy base64 data" (click)="copyTargetBase64()"></i>
-        <i class="icon-button fa-solid fa-folder-open" tippy="Open in Google Drive" (click)="openTargetInGoogleDrive()"></i>
-        <i class="icon-button fa-solid fa-trash" tippy="Trash" (click)="stateService.moveTargetToTrash()"></i>
+        <i class="icon-button fa-solid fa-cloud-arrow-down" tp="Copy base64 data" (click)="copyTargetBase64()"></i>
+        <i class="icon-button fa-solid fa-folder-open" tp="Open in Google Drive" (click)="openTargetInGoogleDrive()"></i>
+        <i class="icon-button fa-solid fa-trash" tp="Trash" (click)="stateService.moveTargetToTrash()"></i>
       </div>
     </div>
     <div class="sidebar-half" style="position: relative;">
       <div class="sidebar-filter-header">
         <div class="flex" style="justify-content: start;">
-          <i class="icon-button fa-regular" [ngClass]="stateService.targetEntireGroup ? 'fa-images' : 'fa-image'" tippy="Group Mode" (click)="stateService.targetEntireGroup = !stateService.targetEntireGroup"></i>
-          <i class="icon-button fa-solid fa-hashtag" tippy="Group Size Filter Configuration" (click)="openGroupSizeFilterDialog()"></i>
+          <i class="icon-button fa-regular" [ngClass]="stateService.targetEntireGroup ? 'fa-images' : 'fa-image'" tp="Group Mode" (click)="stateService.targetEntireGroup = !stateService.targetEntireGroup"></i>
+          <i class="icon-button fa-solid fa-hashtag" tp="Group Size Filter Configuration" (click)="openGroupSizeFilterDialog()"></i>
         </div>
         <div class="flex" style="justify-content: center;">
           <i class="icon-button fa-solid fa-arrows-spin" [class.disabled]="!target?.hasGroup()" (click)="stateService.setRandomGroupTarget()"></i>
           <i class="icon-button fa-solid fa-shuffle" (click)="stateService.setRandomTarget()"></i>
         </div>
         <div class="flex" style="justify-content: end;">
-          <i class="icon-button fa-solid fa-plus" tippy="Tag Editor" (click)="openTagEditor()"></i>
+          <i class="icon-button fa-solid fa-plus" tp="Tag Editor" (click)="openTagEditor()"></i>
         </div>
       </div>
       <div class="taglist-scrollbar-container">

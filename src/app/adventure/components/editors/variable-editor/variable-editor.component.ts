@@ -1,4 +1,6 @@
+import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { DialogConfiguration } from 'src/app/shared/components/dialog/dialog-configuration.class';
 import { DialogContent } from 'src/app/shared/components/dialog/dialog-content.class';
 import { DialogService } from 'src/app/shared/services/dialog.service';
@@ -11,6 +13,11 @@ import { AdventureFactory } from '../../../utils/adventure.factory';
 
 @Component({
   selector: 'app-variable-editor',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule
+  ],
   templateUrl: './variable-editor.component.html',
   styleUrls: ['./variable-editor.component.scss']
 })

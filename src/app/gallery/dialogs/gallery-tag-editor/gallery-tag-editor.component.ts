@@ -1,4 +1,6 @@
+import { CommonModule } from '@angular/common';
 import { Component, HostListener, Input, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { nanoid } from 'nanoid';
 import { TagGroup } from 'src/app/gallery/model/tag-group.interface';
 import { Tag } from 'src/app/gallery/model/tag.interface';
@@ -13,6 +15,11 @@ import { GalleryTagGroupEditorComponent } from '../gallery-tag-group-editor/gall
 
 @Component({
   selector: 'app-gallery-tag-editor',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule
+  ],
   templateUrl: './gallery-tag-editor.component.html',
   styleUrls: ['./gallery-tag-editor.component.scss'],
 })

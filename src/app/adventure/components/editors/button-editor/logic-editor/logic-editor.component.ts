@@ -1,4 +1,6 @@
+import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 import { Action } from '../../../../models/logic/action.model';
 import { Condition } from '../../../../models/logic/condition.model';
@@ -8,9 +10,16 @@ import { Operator } from '../../../../models/logic/operator.enum';
 import { Variable } from '../../../../models/logic/variable.model';
 import { AdventureStateService } from '../../../../services/adventure-state.service';
 import { AdventureFactory } from '../../../../utils/adventure.factory';
+import { ActionEditorComponent } from './action-editor/action-editor.component';
 
 @Component({
   selector: 'app-logic-editor',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ActionEditorComponent
+  ],
   templateUrl: './logic-editor.component.html',
   styleUrls: ['./logic-editor.component.scss']
 })

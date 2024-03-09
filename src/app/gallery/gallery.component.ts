@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { GoogleMetadata } from '../shared/classes/google-api/google-metadata.class';
@@ -6,15 +7,25 @@ import { ApplicationService } from '../shared/services/application.service';
 import { ArrayUtils } from '../shared/utils/array.utils';
 import { GoogleFileUtils } from '../shared/utils/google-file.utils';
 import { GalleryUtils } from './gallery.utils';
+import { MasonryComponent } from './masonry/masonry.component';
 import { Data } from './model/data.interface';
 import { GalleryGroup } from './model/gallery-group.class';
 import { GalleryImage } from './model/gallery-image.class';
 import { ImageProperties } from './model/image-properties.interface';
 import { GalleryGoogleDriveService } from './services/gallery-google-drive.service';
 import { GalleryStateService } from './services/gallery-state.service';
+import { FullscreenComponent } from './fullscreen/fullscreen.component';
+import { SidebarComponent } from './sidebar/sidebar.component';
 
 @Component({
   selector: 'app-gallery',
+  standalone: true,
+  imports: [
+    CommonModule,
+    MasonryComponent,
+    FullscreenComponent,
+    SidebarComponent
+  ],
   templateUrl: './gallery.component.html',
   styleUrls: ['./gallery.component.scss'],
   animations: [enter]

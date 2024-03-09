@@ -17,11 +17,11 @@
   <div class="options-container">
     <div class="section-header">
       <span class="section-title">Options</span>
-      <i class="icon-button fa-solid fa-plus" tippy="Create Option" (click)="createOption()"></i>
+      <i class="icon-button fa-solid fa-plus" tp="Create Option" (click)="createOption()"></i>
     </div>
     <div *ngFor="let option of editableVariable.options" class="option-container">
       <input [(ngModel)]="option.value">
-      <i class="icon-button fa-solid fa-times" tippy="Remove Option" (click)="removeOption(option)"></i>
+      <i class="icon-button fa-solid fa-times" tp="Remove Option" (click)="removeOption(option)"></i>
     </div>
   </div>
 </ng-container>
