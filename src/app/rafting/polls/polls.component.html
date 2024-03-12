@@ -1,0 +1,21 @@
+<div *ngIf="currentIndex < polls.length" class="polls" @leave>
+  <span class="title">Hlasovanie</span>
+  <div @skip class="poll-container">
+    <div *ngFor="let poll of [polls[currentIndex]]" @drawer class="poll-animation-container">
+      <span class="poll-title">{{ poll.title }}</span>
+      <span class="poll-description">{{ poll.description }}</span>
+      <div class="poll-options">
+        <div *ngFor="let option of poll.options" class="poll-option">
+          <input [type]="poll.type" name="radio" [value]="option" (input)="onOptionChange(poll, option)" [checked]="option.selected" />
+          <span>{{ option.text }}</span>
+          <!-- TODO <label> namiesto <span> ? -->
+        </div>
+      </div>
+    </div>
+    <span class="poll-progress">{{ (currentIndex + 1) + ' / ' + polls.length }}</span>
+  </div>
+  <div class="buttons">
+    <div class="button" (click)="submit()">{{ currentIndex == polls.length - 1 ? 'Hlasovať' : 'Ďalej' }}</div>
+  </div>
+</div>
+<div *ngIf="currentIndex == polls.length" class="thankyou" @enter>Hotovo, ďakujem :-)</div>
