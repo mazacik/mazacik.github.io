@@ -85,7 +85,7 @@ export class SurveyComponent implements OnInit {
 
       this.firestoreService.write('2024-survey', entry);
       localStorage.setItem('2024-survey', new Date().toISOString());
-      this.router.navigate(['/splav/vysledky']);
+      this.router.navigate(['/splav-2024/hlasovanie/vysledky']);
     }
   }
 
