@@ -1,6 +1,6 @@
-import { animate, state, style, transition, trigger } from "@angular/animations";
+import { animate, style, transition, trigger } from "@angular/animations";
 
-const ANIMATION_DURATION: number = 1000;
+const ANIMATION_DURATION: number = 500;
 const ANIMATION_TIMINGS: string = ANIMATION_DURATION + 'ms ease';
 
 export const skip = trigger('skip', [
@@ -13,7 +13,20 @@ export const fade = trigger('fade', [
     animate(ANIMATION_TIMINGS, style({ opacity: 1 }))
   ]),
   transition(':leave', [
-    style({ opacity: 1 }),
+    style({ opacity: 1, 'pointer-events': 'none' }),
+    animate(ANIMATION_TIMINGS, style({ opacity: 0 }))
+  ])
+]);
+
+export const crossfade = trigger('crossfade', [
+  transition(':enter', [
+    style({ opacity: 0 }),
+    animate(ANIMATION_TIMINGS, style({ opacity: 1 }))
+  ]),
+  transition(':leave', [
+    // TODO other animations probably also want 'position absolute' and 'pointer-events none'
+    // TODO also use wildcards instead of 1
+    style({ opacity: 1, position: 'absolute', 'pointer-events': 'none' }),
     animate(ANIMATION_TIMINGS, style({ opacity: 0 }))
   ])
 ]);

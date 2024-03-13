@@ -6,6 +6,10 @@
 
 @import 'tippy.js/dist/tippy.css';
 
+@import 'firebaseui/dist/firebaseui.css';
+@import 'src/styles/firebase-changes.scss';
+
+
 @import 'src/styles/variables.scss';
 
 // scrollbar
@@ -241,8 +245,8 @@ hr {
   background-color: var(--color-hover);
   text-shadow: -0.5px 0 var(--color-text-shadow), 0 0.5px var(--color-text-shadow), 0.5px 0 var(--color-text-shadow), 0 -0.5px var(--color-text-shadow);
 
-  transition-property: background-color;
-  transition-duration: $transition-duration * 0.5;
+  transition-property: background-color, opacity;
+  transition-duration: $transition-duration;
 
   &:hover {
     background-color: rgba(255, 255, 255, 0.2) !important;

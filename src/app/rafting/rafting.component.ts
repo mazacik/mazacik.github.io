@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterOutlet } from '@angular/router';
+import { RouterLink, RouterOutlet } from '@angular/router';
+import { FirebaseAuthService } from '../shared/services/firebase-auth.service';
 
 @Component({
   selector: 'app-rafting',
@@ -9,6 +10,7 @@ import { RouterOutlet } from '@angular/router';
   imports: [
     CommonModule,
     FormsModule,
+    RouterLink,
     RouterOutlet
   ],
   templateUrl: './rafting.component.html',
@@ -16,9 +18,9 @@ import { RouterOutlet } from '@angular/router';
 })
 export class RaftingComponent implements OnInit {
 
-  constructor() {
-
-  }
+  constructor(
+    protected authService: FirebaseAuthService
+  ) { }
 
   ngOnInit(): void {
 

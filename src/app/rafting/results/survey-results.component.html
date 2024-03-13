@@ -1,0 +1,19 @@
+<div *ngIf="results" @fade class="results">
+  <div *ngFor="let result of results" class="result-container" [class.closed]="!result.open" (click)="open(result)">
+    <span class="result-title">{{ result.title }}</span>
+      <div *ngIf="result.open" @drawer class="result-options">
+        <div *ngFor="let option of result.options" class="result-option">
+          <ng-container *ngVar="option.count / result.votes * 100 as percentage">
+            <div class="result-header">
+              <span>{{ option.text }}</span>
+              <div class="result-statistics">
+                <span>{{ percentage }}%</span>
+                <span>({{ option.count }})</span>
+              </div>
+            </div>
+            <progress [value]="percentage"></progress>
+          </ng-container>
+        </div>
+      </div>
+  </div>
+</div>

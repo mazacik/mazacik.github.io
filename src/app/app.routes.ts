@@ -4,35 +4,39 @@ import { FolderPickerComponent } from './gallery/folder-picker/folder-picker.com
 import { GalleryComponent } from './gallery/gallery.component';
 import { LoginComponent } from './login/login.component';
 import { RaftingComponent } from './rafting/rafting.component';
-import { AuthenticationGuard } from './router/authentication.guard';
+import { SurveyResultsComponent } from './rafting/results/survey-results.component';
+import { SurveyComponent } from './rafting/survey/survey.component';
+import { GoogleAuthGuard } from './router/google-auth.guard';
 import { HasFolderGuard } from './router/has-folder.guard';
 import { TournamentComponent } from './tournament/tournament.component';
-import { PollsComponent } from './rafting/polls/polls.component';
 
 export const routes: Routes = [{
   path: 'login',
   component: LoginComponent
 }, {
   path: 'adventure',
-  canActivate: [AuthenticationGuard],
+  canActivate: [GoogleAuthGuard],
   component: AdventureComponent
 }, {
   path: 'folder-picker',
-  canActivate: [AuthenticationGuard],
+  canActivate: [GoogleAuthGuard],
   component: FolderPickerComponent
 }, {
   path: 'gallery',
-  canActivate: [AuthenticationGuard, HasFolderGuard],
+  canActivate: [GoogleAuthGuard, HasFolderGuard],
   component: GalleryComponent
 }, {
   path: 'tournament',
   component: TournamentComponent
 }, {
-  path: 'splav',
+  path: 'splav-2024',
   component: RaftingComponent,
   children: [{
-    path: 'polls',
-    component: PollsComponent
+    path: 'hlasovanie/vysledky',
+    component: SurveyResultsComponent
+  }, {
+    path: 'hlasovanie',
+    component: SurveyComponent
   }]
 }, {
   path: '**',

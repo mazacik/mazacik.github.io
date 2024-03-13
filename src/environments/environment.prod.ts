@@ -1,4 +1,7 @@
+const uri: string = 'https://mazacik.github.io';
+
 export const environment = {
   production: true,
-  redirect_uri: 'https://mazacik.github.io/TagalleryWeb/login'
+  baseUrl: uri,
+  redirectUrl: uri + '/login'
 };

@@ -24,7 +24,7 @@ export class AuthenticationService {
 
   startAuthentication(): void {
     const clientId: string = "692582629035-s6vftm7t7erhlblg9iekl0fhfhdskq25.apps.googleusercontent.com";
-    const redirect_uri: string = environment.redirect_uri;
+    const redirect_uri: string = environment.redirectUrl;
     const scope: string = "https://www.googleapis.com/auth/drive";
     const url: string = "https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=" + redirect_uri
       + "&prompt=consent&response_type=code&client_id=" + clientId + "&scope=" + scope
@@ -40,7 +40,7 @@ export class AuthenticationService {
       'code': code,
       'client_id': this.CLIENT_ID,
       'client_secret': this.CLIENT_SECRET,
-      'redirect_uri': environment.redirect_uri,
+      'redirect_uri': environment.redirectUrl,
       'plugin_name': 'TagalleryWeb'
     };
 

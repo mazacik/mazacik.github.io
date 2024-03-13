@@ -1,6 +1,6 @@
 <div class="header">
   <div class="header-item">
-    <a href="/splav/polls">Hlasovanie</a>
+    <a [routerLink]="['/splav-2024/hlasovanie']">Hlasovanie</a>
   </div>
   <!-- <div class="header-item">
     <a href="/splav/tips">Príprava</a>
@@ -14,5 +14,11 @@
   <div class="header-item">
     <a href="/splav/gallery">Galéria</a>
   </div> -->
+
+  <!-- <div class="header-item">
+    <div (click)="authService.logout()">Odhlásiť sa</div>
+  </div> -->
 </div>
-<router-outlet></router-outlet>
+<div class="content">
+  <router-outlet></router-outlet>
+</div>  
