@@ -4,7 +4,7 @@ export interface SurveyQuestion {
   id: string;
   title: string;
   description: string;
-  type: 'checkbox' | 'radio' | 'text',
+  type: 'checkbox' | 'radio',
   dontcare: boolean;
-  options?: SurveyChoice[];
+  choices?: SurveyChoice[];
 }

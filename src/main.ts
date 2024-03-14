@@ -5,7 +5,7 @@ import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withRouterConfig } from '@angular/router';
 import { provideTippyConfig } from '@ngneat/helipopper';
 import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
@@ -14,7 +14,7 @@ import { GoogleDriveInterceptor } from './app/shared/interceptors/google-drive.i
 bootstrapApplication(AppComponent, {
   providers: [
     provideAnimations(),
-    provideRouter(routes),
+    provideRouter(routes, withRouterConfig({ paramsInheritanceStrategy: 'always' })),
     provideHttpClient(withFetch(), withInterceptors([GoogleDriveInterceptor])),
     importProvidersFrom(provideFirebaseApp(() => initializeApp({
       apiKey: "AIzaSyDOAks7IYxZn0CfhQfDYp06r5rP9B-4Jc8",

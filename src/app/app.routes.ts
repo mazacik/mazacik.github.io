@@ -1,11 +1,11 @@
 import { Routes } from '@angular/router';
 import { AdventureComponent } from './adventure/adventure.component';
+import { EventManagerComponent } from './event-manager/event-manager.component';
+import { SurveyResultsComponent } from './event-manager/results/survey-results.component';
+import { SurveyComponent } from './event-manager/survey/survey.component';
 import { FolderPickerComponent } from './gallery/folder-picker/folder-picker.component';
 import { GalleryComponent } from './gallery/gallery.component';
 import { LoginComponent } from './login/login.component';
-import { RaftingComponent } from './rafting/rafting.component';
-import { SurveyResultsComponent } from './rafting/results/survey-results.component';
-import { SurveyComponent } from './rafting/survey/survey.component';
 import { GoogleAuthGuard } from './router/google-auth.guard';
 import { HasFolderGuard } from './router/has-folder.guard';
 import { TournamentComponent } from './tournament/tournament.component';
@@ -29,18 +29,21 @@ export const routes: Routes = [{
   path: 'tournament',
   component: TournamentComponent
 }, {
-  path: 'splav-2024',
-  component: RaftingComponent,
+  path: 'event/:id',
+  component: EventManagerComponent,
   children: [{
     path: 'hlasovanie/vysledky',
     component: SurveyResultsComponent
   }, {
     path: 'hlasovanie',
     component: SurveyComponent
+  }, {
+    path: '**',
+    redirectTo: 'hlasovanie'
   }]
 }, {
   path: '**',
-  redirectTo: ''
+  redirectTo: 'event/2024-splav'
 }];
 
 // {

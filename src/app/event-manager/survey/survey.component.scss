@@ -1,0 +1,221 @@
+@import 'src/styles/variables.scss';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: ($gap * 4) 0;
+  background-color: var(--color-background);
+  top: 0;
+  bottom: 0;
+
+  @media screen and (max-width:600px) {
+    width: calc(100% - ($gap * 4));
+    padding: ($gap * 2);
+  }
+
+  @media screen and (min-width:600px) {
+    padding: ($gap * 4) 0;
+  }
+
+  .content-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    @media screen and (max-width:600px) {
+      width: 100%;
+    }
+  }
+
+  .auth-container {
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--color-border);
+    border-radius: $gap;
+    padding: ($gap * 2);
+    gap: ($gap * 2);
+
+    .auth-header {
+      display: flex;
+      flex-direction: column;
+
+      .auth-text {
+        font-size: 24px;
+        text-align: center;
+      }
+
+      .auth-description {
+        font-size: 16px;
+        text-align: center;
+      }
+    }
+
+    .auth-buttons {
+      display: grid;
+      align-items: center;
+
+      @media screen and (max-width:600px) {
+        grid-template-columns: auto;
+        justify-items: center;
+        gap: $gap;
+      }
+
+      @media screen and (min-width:600px) {
+        grid-template-columns: 1fr auto 1fr;
+        gap: ($gap * 2);
+      }
+
+      .auth-button.auth-ui-button {
+        padding: 0;
+        border-radius: $gap;
+        overflow: hidden;
+      }
+
+      .auth-or {
+        font-size: 14px;
+      }
+
+      .auth-button {
+        width: 100%;
+        height: auto;
+        align-self: center;
+        gap: ($gap * 1.5);
+        padding: ($gap) ($gap * 2);
+      }
+    }
+  }
+
+  .questions {
+    display: flex;
+    flex-direction: column;
+    gap: ($gap * 2);
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--color-border);
+    border-radius: $gap;
+    padding: ($gap * 2);
+    position: relative;
+
+    @media screen and (max-width:600px) {
+      width: 100%;
+    }
+
+    .event-title {
+      font-size: ($gap * 5);
+      margin-bottom: (-$gap);
+    }
+
+    .question-container {
+      display: flex;
+      flex-direction: column;
+
+      @media screen and (max-width:600px) {}
+
+      @media screen and (min-width:600px) {
+        width: 500px;
+      }
+
+      .question-animation-container {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        padding-bottom: ($gap * 2);
+        margin-bottom: (-$gap * 2);
+
+        .question-title {
+          font-size: 24px;
+        }
+
+        .question-description {
+          margin-top: ($gap * 0.5);
+          font-size: 14px;
+        }
+
+        .question-choices {
+          // display: grid;
+          // grid-auto-rows: 1fr;
+          display: flex;
+          flex-direction: column;
+          margin-top: ($gap * 2);
+          align-self: start;
+          gap: $gap;
+
+          .question-choice {
+            display: flex;
+            align-items: center;
+            gap: ($gap * 1.5);
+
+            >input {
+              width: 22.4px;
+              min-width: 22.4px;
+              height: 22.4px;
+              min-height: 22.4px;
+              margin: 0;
+              cursor: pointer;
+            }
+
+            .choice-labels {
+              display: flex;
+              align-items: center;
+              gap: $gap;
+              // flex-direction: column;
+
+              .choice-text {
+                min-width: fit-content;
+
+                &.has-link {
+                  cursor: pointer;
+                  text-decoration: underline;
+                }
+              }
+
+              .choice-description {
+                font-size: 12px;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .buttons {
+      display: flex;
+      gap: ($gap * 2);
+      justify-content: space-between;
+
+      .button-container {
+        display: flex;
+        justify-content: center;
+        flex: 1;
+
+        &:first-child {
+          justify-content: flex-start;
+        }
+
+        &:last-child {
+          justify-content: flex-end;
+        }
+
+        .button {
+          height: auto;
+          padding: ($gap) ($gap * 2);
+          gap: ($gap * 1.5);
+
+          i {
+            font-size: 14px;
+          }
+        }
+      }
+    }
+  }
+
+  .question-progress {
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: ($gap * 2);
+    font-size: 12px;
+  }
+}

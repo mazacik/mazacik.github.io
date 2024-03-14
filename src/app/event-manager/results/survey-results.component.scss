@@ -3,7 +3,6 @@
 :host {
   display: flex;
   flex-direction: column;
-  width: 100%;
   align-items: center;
   justify-content: center;
   padding: ($gap * 2) 0;
@@ -11,10 +10,23 @@
   top: 0;
   bottom: 0;
 
+  @media screen and (max-width:600px) {
+    width: calc(100% - ($gap * 4));
+    padding: ($gap * 2);
+  }
+
+  @media screen and (min-width:600px) {
+    padding: ($gap * 2) 0;
+  }
+
   .results {
     display: flex;
     flex-direction: column;
     gap: ($gap * 2);
+
+    @media screen and (max-width:600px) {
+      width: 100%;
+    }
 
     .title {
       display: block;
@@ -29,15 +41,25 @@
       flex-direction: column;
       background-color: rgba(255, 255, 255, 0.05);
       padding: ($gap * 2);
-      width: 480px;
-      
+      gap: ($gap * 2);
+
+      transition-property: gap;
+      transition-duration: $transition-duration;
+
+      @media screen and (max-width:600px) {}
+
+      @media screen and (min-width:600px) {
+        width: 500px;
+      }
+
       &.closed {
         cursor: pointer;
+        gap: 0;
       }
 
       .result-title {
         font-size: 24px;
-        align-self: center;
+        text-align: center;
       }
 
       .result-description {
@@ -58,7 +80,28 @@
           .result-header {
             width: 100%;
             display: flex;
+            gap: ($gap * 2);
             justify-content: space-between;
+
+            .choice-labels {
+              display: flex;
+              align-items: center;
+              gap: $gap;
+              // flex-direction: column;
+
+              .choice-text {
+                min-width: fit-content;
+
+                &.has-link {
+                  cursor: pointer;
+                  text-decoration: underline;
+                }
+              }
+
+              .choice-description {
+                font-size: 12px;
+              }
+            }
 
             .result-statistics {
               display: flex;

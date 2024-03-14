@@ -12,7 +12,8 @@
 
 .firebaseui-idp-button,
 .firebaseui-tenant-button {
-  width: initial;
+  min-height: 36px;
+  padding: ($gap) ($gap * 2);
 }
 
 .firebaseui-card-content {

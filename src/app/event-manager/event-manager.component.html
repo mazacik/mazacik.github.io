@@ -1,0 +1,27 @@
+<div class="header">
+  <div class="header-left">
+    <div class="header-item">
+      <a [routerLink]="['./hlasovanie']">Hlasovanie</a>
+    </div>
+    <!-- <div class="header-item">
+      <a href="/splav/tips">Príprava</a>
+    </div>
+    <div class="header-item">
+      <a href="/splav/route">Trasa</a>
+    </div>
+    <div class="header-item">
+      <a href="/splav/rules">Pravidlá</a>
+    </div>
+    <div class="header-item">
+      <a href="/splav/gallery">Galéria</a>
+    </div> -->
+  </div>
+  <div class="header-right">
+    <div *ngIf="authService.getUser()" @fade class="header-item">
+      <span (click)="authService.logout()">Odhlásiť sa</span>
+    </div>
+  </div>
+</div>
+<div class="content">
+  <router-outlet></router-outlet>
+</div>

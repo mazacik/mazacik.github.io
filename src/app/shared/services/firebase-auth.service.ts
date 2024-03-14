@@ -1,5 +1,5 @@
-import { Injectable, WritableSignal, signal } from "@angular/core";
-import { Auth, GoogleAuthProvider, User, browserLocalPersistence, onAuthStateChanged } from "@angular/fire/auth";
+import { Injectable } from "@angular/core";
+import { Auth, GoogleAuthProvider, User, browserLocalPersistence } from "@angular/fire/auth";
 import * as firebaseui from 'firebaseui';
 import { FirebaseAuthResult } from "src/app/shared/classes/firebase-auth-result.interface";
 
@@ -8,13 +8,10 @@ import { FirebaseAuthResult } from "src/app/shared/classes/firebase-auth-result.
 })
 export class FirebaseAuthService {
 
-  private user: WritableSignal<User> = signal(null);
-
   constructor(
     private auth: Auth
   ) {
     this.auth.setPersistence(browserLocalPersistence);
-    onAuthStateChanged(this.auth, user => this.user.set(user));
   }
 
   public logout(): void {
@@ -44,12 +41,13 @@ export class FirebaseAuthService {
     return localStorage.getItem('firebase-user') != null;
   }
 
-  public getUser(): User {
-    return this.user();
+  public async awaitUser(): Promise<User> {
+    await this.auth.authStateReady();
+    return this.auth.currentUser;
   }
 
-  public getUserSignal(): WritableSignal<User> {
-    return this.user;
+  public getUser(): User {
+    return this.auth.currentUser;
   }
 
 }

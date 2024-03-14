@@ -1,4 +1,4 @@
-import { animate, style, transition, trigger } from "@angular/animations";
+import { animate, animateChild, group, query, style, transition, trigger } from "@angular/animations";
 
 const ANIMATION_DURATION: number = 500;
 const ANIMATION_TIMINGS: string = ANIMATION_DURATION + 'ms ease';
