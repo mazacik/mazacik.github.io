@@ -12,11 +12,11 @@ export const splav2024: Event = {
     choices: [{
       id: 'pocetdni3',
       text: '3 dni',
-      description: 'Štvrtok večer z BA, Piatok ráno štart, Nedeľa poobede koniec.'
+      description: 'Štvrtok večer výjazd, Piatok ráno štart, Nedeľa poobede domov.'
     }, {
       id: 'pocetdni4',
       text: '4 dni',
-      description: 'Streda večer z BA, Štvrtok ráno štart, Nedeľa poobede koniec.',
+      description: 'Streda večer výjazd, Štvrtok ráno štart, Nedeľa poobede domov.'
     }]
   }, {
     id: 'termin',

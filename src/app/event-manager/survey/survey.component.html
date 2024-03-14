@@ -28,10 +28,17 @@
         <span class="question-title">{{ question.title }}</span>
         <span *ngIf="question.description" class="question-description">{{ question.description }}</span>
         <div *ngIf="question.choices" class="question-choices">
-          <div *ngFor="let choice of question.choices" class="question-choice" [class.disabled]="choice.disabled">
-            <input [type]="question.type" name="radio" (change)="onChoiceChange($event.target, question, choice)" [checked]="choice.selected" />
+          <div *ngFor="let choice of question.choices" class="question-choice" [class.disabled]="choice.disabled" (click)="onChoiceClick(question, choice)">
+            <input [type]="question.type" name="radio" [checked]="choice.selected" />
+            <!-- TODO hyperlink ako ikonka -->
             <div class="choice-labels">
-              <span class="choice-text" [class.has-link]="choice.hyperlink" (click)="openLink(choice.hyperlink)">{{ choice.text }}</span>
+              <span class="choice-text">{{ choice.text }}</span>
+              <ng-container *ngIf="choice.hyperlink">
+                <div class="v-separator"></div>
+                <a class="choice-hyperlink" [href]="choice.hyperlink" target="_blank" rel="noopener noreferrer" (click)="$event.stopImmediatePropagation()">
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+              </ng-container>
               <ng-container *ngIf="choice.description">
                 <div class="v-separator"></div>
                 <span class="choice-description">{{ choice.description }}</span>

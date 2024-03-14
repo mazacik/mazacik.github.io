@@ -6,7 +6,6 @@
   align-items: center;
   justify-content: center;
   padding: ($gap * 4) 0;
-  background-color: var(--color-background);
   top: 0;
   bottom: 0;
 
@@ -114,7 +113,7 @@
       @media screen and (max-width:600px) {}
 
       @media screen and (min-width:600px) {
-        width: 500px;
+        width: 600px;
       }
 
       .question-animation-container {
@@ -134,18 +133,18 @@
         }
 
         .question-choices {
-          // display: grid;
-          // grid-auto-rows: 1fr;
           display: flex;
           flex-direction: column;
           margin-top: ($gap * 2);
           align-self: start;
-          gap: $gap;
+          gap: ($gap * 2);
+          width: 100%;
 
           .question-choice {
             display: flex;
             align-items: center;
             gap: ($gap * 1.5);
+            cursor: pointer;
 
             >input {
               width: 22.4px;
@@ -153,22 +152,21 @@
               height: 22.4px;
               min-height: 22.4px;
               margin: 0;
-              cursor: pointer;
+              pointer-events: none;
             }
 
             .choice-labels {
               display: flex;
               align-items: center;
               gap: $gap;
-              // flex-direction: column;
+
+              .choice-hyperlink {
+                cursor: pointer;
+                font-size: 12px;
+              }
 
               .choice-text {
                 min-width: fit-content;
-
-                &.has-link {
-                  cursor: pointer;
-                  text-decoration: underline;
-                }
               }
 
               .choice-description {

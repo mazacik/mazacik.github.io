@@ -57,13 +57,12 @@ export class SurveyComponent implements OnInit {
     });
   }
 
-  protected onChoiceChange(element: EventTarget, question: SurveyQuestion, choice: SurveyChoice): void {
+  protected onChoiceClick(question: SurveyQuestion, choice: SurveyChoice): void {
     if (question.type == 'checkbox') {
       if (question.dontcare) {
         if (choice.id == 'dontcare') {
           question.choices.forEach(choice => choice.selected = false);
           choice.selected = true;
-          (element as HTMLInputElement).checked = true;
         } else {
           question.choices.find(choice => choice.id == 'dontcare').selected = false;
           choice.selected = !choice.selected;
@@ -106,8 +105,6 @@ export class SurveyComponent implements OnInit {
       this.event.questions.filter(question => question.choices).forEach(question => {
         entry.choices[question.id] = question.choices.filter(choice => choice.selected).map(choice => choice.id);
       });
-
-      console.log(entry);
 
       this.firestoreService.write(this.event.id, user.uid, entry);
       localStorage.setItem(this.event.id, new Date().toISOString());
