@@ -13,16 +13,24 @@
     display: flex;
     gap: ($gap * 5);
     border-bottom: 1px solid var(--color-border);
-    padding: 0 ($gap * 5);
     box-sizing: border-box;
     background-color: var(--color-background);
     z-index: 1;
     justify-content: space-between;
 
+    @media screen and (max-width:600px) {
+      padding: 0 ($gap * 2);
+    }
+
+    @media screen and (min-width:600px) {
+      padding: 0 ($gap * 5);
+    }
+
     .header-left,
     .header-right {
       display: flex;
       gap: ($gap * 5);
+      align-items: center;
     }
 
     .header-item {
@@ -41,6 +49,89 @@
       &:hover {
         color: var(--color-text-hover);
         border-bottom-color: var(--color-primary);
+      }
+    }
+  }
+
+  .sidebar {
+    width: 100vw;
+    height: 100vh;
+    backdrop-filter: blur(3px);
+    position: absolute;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+
+    .sidebar-header {
+      position: sticky;
+      top: 0;
+      height: 40px;
+      display: flex;
+      gap: ($gap * 5);
+      border-bottom: 1px solid var(--color-border);
+      box-sizing: border-box;
+      background-color: var(--color-background);
+      justify-content: space-between;
+
+      @media screen and (max-width:600px) {
+        padding: 0 ($gap * 2);
+      }
+
+      @media screen and (min-width:600px) {
+        padding: 0 ($gap * 5);
+      }
+
+      .header-left,
+      .header-right {
+        display: flex;
+        gap: ($gap * 5);
+        align-items: center;
+      }
+
+      .header-item {
+        min-width: 40px;
+        justify-content: center;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        height: 100%;
+        box-sizing: border-box;
+        padding-top: 3px;
+        border-bottom: 3px solid transparent;
+        transition-property: color, border-color;
+        transition-duration: ($transition-duration * 0.5);
+
+        &:hover {
+          color: var(--color-text-hover);
+          border-bottom-color: var(--color-primary);
+        }
+      }
+    }
+
+    .sidebar-content {
+      margin: ($gap * 2);
+      display: flex;
+      flex-direction: column;
+      gap: ($gap * 2);
+      flex: 1;
+      justify-content: space-between;
+
+      .sidebar-content-top,
+      .sidebar-content-bottom {
+        display: flex;
+        flex-direction: column;
+        gap: ($gap * 2);
+      }
+
+      .sidebar-item {
+        display: flex;
+        justify-content: center;
+        position: relative;
+        align-items: center;
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--color-border);
+        border-radius: $gap;
+        padding: ($gap * 2);
       }
     }
   }

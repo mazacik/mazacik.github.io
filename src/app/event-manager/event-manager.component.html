@@ -1,4 +1,36 @@
-<div class="header">
+<div class="header" smallscreen>
+  <div class="header-left">
+    <div class="header-item">
+      <a [routerLink]="['./hlasovanie']">Hlasovanie</a>
+    </div>
+  </div>
+  <div class="header-right">
+    <i class="fa-solid fa-bars" (click)="sidebarVisible = true"></i>
+  </div>
+</div>
+
+<div *ngIf="sidebarVisible" class="sidebar" @fade smallscreen>
+  <div class="sidebar-header">
+    <div class="header-left">
+
+    </div>
+    <div class="header-right">
+      <i class="fa-solid fa-xmark" (click)="sidebarVisible = false"></i>
+    </div>
+  </div>
+  <div class="sidebar-content">
+    <div class="sidebar-content-top" (click)="sidebarVisible = false">
+      <a class="sidebar-item" [routerLink]="['./hlasovanie']">Hlasovanie</a>
+    </div>
+    <div class="sidebar-content-bottom" (click)="sidebarVisible = false">
+      <ng-container *ngIf="authService.getUser()">
+        <span class="sidebar-item" (click)="authService.logout()">Odhlásiť sa</span>
+      </ng-container>
+    </div>
+  </div>
+</div>
+
+<div class="header" largescreen>
   <div class="header-left">
     <div class="header-item">
       <a [routerLink]="['./hlasovanie']">Hlasovanie</a>
@@ -18,16 +50,14 @@
   </div>
   <div class="header-right">
     <ng-container *ngIf="authService.getUser()">
-      <div largescreen @fade class="header-item hover-container">
+      <div @fade class="header-item hover-container">
         <span class="hover-visible" (click)="authService.logout()">Odhlásiť sa</span>
         <span class="hover-hidden">{{ authService.getUser().displayName }}</span>
-      </div>
-      <div smallscreen @fade class="header-item">
-        <span (click)="authService.logout()">Odhlásiť sa</span>
       </div>
     </ng-container>
   </div>
 </div>
+
 <div class="content">
   <router-outlet></router-outlet>
 </div>

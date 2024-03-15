@@ -119,7 +119,13 @@ export class SurveyComponent implements OnInit {
   }
 
   protected createAuthButton(elementRef: ElementRef<HTMLElement>) {
-    this.authService.createButton(elementRef.nativeElement);
+    this.authService.createButton(elementRef.nativeElement, null, (auth) => {
+      if (auth?.user) {
+        (this.firestoreService.read(this.event.id, true) as Promise<SurveyResult[]>).then(results => {
+          this.userHasVote = results.some(result => result.userId == auth.user.uid);
+        });
+      }
+    });
   }
 
 }

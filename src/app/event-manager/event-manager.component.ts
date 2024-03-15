@@ -24,6 +24,8 @@ import { FirebaseAuthService } from '../shared/services/firebase-auth.service';
 })
 export class EventManagerComponent implements OnInit {
 
+  protected sidebarVisible: boolean = false;
+
   protected id: string;
 
   constructor(
