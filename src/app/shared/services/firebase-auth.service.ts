@@ -20,6 +20,7 @@ export class FirebaseAuthService {
   }
 
   public createButton(element: string | Element, redirectUrl?: string, onsuccess?: (result: FirebaseAuthResult) => void, onshow?: () => void): void {
+    console.log(window.navigator.userAgent);
     (firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(this.auth)).start(element, {
       callbacks: {
         uiShown: onshow,
@@ -29,7 +30,7 @@ export class FirebaseAuthService {
           return redirectUrl ? true : false;
         }
       },
-      signInFlow: 'popup',
+      signInFlow: 'redirect',
       signInSuccessUrl: redirectUrl,
       signInOptions: [
         GoogleAuthProvider.PROVIDER_ID
