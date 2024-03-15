@@ -96,11 +96,6 @@
     position: relative;
     width: 100%;
 
-    .event-title {
-      font-size: ($gap * 4);
-      margin-bottom: (-$gap);
-    }
-
     .question-container {
       display: flex;
       flex-direction: column;

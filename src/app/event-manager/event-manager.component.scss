@@ -29,8 +29,15 @@
     .header-left,
     .header-right {
       display: flex;
-      gap: ($gap * 5);
       align-items: center;
+
+      @media screen and (max-width:600px) {
+        gap: ($gap * 2);
+      }
+
+      @media screen and (min-width:600px) {
+        gap: ($gap * 5);
+      }
     }
 
     .header-item {
@@ -56,7 +63,7 @@
   .sidebar {
     width: 100vw;
     height: 100vh;
-    backdrop-filter: blur(3px);
+    background-color: var(--color-background);
     position: absolute;
     z-index: 1;
     display: flex;
@@ -70,7 +77,6 @@
       gap: ($gap * 5);
       border-bottom: 1px solid var(--color-border);
       box-sizing: border-box;
-      background-color: var(--color-background);
       justify-content: space-between;
 
       @media screen and (max-width:600px) {

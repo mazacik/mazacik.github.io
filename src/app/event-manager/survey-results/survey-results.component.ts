@@ -5,9 +5,9 @@ import { ActivatedRoute } from '@angular/router';
 import { crossfade, drawer, enter, fade, skip } from 'src/app/shared/consntants/animations.constants';
 import { VariableDirective } from 'src/app/shared/directives/variable.directive';
 import { FirestoreService } from 'src/app/shared/services/firestore.service';
-import { events } from '../events/events';
 import { Event } from '../models/event.interface';
 import { SurveyResult } from '../models/survey-result.interface';
+import { EventManagerService } from '../services/event-manager.service';
 
 @Component({
   selector: 'app-survey-results',
@@ -30,14 +30,13 @@ export class SurveyResultsComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private firestoreService: FirestoreService
+    private firestoreService: FirestoreService,
+    private eventManagerService: EventManagerService
   ) { }
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
-      this.event = events.find(event => event.id == params['id']);
-      this.requestResults();
-    });
+    this.event = this.eventManagerService.event;
+    this.requestResults();
   }
 
   private requestResults(): void {

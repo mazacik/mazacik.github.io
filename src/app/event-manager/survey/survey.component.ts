@@ -8,11 +8,11 @@ import { OnCreateDirective } from 'src/app/shared/directives/on-create.directive
 import { VariableDirective } from 'src/app/shared/directives/variable.directive';
 import { FirebaseAuthService } from 'src/app/shared/services/firebase-auth.service';
 import { FirestoreService } from 'src/app/shared/services/firestore.service';
-import { events } from '../events/events';
 import { Event } from '../models/event.interface';
 import { SurveyChoice } from '../models/survey-choice.interface';
 import { SurveyQuestion } from '../models/survey-question.interface';
 import { SurveyResult } from '../models/survey-result.interface';
+import { EventManagerService } from '../services/event-manager.service';
 
 @Component({
   selector: 'app-survey',
@@ -42,13 +42,13 @@ export class SurveyComponent implements OnInit {
   constructor(
     private router: Router,
     private firestoreService: FirestoreService,
+    private eventManagerService: EventManagerService,
     protected route: ActivatedRoute,
     protected authService: FirebaseAuthService
   ) { }
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => this.event = JSON.parse(JSON.stringify(events.find(event => event.id == params['id']))));
-
+    this.event = this.eventManagerService.event;
     const userPromise = this.authService.awaitUser();
     const resultsPromise = this.firestoreService.read(this.event.id, true) as Promise<SurveyResult[]>;
     Promise.all([userPromise, resultsPromise]).then(([user, results]) => {
