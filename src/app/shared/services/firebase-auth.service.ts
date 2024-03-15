@@ -14,6 +14,14 @@ export class FirebaseAuthService {
     this.auth.setPersistence(browserLocalPersistence);
   }
 
+  private isMessenger(): boolean {
+    for (const userAgent of ['FB_IAB', 'FBAN', 'FBAV', 'FB4A', 'MESSENGER']) {
+      if (navigator.userAgent.includes(userAgent)) {
+        return true;
+      }
+    }
+  }
+
   public logout(): void {
     localStorage.removeItem('firebase-user');
     this.auth.signOut();
@@ -29,7 +37,7 @@ export class FirebaseAuthService {
           return redirectUrl ? true : false;
         }
       },
-      signInFlow: 'redirect',
+      signInFlow: this.isMessenger() ? 'redirect' : 'popup',
       signInSuccessUrl: redirectUrl,
       signInOptions: [
         GoogleAuthProvider.PROVIDER_ID
