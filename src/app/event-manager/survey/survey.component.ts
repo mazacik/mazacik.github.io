@@ -33,6 +33,8 @@ export class SurveyComponent implements OnInit {
 
   @HostBinding('@crossfade') crossfade = true;
 
+  protected userAgent = window.navigator.userAgent;
+
   protected event: Event;
   protected userHasVote: boolean;
   protected questionIndex: number = 0;

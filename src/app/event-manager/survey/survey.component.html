@@ -1,7 +1,8 @@
 <div *ngIf="loadingDone" class="content-container" @fade>
   <div *ngIf="!authService.hasLocalStorageEntry()" class="auth-container" @crossfade>
     <div class="auth-header">
-      <span class="auth-text">Hlasovanie</span>
+      <span class="auth-text">{{ userAgent }}</span>
+      <!-- <span class="auth-text">Hlasovanie</span> -->
     </div>
     <div class="auth-buttons">
       <div class="auth-button auth-ui-button" (onCreate)="createAuthButton($event)"></div>
