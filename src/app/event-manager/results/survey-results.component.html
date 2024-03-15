@@ -4,7 +4,7 @@
     <div *ngIf="result.open" @drawer class="result-options">
       <div *ngFor="let option of result.options" class="result-option">
         <ng-container *ngIf="option.id != 'dontcare'">
-          <ng-container *ngVar="option.count / (result.votes || 1) * 100 as percentage">
+          <ng-container *ngVar="getPercentage(option, result) as percentage">
             <div class="result-header">
               <div class="choice-labels">
                 <span class="choice-text">{{ option.text }}</span>
