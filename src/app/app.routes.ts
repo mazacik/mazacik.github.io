@@ -7,11 +7,16 @@ import { SurveyComponent } from './event-manager/survey/survey.component';
 import { FolderPickerComponent } from './gallery/folder-picker/folder-picker.component';
 import { GalleryComponent } from './gallery/gallery.component';
 import { LoginComponent } from './login/login.component';
+import { FuckMessengerBrowserGuard } from './router/fuck-messenger-browser.guard';
 import { GoogleAuthGuard } from './router/google-auth.guard';
 import { HasFolderGuard } from './router/has-folder.guard';
+import { FuckMessengerBrowserComponent } from './shared/components/fuck-messenger-browser/fuck-messenger-browser.component';
 import { TournamentComponent } from './tournament/tournament.component';
 
 export const routes: Routes = [{
+  path: 'fuck-messenger-browser',
+  component: FuckMessengerBrowserComponent
+}, {
   path: 'login',
   component: LoginComponent
 }, {
@@ -31,6 +36,7 @@ export const routes: Routes = [{
   component: TournamentComponent
 }, {
   path: 'event/:id',
+  canActivate: [FuckMessengerBrowserGuard],
   component: EventManagerComponent,
   children: [{
     path: 'hlasovanie/vysledky',
