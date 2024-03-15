@@ -66,4 +66,8 @@ export class SurveyResultsComponent implements OnInit {
     result.open = true;
   }
 
+  protected getPercentage(choice: any, result: any): number {
+    return Math.round((choice.count / (result.votes || 1) * 100));
+  }
+
 }

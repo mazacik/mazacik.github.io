@@ -9,9 +9,16 @@ import { GalleryComponent } from './gallery/gallery.component';
 import { LoginComponent } from './login/login.component';
 import { GoogleAuthGuard } from './router/google-auth.guard';
 import { HasFolderGuard } from './router/has-folder.guard';
+import { MessengerBrowserGuard } from './router/messenger-browser.guard';
+import { NotMessengerBrowserGuard } from './router/not-messenger-browser.guard copy';
+import { FuckMessengerBrowserComponent } from './shared/components/fuck-messenger-browser/fuck-messenger-browser.component';
 import { TournamentComponent } from './tournament/tournament.component';
 
 export const routes: Routes = [{
+  path: 'messenger-browser',
+  canActivate: [NotMessengerBrowserGuard],
+  component: FuckMessengerBrowserComponent
+}, {
   path: 'login',
   component: LoginComponent
 }, {
@@ -31,6 +38,7 @@ export const routes: Routes = [{
   component: TournamentComponent
 }, {
   path: 'event/:id',
+  canActivate: [MessengerBrowserGuard],
   component: EventManagerComponent,
   children: [{
     path: 'hlasovanie/vysledky',
