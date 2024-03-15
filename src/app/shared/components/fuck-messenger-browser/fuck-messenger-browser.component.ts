@@ -22,6 +22,8 @@ import { VariableDirective } from 'src/app/shared/directives/variable.directive'
 })
 export class FuckMessengerBrowserComponent implements OnInit {
 
+  protected userAgent: string = window.navigator.userAgent;
+
   constructor() { }
 
   ngOnInit(): void {
