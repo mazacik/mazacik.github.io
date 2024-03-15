@@ -1,7 +1,7 @@
 <div class="header" smallscreen>
   <div class="header-left">
     <div class="header-item">
-      <a [routerLink]="['./hlasovanie']">Hlasovanie</a>
+
     </div>
   </div>
   <div class="header-right">
@@ -21,6 +21,7 @@
   <div class="sidebar-content">
     <div class="sidebar-content-top" (click)="sidebarVisible = false">
       <a class="sidebar-item" [routerLink]="['./hlasovanie']">Hlasovanie</a>
+      <a class="sidebar-item" [routerLink]="['./hlasovanie/vysledky']">Výsledky</a>
     </div>
     <div class="sidebar-content-bottom" (click)="sidebarVisible = false">
       <ng-container *ngIf="authService.getUser()">
@@ -34,6 +35,9 @@
   <div class="header-left">
     <div class="header-item">
       <a [routerLink]="['./hlasovanie']">Hlasovanie</a>
+    </div>
+    <div class="header-item">
+      <a [routerLink]="['./hlasovanie/vysledky']">Výsledky</a>
     </div>
     <!-- <div class="header-item">
       <a [routerLink]="['./pravidla']">Pravidlá</a>
