@@ -3,21 +3,25 @@
     <span class="result-title">{{ result.title }}</span>
     <div *ngIf="result.open" @drawer class="result-options">
       <div *ngFor="let option of result.options" class="result-option">
-        <ng-container *ngVar="option.count / (result.votes || 1) * 100 as percentage">
-          <div class="result-header">
-            <div class="choice-labels">
-              <span class="choice-text">{{ option.text }}</span>
-              <ng-container *ngIf="option.description">
-                <div class="v-separator"></div>
-                <span class="choice-description">{{ option.description }}</span>
-              </ng-container>
+        <ng-container *ngIf="option.id != 'dontcare'">
+          <ng-container *ngVar="option.count / (result.votes || 1) * 100 as percentage">
+            <div class="result-header">
+              <div class="choice-labels">
+                <span class="choice-text">{{ option.text }}</span>
+                <ng-container *ngIf="option.description">
+                  <div class="v-separator"></div>
+                  <span class="choice-description">{{ option.description }}</span>
+                </ng-container>
+              </div>
+              <div class="result-statistics">
+                <span>{{ percentage }}%</span>
+                <span>({{ option.count }})</span>
+              </div>
             </div>
-            <div class="result-statistics">
-              <span>{{ percentage }}%</span>
-              <span>({{ option.count }})</span>
+            <div class="progress-container">
+              <div class="progress" [style.width.%]="percentage"></div>
             </div>
-          </div>
-          <progress [value]="percentage" max="100"></progress>
+          </ng-container>
         </ng-container>
       </div>
     </div>

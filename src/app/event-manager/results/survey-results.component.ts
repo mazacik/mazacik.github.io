@@ -26,7 +26,6 @@ export class SurveyResultsComponent implements OnInit {
   @HostBinding('@crossfade') crossfade = true;
 
   protected event: Event;
-  protected databaseEntries: SurveyResult[];
   protected statistics;
 
   constructor(
@@ -43,12 +42,11 @@ export class SurveyResultsComponent implements OnInit {
 
   private requestResults(): void {
     this.firestoreService.read(this.event.id).then((docs: SurveyResult[]) => {
-      this.databaseEntries = docs;
       this.statistics = this.event.questions.map(question => {
         return {
           id: question.id,
           title: question.title,
-          votes: docs.length,
+          votes: docs.filter(doc => !doc.choices[question.id].includes('dontcare')).length,
           open: this.event.questions.indexOf(question) == 0,
           options: question.choices?.map(option => {
             return {
@@ -56,7 +54,7 @@ export class SurveyResultsComponent implements OnInit {
               text: option.text,
               description: option.description,
               hyperlink: option.hyperlink,
-              count: docs.filter(doc => doc.choices[question.id].includes(option.id)).length
+              count: docs.filter(doc => !doc.choices[question.id].includes('dontcare') && doc.choices[question.id].includes(option.id)).length
             }
           }).sort((o1, o2) => o2.count - o1.count)
         }

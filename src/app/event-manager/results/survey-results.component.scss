@@ -15,6 +15,7 @@
   }
 
   @media screen and (min-width:600px) {
+    width: 48rem;
     padding: ($gap * 2) 0;
   }
 
@@ -22,10 +23,7 @@
     display: flex;
     flex-direction: column;
     gap: ($gap * 2);
-
-    @media screen and (max-width:600px) {
-      width: 100%;
-    }
+    width: 100%;
 
     .title {
       display: block;
@@ -40,16 +38,10 @@
       flex-direction: column;
       background-color: rgba(255, 255, 255, 0.05);
       padding: ($gap * 2);
-      gap: ($gap * 2);
+      gap: $gap;
 
       transition-property: gap;
       transition-duration: $transition-duration;
-
-      @media screen and (max-width:600px) {}
-
-      @media screen and (min-width:600px) {
-        width: 600px;
-      }
 
       &.closed {
         cursor: pointer;
@@ -75,6 +67,7 @@
         .result-option {
           display: flex;
           flex-direction: column;
+          gap: ($gap * 0.5);
 
           .result-header {
             width: 100%;
@@ -98,13 +91,28 @@
               }
 
               .choice-description {
-                font-size: 12px;
+                font-size: 14px;
               }
             }
 
             .result-statistics {
               display: flex;
               gap: $gap;
+            }
+          }
+
+          .progress-container {
+            width: 100%;
+            border-radius: $gap;
+            background-color: var(--color-hover);
+            border: 1px solid var(--color-border);
+            box-sizing: border-box;
+
+            .progress {
+              min-height: 0.334rem;
+              background-color: var(--color-primary);
+              border-radius: $gap;
+              box-sizing: border-box;
             }
           }
 

@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink, RouterOutlet } from '@angular/router';
 import { fade } from '../shared/consntants/animations.constants';
+import { LargeScreenDirective } from '../shared/directives/largescreen.directive';
+import { SmallScreenDirective } from '../shared/directives/smallscreen.directive';
 import { FirebaseAuthService } from '../shared/services/firebase-auth.service';
 
 @Component({
@@ -12,7 +14,9 @@ import { FirebaseAuthService } from '../shared/services/firebase-auth.service';
     CommonModule,
     FormsModule,
     RouterLink,
-    RouterOutlet
+    RouterOutlet,
+    LargeScreenDirective,
+    SmallScreenDirective
   ],
   templateUrl: './event-manager.component.html',
   styleUrls: ['./event-manager.component.scss'],

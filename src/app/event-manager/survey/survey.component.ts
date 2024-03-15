@@ -122,8 +122,4 @@ export class SurveyComponent implements OnInit {
     this.authService.createButton(elementRef.nativeElement);
   }
 
-  protected openLink(url: string) {
-    if (url) window.open(url, '_blank');
-  }
-
 }

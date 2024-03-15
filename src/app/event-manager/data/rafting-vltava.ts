@@ -1,4 +1,4 @@
-export const camps = [{
+export const vltava = [{
   id: 'kempbranna',
   text: 'Kemp Branná',
   description: 'Rodinný kemp, to znamená nočný kľud, inak vyzerá úplne super.',

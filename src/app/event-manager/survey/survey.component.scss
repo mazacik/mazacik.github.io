@@ -15,6 +15,7 @@
   }
 
   @media screen and (min-width:600px) {
+    width: 48rem;
     padding: ($gap * 4) 0;
   }
 
@@ -22,10 +23,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-
-    @media screen and (max-width:600px) {
-      width: 100%;
-    }
+    width: 100%;
   }
 
   .auth-container {
@@ -96,25 +94,16 @@
     border-radius: $gap;
     padding: ($gap * 2);
     position: relative;
-
-    @media screen and (max-width:600px) {
-      width: 100%;
-    }
+    width: 100%;
 
     .event-title {
-      font-size: ($gap * 5);
+      font-size: ($gap * 4);
       margin-bottom: (-$gap);
     }
 
     .question-container {
       display: flex;
       flex-direction: column;
-
-      @media screen and (max-width:600px) {}
-
-      @media screen and (min-width:600px) {
-        width: 600px;
-      }
 
       .question-animation-container {
         display: flex;
@@ -124,7 +113,7 @@
         margin-bottom: (-$gap * 2);
 
         .question-title {
-          font-size: 24px;
+          // font-size: 24px;
         }
 
         .question-description {
@@ -137,22 +126,25 @@
           flex-direction: column;
           margin-top: ($gap * 2);
           align-self: start;
-          gap: ($gap * 2);
+          gap: 0.5rem;
           width: 100%;
 
           .question-choice {
             display: flex;
             align-items: center;
-            gap: ($gap * 1.5);
+            gap: 0.5rem;
             cursor: pointer;
+            padding: 0.75rem 0.5rem;
+            border: 1px solid var(--color-border);
+            border-radius: $gap;
+            transition: $transition-duration * 0.5;
 
-            >input {
-              width: 22.4px;
-              min-width: 22.4px;
-              height: 22.4px;
-              min-height: 22.4px;
-              margin: 0;
-              pointer-events: none;
+            &.selected {
+              background-color: var(--color-secondary);
+            }
+
+            .question-selection-icon {
+
             }
 
             .choice-labels {
@@ -170,7 +162,7 @@
               }
 
               .choice-description {
-                font-size: 12px;
+                font-size: 14px;
               }
             }
           }
