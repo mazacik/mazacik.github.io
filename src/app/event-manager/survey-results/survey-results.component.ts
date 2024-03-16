@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostBinding, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { crossfade, drawer2, fade } from 'src/app/shared/consntants/animations.constants';
+import { drawer2 } from 'src/app/shared/consntants/animations.constants';
 import { VariableDirective } from 'src/app/shared/directives/variable.directive';
 import { FirestoreService } from 'src/app/shared/services/firestore.service';
 import { Event } from '../models/event.interface';
@@ -18,11 +18,9 @@ import { EventManagerService } from '../services/event-manager.service';
   ],
   templateUrl: './survey-results.component.html',
   styleUrls: ['./survey-results.component.scss'],
-  animations: [crossfade, fade, drawer2]
+  animations: [drawer2]
 })
 export class SurveyResultsComponent implements OnInit {
-
-  @HostBinding('@crossfade') crossfade = true;
 
   protected event: Event;
   protected userEntries: SurveyResult[];

@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, HostBinding, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TippyDirective } from '@ngneat/helipopper';
-import { crossfade, drawer, enter, fade, leave, skip } from 'src/app/shared/consntants/animations.constants';
+import { crossfade, drawer2, fade, skip } from 'src/app/shared/consntants/animations.constants';
 import { OnCreateDirective } from 'src/app/shared/directives/on-create.directive';
 import { VariableDirective } from 'src/app/shared/directives/variable.directive';
 import { FirebaseAuthService } from 'src/app/shared/services/firebase-auth.service';
@@ -27,11 +27,9 @@ import { EventManagerService } from '../services/event-manager.service';
   ],
   templateUrl: './survey.component.html',
   styleUrls: ['./survey.component.scss'],
-  animations: [crossfade, drawer, enter, fade, leave, skip]
+  animations: [crossfade, drawer2, fade, skip]
 })
 export class SurveyComponent implements OnInit {
-
-  @HostBinding('@crossfade') crossfade = true;
 
   protected event: Event;
   protected userHasVote: boolean;
@@ -76,20 +74,12 @@ export class SurveyComponent implements OnInit {
     }
   }
 
-  private directionTimeout: NodeJS.Timeout;
   protected back(): void {
-    clearTimeout(this.directionTimeout);
-    const container = document.querySelector('.question-container') as HTMLElement;
-    container.style.flexDirection = 'column-reverse';
-    this.directionTimeout = setTimeout(() => container.style.flexDirection = 'column', 500);
     if (this.questionIndex > 0) this.questionIndex--;
   }
 
   protected next(): void {
-    clearTimeout(this.directionTimeout);
-    const container = document.querySelector('.question-container') as HTMLElement;
-    container.style.flexDirection = 'column';
-    this.questionIndex++;
+    if (this.questionIndex < this.event.questions.length - 1) this.questionIndex++;
   }
 
   protected submit(): void {
@@ -106,9 +96,9 @@ export class SurveyComponent implements OnInit {
         entry.choices[question.id] = question.choices.filter(choice => choice.selected).map(choice => choice.id);
       });
 
-      this.firestoreService.write(this.event.id, user.uid, entry);
-      localStorage.setItem(this.event.id, new Date().toISOString());
-      this.router.navigate(['./vysledky'], { relativeTo: this.route });
+      this.firestoreService.write(this.event.id, user.uid, entry).then(() => {
+        this.router.navigate(['./vysledky'], { relativeTo: this.route });
+      });
     }
   }
 
@@ -128,6 +118,6 @@ export class SurveyComponent implements OnInit {
     });
   }
 
-  
+
 
 }
