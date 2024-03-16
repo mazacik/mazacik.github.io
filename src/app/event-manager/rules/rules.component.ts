@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostBinding, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { crossfade, drawer, enter, fade, skip } from 'src/app/shared/consntants/animations.constants';
 import { events } from '../events/events';
 import { Event } from '../models/event.interface';
 
@@ -12,12 +11,9 @@ import { Event } from '../models/event.interface';
     CommonModule
   ],
   templateUrl: './rules.component.html',
-  styleUrls: ['./rules.component.scss'],
-  animations: [crossfade, enter, drawer, fade, skip]
+  styleUrls: ['./rules.component.scss']
 })
 export class RulesComponent implements OnInit {
-
-  @HostBinding('@crossfade') crossfade = true;
 
   protected event: Event;
 

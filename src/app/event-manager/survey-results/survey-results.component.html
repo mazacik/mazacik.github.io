@@ -1,4 +1,4 @@
-<div *ngIf="statistics" @fade class="results">
+<div *ngIf="statistics" class="results">
   <div *ngFor="let result of statistics" class="result-container" [class.closed]="!result.open" (click)="open(result)">
     <span class="result-title">{{ result.title }}</span>
     <div [@drawer2]="result.open" class="result-options" [class.closed]="!result.open">

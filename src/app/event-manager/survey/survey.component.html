@@ -1,29 +1,19 @@
-<div *ngIf="loadingDone" class="content-container" @fade>
-  <div *ngIf="!authService.hasLocalStorageEntry()" class="auth-container" @crossfade>
+<div *ngIf="loadingDone" class="content-container">
+  <div *ngIf="!authService.hasLocalStorageEntry() || userHasVote" class="auth-container">
     <div class="auth-header">
       <span class="auth-text">Hlasovanie</span>
     </div>
-    <div class="auth-buttons">
-      <div class="auth-button auth-ui-button" (onCreate)="createAuthButton($event)"></div>
+    <div class="auth-buttons" @skip>
+      <div *ngIf="!authService.hasLocalStorageEntry()" @crossfade class="auth-button auth-ui-button" (onCreate)="createAuthButton($event)"></div>
+      <div *ngIf="authService.hasLocalStorageEntry() && userHasVote" @crossfade class="auth-button button" (click)="resetVote()">Zmena hlasovania</div>
       <span class="auth-or">alebo</span>
       <a class="auth-button button" [routerLink]="['./vysledky']"><i class="fa-solid fa-chart-simple"></i>Výsledky</a>
     </div>
   </div>
 
-  <div *ngIf="authService.hasLocalStorageEntry() && userHasVote" class="auth-container" @crossfade>
-    <div class="auth-header">
-      <span class="auth-text">Hlasovanie</span>
-    </div>
-    <div class="auth-buttons">
-      <div class="auth-button button" (click)="resetVote()">Zmena hlasovania</div>
-      <span class="auth-or">alebo</span>
-      <a class="auth-button button" [routerLink]="['./vysledky']"><i class="fa-solid fa-chart-simple"></i>Výsledky</a>
-    </div>
-  </div>
-
-  <div *ngIf="authService.hasLocalStorageEntry() && !userHasVote" class="questions" @crossfade>
-    <div @skip class="question-container">
-      <div *ngFor="let question of [event.questions[questionIndex]]" @drawer class="question-animation-container">
+  <div *ngIf="authService.hasLocalStorageEntry() && !userHasVote" class="questions">
+    <div class="question-container" @skip>
+      <div *ngFor="let question of event.questions; let i = index;" [@drawer2]="i == questionIndex" class="question-animation-container">
         <span class="question-title">{{ question.title }}</span>
         <span *ngIf="question.description" class="question-description">{{ question.description }}</span>
         <div *ngIf="question.choices" class="question-choices">
@@ -47,15 +37,15 @@
         </div>
       </div>
     </div>
-    <div @skip class="buttons">
-      <div class="button-container">
+    <div class="buttons">
+      <div @skip class="button-container">
         <a *ngIf="questionIndex == 0" @crossfade class="button" [routerLink]="['./vysledky']"><i class="fa-solid fa-chart-simple"></i>Výsledky</a>
         <div *ngIf="questionIndex != 0" @crossfade class="button" (click)="back()">Späť</div>
       </div>
       <div class="button-container">
-
+        <div class="button transparent">&nbsp;</div>
       </div>
-      <div class="button-container">
+      <div @skip class="button-container">
         <div *ngIf="questionIndex < event.questions.length - 1" @crossfade class="button" (click)="next()">Ďalej</div>
         <div *ngIf="questionIndex == event.questions.length - 1" @crossfade class="button" [class.disabled]="!authService.getUser()" (click)="submit()">Hlasovať</div>
       </div>
