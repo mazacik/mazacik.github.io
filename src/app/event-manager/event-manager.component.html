@@ -36,8 +36,8 @@
   <div class="header-left">
     <span>{{ eventManagerService.event.title }}</span>
     <div class="v-separator margins"></div>
-    <a class="header-item" [routerLink]="['hlasovanie']" [routerLinkActive]="['current']" [routerLinkActiveOptions]="{ exact: true }">Hlasovanie</a>
-    <a class="header-item" [routerLink]="['hlasovanie', 'vysledky']" [routerLinkActive]="['current']" [routerLinkActiveOptions]="{ exact: true }">Výsledky</a>
+    <a class="header-item" [routerLink]="['hlasovanie']" [routerLinkActive]="['currentRoute']" [routerLinkActiveOptions]="{ exact: true }">Hlasovanie</a>
+    <a class="header-item" [routerLink]="['hlasovanie', 'vysledky']" [routerLinkActive]="['currentRoute']" [routerLinkActiveOptions]="{ exact: true }">Výsledky</a>
     <!-- <div class="header-item">
       <a [routerLink]="['./pravidla']">Pravidlá</a>
     </div> -->
