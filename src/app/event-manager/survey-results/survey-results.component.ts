@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostBinding, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { crossfade, drawer, enter, fade, drawer2, skip } from 'src/app/shared/consntants/animations.constants';
+import { crossfade, drawer2, fade } from 'src/app/shared/consntants/animations.constants';
 import { VariableDirective } from 'src/app/shared/directives/variable.directive';
 import { FirestoreService } from 'src/app/shared/services/firestore.service';
 import { Event } from '../models/event.interface';
@@ -18,7 +18,7 @@ import { EventManagerService } from '../services/event-manager.service';
   ],
   templateUrl: './survey-results.component.html',
   styleUrls: ['./survey-results.component.scss'],
-  animations: [crossfade, enter, drawer, fade, skip, drawer2]
+  animations: [crossfade, fade, drawer2]
 })
 export class SurveyResultsComponent implements OnInit {
 
@@ -65,10 +65,6 @@ export class SurveyResultsComponent implements OnInit {
   protected open(result) {
     this.statistics.forEach(r => r.open = false);
     result.open = true;
-  }
-
-  protected getPercentage(choice: any, result: any): number {
-    return Math.round((choice.count / (result.votes || 1) * 100));
   }
 
   protected getShortName(displayName: string): string {
