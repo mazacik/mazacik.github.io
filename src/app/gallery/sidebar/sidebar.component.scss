@@ -113,7 +113,7 @@
   padding: 0 $gap;
 
   @media screen and (min-width:768px) {
-    background-color: var(--color-background);
+    background-color: var(--color-background-primary);
     padding: $gap;
     border-radius: $gap * 1.5;
   }
@@ -145,7 +145,7 @@
   border-radius: $gap * 2;
 
   &:nth-child(2n+1) {
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: var(--color-background-secondary);
   }
 
   &:hover {

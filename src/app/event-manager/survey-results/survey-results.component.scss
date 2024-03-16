@@ -10,12 +10,12 @@
   bottom: 0;
 
   @media screen and (max-width:600px) {
-    width: calc(100% - ($gap * 4));
+    width: calc(100vw - ($gap * 4));
+    max-width: calc(100vw - ($gap * 4));
     padding: ($gap * 2);
   }
 
   @media screen and (min-width:600px) {
-    width: 48rem;
     padding: ($gap * 2) 0;
   }
 
@@ -23,12 +23,12 @@
     display: flex;
     flex-direction: column;
     gap: ($gap * 2);
-    width: 100%;
+    max-width: 100%;
 
     .title {
       display: block;
       text-align: center;
-      font-size: 36px; // TODO ($font-size * 2)
+      font-size: 2rem;
     }
 
     .result-container {
@@ -36,9 +36,8 @@
       border-radius: $gap;
       display: flex;
       flex-direction: column;
-      background-color: rgba(255, 255, 255, 0.05);
+      background-color: var(--color-background-secondary);
       padding: ($gap * 2);
-      gap: $gap;
 
       transition-property: gap;
       transition-duration: $transition-duration;
@@ -62,63 +61,50 @@
         flex-direction: column;
         gap: $gap;
         width: 100%;
-        overflow: hidden;
+        overflow-x: auto;
+        overflow-y: hidden;
 
-        .result-option {
-          display: flex;
-          flex-direction: column;
-          gap: ($gap * 0.5);
+        table {
+          border-collapse: collapse;
 
-          .result-header {
-            width: 100%;
-            display: flex;
-            gap: ($gap * 2);
-            justify-content: space-between;
+          tr {
+            &:not(:last-child) {
+              border-bottom: 1px solid var(--color-border);
+            }
 
-            .choice-labels {
-              display: flex;
-              align-items: center;
-              gap: $gap;
-              // flex-direction: column;
+            td {
+              font-size: 14px;
+              width: fit-content;
+              padding: 0.5rem;
 
-              .choice-text {
-                min-width: fit-content;
+              &.first-column {
+                width: 0;
+                text-wrap: nowrap;
+                position: sticky;
+                left: 0;
+                background-color: var(--color-background-secondary);
+              }
 
-                &.has-link {
-                  cursor: pointer;
-                  text-decoration: underline;
+              &:not(.first-column) {
+                text-align: center;
+              }
+
+              &.first-row {
+                text-wrap: nowrap;
+
+                // &:not(:first-child)  {
+                //   &:not(:last-child) {
+                //     border-right: 1px solid var(--color-border);
+                //   }
+                // }
+
+                @media screen and (max-width:600px) {
+                  writing-mode: tb;
                 }
               }
 
-              .choice-description {
-                font-size: 14px;
-              }
+              &:not(.first-row) {}
             }
-
-            .result-statistics {
-              display: flex;
-              gap: $gap;
-            }
-          }
-
-          .progress-container {
-            width: 100%;
-            border-radius: $gap;
-            background-color: var(--color-hover);
-            border: 1px solid var(--color-border);
-            box-sizing: border-box;
-
-            .progress {
-              min-height: 0.334rem;
-              background-color: var(--color-primary);
-              border-radius: $gap;
-              box-sizing: border-box;
-            }
-          }
-
-          >progress {
-            width: 100%;
-            height: 18px;
           }
         }
       }

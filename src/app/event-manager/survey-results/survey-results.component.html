@@ -1,29 +1,19 @@
 <div *ngIf="statistics" @fade class="results">
   <div *ngFor="let result of statistics" class="result-container" [class.closed]="!result.open" (click)="open(result)">
     <span class="result-title">{{ result.title }}</span>
-    <div *ngIf="result.open" @drawer class="result-options">
-      <div *ngFor="let option of result.options" class="result-option">
-        <ng-container *ngIf="option.id != 'dontcare'">
-          <ng-container *ngVar="getPercentage(option, result) as percentage">
-            <div class="result-header">
-              <div class="choice-labels">
-                <span class="choice-text">{{ option.text }}</span>
-                <ng-container *ngIf="option.description">
-                  <div class="v-separator"></div>
-                  <span class="choice-description">{{ option.description }}</span>
-                </ng-container>
-              </div>
-              <div class="result-statistics">
-                <span>{{ percentage }}%</span>
-                <span>({{ option.count }})</span>
-              </div>
-            </div>
-            <div class="progress-container">
-              <div class="progress" [style.width.%]="percentage"></div>
-            </div>
-          </ng-container>
-        </ng-container>
-      </div>
+    <div [@drawer2]="result.open" class="result-options" [class.closed]="!result.open">
+      <table>
+        <tr>
+          <td class="first-column first-row"></td>
+          <td *ngFor="let option of result.options" [style.width.%]="100 / result.options.length" class="first-row">{{ option.text }}</td>
+        </tr>
+        <tr *ngFor="let userEntry of userEntries">
+          <td class="first-column">{{ getShortName(userEntry.userDisplayName) }}</td>
+          <td *ngFor="let option of result.options">
+            <i *ngIf="option.people.includes(userEntry.userDisplayName)" class="fa-solid fa-check"></i>
+          </td>
+        </tr>
+      </table>
     </div>
   </div>
 </div>

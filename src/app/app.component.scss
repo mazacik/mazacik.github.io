@@ -1,7 +1,7 @@
 @import 'src/styles/variables.scss';
 
 :host-context(.light-theme) {
-  --color-background: rgb(255, 255, 255);
+  --color-background-primary: rgb(255, 255, 255);
   --color-border: rgba(0, 0, 0, 0.2);
   --color-hover: rgba(0, 0, 0, 0.1);
   --color-text: black;
@@ -15,7 +15,8 @@
 }
 
 :host-context(.dark-theme) {
-  --color-background: #202124;
+  --color-background-primary: #202124;
+  --color-background-secondary: #2b2c2f;
   --color-border: rgba(255, 255, 255, 0.2);
   --color-hover: rgba(255, 255, 255, 0.1);
   --color-text-shadow: black;
@@ -33,7 +34,7 @@
   align-items: center;
   justify-content: center;
   color: var(--color-text);
-  background-color: var(--color-background);
+  background-color: var(--color-background-primary);
 
   >* {
     position: absolute;
@@ -70,7 +71,7 @@
   width: 75px;
   height: 75px;
   border-width: 3px;
-  border-color: rgba(255, 255, 255, 0.05);
+  border-color: var(--color-background-secondary);
   border-top-color: #fff;
   animation: spin 1s infinite linear;
   border-radius: 100%;
