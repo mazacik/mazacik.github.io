@@ -1,7 +1,7 @@
 <ng-container *ngIf="getActiveQuestions().length == 0;else hasActiveQuestions">
   <div class="no-questions-container">
     <span>Hlasovanie teraz nie je aktívne</span>
-    <a class="button" [routerLink]="['./vysledky']"><i class="fa-solid fa-chart-simple"></i>Výsledky</a>
+    <a class="button" [routerLink]="['vysledky']"><i class="fa-solid fa-chart-simple"></i>Výsledky</a>
   </div>
 </ng-container>
 
@@ -15,10 +15,10 @@
         <div *ngIf="!authService.hasLocalStorageEntry()" @crossfade class="auth-button auth-ui-button" (onCreate)="createAuthButton($event)"></div>
         <div *ngIf="authService.hasLocalStorageEntry() && !userCanVote" @crossfade class="auth-button button" (click)="updateVote()">Zmena hlasovania</div>
         <span class="auth-or">alebo</span>
-        <a class="auth-button button" [routerLink]="['./vysledky']"><i class="fa-solid fa-chart-simple"></i>Výsledky</a>
+        <a class="auth-button button" [routerLink]="['vysledky']"><i class="fa-solid fa-chart-simple"></i>Výsledky</a>
       </div>
     </div>
-  
+
     <div *ngIf="authService.hasLocalStorageEntry() && userCanVote" class="questions">
       <ng-container *ngVar="getActiveQuestions() as questions">
         <div class="question-container" @skip>
@@ -48,7 +48,7 @@
         </div>
         <div class="buttons">
           <div @skip class="button-container">
-            <a *ngIf="questionIndex == 0" @crossfade class="button" [routerLink]="['./vysledky']"><i class="fa-solid fa-chart-simple"></i>Výsledky</a>
+            <a *ngIf="questionIndex == 0" @crossfade class="button" [routerLink]="['vysledky']"><i class="fa-solid fa-chart-simple"></i>Výsledky</a>
             <div *ngIf="questionIndex != 0" @crossfade class="button" (click)="back()">Späť</div>
           </div>
           <div class="button-container">
