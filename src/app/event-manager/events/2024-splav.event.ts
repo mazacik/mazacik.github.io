@@ -6,6 +6,7 @@ export const splav2024: Event = {
   title: 'Splav 2024',
   questions: ([{
     id: 'termin',
+    active: true,
     title: 'Ktoré víkendy môžeš?',
     description: 'Fakt vyber prosím čo najviac, aby sme sa mali šancu zhodnúť. Nie že kedy sa ti chce.',
     type: 'checkbox',
@@ -57,6 +58,7 @@ export const splav2024: Event = {
     }]
   }, {
     id: 'pocetdni',
+    active: true,
     title: 'Na ako dlho chceš ísť?',
     description: 'Chodíme iba raz za rok a 3 noci sú viac srandy ako 2. Ten posledný deň však býva dosť náročný.',
     type: 'radio',

@@ -18,11 +18,11 @@
     z-index: 1;
     justify-content: space-between;
 
-    @media screen and (max-width:600px) {
+    @media screen and (max-width:1000px) {
       padding: 0 ($gap * 2);
     }
 
-    @media screen and (min-width:600px) {
+    @media screen and (min-width:1000px) {
       padding: 0 ($gap * 5);
     }
 
@@ -31,11 +31,11 @@
       display: flex;
       align-items: center;
 
-      @media screen and (max-width:600px) {
+      @media screen and (max-width:1000px) {
         gap: ($gap * 2);
       }
 
-      @media screen and (min-width:600px) {
+      @media screen and (min-width:1000px) {
         gap: ($gap * 5);
       }
     }
@@ -79,11 +79,11 @@
       box-sizing: border-box;
       justify-content: space-between;
 
-      @media screen and (max-width:600px) {
+      @media screen and (max-width:1000px) {
         padding: 0 ($gap * 2);
       }
 
-      @media screen and (min-width:600px) {
+      @media screen and (min-width:1000px) {
         padding: 0 ($gap * 5);
       }
 

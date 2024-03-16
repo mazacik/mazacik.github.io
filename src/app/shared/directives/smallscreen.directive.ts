@@ -20,7 +20,7 @@ export class SmallScreenDirective implements OnInit {
   }
 
   private updateVisibility(screenWidth: number) {
-    if (screenWidth <= 600) {
+    if (screenWidth <= 1000) {
       (this.elementRef.nativeElement as HTMLElement).style.display = '';
     } else {
       (this.elementRef.nativeElement as HTMLElement).style.display = 'none';

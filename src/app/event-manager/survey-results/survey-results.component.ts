@@ -66,7 +66,7 @@ export class SurveyResultsComponent implements OnInit {
   }
 
   protected getShortName(displayName: string): string {
-    if (window.innerWidth > 600) {
+    if (window.innerWidth > 1000) {
       return displayName;
     } else {
       const [firstName, lastName] = displayName.split(' ');

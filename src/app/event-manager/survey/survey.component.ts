@@ -32,10 +32,10 @@ import { EventManagerService } from '../services/event-manager.service';
 export class SurveyComponent implements OnInit {
 
   protected event: Event;
-  protected userHasVote: boolean;
+  protected userCanVote: boolean;
   protected questionIndex: number = 0;
 
-  protected loadingDone: boolean = false;
+  protected loading: boolean = true;
 
   constructor(
     private router: Router,
@@ -50,9 +50,13 @@ export class SurveyComponent implements OnInit {
     const userPromise = this.authService.awaitUser();
     const resultsPromise = this.firestoreService.read(this.event.id, true) as Promise<SurveyResult[]>;
     Promise.all([userPromise, resultsPromise]).then(([user, results]) => {
-      this.userHasVote = results.some(result => result.userId == user?.uid);
-      this.loadingDone = true;
+      this.userCanVote = !results.some(result => result.userId == user?.uid);
+      this.loading = false;
     });
+  }
+
+  protected getActiveQuestions(): SurveyQuestion[] {
+    return this.event.questions.filter(question => question.active);
   }
 
   protected onChoiceClick(question: SurveyQuestion, choice: SurveyChoice): void {
@@ -102,9 +106,19 @@ export class SurveyComponent implements OnInit {
     }
   }
 
-  protected resetVote(): void {
-    this.firestoreService.delete(this.event.id, this.authService.getUser().uid).then(() => {
-      this.userHasVote = false;
+  protected updateVote(): void {
+    this.firestoreService.read(this.event.id).then((results: SurveyResult[]) => {
+      const userVote = results.find(result => result.userId == this.authService.getUser().uid);
+      if (userVote) {
+        this.event.questions.forEach(question => {
+          question.choices.forEach(choice => {
+            if (userVote.choices && userVote.choices[question.id])
+              choice.selected = userVote.choices[question.id].includes(choice.id);
+          });
+        });
+      }
+
+      this.userCanVote = true;
     });
   }
 
@@ -112,12 +126,10 @@ export class SurveyComponent implements OnInit {
     this.authService.createButton(elementRef.nativeElement, null, (auth) => {
       if (auth?.user) {
         (this.firestoreService.read(this.event.id, true) as Promise<SurveyResult[]>).then(results => {
-          this.userHasVote = results.some(result => result.userId == auth.user.uid);
+          this.userCanVote = !results.some(result => result.userId == auth.user.uid);
         });
       }
     });
   }
-
-
 
 }
