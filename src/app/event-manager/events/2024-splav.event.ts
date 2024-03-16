@@ -6,7 +6,7 @@ export const splav2024: Event = {
   title: 'Splav 2024',
   questions: ([{
     id: 'termin',
-    title: 'Ktoré víkendy môžeš ísť?',
+    title: 'Ktoré víkendy môžeš?',
     description: 'Fakt vyber prosím čo najviac, aby sme sa mali šancu zhodnúť. Nie že kedy sa ti chce.',
     type: 'checkbox',
     choices: [{

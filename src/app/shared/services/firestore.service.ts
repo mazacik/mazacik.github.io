@@ -23,16 +23,8 @@ export class FirestoreService {
     return this.cache[path];
   }
 
-  // public write(path: string, data: any): Promise<DocumentReference<any, DocumentData>> {
-  //   const docRef = addDoc(collection(this.firestore, path), data);
-  //   docRef.then(() => this.cache[path]?.push(data));
-  //   return docRef;
-  // }
-
   public write(path: string, documentId: string, data: any): Promise<void> {
-    const docRef = setDoc(doc(this.firestore, path, documentId), data);
-    docRef.then(() => this.cache[path]?.push(data));
-    return docRef;
+    return setDoc(doc(this.firestore, path, documentId), data);
   }
 
   public delete(path: string, documentId: string): Promise<void> {
