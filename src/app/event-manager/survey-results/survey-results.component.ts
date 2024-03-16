@@ -38,7 +38,7 @@ export class SurveyResultsComponent implements OnInit {
 
   private requestResults(): void {
     this.firestoreService.read(this.event.id).then((docs: SurveyResult[]) => {
-      this.userEntries = docs;
+      this.userEntries = docs.sort((r1, r2) => r2.submitDate.localeCompare(r1.submitDate));
       this.statistics = this.event.questions.map(question => {
         return {
           id: question.id,
@@ -72,7 +72,7 @@ export class SurveyResultsComponent implements OnInit {
       const [firstName, lastName] = displayName.split(' ');
       return firstName.substring(0, 10) + ' ' + lastName[0];
     }
-    
+
   }
 
 }

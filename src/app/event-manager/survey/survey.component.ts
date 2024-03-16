@@ -32,7 +32,7 @@ import { EventManagerService } from '../services/event-manager.service';
 export class SurveyComponent implements OnInit {
 
   protected event: Event;
-  protected userCanVote: boolean;
+  protected canVote: boolean;
   protected questionIndex: number = 0;
 
   protected loading: boolean = true;
@@ -50,7 +50,7 @@ export class SurveyComponent implements OnInit {
     const userPromise = this.authService.awaitUser();
     const resultsPromise = this.firestoreService.read(this.event.id, true) as Promise<SurveyResult[]>;
     Promise.all([userPromise, resultsPromise]).then(([user, results]) => {
-      this.userCanVote = !results.some(result => result.userId == user?.uid);
+      this.canVote = !results.some(result => result.userId == user?.uid);
       this.loading = false;
     });
   }
@@ -118,7 +118,7 @@ export class SurveyComponent implements OnInit {
         });
       }
 
-      this.userCanVote = true;
+      this.canVote = true;
     });
   }
 
@@ -126,7 +126,7 @@ export class SurveyComponent implements OnInit {
     this.authService.createButton(elementRef.nativeElement, null, (auth) => {
       if (auth?.user) {
         (this.firestoreService.read(this.event.id, true) as Promise<SurveyResult[]>).then(results => {
-          this.userCanVote = !results.some(result => result.userId == auth.user.uid);
+          this.canVote = !results.some(result => result.userId == auth.user.uid);
         });
       }
     });
