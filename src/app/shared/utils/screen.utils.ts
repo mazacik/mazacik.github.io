@@ -3,7 +3,7 @@ export abstract class ScreenUtils {
   public static readonly MOUSE_MOVEMENT_TOLERANCE: number = 10;
 
   public static isLargeScreen(): boolean {
-    return window.innerWidth > 600;
+    return window.innerWidth > 1000;
   }
 
   public static isElementVisible(element: HTMLElement, container?: HTMLElement): boolean {

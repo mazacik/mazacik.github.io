@@ -10,13 +10,13 @@
   top: 0;
   bottom: 0;
 
-  @media screen and (max-width:600px) {
+  @media screen and (max-width:1000px) {
     width: calc(100vw - ($gap * 4));
     max-width: calc(100vw - ($gap * 4));
     padding: ($gap * 2);
   }
 
-  @media screen and (min-width:600px) {
+  @media screen and (min-width:1000px) {
     padding: ($gap * 2) 0;
   }
 
@@ -80,7 +80,7 @@
 
               &.first-column {
                 width: 0;
-                text-wrap: nowrap;
+                white-space: nowrap;
                 position: sticky;
                 left: 0;
                 background-color: var(--color-background-secondary);
@@ -91,7 +91,7 @@
               }
 
               &.first-row {
-                text-wrap: nowrap;
+                white-space: nowrap;
 
                 // &:not(:first-child)  {
                 //   &:not(:last-child) {
@@ -99,7 +99,7 @@
                 //   }
                 // }
 
-                @media screen and (max-width:600px) {
+                @media screen and (max-width:1000px) {
                   writing-mode: tb;
                 }
               }
