@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterLink, RouterOutlet } from '@angular/router';
+import { ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { fade } from '../shared/consntants/animations.constants';
 import { LargeScreenDirective } from '../shared/directives/largescreen.directive';
 import { SmallScreenDirective } from '../shared/directives/smallscreen.directive';
@@ -16,6 +16,7 @@ import { EventManagerService } from './services/event-manager.service';
     CommonModule,
     FormsModule,
     RouterLink,
+    RouterLinkActive,
     RouterOutlet,
     LargeScreenDirective,
     SmallScreenDirective

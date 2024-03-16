@@ -20,8 +20,8 @@
   </div>
   <div class="sidebar-content">
     <div class="sidebar-content-top" (click)="sidebarVisible = false">
-      <a class="sidebar-item" [routerLink]="['./hlasovanie']">Hlasovanie</a>
-      <a class="sidebar-item" [routerLink]="['./hlasovanie/vysledky']">Výsledky</a>
+      <a class="sidebar-item" [routerLink]="['hlasovanie']">Hlasovanie</a>
+      <a class="sidebar-item" [routerLink]="['hlasovanie', 'vysledky']">Výsledky</a>
     </div>
     <div class="sidebar-content-bottom" (click)="sidebarVisible = false">
       <ng-container *ngIf="authService.getUser()">
@@ -36,8 +36,8 @@
   <div class="header-left">
     <span>{{ eventManagerService.event.title }}</span>
     <div class="v-separator margins"></div>
-    <a class="header-item" [routerLink]="['./hlasovanie']">Hlasovanie</a>
-    <a class="header-item" [routerLink]="['./hlasovanie/vysledky']">Výsledky</a>
+    <a class="header-item" [routerLink]="['hlasovanie']" [routerLinkActive]="['current']" [routerLinkActiveOptions]="{ exact: true }">Hlasovanie</a>
+    <a class="header-item" [routerLink]="['hlasovanie', 'vysledky']" [routerLinkActive]="['current']" [routerLinkActiveOptions]="{ exact: true }">Výsledky</a>
     <!-- <div class="header-item">
       <a [routerLink]="['./pravidla']">Pravidlá</a>
     </div> -->
@@ -53,7 +53,7 @@
   </div>
   <div class="header-right">
     <ng-container *ngIf="authService.getUser()">
-      <div @fade class="header-item hover-container">
+      <div class="header-item hover-container">
         <span class="hover-visible" (click)="authService.logout()">Odhlásiť sa</span>
         <span class="hover-hidden">{{ authService.getUser().displayName }}</span>
       </div>

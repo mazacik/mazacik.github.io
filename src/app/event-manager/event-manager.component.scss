@@ -50,11 +50,17 @@
       box-sizing: border-box;
       padding-top: 3px;
       border-bottom: 3px solid transparent;
-      transition-property: color, border-color;
-      transition-duration: ($transition-duration * 0.5);
+
+      &.current {
+        padding-bottom: 2px;
+        border-bottom-width: 1px;
+        border-bottom-color: var(--color-primary);
+      }
 
       &:hover {
+        padding-bottom: 0;
         color: var(--color-text-hover);
+        border-bottom-width: 3px;
         border-bottom-color: var(--color-primary);
       }
     }
