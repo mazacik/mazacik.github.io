@@ -1,13 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostBinding, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
-import { crossfade, drawer, enter, fade, skip } from 'src/app/shared/consntants/animations.constants';
+import { crossfade, drawer, enter, fade, drawer2, skip } from 'src/app/shared/consntants/animations.constants';
 import { VariableDirective } from 'src/app/shared/directives/variable.directive';
 import { FirestoreService } from 'src/app/shared/services/firestore.service';
-import { events } from '../events/events';
 import { Event } from '../models/event.interface';
 import { SurveyResult } from '../models/survey-result.interface';
+import { EventManagerService } from '../services/event-manager.service';
 
 @Component({
   selector: 'app-survey-results',
@@ -19,29 +18,29 @@ import { SurveyResult } from '../models/survey-result.interface';
   ],
   templateUrl: './survey-results.component.html',
   styleUrls: ['./survey-results.component.scss'],
-  animations: [crossfade, enter, drawer, fade, skip]
+  animations: [crossfade, enter, drawer, fade, skip, drawer2]
 })
 export class SurveyResultsComponent implements OnInit {
 
   @HostBinding('@crossfade') crossfade = true;
 
   protected event: Event;
+  protected userEntries: SurveyResult[];
   protected statistics;
 
   constructor(
-    private route: ActivatedRoute,
-    private firestoreService: FirestoreService
+    private firestoreService: FirestoreService,
+    private eventManagerService: EventManagerService
   ) { }
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
-      this.event = events.find(event => event.id == params['id']);
-      this.requestResults();
-    });
+    this.event = this.eventManagerService.event;
+    this.requestResults();
   }
 
   private requestResults(): void {
     this.firestoreService.read(this.event.id).then((docs: SurveyResult[]) => {
+      this.userEntries = docs;
       this.statistics = this.event.questions.map(question => {
         return {
           id: question.id,
@@ -54,6 +53,7 @@ export class SurveyResultsComponent implements OnInit {
               text: option.text,
               description: option.description,
               hyperlink: option.hyperlink,
+              people: docs.filter(doc => doc.choices[question.id].includes(option.id)).map(doc => doc.userDisplayName),
               count: docs.filter(doc => !doc.choices[question.id].includes('dontcare') && doc.choices[question.id].includes(option.id)).length
             }
           }).sort((o1, o2) => o2.count - o1.count)
@@ -69,6 +69,16 @@ export class SurveyResultsComponent implements OnInit {
 
   protected getPercentage(choice: any, result: any): number {
     return Math.round((choice.count / (result.votes || 1) * 100));
+  }
+
+  protected getShortName(displayName: string): string {
+    if (window.innerWidth > 600) {
+      return displayName;
+    } else {
+      const [firstName, lastName] = displayName.split(' ');
+      return firstName.substring(0, 10) + ' ' + lastName[0];
+    }
+    
   }
 
 }

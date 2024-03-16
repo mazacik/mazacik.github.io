@@ -16,7 +16,7 @@ export const splav2024: Event = {
       description: 'Streda večer prídeme, Štvrtok ráno štart, Nedeľa večer doma.'
     }, {
       id: 'pocetdni4aleposlednydennesplavovat',
-      text: '3 noci',
+      text: '3 noci*',
       description: '...ale v Nedeľu už nesplavovať, ráno hneď domov.'
     }, {
       id: 'pocetdni3',

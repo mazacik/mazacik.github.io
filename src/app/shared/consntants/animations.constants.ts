@@ -21,13 +21,19 @@ export const fade = trigger('fade', [
 export const crossfade = trigger('crossfade', [
   transition(':enter', [
     style({ opacity: 0 }),
-    animate(ANIMATION_TIMINGS, style({ opacity: 1 }))
+    group([
+      animate(ANIMATION_TIMINGS, style({ opacity: 1 })),
+      query('@*', animateChild(), { optional: true })
+    ])
   ]),
   transition(':leave', [
     // TODO other animations probably also want 'position absolute' and 'pointer-events none'
     // TODO also use wildcards instead of 1
     style({ opacity: 1, position: 'absolute', 'pointer-events': 'none' }),
-    animate(ANIMATION_TIMINGS, style({ opacity: 0 }))
+    group([
+      animate(ANIMATION_TIMINGS, style({ opacity: 0 })),
+      query('@*', animateChild(), { optional: true })
+    ])
   ])
 ]);
 
@@ -53,6 +59,23 @@ export const hidden = trigger('hidden', [
   transition('true => *', [
     style({ opacity: 0 }),
     animate(ANIMATION_TIMINGS, style({ opacity: '*' }))
+  ])
+]);
+
+export const drawer2 = trigger('drawer2', [
+  state('0', style({ height: 0 })),
+  transition('1 => void', []),
+  transition('1 => *', [
+    style({ height: '*' }),
+    animate(ANIMATION_TIMINGS, style({ height: 0 }))
+  ]),
+  transition('0 => void', [
+    style({ height: 0 }),
+    animate(ANIMATION_TIMINGS, style({ height: 0 }))
+  ]),
+  transition('0 => *', [
+    style({ height: 0 }),
+    animate(ANIMATION_TIMINGS, style({ height: '*' }))
   ])
 ]);
 

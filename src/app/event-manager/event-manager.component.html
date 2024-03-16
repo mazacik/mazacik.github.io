@@ -1,18 +1,18 @@
+<!-- Header smallscreen -->
 <div class="header" smallscreen>
   <div class="header-left">
-    <div class="header-item">
-
-    </div>
+    <span>{{ eventManagerService.event.title }}</span>
   </div>
   <div class="header-right">
     <i class="fa-solid fa-bars" (click)="sidebarVisible = true"></i>
   </div>
 </div>
 
+<!-- Sidebar smallscreen -->
 <div *ngIf="sidebarVisible" class="sidebar" @fade smallscreen>
   <div class="sidebar-header">
     <div class="header-left">
-
+      <span>{{ eventManagerService.event.title }}</span>
     </div>
     <div class="header-right">
       <i class="fa-solid fa-xmark" (click)="sidebarVisible = false"></i>
@@ -31,8 +31,11 @@
   </div>
 </div>
 
+<!-- Header largescreen -->
 <div class="header" largescreen>
   <div class="header-left">
+    <span>{{ eventManagerService.event.title }}</span>
+    <div class="v-separator margins"></div>
     <div class="header-item">
       <a [routerLink]="['./hlasovanie']">Hlasovanie</a>
     </div>

@@ -1,0 +1,113 @@
+@import 'src/styles/variables.scss';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: ($gap * 2) 0;
+  top: 0;
+  bottom: 0;
+
+  @media screen and (max-width:600px) {
+    width: calc(100vw - ($gap * 4));
+    max-width: calc(100vw - ($gap * 4));
+    padding: ($gap * 2);
+  }
+
+  @media screen and (min-width:600px) {
+    padding: ($gap * 2) 0;
+  }
+
+  .results {
+    display: flex;
+    flex-direction: column;
+    gap: ($gap * 2);
+    max-width: 100%;
+
+    .title {
+      display: block;
+      text-align: center;
+      font-size: 2rem;
+    }
+
+    .result-container {
+      border: 1px solid var(--color-border);
+      border-radius: $gap;
+      display: flex;
+      flex-direction: column;
+      background-color: var(--color-background-secondary);
+      padding: ($gap * 2);
+
+      transition-property: gap;
+      transition-duration: $transition-duration;
+
+      &.closed {
+        cursor: pointer;
+        gap: 0;
+      }
+
+      .result-title {
+        font-size: 24px;
+        text-align: center;
+      }
+
+      .result-description {
+        font-size: 16px;
+      }
+
+      .result-options {
+        display: flex;
+        flex-direction: column;
+        gap: $gap;
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        table {
+          border-collapse: collapse;
+
+          tr {
+            &:not(:last-child) {
+              border-bottom: 1px solid var(--color-border);
+            }
+
+            td {
+              font-size: 14px;
+              width: fit-content;
+              padding: 0.5rem;
+
+              &.first-column {
+                width: 0;
+                text-wrap: nowrap;
+                position: sticky;
+                left: 0;
+                background-color: var(--color-background-secondary);
+              }
+
+              &:not(.first-column) {
+                text-align: center;
+              }
+
+              &.first-row {
+                text-wrap: nowrap;
+
+                // &:not(:first-child)  {
+                //   &:not(:last-child) {
+                //     border-right: 1px solid var(--color-border);
+                //   }
+                // }
+
+                @media screen and (max-width:600px) {
+                  writing-mode: tb;
+                }
+              }
+
+              &:not(.first-row) {}
+            }
+          }
+        }
+      }
+    }
+  }
+}

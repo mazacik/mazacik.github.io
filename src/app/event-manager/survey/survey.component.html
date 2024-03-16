@@ -22,7 +22,6 @@
   </div>
 
   <div *ngIf="authService.hasLocalStorageEntry() && !userHasVote" class="questions" @crossfade>
-    <span class="event-title">{{ event.title }}</span>
     <div @skip class="question-container">
       <div *ngFor="let question of [event.questions[questionIndex]]" @drawer class="question-animation-container">
         <span class="question-title">{{ question.title }}</span>

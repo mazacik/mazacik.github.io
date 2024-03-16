@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { AdventureComponent } from './adventure/adventure.component';
 import { EventManagerComponent } from './event-manager/event-manager.component';
-import { SurveyResultsComponent } from './event-manager/results/survey-results.component';
+import { SurveyResultsComponent } from './event-manager/survey-results/survey-results.component';
 import { RulesComponent } from './event-manager/rules/rules.component';
 import { SurveyComponent } from './event-manager/survey/survey.component';
 import { FolderPickerComponent } from './gallery/folder-picker/folder-picker.component';
