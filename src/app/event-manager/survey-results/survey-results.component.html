@@ -5,7 +5,9 @@
       <table>
         <tr>
           <td class="first-column first-row"></td>
-          <td *ngFor="let option of result.options" [style.width.%]="100 / result.options.length" class="first-row">{{ option.text }}</td>
+          <td *ngFor="let option of result.options" [style.width.%]="100 / result.options.length" class="first-row">
+            <span>{{ option.text }}</span>
+          </td>
         </tr>
         <tr *ngFor="let userEntry of userEntries">
           <td class="first-column">{{ getShortName(userEntry.userDisplayName) }}</td>
