@@ -43,7 +43,7 @@ export class SurveyResultsComponent implements OnInit {
         return {
           id: question.id,
           title: question.title,
-          votes: docs.filter(doc => !doc.choices[question.id].includes('dontcare')).length,
+          votes: docs.filter(doc => !doc.choices[question.id]?.includes('dontcare')).length,
           open: this.event.questions.indexOf(question) == 0,
           options: question.choices?.map(option => {
             return {
@@ -51,8 +51,8 @@ export class SurveyResultsComponent implements OnInit {
               text: option.text,
               description: option.description,
               hyperlink: option.hyperlink,
-              people: docs.filter(doc => doc.choices[question.id].includes(option.id)).map(doc => doc.userDisplayName),
-              count: docs.filter(doc => !doc.choices[question.id].includes('dontcare') && doc.choices[question.id].includes(option.id)).length
+              people: docs.filter(doc => doc.choices[question.id]?.includes(option.id)).map(doc => doc.userDisplayName),
+              count: docs.filter(doc => !doc.choices[question.id]?.includes('dontcare') && doc.choices[question.id]?.includes(option.id)).length
             }
           }).sort((o1, o2) => o2.count - o1.count)
         }
