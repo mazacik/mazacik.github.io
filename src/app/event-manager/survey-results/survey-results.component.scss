@@ -96,14 +96,17 @@
               &.first-row {
                 white-space: nowrap;
 
-                &:not(:first-child)  {
-                  &:not(:last-child) {
-                    border-right: 1px solid var(--color-border);
-                  }
-                }
+                // &:not(:first-child) {
+                //   &:not(:last-child) {
+                //     border-right: 1px solid var(--color-border);
+                //   }
+                // }
 
                 @media screen and (max-width:1000px) {
-                  writing-mode: tb;
+                  >span {
+                    // https://stackoverflow.com/questions/69154927
+                    writing-mode: tb;
+                  }
                 }
               }
 
