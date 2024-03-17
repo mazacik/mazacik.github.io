@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, HostBinding, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { fade } from '../shared/consntants/animations.constants';
+import { fade, skip } from '../shared/consntants/animations.constants';
 import { LargeScreenDirective } from '../shared/directives/largescreen.directive';
 import { SmallScreenDirective } from '../shared/directives/smallscreen.directive';
 import { FirebaseAuthService } from '../shared/services/firebase-auth.service';
@@ -23,11 +23,13 @@ import { EventManagerService } from './services/event-manager.service';
   ],
   templateUrl: './event-manager.component.html',
   styleUrls: ['./event-manager.component.scss'],
-  animations: [fade]
+  animations: [fade, skip]
 })
 export class EventManagerComponent implements OnInit {
 
-  protected sidebarVisible: boolean = false;
+  @HostBinding('@skip') skip = true;
+
+  protected sidebarVisible: boolean = window.innerWidth <= 1000;
 
   constructor(
     private route: ActivatedRoute,

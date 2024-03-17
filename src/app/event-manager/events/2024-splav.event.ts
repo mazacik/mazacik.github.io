@@ -57,24 +57,36 @@ export const splav2024: Event = {
       selected: true
     }]
   }, {
-    id: 'pocetdni',
+    id: 'nocivkempoch',
     active: true,
-    title: 'Na ako dlho chceš ísť?',
+    title: 'Koľko nocí chceš byť v kempoch?',
     description: 'Chodíme iba raz za rok a 3 noci sú viac srandy ako 2. Ten posledný deň však býva dosť náročný.',
     type: 'radio',
     dontcare: 'true',
     choices: [{
-      id: 'pocetdni4',
+      id: '3noci',
       text: '3 noci',
-      description: 'Streda večer prídeme, Štvrtok ráno štart, Nedeľa večer doma.'
+      description: 'Streda večer prídeme na ubytovňu, Štvrtok ráno štart, Nedeľa večer doma.'
     }, {
-      id: 'pocetdni4aleposlednydennesplavovat',
-      text: '3 noci*',
-      description: '...ale v Nedeľu už nesplavovať, ráno hneď domov.'
-    }, {
-      id: 'pocetdni3',
+      id: '2noci',
       text: '2 noci',
-      description: 'Štvrtok večer prídeme, Piatok ráno štart, Nedeľa večer doma.'
+      description: 'Štvrtok večer prídeme na ubytovňu, Piatok ráno štart, Nedeľa večer doma.'
+    }]
+  }, {
+    id: 'splavovatajposlednyden',
+    active: true,
+    title: 'Chceš aj v Nedeľu ešte splavovať?',
+    description: 'Posledný deň býva dosť náročný.',
+    type: 'radio',
+    dontcare: 'true',
+    choices: [{
+      id: 'ano',
+      text: 'Áno',
+      description: 'Jasné, pohodička.'
+    }, {
+      id: 'nie',
+      text: 'Nie',
+      description: 'Posledný deň si chcem sadnúť do auta a ísť domov.'
     }]
   }] as SurveyQuestion[]).map(poll => {
     if (poll.dontcare) poll.choices.push({ id: 'dontcare', text: 'Je mi to jedno', selected: !poll.choices.some(choice => choice.selected) });
