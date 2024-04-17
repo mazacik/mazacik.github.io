@@ -6,6 +6,7 @@ export class GalleryImage extends GoogleMetadata {
   public heart: boolean;
   public bookmark: boolean;
   public tags: string[];
+  public likes: number;
 
   public top: number;
   public left: number;

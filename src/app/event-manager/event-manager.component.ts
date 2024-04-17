@@ -7,6 +7,7 @@ import { LargeScreenDirective } from '../shared/directives/largescreen.directive
 import { SmallScreenDirective } from '../shared/directives/smallscreen.directive';
 import { FirebaseAuthService } from '../shared/services/firebase-auth.service';
 import { events } from './events/events';
+import { Event } from './models/event.interface';
 import { EventManagerService } from './services/event-manager.service';
 
 @Component({
@@ -29,7 +30,22 @@ export class EventManagerComponent implements OnInit {
 
   @HostBinding('@skip') skip = true;
 
+  protected event: Event;
   protected sidebarVisible: boolean = window.innerWidth <= 1000;
+
+  protected menus = [{
+    text: 'Prihláška',
+    urlTree: ['prihlaska'],
+    active: false
+  }, {
+    text: 'Hlasovanie',
+    urlTree: ['hlasovanie'],
+    active: true
+  }, {
+    text: 'Výsledky',
+    urlTree: ['hlasovanie', 'vysledky'],
+    active: true
+  }];
 
   constructor(
     private route: ActivatedRoute,
@@ -38,7 +54,14 @@ export class EventManagerComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => this.eventManagerService.event = JSON.parse(JSON.stringify(events.find(event => event.id == params['id']))));
+    this.route.params.subscribe(params => {
+      this.event = JSON.parse(JSON.stringify(events.find(event => event.id == params['id'])));
+      this.eventManagerService.event = this.event;
+    });
+  }
+
+  protected getActiveMenus(): any {
+    return this.menus.filter(menu => menu.active);
   }
 
 }

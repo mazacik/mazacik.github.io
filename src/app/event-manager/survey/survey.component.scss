@@ -6,9 +6,6 @@
   align-items: center;
   justify-content: center;
 
-  top: 0;
-  bottom: 0;
-
   @media screen and (max-width:1000px) {
     width: calc(100% - ($gap * 4));
     padding: ($gap * 2);
@@ -139,7 +136,7 @@
             align-items: center;
             gap: 0.5rem;
             cursor: pointer;
-            padding: 0.75rem 0.5rem;
+            padding: 0.5rem;
             border: 1px solid var(--color-border);
             border-radius: $gap;
             transition: $transition-duration * 0.5;

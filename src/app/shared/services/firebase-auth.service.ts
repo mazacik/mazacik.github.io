@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, WritableSignal, signal } from "@angular/core";
 import { Auth, GoogleAuthProvider, User, browserLocalPersistence } from "@angular/fire/auth";
 import * as firebaseui from 'firebaseui';
 import { FirebaseAuthResult } from "src/app/shared/classes/firebase-auth-result.interface";
@@ -8,14 +8,19 @@ import { FirebaseAuthResult } from "src/app/shared/classes/firebase-auth-result.
 })
 export class FirebaseAuthService {
 
+  private readonly localStorageKeyUser: string = 'firebase-user';
+
+  public readonly userS: WritableSignal<User> = signal(JSON.parse(localStorage.getItem(this.localStorageKeyUser)));
+
   constructor(
     private auth: Auth
   ) {
     this.auth.setPersistence(browserLocalPersistence);
+    this.auth.onAuthStateChanged(user => this.userS.set(user));
   }
 
   public logout(): void {
-    localStorage.removeItem('firebase-user');
+    localStorage.removeItem(this.localStorageKeyUser);
     this.auth.signOut();
   }
 
@@ -24,8 +29,8 @@ export class FirebaseAuthService {
       callbacks: {
         uiShown: onshow,
         signInSuccessWithAuthResult: (result: FirebaseAuthResult) => {
+          localStorage.setItem(this.localStorageKeyUser, JSON.stringify(result.user));
           if (onsuccess) onsuccess(result);
-          localStorage.setItem('firebase-user', result.user.uid);
           return redirectUrl ? true : false;
         }
       },
@@ -37,16 +42,8 @@ export class FirebaseAuthService {
     });
   }
 
-  public hasLocalStorageEntry(): boolean {
-    return localStorage.getItem('firebase-user') != null;
-  }
-
   public async awaitUser(): Promise<User> {
     await this.auth.authStateReady();
-    return this.auth.currentUser;
-  }
-
-  public getUser(): User {
     return this.auth.currentUser;
   }
 

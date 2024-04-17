@@ -3,6 +3,7 @@ import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot } fr
 import { AuthenticationService } from "../shared/services/authentication.serivce";
 
 export const GoogleAuthGuard: CanActivateFn = async (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+  sessionStorage.setItem('appId', route.url.join(''));
   console.log('guard: start');
 
   const router: Router = inject(Router);
@@ -27,5 +28,5 @@ export const GoogleAuthGuard: CanActivateFn = async (route: ActivatedRouteSnapsh
   }
 
   console.log('guard: return false');
-  return router.createUrlTree(['/login']);
+  return router.navigate(['login']);
 }

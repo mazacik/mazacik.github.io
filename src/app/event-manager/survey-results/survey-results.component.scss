@@ -7,9 +7,6 @@
   justify-content: center;
   padding: ($gap * 2) 0;
 
-  top: 0;
-  bottom: 0;
-
   @media screen and (max-width:1000px) {
     width: calc(100vw - ($gap * 4));
     max-width: calc(100vw - ($gap * 4));

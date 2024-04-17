@@ -1,4 +1,4 @@
-<ng-container *ngIf="getActiveQuestions().length == 0;else hasActiveQuestions">
+<ng-container *ngIf="activeQuestions.length == 0; else hasActiveQuestions">
   <div class="no-questions-container">
     <span>Hlasovanie teraz nie je aktívne</span>
     <a class="button" [routerLink]="['vysledky']"><i class="fa-solid fa-chart-simple"></i>Výsledky</a>
@@ -6,63 +6,59 @@
 </ng-container>
 
 <ng-template #hasActiveQuestions>
-  <ng-container *ngVar="authService.hasLocalStorageEntry() as hasUser">
-    <div *ngIf="!loading" class="content-container">
-      <div *ngIf="!hasUser || !canVote" class="auth-container">
-        <div class="auth-header">
-          <span class="auth-text">Hlasovanie</span>
-        </div>
-        <div class="auth-buttons" @skip>
-          <div *ngIf="!hasUser" @crossfade class="auth-button auth-ui-button" (onCreate)="createAuthButton($event)"></div>
-          <div *ngIf="hasUser && !canVote" @crossfade class="auth-button button" (click)="updateVote()">Zmeniť hlasovanie</div>
-          <span class="auth-or">alebo</span>
-          <a class="auth-button button" [routerLink]="['vysledky']"><i class="fa-solid fa-chart-simple"></i>Výsledky</a>
-        </div>
+  <div *ngIf="!loading" class="content-container">
+    <div *ngIf="!authService.userS() || !canVote" class="auth-container">
+      <div class="auth-header">
+        <span class="auth-text">Hlasovanie</span>
       </div>
+      <div class="auth-buttons">
+        <div *ngIf="!authService.userS()" class="auth-button auth-ui-button" (onCreate)="createAuthButton($event)"></div>
+        <div *ngIf="authService.userS() && !canVote" class="auth-button button" (click)="updateVote()">Zmeniť hlasovanie</div>
+        <span class="auth-or">alebo</span>
+        <a class="auth-button button" [routerLink]="['vysledky']"><i class="fa-solid fa-chart-simple"></i>Výsledky</a>
+      </div>
+    </div>
 
-      <div *ngIf="hasUser && canVote" class="questions">
-        <ng-container *ngVar="getActiveQuestions() as questions">
-          <div class="question-container" @skip>
-            <div *ngFor="let question of questions; let i = index;" [@drawer2]="i == questionIndex" class="question-animation-container">
-              <span class="question-title">{{ question.title }}</span>
-              <span *ngIf="question.description" class="question-description">{{ question.description }}</span>
-              <div *ngIf="question.choices" class="question-choices">
-                <div *ngFor="let choice of question.choices" class="question-choice" [class.disabled]="choice.disabled" [class.selected]="choice.selected" (click)="onChoiceClick(question, choice)">
-                  <i *ngIf="question.type == 'checkbox'" class="question-selection-icon" [ngClass]="choice.selected ? 'fa-regular fa-square-check' : 'fa-regular fa-square'"></i>
-                  <i *ngIf="question.type == 'radio'" class="question-selection-icon" [ngClass]="choice.selected ? 'fa-regular fa-circle-check' : 'fa-regular fa-circle'"></i>
-                  <div class="choice-labels">
-                    <span class="choice-text">{{ choice.text }}</span>
-                    <ng-container *ngIf="choice.hyperlink">
-                      <div class="v-separator"></div>
-                      <a class="choice-hyperlink" [href]="choice.hyperlink" target="_blank" rel="noopener noreferrer" (click)="$event.stopImmediatePropagation()">
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                      </a>
-                    </ng-container>
-                    <ng-container *ngIf="choice.description">
-                      <div class="v-separator"></div>
-                      <span class="choice-description">{{ choice.description }}</span>
-                    </ng-container>
-                  </div>
-                </div>
+    <div *ngIf="authService.userS() && canVote" class="questions">
+      <div class="question-container" @skip>
+        <div *ngFor="let question of activeQuestions; let i = index;" [@drawer2]="i == questionIndex" class="question-animation-container">
+          <span class="question-title">{{ question.title }}</span>
+          <span *ngIf="question.description" class="question-description">{{ question.description }}</span>
+          <div *ngIf="question.choices" class="question-choices">
+            <div *ngFor="let choice of question.choices" class="question-choice" [class.disabled]="choice.disabled" [class.selected]="choice.selected" (click)="onChoiceClick(question, choice)">
+              <i *ngIf="question.type == 'checkbox'" class="question-selection-icon" [ngClass]="choice.selected ? 'fa-regular fa-square-check' : 'fa-regular fa-square'"></i>
+              <i *ngIf="question.type == 'radio'" class="question-selection-icon" [ngClass]="choice.selected ? 'fa-regular fa-circle-check' : 'fa-regular fa-circle'"></i>
+              <div class="choice-labels">
+                <span class="choice-text">{{ choice.text }}</span>
+                <ng-container *ngIf="choice.hyperlink">
+                  <div class="v-separator"></div>
+                  <a class="choice-hyperlink" [href]="choice.hyperlink" target="_blank" rel="noopener noreferrer" (click)="$event.stopImmediatePropagation()">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                  </a>
+                </ng-container>
+                <ng-container *ngIf="choice.description">
+                  <div class="v-separator"></div>
+                  <span class="choice-description">{{ choice.description }}</span>
+                </ng-container>
               </div>
             </div>
           </div>
-          <div class="buttons">
-            <div @skip class="button-container">
-              <a *ngIf="questionIndex == 0" @crossfade class="button" [routerLink]="['vysledky']"><i class="fa-solid fa-chart-simple"></i>Výsledky</a>
-              <div *ngIf="questionIndex != 0" @crossfade class="button" (click)="back()">Späť</div>
-            </div>
-            <div class="button-container">
-              <div class="button transparent">&nbsp;</div>
-            </div>
-            <div @skip class="button-container">
-              <div *ngIf="questionIndex < questions.length - 1" @crossfade class="button" (click)="next()">Ďalej</div>
-              <div *ngIf="questionIndex == questions.length - 1" @crossfade class="button" [class.disabled]="!authService.getUser()" (click)="submit()">Hlasovať</div>
-            </div>
-          </div>
-          <span class="question-progress">{{ (questionIndex + 1) + ' / ' + questions.length }}</span>
-        </ng-container>
+        </div>
       </div>
+      <div class="buttons">
+        <div @skip class="button-container">
+          <a *ngIf="questionIndex == 0" @crossfade class="button" [routerLink]="['vysledky']"><i class="fa-solid fa-chart-simple"></i>Výsledky</a>
+          <div *ngIf="questionIndex != 0" @crossfade class="button" (click)="back()">Späť</div>
+        </div>
+        <div class="button-container">
+          <div class="button transparent">&nbsp;</div>
+        </div>
+        <div @skip class="button-container">
+          <div *ngIf="questionIndex < activeQuestions.length - 1" @crossfade class="button" (click)="next()">Ďalej</div>
+          <div *ngIf="questionIndex == activeQuestions.length - 1" @crossfade class="button" [class.disabled]="!authService.userS()" (click)="submit()">Hlasovať</div>
+        </div>
+      </div>
+      <span class="question-progress">{{ (questionIndex + 1) + ' / ' + activeQuestions.length }}</span>
     </div>
-  </ng-container>
+  </div>
 </ng-template>
