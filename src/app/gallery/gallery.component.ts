@@ -141,8 +141,10 @@ export class GalleryComponent implements OnInit {
       image.heart = imageProperties.heart;
       image.bookmark = imageProperties.bookmark;
       image.tags = imageProperties.tags;
+      image.likes = imageProperties.likes || 0;
     } else {
       image.tags = [];
+      image.likes = 0;
     }
 
     return image;

@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { events } from '../events/events';
 import { Event } from '../models/event.interface';
+import { EventManagerService } from '../services/event-manager.service';
 
 @Component({
   selector: 'app-rules',
@@ -18,13 +17,12 @@ export class RulesComponent implements OnInit {
   protected event: Event;
 
   constructor(
-    private route: ActivatedRoute
+    private eventManagerService: EventManagerService
   ) { }
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
-      this.event = events.find(event => event.id == params['id']);
-    });
+    this.event = this.eventManagerService.event;
+
   }
 
 }

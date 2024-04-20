@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { AdventureComponent } from './adventure/adventure.component';
+import { EventApplicationComponent } from './event-manager/event-application/event-application.component';
 import { EventManagerComponent } from './event-manager/event-manager.component';
 import { RulesComponent } from './event-manager/rules/rules.component';
 import { SurveyResultsComponent } from './event-manager/survey-results/survey-results.component';
@@ -46,6 +47,9 @@ export const routes: Routes = [{
     path: 'hlasovanie',
     canActivate: [MessengerBrowserGuard],
     component: SurveyComponent
+  }, {
+    path: 'prihlaska',
+    component: EventApplicationComponent
   }, {
     path: 'pravidla',
     component: RulesComponent

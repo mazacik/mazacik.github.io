@@ -1,0 +1,81 @@
+@import 'src/styles/variables.scss';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: ($gap * 2) 0;
+
+  @media screen and (min-width:1000px) {
+    max-width: 50%;
+  }
+
+  .auth-container {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-background-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: $gap;
+    padding: ($gap * 2);
+    gap: ($gap * 2);
+
+    .auth-header {
+      display: flex;
+      flex-direction: column;
+      align-self: center;
+
+      .auth-text {
+        font-size: 24px;
+      }
+
+      .user-name {
+        font-size: 16px;
+      }
+    }
+
+    .auth-button {
+      width: 100%;
+      height: auto;
+      gap: ($gap * 1.5);
+      padding: ($gap) ($gap * 2);
+    }
+
+    .rules-container {
+      display: flex;
+      flex-direction: column;
+
+      .rule-text {
+        padding-left: 1rem;
+      }
+
+      .rule-description {
+        font-size: 14px;
+        text-align: justify;
+      }
+    }
+
+    .consent-checkbox-container {
+      display: flex;
+      align-items: center;
+      gap: $gap;
+      cursor: pointer;
+      align-self: flex-start;
+
+      .consent-checkbox-icon {}
+
+      .consent-checkbox-label {}
+    }
+
+    .button-apply {
+      height: auto;
+      padding: ($gap) ($gap * 2);
+      gap: ($gap * 1.5);
+      align-self: center;
+
+      i {
+        font-size: 14px;
+      }
+    }
+  }
+}

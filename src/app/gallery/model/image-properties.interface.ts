@@ -4,5 +4,6 @@ export interface ImageProperties {
   heart: boolean;
   bookmark: boolean;
   tags: string[];
+  likes: number;
 
 }

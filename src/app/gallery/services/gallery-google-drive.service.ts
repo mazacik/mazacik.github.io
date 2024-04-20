@@ -42,7 +42,8 @@ export class GalleryGoogleDriveService extends BaseGoogleDriveService {
               id: image.id,
               heart: image.heart,
               bookmark: image.bookmark,
-              tags: image.tags
+              tags: image.tags,
+              likes: image.likes
             }
           }),
           groupProperties: stateService.groups.map(group => {

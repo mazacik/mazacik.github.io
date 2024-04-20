@@ -33,6 +33,7 @@ export class SurveyComponent implements OnInit {
 
   protected event: Event;
   protected canVote: boolean;
+  protected activeQuestions: SurveyQuestion[];
   protected questionIndex: number = 0;
 
   protected loading: boolean = true;
@@ -47,16 +48,14 @@ export class SurveyComponent implements OnInit {
 
   ngOnInit(): void {
     this.event = this.eventManagerService.event;
+    this.activeQuestions = this.event.questions.filter(question => question.active);
+
     const userPromise = this.authService.awaitUser();
     const resultsPromise = this.firestoreService.read(this.event.id, true) as Promise<SurveyResult[]>;
     Promise.all([userPromise, resultsPromise]).then(([user, results]) => {
       this.canVote = !results.some(result => result.userId == user?.uid);
       this.loading = false;
     });
-  }
-
-  protected getActiveQuestions(): SurveyQuestion[] {
-    return this.event.questions.filter(question => question.active);
   }
 
   protected onChoiceClick(question: SurveyQuestion, choice: SurveyChoice): void {
@@ -87,7 +86,7 @@ export class SurveyComponent implements OnInit {
   }
 
   protected submit(): void {
-    const user = this.authService.getUser();
+    const user = this.authService.userS();
     if (user) {
       const entry: SurveyResult = {
         userId: user.uid,
@@ -108,7 +107,7 @@ export class SurveyComponent implements OnInit {
 
   protected updateVote(): void {
     this.firestoreService.read(this.event.id).then((results: SurveyResult[]) => {
-      const userVote = results.find(result => result.userId == this.authService.getUser().uid);
+      const userVote = results.find(result => result.userId == this.authService.userS().uid);
       if (userVote) {
         this.event.questions.forEach(question => {
           question.choices.forEach(choice => {
