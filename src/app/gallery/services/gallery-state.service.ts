@@ -200,8 +200,15 @@ export class GalleryStateService {
   }
 
   public like(image: GalleryImage): void {
-    image.likes += 1;
+    image.likes++;
     this.googleService.updateData();
+  }
+
+  public dislike(image: GalleryImage): void {
+    if (image.likes > 0) {
+      image.likes--;
+      this.googleService.updateData();
+    }
   }
 
   public async moveTargetToTrash(): Promise<void> {

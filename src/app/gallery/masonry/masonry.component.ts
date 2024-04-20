@@ -162,6 +162,13 @@ export class MasonryComponent {
     }
   }
 
+  protected onDislikeClick(event: MouseEvent, image: GalleryImage): void {
+    if (ScreenUtils.isLargeScreen()) {
+      event.preventDefault();
+      this.stateService.dislike(image);
+    }
+  }
+
   protected onGroupToggleClick(event: MouseEvent, image: GalleryImage): void {
     if (ScreenUtils.isLargeScreen()) {
       event.stopPropagation();
