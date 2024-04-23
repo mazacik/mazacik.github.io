@@ -1,22 +1,22 @@
 <div *ngVar="stateService.target() as target" class="fullscreen-container" [class.transparent]="!stateService.fullscreenVisible()">
   <div class="fullscreen-header">
     <div>
-
+      <i class="icon-button fa-solid fa-arrow-left" (click)="stateService.fullscreenVisible.set(false)"></i>
     </div>
     <div>
-      <i class="icon-button fa-solid fa-xmark" (click)="stateService.fullscreenVisible.set(false)"></i>
       <i class="icon-button fa-heart" [ngClass]="target?.heart ? 'fa-solid' : 'fa-regular'" tp="Favorite" (click)="stateService.toggleHeart(target)"></i>
       <i class="icon-button fa-bookmark" [ngClass]="target?.bookmark ? 'fa-solid' : 'fa-regular'" tp="Bookmark" (click)="stateService.toggleBookmark(target)"></i>
+      <span class="icon-button" tp="Like" (click)="stateService.like(target)" (contextmenu)="$event.preventDefault(); stateService.dislike(target);">{{ target?.likes }}</span>
       <!-- <i *ngIf="video" class="icon-button fa-regular fa-image" tp="Snapshot" (click)="snapshot()"></i> -->
     </div>
   </div>
   <div class="fullscreen-footer desktop-hidden">
     <div style="justify-content: start;">
-
-    </div>
-    <div style="justify-content: center;">
       <i class="icon-button fa-solid fa-arrows-spin" [class.disabled]="!target?.hasGroup()" (click)="stateService.setRandomGroupTarget()"></i>
       <i class="icon-button fa-solid fa-shuffle" (click)="stateService.setRandomTarget()"></i>
+    </div>
+    <div style="justify-content: center;">
+
     </div>
     <div style="justify-content: end;">
       <i class="icon-button fa-solid fa-trash" tp="Trash" (click)="stateService.moveTargetToTrash()"></i>
