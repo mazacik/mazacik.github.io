@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
 import { GalleryImage } from 'src/app/gallery/model/gallery-image.class';
 import { Tournament } from 'src/app/shared/classes/tournament.class';
@@ -6,6 +7,10 @@ import { DialogContent } from 'src/app/shared/components/dialog/dialog-content.c
 
 @Component({
   selector: 'app-image-comparison',
+  standalone: true,
+  imports: [
+    CommonModule
+  ],
   templateUrl: './image-comparison.component.html',
   styleUrls: ['./image-comparison.component.scss']
 })

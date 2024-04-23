@@ -165,9 +165,9 @@
 }
 
 .sidebar-filter-header {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: $gap;
-  justify-content: space-between;
   padding: 0 $gap;
 
   input {
