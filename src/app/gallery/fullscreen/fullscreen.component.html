@@ -13,14 +13,14 @@
   </div>
   <div class="fullscreen-footer">
     <div style="justify-content: start;">
-      <i class="icon-button fa-solid fa-arrows-spin" [class.disabled]="!target?.hasGroup()" (click)="stateService.setRandomGroupTarget()"></i>
-      <i class="icon-button fa-solid fa-shuffle" (click)="stateService.setRandomTarget()"></i>
+      <i class="icon-button fa-solid fa-trash" tp="Trash" (click)="stateService.moveTargetToTrash()"></i>
     </div>
     <div style="justify-content: center;">
 
     </div>
     <div style="justify-content: end;">
-      <i class="icon-button fa-solid fa-trash" tp="Trash" (click)="stateService.moveTargetToTrash()"></i>
+      <i class="icon-button fa-solid fa-arrows-spin" [class.disabled]="!target?.hasGroup()" (click)="stateService.setRandomGroupTarget()"></i>
+      <i class="icon-button fa-solid fa-shuffle" (click)="stateService.setRandomTarget()"></i>
     </div>
   </div>
   <div *ngFor="let image of crossfadeHelper" @fade class="fullscreen-crossfade">
