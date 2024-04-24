@@ -5,6 +5,7 @@ import { ApplicationService } from "src/app/shared/services/application.service"
 import { ArrayUtils } from "src/app/shared/utils/array.utils";
 import { ScreenUtils } from "src/app/shared/utils/screen.utils";
 import { GalleryUtils } from "../gallery.utils";
+import { GallerySettings } from "../model/gallery-settings.interface";
 import { TagGroup } from "../model/tag-group.interface";
 import { GalleryGoogleDriveService } from "./gallery-google-drive.service";
 
@@ -14,6 +15,7 @@ import { GalleryGoogleDriveService } from "./gallery-google-drive.service";
 export class GalleryStateService {
 
   public rootFolderId: string;
+  public settings: GallerySettings;
 
   public targetEntireGroup: boolean = false;
   public fullscreenVisible: WritableSignal<boolean> = signal(false);

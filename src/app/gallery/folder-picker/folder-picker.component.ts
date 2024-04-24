@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { GalleryGoogleDriveService } from 'src/app/gallery/services/gallery-google-drive.service';
 import { ApplicationService } from 'src/app/shared/services/application.service';
+import { DialogService } from 'src/app/shared/services/dialog.service';
 import { GoogleMetadata } from '../../shared/classes/google-api/google-metadata.class';
 import { GoogleFileUtils } from '../../shared/utils/google-file.utils';
 import { Data } from '../model/data.interface';
@@ -23,6 +24,7 @@ export class FolderPickerComponent implements OnInit {
 
   constructor(
     private router: Router,
+    private dialogService: DialogService,
     private googleService: GalleryGoogleDriveService,
     protected applicationService: ApplicationService
   ) {
@@ -49,17 +51,17 @@ export class FolderPickerComponent implements OnInit {
     this.applicationService.loading.next(true);
     this.googleService.createDataFile(folder.name).then(dataFile => {
       sessionStorage.setItem('dataFileId', dataFile.id);
-      this.googleService.updateContent(dataFile.id, {
-        rootFolderId: folder.id,
-        heartsFilter: 0,
-        bookmarksFilter: 0,
-        groupSizeFilterMin: 0,
-        groupSizeFilterMax: 999,
-        tagGroups: [],
-        imageProperties: [],
-        groupProperties: []
-      } as Data).then(() => {
-        this.router.navigate(['/gallery']);
+        this.googleService.updateContent(dataFile.id, {
+          rootFolderId: folder.id,
+          imageProperties: [],
+          groupProperties: [],
+          tagGroups: [],
+          heartsFilter: 0,
+          bookmarksFilter: 0,
+          groupSizeFilterMin: 0,
+          groupSizeFilterMax: 999
+        } as Data).then(() => {
+          this.router.navigate(['/gallery']);
       });
     });
   }

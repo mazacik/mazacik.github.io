@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, effect } from '@angular/core';
-import { TippyService } from '@ngneat/helipopper';
 import { GalleryGoogleDriveService } from 'src/app/gallery/services/gallery-google-drive.service';
 import { SwitchComponent } from 'src/app/shared/components/switch/switch.component';
 import { SwitchEvent } from 'src/app/shared/components/switch/switch.event';
@@ -12,7 +11,6 @@ import { ScreenUtils } from '../../shared/utils/screen.utils';
 import { GalleryTagEditorComponent } from '../dialogs/gallery-tag-editor/gallery-tag-editor.component';
 import { GalleryTagGroupEditorComponent } from '../dialogs/gallery-tag-group-editor/gallery-tag-group-editor.component';
 import { GroupSizeFilterEditor } from '../dialogs/group-size-filter-editor/group-size-filter-editor.component';
-import { ImageComparisonComponent } from '../dialogs/image-comparison/image-comparison.component';
 import { GalleryImage } from '../model/gallery-image.class';
 import { TagGroup } from '../model/tag-group.interface';
 import { Tag } from '../model/tag.interface';
@@ -42,9 +40,8 @@ export class SidebarComponent implements AfterViewInit {
   constructor(
     protected applicationService: ApplicationService,
     protected stateService: GalleryStateService,
-    private googleService: GalleryGoogleDriveService,
-    private dialogService: DialogService,
-    private tippyService: TippyService
+    protected dialogService: DialogService,
+    private googleService: GalleryGoogleDriveService
   ) {
     let previousTarget: GalleryImage;
     effect(beforeEffect => {
@@ -153,30 +150,6 @@ export class SidebarComponent implements AfterViewInit {
     }
   }
 
-  protected openYandexReverseImageSearch(event: MouseEvent): void {
-    const url: string = 'https://yandex.com/images/search?rpt=imageview&url=' + encodeURIComponent(this.stateService.target().thumbnailLink.replace(new RegExp('=s...'), '=s9999'));
-    if (event.altKey) {
-      navigator.clipboard.writeText(url);
-      this.tippyService.create(event.target as HTMLElement, 'URL copied to clipboard!', {
-        trigger: 'click',
-        onShow(instance) {
-          setTimeout(() => {
-            instance.hide();
-          }, 3000);
-        },
-        onHidden(instance) {
-          instance.destroy();
-        }
-      }).show();
-    } else {
-      window.open(url, '_blank');
-    }
-  }
-
-  protected startImageComparison(): void {
-    this.dialogService.create(ImageComparisonComponent, { images: this.stateService.filter() });
-  }
-
   protected openTagEditor(event?: MouseEvent, group?: TagGroup, tag?: Tag): void {
     if (!event || !this.tagListClickY || Math.abs(event.pageY - this.tagListClickY - 36) < ScreenUtils.MOUSE_MOVEMENT_TOLERANCE) {
       this.dialogService.create(GalleryTagEditorComponent, {
@@ -201,10 +174,6 @@ export class SidebarComponent implements AfterViewInit {
         this.googleService.updateData();
       }
     });
-  }
-
-  protected openTargetInGoogleDrive(): void {
-    this.googleService.openSearch(this.stateService.target().name);
   }
 
   protected onFilterStateChange(filter: Tag | TagGroup, event: SwitchEvent): void {
@@ -239,10 +208,6 @@ export class SidebarComponent implements AfterViewInit {
     if (Math.abs(event.pageX + this.groupPreviewContainerOffsetLeft - this.groupPreviewClickX) < ScreenUtils.MOUSE_MOVEMENT_TOLERANCE) {
       this.stateService.fullscreenVisible.set(true);
     }
-  }
-
-  protected copyTargetBase64(): void {
-    this.googleService.getBase64(this.stateService.target().id).then(base64 => navigator.clipboard.writeText(base64));
   }
 
 }

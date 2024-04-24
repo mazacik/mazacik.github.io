@@ -13,9 +13,7 @@
       </div>
       <div class="absolute top left">
         <i *ngIf="!applicationService.reduceBandwidth" class="icon-button fa-solid fa-arrow-left desktop-hidden" (click)="stateService.sidebarVisible = false"></i>
-        <i class="icon-button fa-solid fa-y mobile-hidden" tp="Yandex Reverse Image Search" (click)="openYandexReverseImageSearch($event)"></i>
-        <!-- <i class="icon-button fa-solid fa-code-compare" tp="Pairwise Comparison" (click)="startImageComparison()"></i> -->
-        <!-- <i class="icon-button fa-solid" [ngClass]="applicationService.isDarkTheme() ? 'fa-moon' : 'fa-sun'" tp="Toggle Brightness Mode" (click)="applicationService.toggleTheme()"></i> -->
+        <i class="icon-button fa-solid fa-gear" tp="Settings" (click)="dialogService.openSettings()"></i>
       </div>
       <div class="absolute top right">
         <i class="icon-button fa-heart" [ngClass]="target?.heart ? 'fa-solid' : 'fa-regular'" tp="Favorite" (click)="stateService.toggleHeart(target)"></i>
@@ -26,8 +24,6 @@
 
       </div>
       <div class="absolute bottom right">
-        <i class="icon-button fa-solid fa-cloud-arrow-down mobile-hidden" tp="Copy base64 data" (click)="copyTargetBase64()"></i>
-        <i class="icon-button fa-solid fa-folder-open mobile-hidden" tp="Open in Google Drive" (click)="openTargetInGoogleDrive()"></i>
         <i class="icon-button fa-solid fa-trash" tp="Trash" (click)="stateService.moveTargetToTrash()"></i>
       </div>
     </div>

@@ -4,6 +4,7 @@ import { SafeUrl } from '@angular/platform-browser';
 import { fade } from 'src/app/shared/consntants/animations.constants';
 import { VariableDirective } from 'src/app/shared/directives/variable.directive';
 import { ApplicationService } from 'src/app/shared/services/application.service';
+import { DialogService } from 'src/app/shared/services/dialog.service';
 import { GoogleFileUtils } from 'src/app/shared/utils/google-file.utils';
 import { GalleryImage } from '../model/gallery-image.class';
 import { GalleryStateService } from '../services/gallery-state.service';
@@ -30,7 +31,8 @@ export class FullscreenComponent {
     // private sanitizer: DomSanitizer,
     private applicationService: ApplicationService,
     // private googleService: GalleryGoogleDriveService,
-    protected stateService: GalleryStateService
+    protected stateService: GalleryStateService,
+    protected dialogService: DialogService
   ) {
     effect(() => {
       if (this.stateService.fullscreenVisible()) {

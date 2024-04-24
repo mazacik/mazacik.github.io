@@ -32,11 +32,7 @@ export class GalleryGoogleDriveService extends BaseGoogleDriveService {
       const updateContent = () => {
         this.updateContent(dataFileId, {
           rootFolderId: stateService.rootFolderId,
-          heartsFilter: stateService.heartsFilter,
-          bookmarksFilter: stateService.bookmarksFilter,
-          groupSizeFilterMin: stateService.groupSizeFilterMin,
-          groupSizeFilterMax: stateService.groupSizeFilterMax,
-          tagGroups: stateService.tagGroups,
+          settings: stateService.settings,
           imageProperties: stateService.images.map(image => {
             return {
               id: image.id,
@@ -51,7 +47,12 @@ export class GalleryGoogleDriveService extends BaseGoogleDriveService {
               imageIds: group.images.map(image => image.id),
               starId: group.star.id
             }
-          })
+          }),
+          tagGroups: stateService.tagGroups,
+          heartsFilter: stateService.heartsFilter,
+          bookmarksFilter: stateService.bookmarksFilter,
+          groupSizeFilterMin: stateService.groupSizeFilterMin,
+          groupSizeFilterMax: stateService.groupSizeFilterMax
         } as Data).then(entity => {
           if (!entity) {
             this.applicationService.errors.next(true);
