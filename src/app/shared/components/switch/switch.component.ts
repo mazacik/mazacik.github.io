@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ScreenUtils } from '../../utils/screen.utils';
 import { SwitchEvent } from './switch.event';
 
@@ -12,7 +12,7 @@ import { SwitchEvent } from './switch.event';
   templateUrl: './switch.component.html',
   styleUrls: ['./switch.component.scss']
 })
-export class SwitchComponent {
+export class SwitchComponent implements OnInit {
 
   @Input() tri: boolean = false;
   @Input() state: number;
@@ -21,6 +21,12 @@ export class SwitchComponent {
 
   private clickX: number;
   private clickY: number;
+
+  ngOnInit(): void {
+    if (!this.state) {
+      this.state = this.tri ? 0 : -1;
+    }
+  }
 
   onMouseDown(event: MouseEvent): void {
     this.clickX = event.pageX;

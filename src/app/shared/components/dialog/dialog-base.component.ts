@@ -1,7 +1,7 @@
 import { animate, style, transition, trigger } from '@angular/animations';
+import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, ComponentRef, HostBinding, HostListener, Type, ViewChild, ViewContainerRef } from '@angular/core';
 import { DialogContent } from './dialog-content.class';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-dialog-base',

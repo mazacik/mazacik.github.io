@@ -1,4 +1,5 @@
 import { ApplicationRef, ComponentRef, EnvironmentInjector, Injectable, Type, createComponent } from '@angular/core';
+import { GallerySettingsComponent } from 'src/app/gallery/dialogs/settings/gallery-settings.component';
 import { DialogBaseComponent } from '../components/dialog/dialog-base.component';
 import { DialogContent } from '../components/dialog/dialog-content.class';
 import { ConfirmationDialogComponent } from '../dialogs/confirmation/confirmation-dialog.component';
@@ -51,6 +52,10 @@ export class DialogService {
 
   public getCount(): number {
     return this.stack.length;
+  }
+
+  public openSettings(): Promise<boolean> {
+    return this.create(GallerySettingsComponent);
   }
 
 }

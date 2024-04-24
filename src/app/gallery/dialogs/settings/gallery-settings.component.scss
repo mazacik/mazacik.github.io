@@ -1,0 +1,17 @@
+@import 'src/styles/variables.scss';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: $gap;
+  padding: $gap * 3;
+
+  >.button {
+    width: 100%;
+  }
+
+  >.switch-container {
+    display: flex;
+    gap: $gap;
+  }
+}

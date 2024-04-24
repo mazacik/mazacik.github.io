@@ -4,17 +4,19 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { GoogleMetadata } from '../shared/classes/google-api/google-metadata.class';
 import { enter } from '../shared/consntants/animations.constants';
 import { ApplicationService } from '../shared/services/application.service';
+import { DialogService } from '../shared/services/dialog.service';
 import { ArrayUtils } from '../shared/utils/array.utils';
 import { GoogleFileUtils } from '../shared/utils/google-file.utils';
+import { FullscreenComponent } from './fullscreen/fullscreen.component';
 import { GalleryUtils } from './gallery.utils';
 import { MasonryComponent } from './masonry/masonry.component';
 import { Data } from './model/data.interface';
 import { GalleryGroup } from './model/gallery-group.class';
 import { GalleryImage } from './model/gallery-image.class';
+import { GallerySettings } from './model/gallery-settings.interface';
 import { ImageProperties } from './model/image-properties.interface';
 import { GalleryGoogleDriveService } from './services/gallery-google-drive.service';
 import { GalleryStateService } from './services/gallery-state.service';
-import { FullscreenComponent } from './fullscreen/fullscreen.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 
 @Component({
@@ -34,6 +36,7 @@ export class GalleryComponent implements OnInit {
 
   constructor(
     private sanitizer: DomSanitizer,
+    private dialogService: DialogService,
     private applicationService: ApplicationService,
     private stateService: GalleryStateService,
     private googleService: GalleryGoogleDriveService
@@ -41,17 +44,23 @@ export class GalleryComponent implements OnInit {
     this.applicationService.loading.next(true);
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.initKeybinds();
-    this.googleService.getData().then(data => {
-      this.stateService.rootFolderId = data.rootFolderId;
-      this.stateService.heartsFilter = data.heartsFilter;
-      this.stateService.bookmarksFilter = data.bookmarksFilter;
-      this.stateService.groupSizeFilterMin = data.groupSizeFilterMin;
-      this.stateService.groupSizeFilterMax = data.groupSizeFilterMax;
-      this.stateService.tagGroups = data.tagGroups;
-      this.processData(data);
-    });
+    const data = await this.googleService.getData();
+    this.stateService.rootFolderId = data.rootFolderId;
+    this.stateService.heartsFilter = data.heartsFilter;
+    this.stateService.bookmarksFilter = data.bookmarksFilter;
+    this.stateService.settings = data.settings;
+    this.stateService.groupSizeFilterMin = data.groupSizeFilterMin;
+    this.stateService.groupSizeFilterMax = data.groupSizeFilterMax;
+    this.stateService.tagGroups = data.tagGroups;
+
+    if (!data.settings) {
+      this.stateService.settings = {} as GallerySettings;
+      await this.dialogService.openSettings();
+    }
+
+    this.processData(data);
   }
 
   private processData(data: Data, folderId: string = this.stateService.rootFolderId, imageCollector: GalleryImage[] = [], recursionTracker = { calls: 0 }): void {
@@ -140,9 +149,10 @@ export class GalleryComponent implements OnInit {
     if (imageProperties) {
       image.heart = imageProperties.heart;
       image.bookmark = imageProperties.bookmark;
-      image.tags = imageProperties.tags;
+      image.tags = imageProperties.tags || [];
       image.likes = imageProperties.likes || 0;
     } else {
+      if (this.stateService.settings.autoBookmark) image.bookmark = true;
       image.tags = [];
       image.likes = 0;
     }

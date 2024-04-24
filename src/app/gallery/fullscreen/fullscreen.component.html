@@ -2,6 +2,7 @@
   <div class="fullscreen-header">
     <div>
       <i class="icon-button fa-solid fa-arrow-left" (click)="stateService.fullscreenVisible.set(false)"></i>
+      <i class="icon-button fa-solid fa-gear" tp="Settings" (click)="dialogService.openSettings()"></i>
     </div>
     <div>
       <i class="icon-button fa-heart" [ngClass]="target?.heart ? 'fa-solid' : 'fa-regular'" tp="Favorite" (click)="stateService.toggleHeart(target)"></i>
@@ -10,7 +11,7 @@
       <!-- <i *ngIf="video" class="icon-button fa-regular fa-image" tp="Snapshot" (click)="snapshot()"></i> -->
     </div>
   </div>
-  <div class="fullscreen-footer desktop-hidden">
+  <div class="fullscreen-footer">
     <div style="justify-content: start;">
       <i class="icon-button fa-solid fa-arrows-spin" [class.disabled]="!target?.hasGroup()" (click)="stateService.setRandomGroupTarget()"></i>
       <i class="icon-button fa-solid fa-shuffle" (click)="stateService.setRandomTarget()"></i>
