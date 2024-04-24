@@ -21,10 +21,10 @@
         <span class="icon-button" tp="Like" (click)="stateService.like(target)" (contextmenu)="$event.preventDefault(); stateService.dislike(target);">{{ target?.likes }}</span>
       </div>
       <div class="absolute bottom left">
-
+        <i class="icon-button fa-solid fa-trash" tp="Trash" (click)="stateService.moveTargetToTrash()"></i>
       </div>
       <div class="absolute bottom right">
-        <i class="icon-button fa-solid fa-trash" tp="Trash" (click)="stateService.moveTargetToTrash()"></i>
+
       </div>
     </div>
     <div class="sidebar-half" style="position: relative;">
