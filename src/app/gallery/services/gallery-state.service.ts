@@ -71,17 +71,20 @@ export class GalleryStateService {
     }
   }
 
-  public refreshFilter(): void {
+  public refreshFilter(forImage?: GalleryImage): void {
     this.filter.set(this.images.filter(image => {
-      if (image.hasGroup()) {
-        if (image.group.open) {
-          return this.doesPassFilter(image);
+      if (forImage == undefined || forImage == image) {
+        if (image.hasGroup()) {
+          if (image.group.open) {
+            image.passesFilter = this.doesPassFilter(image);
+          } else {
+            image.passesFilter = this.getGroupRepresent(image) == image;
+          }
         } else {
-          return this.getGroupRepresent(image) == image;
+          image.passesFilter = this.doesPassFilter(image);
         }
-      } else {
-        return this.doesPassFilter(image);
       }
+      return image.passesFilter;
     }));
   }
 
@@ -124,7 +127,6 @@ export class GalleryStateService {
     }
 
     let hasGroup: boolean;
-    let includes: boolean;
     for (const tagGroup of this.tagGroups) {
       hasGroup = tagGroup.tags.some(tag => image.tags.includes(tag.id));
       if (tagGroup.state == -1 && hasGroup) {
@@ -136,6 +138,7 @@ export class GalleryStateService {
       }
     }
 
+    let includes: boolean;
     for (const tag of this.tagGroups.flatMap(group => group.tags)) {
       includes = image.tags.includes(tag.id);
       if (tag.state == -1 && includes) {
@@ -159,6 +162,7 @@ export class GalleryStateService {
     }
 
     this.tagCounts['_heart'] = this.images.filter(i => i.heart).length;
+    this.refreshFilter(image);
     this.googleService.updateData();
   }
 
@@ -171,6 +175,7 @@ export class GalleryStateService {
     }
 
     this.tagCounts['_bookmark'] = this.images.filter(i => i.bookmark).length;
+    this.refreshFilter(image);
     this.googleService.updateData();
   }
 
@@ -198,6 +203,7 @@ export class GalleryStateService {
     }
 
     this.tagCounts[tag] = this.images.filter(i => i.tags.includes(tag)).length;
+    this.refreshFilter(image);
     this.googleService.updateData();
   }
 
@@ -219,7 +225,7 @@ export class GalleryStateService {
     const target: GalleryImage = this.target();
     if (target) {
       const nextTarget: GalleryImage = await this.moveImageToTrash(target);
-      this.refreshFilter();
+      this.refreshFilter(); // why is refreshFilter needed here
       this.target.set(nextTarget);
 
       for (const key in this.tagCounts) {

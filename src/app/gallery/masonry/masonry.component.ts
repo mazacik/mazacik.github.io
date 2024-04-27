@@ -172,8 +172,10 @@ export class MasonryComponent {
   protected onGroupToggleClick(event: MouseEvent, image: GalleryImage): void {
     if (ScreenUtils.isLargeScreen()) {
       event.stopPropagation();
-      image.group.open = !image.group.open;
-      this.stateService.refreshFilter();
+      if (image.hasGroup()) {
+        image.group.open = !image.group.open;
+        this.stateService.refreshFilter();
+      }
     }
   }
 
