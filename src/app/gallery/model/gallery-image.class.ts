@@ -8,14 +8,15 @@ export class GalleryImage extends GoogleMetadata {
   public tags: string[];
   public likes: number;
 
+  // transient props
   public top: number;
   public left: number;
   public width: number;
   public height: number;
   public aspectRatio: number;
   public contentLink: string;
-
   public group: GalleryGroup;
+  public passesFilter: boolean;
 
   public hasGroup(): boolean {
     return this.group?.images.length > 1;
