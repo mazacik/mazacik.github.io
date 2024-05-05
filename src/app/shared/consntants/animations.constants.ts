@@ -18,6 +18,17 @@ export const fade = trigger('fade', [
   ])
 ]);
 
+export const scalefade = trigger('scalefade', [
+  transition(':enter', [
+    style({ opacity: 0, width: 0, 'min-width': 0, height: 0, 'min-height': 0 }),
+    animate(ANIMATION_TIMINGS, style({ opacity: '*', width: '*', 'min-width': '*', height: '*', 'min-height': '*' }))
+  ]),
+  transition(':leave', [
+    style({ opacity: '*', 'pointer-events': 'none', width: '*', 'min-width': '*', height: '*', 'min-height': '*' }),
+    animate(ANIMATION_TIMINGS, style({ opacity: 0, width: 0, 'min-width': 0, height: 0, 'min-height': 0 }))
+  ])
+]);
+
 export const crossfade = trigger('crossfade', [
   transition(':enter', [
     style({ opacity: 0 }),

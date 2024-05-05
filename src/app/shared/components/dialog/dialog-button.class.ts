@@ -1,8 +1,9 @@
 export interface DialogButton {
 
-  text: () => string;
+  text?: string | (() => string);
+  iconClass?: string | (() => string);
   hidden?: () => boolean;
-  disable?: () => boolean;
+  disabled?: () => boolean;
   click?: () => void;
 
 }

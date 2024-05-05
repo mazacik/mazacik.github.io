@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { StringUtils } from "src/app/shared/utils/string.utils";
 import { Button } from "../models/components/button.interface";
 import { Character } from "../models/components/character.interface";
 import { DialogueNode } from "../models/components/dialogue-node.interface";
@@ -104,6 +105,10 @@ export class AdventureStateService {
             node.parentScenarioId = scenario.id;
           }
 
+          for (const note of scenario.notes) {
+            note.wordCount = StringUtils.getWordCount(note.text);
+          }
+
           for (const button of scenario.buttons) {
             if (!button.logic) button.logic = [AdventureFactory.createLogic(Operator.ALWAYS)];
           }
@@ -157,8 +162,7 @@ export class AdventureStateService {
           notes: scenario.notes.map(note => {
             return {
               label: note.label,
-              text: note.text,
-              wordCount: note.wordCount
+              text: note.text
             } as Note;
           })
         }

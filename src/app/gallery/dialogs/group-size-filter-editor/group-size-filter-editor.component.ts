@@ -24,7 +24,7 @@ export class GroupSizeFilterEditor extends DialogContent<boolean> implements OnI
     title: 'Group Size Filter Editor',
     buttons: [{
       text: () => 'Submit',
-      disable: () => !this.canSubmit(),
+      disabled: () => !this.canSubmit(),
       click: () => this.submit()
     }, {
       text: () => 'Close',

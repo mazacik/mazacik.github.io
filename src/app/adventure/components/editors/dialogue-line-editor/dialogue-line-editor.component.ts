@@ -30,7 +30,7 @@ export class DialogueLineEditorComponent extends DialogContent<DialogueLine> imp
     title: 'Dialogue Line Editor',
     buttons: [{
       text: () => 'Done',
-      disable: () => !this.canSubmit(),
+      disabled: () => !this.canSubmit(),
       click: () => this.submit()
     }, {
       text: () => 'Cancel',

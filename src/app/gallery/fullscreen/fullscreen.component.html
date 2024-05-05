@@ -19,7 +19,7 @@
 
     </div>
     <div style="justify-content: end;">
-      <i class="icon-button fa-solid fa-arrows-spin" [class.disabled]="!target?.hasGroup()" (click)="stateService.setRandomGroupTarget()"></i>
+      <i *ngIf="target?.hasGroup()" class="icon-button fa-solid fa-arrows-spin" (click)="stateService.setRandomGroupTarget()"></i>
       <i class="icon-button fa-solid fa-shuffle" (click)="stateService.setRandomTarget()"></i>
     </div>
   </div>

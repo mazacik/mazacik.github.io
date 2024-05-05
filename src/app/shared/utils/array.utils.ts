@@ -70,6 +70,18 @@ export abstract class ArrayUtils {
     }
   }
 
+  public static toggle<T>(where: T[], what: T): void {
+    if (Array.isArray(where)) {
+      if (what !== null && what !== undefined) {
+        if (where.includes(what)) {
+          this._remove(where, what);
+        } else {
+          where.push(what);
+        }
+      }
+    }
+  }
+
   public static difference<T>(array1: T[], array2: T[], equal: (t1: T, t2: T) => boolean): T[] {
     if (!this.isEmpty(array1) && !this.isEmpty(array2)) {
       const result: T[] = [];

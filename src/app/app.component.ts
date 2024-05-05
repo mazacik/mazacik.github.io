@@ -5,6 +5,7 @@ import { Delay } from './shared/classes/delay.class';
 import { fade } from './shared/consntants/animations.constants';
 import { ApplicationService } from './shared/services/application.service';
 import { DialogService } from './shared/services/dialog.service';
+import { ArrayUtils } from './shared/utils/array.utils';
 
 @Component({
   selector: 'app-root',
@@ -34,7 +35,7 @@ export class AppComponent {
   }
 
   protected isBlurOverlayVisible(): boolean {
-    return this.applicationService.loading.value || this.dialogService.getCount() != 0;
+    return this.applicationService.loading.value || ArrayUtils.getLast(this.dialogService.stack)?.blurOverlay;
   }
 
   protected getLoadingBarColor(): string {

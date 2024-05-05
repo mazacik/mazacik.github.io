@@ -7,7 +7,7 @@ import { OnCreateDirective } from 'src/app/shared/directives/on-create.directive
 import { ApplicationService } from 'src/app/shared/services/application.service';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 import { ScreenUtils } from '../../shared/utils/screen.utils';
-import { GalleryGoogleDriveService } from '../services/gallery-google-drive.service';
+import { GalleryGroup } from '../model/gallery-group.class';
 import { GalleryStateService } from '../services/gallery-state.service';
 
 @Component({
@@ -28,7 +28,6 @@ export class MasonryComponent {
   private masonryContainer: HTMLElement;
 
   constructor(
-    private googleService: GalleryGoogleDriveService,
     protected applicationService: ApplicationService,
     protected stateService: GalleryStateService
   ) {
@@ -133,6 +132,16 @@ export class MasonryComponent {
   }
 
   protected onImageClick(image: GalleryImage): void {
+    if (this.stateService.modifyingGroup) {
+      const target: GalleryImage = this.stateService.target();
+      if (image.hasGroup() && target.hasGroup() && !target.group.images.includes(image)) {
+        return;
+      }
+
+      ArrayUtils.toggle(this.stateService.modifyingGroup, image);
+      return;
+    }
+
     if (ScreenUtils.isLargeScreen() && image == this.stateService.target()) {
       this.stateService.fullscreenVisible.set(true);
     }
@@ -179,21 +188,11 @@ export class MasonryComponent {
     }
   }
 
-  protected onStarClick(event: MouseEvent, image: GalleryImage): void {
-    if (ScreenUtils.isLargeScreen()) {
-      event.stopPropagation();
-      if (image.hasGroup() && image.group.star != image) {
-        image.group.star = image;
-        this.googleService.updateData();
-      }
-    }
-  }
-
   protected onBrickCreate(elementRef: ElementRef, image: GalleryImage): void {
     this.bricks[image.id] = elementRef.nativeElement;
   }
 
-  protected onMasonryElementCreate(elementRef: ElementRef): void {
+  protected onMasonryContainerCreate(elementRef: ElementRef): void {
     this.masonryContainer = elementRef.nativeElement;
     this.updateLayout();
   }

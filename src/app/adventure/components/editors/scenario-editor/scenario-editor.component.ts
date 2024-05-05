@@ -37,7 +37,7 @@ export class ScenarioEditorComponent extends DialogContent<Scenario> implements 
     title: 'Scenario Editor',
     buttons: [{
       text: () => 'Done',
-      disable: () => !this.canSubmit(),
+      disabled: () => !this.canSubmit(),
       click: () => this.submit()
     }, {
       text: () => 'Cancel',

@@ -13,8 +13,8 @@ import { GraphRendererService } from "./graph-renderer.service";
 export class AdventureGoogleDriveService extends BaseGoogleDriveService {
 
   public delay: Delay = new Delay(3000);
-  protected readonly FIELDS: string = 'id,name,mimeType,appProperties';
   private readonly FILE_ID: string = '1l3MbDnNr9VKc1aADVATWCYe1tMwLUTp-';
+  protected readonly FIELDS: string = 'id,name,mimeType,appProperties';
 
   constructor(
     override http: HttpClient,

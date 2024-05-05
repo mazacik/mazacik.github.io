@@ -1,11 +1,17 @@
 import { Injectable, WritableSignal, signal } from "@angular/core";
+import { DomSanitizer } from "@angular/platform-browser";
 import { GalleryGroup } from "src/app/gallery/model/gallery-group.class";
 import { GalleryImage } from "src/app/gallery/model/gallery-image.class";
+import { Delay } from "src/app/shared/classes/delay.class";
+import { GoogleMetadata } from "src/app/shared/classes/google-api/google-metadata.class";
 import { ApplicationService } from "src/app/shared/services/application.service";
 import { ArrayUtils } from "src/app/shared/utils/array.utils";
+import { GoogleFileUtils } from "src/app/shared/utils/google-file.utils";
 import { ScreenUtils } from "src/app/shared/utils/screen.utils";
 import { GalleryUtils } from "../gallery.utils";
+import { Data } from "../model/data.interface";
 import { GallerySettings } from "../model/gallery-settings.interface";
+import { ImageProperties } from "../model/image-properties.interface";
 import { TagGroup } from "../model/tag-group.interface";
 import { GalleryGoogleDriveService } from "./gallery-google-drive.service";
 
@@ -13,6 +19,8 @@ import { GalleryGoogleDriveService } from "./gallery-google-drive.service";
   providedIn: 'root',
 })
 export class GalleryStateService {
+
+  private updateDelay: Delay = new Delay(5000);
 
   public rootFolderId: string;
   public settings: GallerySettings;
@@ -34,10 +42,153 @@ export class GalleryStateService {
   public groupSizeFilterMin: number;
   public groupSizeFilterMax: number;
 
+  public modifyingGroup: GalleryImage[];
+
   constructor(
+    private sanitizer: DomSanitizer,
     private applicationService: ApplicationService,
     private googleService: GalleryGoogleDriveService
   ) { }
+
+  public async processData(): Promise<Data> {
+    const data = await this.googleService.getData();
+    this.rootFolderId = data.rootFolderId;
+    this.heartsFilter = data.heartsFilter;
+    this.bookmarksFilter = data.bookmarksFilter;
+    this.settings = data.settings;
+    this.groupSizeFilterMin = data.groupSizeFilterMin;
+    this.groupSizeFilterMax = data.groupSizeFilterMax;
+    this.tagGroups = data.tagGroups;
+    return data;
+  }
+
+  public processImages(data: Data, folderId: string = this.rootFolderId, imageCollector: GalleryImage[] = [], recursionTracker = { calls: 0 }): void {
+    recursionTracker.calls++;
+
+    this.googleService.getFolderMetadata(folderId).then(metas => {
+      for (const folder of metas.filter(entity => GoogleFileUtils.isFolder(entity))) {
+        this.processImages(data, folder.id, imageCollector, recursionTracker);
+      }
+
+      ArrayUtils.push(imageCollector, metas.filter(meta => GoogleFileUtils.isImage(meta) || GoogleFileUtils.isVideo(meta)).map(meta => {
+        return this.metaToImage(meta, data.imageProperties.find(imageProperty => imageProperty.id == meta.id), this.applicationService.reduceBandwidth)
+      }));
+
+      if (--recursionTracker.calls == 0) {
+        this.images = imageCollector;
+        this.groups = data.groupProperties.map(groupProperties => {
+          const group: GalleryGroup = new GalleryGroup();
+          group.images = this.images.filter(image => groupProperties.imageIds.includes(image.id));
+          group.images.sort((a, b) => groupProperties.imageIds.indexOf(a.id) - groupProperties.imageIds.indexOf(b.id));
+          group.images.forEach(image => image.group = group);
+          return group;
+        });
+
+        this.refreshFilter();
+        this.target.set(ArrayUtils.getFirst(this.filter()));
+
+        for (const image of ArrayUtils.difference(data.imageProperties, this.images, (i1, i2) => i1.id == i2.id)) {
+          console.log(image);
+          console.log('This image does not exist, but has a data entry. Removing image entry from data.');
+          ArrayUtils.remove(this.images, this.images.find(_image => _image.id == image.id));
+        }
+
+        this.tagCounts['_heart'] = this.images.filter(image => image.heart).length;
+        this.tagCounts['_bookmark'] = this.images.filter(image => image.bookmark).length;
+
+        for (const filterGroup of this.tagGroups) {
+          for (const tag of filterGroup.tags) {
+            this.tagCounts[tag.id] = 0;
+          }
+        }
+
+        for (const image of this.images) {
+          for (const tagId of image.tags) {
+            this.tagCounts[tagId]++;
+          }
+        }
+
+        this.applicationService.loading.next(false);
+      };
+    });
+  }
+
+  private metaToImage(metadata: GoogleMetadata, imageProperties: ImageProperties, bReduceBandwidth: boolean): GalleryImage {
+    const image: GalleryImage = new GalleryImage();
+    image.id = metadata.id;
+    image.name = metadata.name;
+    image.mimeType = metadata.mimeType;
+
+    if (metadata.thumbnailLink) {
+      if (bReduceBandwidth) {
+        image.thumbnailLink = metadata.thumbnailLink;
+      } else {
+        image.thumbnailLink = metadata.thumbnailLink.replace('=s220', '=s440');
+      }
+
+      if (GoogleFileUtils.isImage(image)) {
+        image.imageMediaMetadata = metadata.imageMediaMetadata;
+        image.aspectRatio = image.imageMediaMetadata.width / image.imageMediaMetadata.height;
+        image.contentLink = metadata.thumbnailLink.replace('=s220', '=s' + Math.max(window.screen.width, window.screen.height));
+      } else if (GoogleFileUtils.isVideo(image)) {
+        image.videoMediaMetadata = metadata.videoMediaMetadata;
+        if (!image.videoMediaMetadata) image.videoMediaMetadata = {};
+        if (!image.videoMediaMetadata.width || image.videoMediaMetadata.width == 0) image.videoMediaMetadata.width = 1920;
+        if (!image.videoMediaMetadata.height || image.videoMediaMetadata.height == 0) image.videoMediaMetadata.height = 1080;
+
+        image.aspectRatio = image.videoMediaMetadata.width / image.videoMediaMetadata.height;
+        image.contentLink = this.sanitizer.bypassSecurityTrustResourceUrl('https://drive.google.com/file/d/' + image.id + '/preview') as string; // used in <iframe> display method
+      }
+    }
+
+    if (imageProperties) {
+      image.heart = imageProperties.heart;
+      image.bookmark = imageProperties.bookmark;
+      image.tags = imageProperties.tags || [];
+      image.likes = imageProperties.likes || 0;
+    } else {
+      if (this.settings.autoBookmark) image.bookmark = true;
+      image.tags = [];
+      image.likes = 0;
+    }
+
+    return image;
+  }
+
+  public updateData(): void {
+    this.applicationService.changes.next(true);
+    this.updateDelay.restart(() => {
+      this.googleService.updateContent(this.googleService.fileId, {
+        rootFolderId: this.rootFolderId,
+        settings: this.settings,
+        imageProperties: this.images.map(image => {
+          return {
+            id: image.id,
+            heart: image.heart,
+            bookmark: image.bookmark,
+            tags: image.tags,
+            likes: image.likes
+          }
+        }),
+        groupProperties: this.groups.map(group => {
+          return {
+            imageIds: group.images.map(image => image.id)
+          }
+        }),
+        tagGroups: this.tagGroups,
+        heartsFilter: this.heartsFilter,
+        bookmarksFilter: this.bookmarksFilter,
+        groupSizeFilterMin: this.groupSizeFilterMin,
+        groupSizeFilterMax: this.groupSizeFilterMax
+      } as Data).then(metadata => {
+        if (!metadata) {
+          this.applicationService.errors.next(true);
+        }
+      }).finally(() => {
+        this.applicationService.changes.next(false);
+      });
+    });
+  }
 
   public setRandomTarget(): void {
     if (!ArrayUtils.isEmpty(this.filter())) {
@@ -90,8 +241,6 @@ export class GalleryStateService {
 
   public getGroupRepresent(image: GalleryImage): GalleryImage {
     if (image.hasGroup()) {
-      if (this.doesPassFilter(image.group.star)) return image.group.star;
-      // TODO prioritize hearts and bookmarks
       return image.group.images.find(image => this.doesPassFilter(image));
     } else {
       return image;
@@ -163,7 +312,7 @@ export class GalleryStateService {
 
     this.tagCounts['_heart'] = this.images.filter(i => i.heart).length;
     this.refreshFilter(image);
-    this.googleService.updateData();
+    this.updateData();
   }
 
   public toggleBookmark(image: GalleryImage): void {
@@ -176,7 +325,7 @@ export class GalleryStateService {
 
     this.tagCounts['_bookmark'] = this.images.filter(i => i.bookmark).length;
     this.refreshFilter(image);
-    this.googleService.updateData();
+    this.updateData();
   }
 
   public toggleTag(image: GalleryImage, tag: string): void {
@@ -204,18 +353,18 @@ export class GalleryStateService {
 
     this.tagCounts[tag] = this.images.filter(i => i.tags.includes(tag)).length;
     this.refreshFilter(image);
-    this.googleService.updateData();
+    this.updateData();
   }
 
   public like(image: GalleryImage): void {
     image.likes++;
-    this.googleService.updateData();
+    this.updateData();
   }
 
   public dislike(image: GalleryImage): void {
     if (image.likes > 0) {
       image.likes--;
-      this.googleService.updateData();
+      this.updateData();
     }
   }
 
@@ -241,7 +390,7 @@ export class GalleryStateService {
         }
       }
 
-      this.googleService.updateData();
+      this.updateData();
     }
 
     this.applicationService.loading.next(false);
@@ -272,9 +421,6 @@ export class GalleryStateService {
 
     if (image.hasGroup()) {
       ArrayUtils.remove(image.getGroupImages(), image.getGroupImages().find(i => i.id == image.id));
-      if (image.group.star == image && image.group.images.length > 0) {
-        image.group.star = image.group.images[0];
-      }
     }
 
     return nextTarget;
