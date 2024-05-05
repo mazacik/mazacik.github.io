@@ -31,7 +31,7 @@ export class VariableEditorComponent extends DialogContent<Variable> implements 
     title: 'Variable Editor',
     buttons: [{
       text: () => 'Done',
-      disable: () => !this.canSubmit(),
+      disabled: () => !this.canSubmit(),
       click: () => this.submit()
     }, {
       text: () => 'Cancel',

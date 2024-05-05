@@ -24,6 +24,12 @@
     max-height: 80%;
   }
 
+  &.bottom {
+    top: auto;
+    bottom: $gap;
+    transform: translateX(-50%);
+  }
+
   &:not(.active) {
     filter: blur(3px);
     pointer-events: none;
@@ -58,4 +64,6 @@
 .button {
   flex: 1;
   transition: $transition-duration; // TODO specify
+  white-space: nowrap;
+  min-width: auto;
 }

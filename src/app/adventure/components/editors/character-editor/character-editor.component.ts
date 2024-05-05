@@ -27,7 +27,7 @@ export class CharacterEditorComponent extends DialogContent<Character> implement
     title: 'Character Editor',
     buttons: [{
       text: () => 'Done',
-      disable: () => !this.canSubmit(),
+      disabled: () => !this.canSubmit(),
       click: () => this.submit()
     }, {
       text: () => 'Cancel',

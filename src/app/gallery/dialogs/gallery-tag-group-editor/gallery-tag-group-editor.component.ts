@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { Component, HostListener, Input, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TagGroup } from 'src/app/gallery/model/tag-group.interface';
-import { GalleryGoogleDriveService } from 'src/app/gallery/services/gallery-google-drive.service';
 import { DialogConfiguration } from 'src/app/shared/components/dialog/dialog-configuration.class';
 import { DialogContent } from 'src/app/shared/components/dialog/dialog-content.class';
 import { DialogService } from 'src/app/shared/services/dialog.service';
@@ -32,7 +31,7 @@ export class GalleryTagGroupEditorComponent extends DialogContent<TagGroup> impl
     title: 'Tag Group Editor',
     buttons: [{
       text: () => this.group.name.length > 0 ? 'Save' : 'Create',
-      disable: () => !this.canSubmit(),
+      disabled: () => !this.canSubmit(),
       click: () => this.submit()
     }, {
       text: () => 'Cancel',
@@ -46,7 +45,6 @@ export class GalleryTagGroupEditorComponent extends DialogContent<TagGroup> impl
 
   constructor(
     private dialogService: DialogService,
-    private googleService: GalleryGoogleDriveService,
     private stateService: GalleryStateService
   ) {
     super();
@@ -68,7 +66,7 @@ export class GalleryTagGroupEditorComponent extends DialogContent<TagGroup> impl
             ArrayUtils.remove(image.tags, tagIds);
           }
 
-          this.googleService.updateData();
+          this.stateService.updateData();
           this.resolve(null);
         }
       });
@@ -97,7 +95,7 @@ export class GalleryTagGroupEditorComponent extends DialogContent<TagGroup> impl
       }
 
       this.stateService.tagGroups.sort((group1, group2) => group1.name.localeCompare(group2.name));
-      this.googleService.updateData();
+      this.stateService.updateData();
       this.resolve(this.group);
     }
   }

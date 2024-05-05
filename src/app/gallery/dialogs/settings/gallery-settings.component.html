@@ -1,3 +1,5 @@
+<span class="button" tp="Modify Group" (click)="modifyGroup()">Modify Group</span>
+<span *ngIf="stateService.target()?.hasGroup()" class="button" tp="Reorder Group" (click)="reorderGroup()">Reorder Group</span>
 <span class="button" tp="Yandex Reverse Image Search" (click)="openYandexReverseImageSearch($event)">Yandex RIS</span>
 <span class="button" tp="Pairwise Comparison" (click)="startImageComparison()">Comparison</span>
 <span class="button" tp="Toggle Brightness Mode" (click)="applicationService.toggleTheme()">Theme</span>
@@ -6,5 +8,5 @@
 <div class="h-separator"></div>
 <div class="switch-container">
   <app-switch [state]="stateService.settings.autoBookmark" tp="Bookmark new images automatically" (stateChange)="onAutoBookmarkStateChange($event)"></app-switch>
-  <span>Auto Bookmark</span>
+  <span class="nowrap">Auto Bookmark</span>
 </div>

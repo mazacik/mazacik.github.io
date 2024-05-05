@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, effect } from '@angular/core';
-import { GalleryGoogleDriveService } from 'src/app/gallery/services/gallery-google-drive.service';
+import { TippyDirective } from '@ngneat/helipopper';
 import { SwitchComponent } from 'src/app/shared/components/switch/switch.component';
 import { SwitchEvent } from 'src/app/shared/components/switch/switch.event';
 import { OnCreateDirective } from 'src/app/shared/directives/on-create.directive';
@@ -23,7 +23,8 @@ import { GalleryStateService } from '../services/gallery-state.service';
     CommonModule,
     SwitchComponent,
     OnCreateDirective,
-    VariableDirective
+    VariableDirective,
+    TippyDirective
   ],
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss']
@@ -40,8 +41,7 @@ export class SidebarComponent implements AfterViewInit {
   constructor(
     protected applicationService: ApplicationService,
     protected stateService: GalleryStateService,
-    protected dialogService: DialogService,
-    private googleService: GalleryGoogleDriveService
+    protected dialogService: DialogService
   ) {
     let previousTarget: GalleryImage;
     effect(beforeEffect => {
@@ -171,7 +171,7 @@ export class SidebarComponent implements AfterViewInit {
     this.dialogService.create(GroupSizeFilterEditor).then(update => {
       if (update) {
         this.stateService.refreshFilter();
-        this.googleService.updateData();
+        this.stateService.updateData();
       }
     });
   }
@@ -179,19 +179,19 @@ export class SidebarComponent implements AfterViewInit {
   protected onFilterStateChange(filter: Tag | TagGroup, event: SwitchEvent): void {
     filter.state = event.state;
     this.stateService.refreshFilter();
-    this.googleService.updateData();
+    this.stateService.updateData();
   }
 
   protected onLikesStateChange(event: SwitchEvent): void {
     this.stateService.heartsFilter = event.state;
     this.stateService.refreshFilter();
-    this.googleService.updateData();
+    this.stateService.updateData();
   }
 
   protected onBookmarksStateChange(event: SwitchEvent): void {
     this.stateService.bookmarksFilter = event.state;
     this.stateService.refreshFilter();
-    this.googleService.updateData();
+    this.stateService.updateData();
   }
 
   protected onPreviewClick(): void {

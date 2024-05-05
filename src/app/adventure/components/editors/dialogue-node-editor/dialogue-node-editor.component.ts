@@ -33,7 +33,7 @@ export class DialogueNodeEditorComponent extends DialogContent<DialogueNode> imp
     title: 'Dialogue Node Editor',
     buttons: [{
       text: () => 'Done',
-      disable: () => !this.canSubmit(),
+      disabled: () => !this.canSubmit(),
       click: () => this.submit()
     }, {
       text: () => 'Cancel',

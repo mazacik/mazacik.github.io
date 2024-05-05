@@ -22,6 +22,7 @@ export class GalleryImage extends GoogleMetadata {
     return this.group?.images.length > 1;
   }
 
+  // TODO not required
   public getGroupImages(): GalleryImage[] {
     return this.group?.images;
   }

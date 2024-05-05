@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { nanoid } from 'nanoid';
 import { TagGroup } from 'src/app/gallery/model/tag-group.interface';
 import { Tag } from 'src/app/gallery/model/tag.interface';
-import { GalleryGoogleDriveService } from 'src/app/gallery/services/gallery-google-drive.service';
 import { DialogConfiguration } from 'src/app/shared/components/dialog/dialog-configuration.class';
 import { DialogContent } from 'src/app/shared/components/dialog/dialog-content.class';
 import { DialogService } from 'src/app/shared/services/dialog.service';
@@ -38,7 +37,7 @@ export class GalleryTagEditorComponent extends DialogContent<Tag> implements OnI
     title: 'Tag Editor',
     buttons: [{
       text: () => this.group.name.length > 0 ? 'Save' : 'Create',
-      disable: () => !this.canSubmit(),
+      disabled: () => !this.canSubmit(),
       click: () => this.submit()
     }, {
       text: () => 'Cancel',
@@ -51,7 +50,6 @@ export class GalleryTagEditorComponent extends DialogContent<Tag> implements OnI
   };
 
   constructor(
-    private googleService: GalleryGoogleDriveService,
     private dialogService: DialogService,
     protected stateService: GalleryStateService
   ) {
@@ -96,7 +94,7 @@ export class GalleryTagEditorComponent extends DialogContent<Tag> implements OnI
             ArrayUtils.remove(filterGroup.tags, this.tag);
           }
 
-          this.googleService.updateData();
+          this.stateService.updateData();
           this.resolve(null);
         }
       });
@@ -130,7 +128,7 @@ export class GalleryTagEditorComponent extends DialogContent<Tag> implements OnI
       }
 
       this.currentGroup.tags.sort((tag1, tag2) => tag1.name.localeCompare(tag2.name));
-      this.googleService.updateData();
+      this.stateService.updateData();
       this.resolve(this.tag);
     }
   }

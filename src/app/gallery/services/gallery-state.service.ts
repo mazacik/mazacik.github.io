@@ -2,6 +2,7 @@ import { Injectable, WritableSignal, signal } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
 import { GalleryGroup } from "src/app/gallery/model/gallery-group.class";
 import { GalleryImage } from "src/app/gallery/model/gallery-image.class";
+import { Delay } from "src/app/shared/classes/delay.class";
 import { GoogleMetadata } from "src/app/shared/classes/google-api/google-metadata.class";
 import { ApplicationService } from "src/app/shared/services/application.service";
 import { ArrayUtils } from "src/app/shared/utils/array.utils";
@@ -18,6 +19,8 @@ import { GalleryGoogleDriveService } from "./gallery-google-drive.service";
   providedIn: 'root',
 })
 export class GalleryStateService {
+
+  private updateDelay: Delay = new Delay(5000);
 
   public rootFolderId: string;
   public settings: GallerySettings;
@@ -38,6 +41,8 @@ export class GalleryStateService {
   public bookmarksFilter: number;
   public groupSizeFilterMin: number;
   public groupSizeFilterMax: number;
+
+  public modifyingGroup: GalleryImage[];
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -60,20 +65,22 @@ export class GalleryStateService {
   public processImages(data: Data, folderId: string = this.rootFolderId, imageCollector: GalleryImage[] = [], recursionTracker = { calls: 0 }): void {
     recursionTracker.calls++;
 
-    this.googleService.getFolderMetadata(folderId).then(metadata => {
-      for (const folder of metadata.filter(entity => GoogleFileUtils.isFolder(entity))) {
+    this.googleService.getFolderMetadata(folderId).then(metas => {
+      for (const folder of metas.filter(entity => GoogleFileUtils.isFolder(entity))) {
         this.processImages(data, folder.id, imageCollector, recursionTracker);
       }
 
-      ArrayUtils.push(imageCollector, this.metaToImages(metadata, data.imageProperties));
+      ArrayUtils.push(imageCollector, metas.filter(meta => GoogleFileUtils.isImage(meta) || GoogleFileUtils.isVideo(meta)).map(meta => {
+        return this.metaToImage(meta, data.imageProperties.find(imageProperty => imageProperty.id == meta.id), this.applicationService.reduceBandwidth)
+      }));
 
       if (--recursionTracker.calls == 0) {
         this.images = imageCollector;
         this.groups = data.groupProperties.map(groupProperties => {
           const group: GalleryGroup = new GalleryGroup();
           group.images = this.images.filter(image => groupProperties.imageIds.includes(image.id));
+          group.images.sort((a, b) => groupProperties.imageIds.indexOf(a.id) - groupProperties.imageIds.indexOf(b.id));
           group.images.forEach(image => image.group = group);
-          group.star = groupProperties.starId ? group.star = group.images.find(image => image.id == groupProperties.starId) : group.images[0];
           return group;
         });
 
@@ -103,12 +110,6 @@ export class GalleryStateService {
 
         this.applicationService.loading.next(false);
       };
-    });
-  }
-
-  private metaToImages(metadata: GoogleMetadata[], imageProperties: ImageProperties[]): GalleryImage[] {
-    return metadata.filter(entity => GoogleFileUtils.isImage(entity) || GoogleFileUtils.isVideo(entity)).map(image => {
-      return this.metaToImage(image as GoogleMetadata, imageProperties.find(_image => _image.id == image.id), this.applicationService.reduceBandwidth)
     });
   }
 
@@ -152,6 +153,41 @@ export class GalleryStateService {
     }
 
     return image;
+  }
+
+  public updateData(): void {
+    this.applicationService.changes.next(true);
+    this.updateDelay.restart(() => {
+      this.googleService.updateContent(this.googleService.fileId, {
+        rootFolderId: this.rootFolderId,
+        settings: this.settings,
+        imageProperties: this.images.map(image => {
+          return {
+            id: image.id,
+            heart: image.heart,
+            bookmark: image.bookmark,
+            tags: image.tags,
+            likes: image.likes
+          }
+        }),
+        groupProperties: this.groups.map(group => {
+          return {
+            imageIds: group.images.map(image => image.id)
+          }
+        }),
+        tagGroups: this.tagGroups,
+        heartsFilter: this.heartsFilter,
+        bookmarksFilter: this.bookmarksFilter,
+        groupSizeFilterMin: this.groupSizeFilterMin,
+        groupSizeFilterMax: this.groupSizeFilterMax
+      } as Data).then(metadata => {
+        if (!metadata) {
+          this.applicationService.errors.next(true);
+        }
+      }).finally(() => {
+        this.applicationService.changes.next(false);
+      });
+    });
   }
 
   public setRandomTarget(): void {
@@ -205,8 +241,6 @@ export class GalleryStateService {
 
   public getGroupRepresent(image: GalleryImage): GalleryImage {
     if (image.hasGroup()) {
-      if (this.doesPassFilter(image.group.star)) return image.group.star;
-      // TODO prioritize hearts and bookmarks
       return image.group.images.find(image => this.doesPassFilter(image));
     } else {
       return image;
@@ -278,7 +312,7 @@ export class GalleryStateService {
 
     this.tagCounts['_heart'] = this.images.filter(i => i.heart).length;
     this.refreshFilter(image);
-    this.googleService.updateData();
+    this.updateData();
   }
 
   public toggleBookmark(image: GalleryImage): void {
@@ -291,7 +325,7 @@ export class GalleryStateService {
 
     this.tagCounts['_bookmark'] = this.images.filter(i => i.bookmark).length;
     this.refreshFilter(image);
-    this.googleService.updateData();
+    this.updateData();
   }
 
   public toggleTag(image: GalleryImage, tag: string): void {
@@ -319,18 +353,18 @@ export class GalleryStateService {
 
     this.tagCounts[tag] = this.images.filter(i => i.tags.includes(tag)).length;
     this.refreshFilter(image);
-    this.googleService.updateData();
+    this.updateData();
   }
 
   public like(image: GalleryImage): void {
     image.likes++;
-    this.googleService.updateData();
+    this.updateData();
   }
 
   public dislike(image: GalleryImage): void {
     if (image.likes > 0) {
       image.likes--;
-      this.googleService.updateData();
+      this.updateData();
     }
   }
 
@@ -356,7 +390,7 @@ export class GalleryStateService {
         }
       }
 
-      this.googleService.updateData();
+      this.updateData();
     }
 
     this.applicationService.loading.next(false);
@@ -387,9 +421,6 @@ export class GalleryStateService {
 
     if (image.hasGroup()) {
       ArrayUtils.remove(image.getGroupImages(), image.getGroupImages().find(i => i.id == image.id));
-      if (image.group.star == image && image.group.images.length > 0) {
-        image.group.star = image.group.images[0];
-      }
     }
 
     return nextTarget;

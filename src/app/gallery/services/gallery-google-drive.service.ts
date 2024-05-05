@@ -1,88 +1,46 @@
 import { HttpClient } from "@angular/common/http";
-import { Injectable, Injector } from "@angular/core";
+import { Injectable } from "@angular/core";
 import { lastValueFrom } from "rxjs";
-import { Delay } from "src/app/shared/classes/delay.class";
 import { GoogleMetadata } from "src/app/shared/classes/google-api/google-metadata.class";
-import { ApplicationService } from "../../shared/services/application.service";
 import { BaseGoogleDriveService } from "../../shared/services/base-google-drive.service";
 import { Data } from "../model/data.interface";
-import { GalleryStateService } from "./gallery-state.service";
 
 @Injectable({
   providedIn: 'root',
 })
 export class GalleryGoogleDriveService extends BaseGoogleDriveService {
 
+  private _fileId: string;
   protected readonly FIELDS: string = 'id,name,thumbnailLink,mimeType,imageMediaMetadata,videoMediaMetadata';
-  private delay: Delay = new Delay(5000);
 
   constructor(
-    override http: HttpClient,
-    private applicationService: ApplicationService,
-    private injector: Injector
+    override http: HttpClient
   ) {
     super(http);
   }
 
-  public updateData(instant: boolean = false): void {
-    const dataFileId: string = sessionStorage.getItem('dataFileId');
-    if (dataFileId) {
-      const stateService: GalleryStateService = this.injector.get(GalleryStateService);
-      this.applicationService.changes.next(true);
-      const updateContent = () => {
-        this.updateContent(dataFileId, {
-          rootFolderId: stateService.rootFolderId,
-          settings: stateService.settings,
-          imageProperties: stateService.images.map(image => {
-            return {
-              id: image.id,
-              heart: image.heart,
-              bookmark: image.bookmark,
-              tags: image.tags,
-              likes: image.likes
-            }
-          }),
-          groupProperties: stateService.groups.map(group => {
-            return {
-              imageIds: group.images.map(image => image.id),
-              starId: group.star.id
-            }
-          }),
-          tagGroups: stateService.tagGroups,
-          heartsFilter: stateService.heartsFilter,
-          bookmarksFilter: stateService.bookmarksFilter,
-          groupSizeFilterMin: stateService.groupSizeFilterMin,
-          groupSizeFilterMax: stateService.groupSizeFilterMax
-        } as Data).then(entity => {
-          if (!entity) {
-            this.applicationService.errors.next(true);
-          }
-        }).finally(() => {
-          this.applicationService.changes.next(false);
-        });
-      }
-
-      if (instant) {
-        this.delay.stop();
-        updateContent();
-      } else {
-        this.delay.restart(() => updateContent());
+  public get fileId(): string {
+    if (!this._fileId) {
+      const dataFileId: string = sessionStorage.getItem('dataFileId');
+      if (dataFileId) {
+        this._fileId = dataFileId;
       }
     }
+    return this._fileId;
   }
 
-  public async createDataFile(folderName: string): Promise<GoogleMetadata> {
-    const dataFile: GoogleMetadata = await this.createFile(folderName + '.tagallery', ['root'], 'application/json');
-    sessionStorage.setItem('dataFileId', dataFile.id);
-    return dataFile;
+  public set fileId(fileId: string) {
+    this._fileId = fileId;
+    sessionStorage.setItem('dataFileId', fileId);
+  }
+
+  public createDataFile(folderName: string): Promise<GoogleMetadata> {
+    return this.createFile(folderName + '.tagallery', ['root'], 'application/json');
   }
 
   public async getData(): Promise<Data> {
-    const dataFileId: string = sessionStorage.getItem('dataFileId');
-    if (dataFileId) {
-      const url: string = 'https://www.googleapis.com/drive/v3/files/' + dataFileId;
-      return await lastValueFrom(this.http.get<Data>(url, { params: { 'alt': 'media' }, responseType: 'json' })).catch(error => error);
-    }
+    const url: string = 'https://www.googleapis.com/drive/v3/files/' + this.fileId;
+    return await lastValueFrom(this.http.get<Data>(url, { params: { 'alt': 'media' }, responseType: 'json' })).catch(error => error);
   }
 
   public async getBase64(entityId: string): Promise<string> {
