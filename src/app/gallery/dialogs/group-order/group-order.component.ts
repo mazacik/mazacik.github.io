@@ -4,6 +4,7 @@ import { GalleryImage } from 'src/app/gallery/model/gallery-image.class';
 import { DialogConfiguration } from 'src/app/shared/components/dialog/dialog-configuration.class';
 import { DialogContent } from 'src/app/shared/components/dialog/dialog-content.class';
 import { DragDropDirective } from 'src/app/shared/directives/dragdrop.directive';
+import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 
 @Component({
   selector: 'app-group-order',
@@ -19,6 +20,8 @@ export class GroupOrderComponent extends DialogContent<GalleryImage[]> implement
 
   @Input() images: GalleryImage[];
 
+  protected target: GalleryImage;
+
   configuration: DialogConfiguration = {
     title: 'Group Order',
     buttons: [{
@@ -31,7 +34,7 @@ export class GroupOrderComponent extends DialogContent<GalleryImage[]> implement
   }
 
   ngOnInit(): void {
-    
+    this.target = ArrayUtils.getFirst(this.images);
   }
 
   @HostListener('window:keydown.enter', ['$event'])
