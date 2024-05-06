@@ -1,5 +1,8 @@
+<div class="image-container">
+  <img class="image-content" [src]="target.contentLink">
+</div>
 <div class="results">
-  <div *ngFor="let image of images" class="image-container" [dragdrop]="image" [dragdropParent]="images">
+  <div *ngFor="let image of images" class="image-container" [class.active]="image == target" (click)="target = image" [dragdrop]="image" [dragdropParent]="images">
     <img class="image" [src]="image.thumbnailLink">
   </div>
 </div>

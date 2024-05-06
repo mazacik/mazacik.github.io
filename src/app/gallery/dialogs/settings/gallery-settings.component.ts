@@ -15,6 +15,7 @@ import { GalleryGoogleDriveService } from '../../services/gallery-google-drive.s
 import { GalleryStateService } from '../../services/gallery-state.service';
 import { GroupOrderComponent } from '../group-order/group-order.component';
 import { ImageComparisonComponent } from '../image-comparison/image-comparison.component';
+import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 
 @Component({
   selector: 'app-gallery-settings',
@@ -66,18 +67,24 @@ export class GallerySettingsComponent extends DialogContent<boolean> implements 
     const buttons: DialogButton[] = [{ text: () => 'Confirm: ' + this.stateService.modifyingGroup?.length + ' images', click: () => null }, { iconClass: () => 'fa-solid fa-times' }];
     this.dialogService.create(null, { buttons: buttons }, false, 'bottom').then((success: boolean) => {
       if (success) {
-        if (target.hasGroup()) {
-          target.group.images = this.stateService.modifyingGroup;
-          target.group.images.forEach(image => image.group = target.group);
+        if (this.stateService.modifyingGroup.length > 1) {
+          if (target.hasGroup()) {
+            target.group.images = this.stateService.modifyingGroup;
+            target.group.images.forEach(image => image.group = target.group);
+          } else {
+            const group: GalleryGroup = new GalleryGroup();
+            group.images = this.stateService.modifyingGroup;
+            group.images.forEach(image => image.group = group);
+            this.stateService.groups.push(group);
+          }
+
+          this.stateService.updateData();
         } else {
-          const group: GalleryGroup = new GalleryGroup();
-          group.images = this.stateService.modifyingGroup;
-          group.images.forEach(image => image.group = group);
-
-          this.stateService.groups.push(group);
+          if (target.hasGroup()) {
+            target.group.images.forEach(image => image.group = null);
+            ArrayUtils.remove(this.stateService.groups, target.group);
+          }
         }
-
-        this.stateService.updateData();
       }
 
       if (target.hasGroup()) {
