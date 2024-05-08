@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, HostBinding, HostListener, OnInit } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { OnCreateDirective } from 'src/app/shared/directives/on-create.directive';
 import { VariableDirective } from 'src/app/shared/directives/variable.directive';
@@ -35,10 +35,8 @@ export class NotesComponent implements OnInit {
     this.applicationService.loading.next(true);
   }
 
-  @HostBinding('class.side-margins') sideMargins: boolean;
-
   ngOnInit(): void {
-    this.adventureService.sidebarVisible.subscribe(value => this.sideMargins = !value);
+    
   }
 
   initTab(elementRef: ElementRef<HTMLTextAreaElement>): void {
