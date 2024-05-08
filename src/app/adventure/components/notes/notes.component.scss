@@ -11,11 +11,6 @@
   transition-property: margin;
   transition-duration: $transition-duration;
 
-  &.side-margins {
-    margin: 0 25%;
-  }
-
-
   .note-title {
     min-width: 100px;
     border: 0;
