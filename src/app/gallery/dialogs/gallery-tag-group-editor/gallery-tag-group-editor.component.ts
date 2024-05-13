@@ -66,6 +66,8 @@ export class GalleryTagGroupEditorComponent extends DialogContent<TagGroup> impl
             ArrayUtils.remove(image.tags, tagIds);
           }
 
+          ArrayUtils.remove(this.stateService.tagGroups, this.group);
+
           this.stateService.updateData();
           this.resolve(null);
         }

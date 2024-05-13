@@ -207,7 +207,7 @@ export class GalleryStateService {
 
       if (nextTarget) {
         if (nextTarget.hasGroup()) {
-          nextTarget = ArrayUtils.getRandom(nextTarget.getGroupImages().filter(image => this.doesPassFilter(image)));
+          nextTarget = ArrayUtils.getRandom(nextTarget.getGroupImages().filter(image => image.passesFilter));
         }
 
         this.target.set(nextTarget);
@@ -218,36 +218,28 @@ export class GalleryStateService {
   public setRandomGroupTarget(): void {
     const target: GalleryImage = this.target();
     if (target?.hasGroup()) {
-      this.target.set(ArrayUtils.getRandom(target.getGroupImages().filter(image => this.doesPassFilter(image)), [target]));
+      this.target.set(ArrayUtils.getRandom(target.getGroupImages().filter(image => image.passesFilter), [target]));
     }
   }
 
   public refreshFilter(forImage?: GalleryImage): void {
-    this.filter.set(this.images.filter(image => {
-      if (forImage == undefined || forImage == image) {
-        if (image.hasGroup()) {
-          if (image.group.open) {
-            image.passesFilter = this.doesPassFilter(image);
-          } else {
-            image.passesFilter = this.getGroupRepresent(image) == image;
-          }
-        } else {
-          image.passesFilter = this.doesPassFilter(image);
-        }
-      }
-      return image.passesFilter;
-    }));
+    forImage ? this.actuallyRefreshFilter(forImage) : this.images.forEach(image => this.actuallyRefreshFilter(image));
+    this.filter.set(this.images.filter(image => image.passesFilter));
   }
 
-  public getGroupRepresent(image: GalleryImage): GalleryImage {
+  private actuallyRefreshFilter(image: GalleryImage): void {
     if (image.hasGroup()) {
-      return image.group.images.find(image => this.doesPassFilter(image));
+      if (image.group.open) {
+        image.passesFilter = this.doesPassFilter(image);
+      } else {
+        image.getGroupImages().forEach(groupImage => groupImage.passesFilter = this.doesPassFilter(groupImage));
+      }
     } else {
-      return image;
+      image.passesFilter = this.doesPassFilter(image);
     }
   }
 
-  public doesPassFilter(image: GalleryImage): boolean {
+  private doesPassFilter(image: GalleryImage): boolean {
     if (!image) return false;
 
     if (this.heartsFilter == -1 && image.heart) {
