@@ -90,9 +90,7 @@ export class GalleryTagEditorComponent extends DialogContent<Tag> implements OnI
             ArrayUtils.remove(image.tags, this.tag.id);
           }
 
-          for (const filterGroup of this.stateService.tagGroups) {
-            ArrayUtils.remove(filterGroup.tags, this.tag);
-          }
+          ArrayUtils.remove(this.stateService.tagGroups.find(tagGroup => tagGroup.tags.includes(this.tag)).tags, this.tag);
 
           this.stateService.updateData();
           this.resolve(null);
