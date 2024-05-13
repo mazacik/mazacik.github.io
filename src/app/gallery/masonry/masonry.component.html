@@ -12,7 +12,7 @@
           <i class="icon-button fa-bookmark" [ngClass]="image.bookmark ? 'fa-solid active' : 'fa-regular'" tp="Bookmark" (click)="onBookmarkClick($event, image)"></i>
           <span class="icon-button" tp="Like" (click)="onLikeClick($event, image)" (contextmenu)="onDislikeClick($event, image)">{{ image.likes }}</span>
           <ng-container *ngIf="image.hasGroup()">
-            <i class="icon-button fa-solid active" [ngClass]="image.group.open ? 'fa-square-minus' : 'fa-square-plus'" [tp]="image.group.open ? 'Collapse Group' : 'Expand Group'" (click)="onGroupToggleClick($event, image)"></i>
+            <i class="icon-button fa-solid active" [ngClass]="image.group.open ? 'fa-square-minus' : 'fa-square-plus'" [class.disabled]="shouldDisableGroupToggleButton(image)" [tp]="image.group.open ? 'Collapse Group' : 'Expand Group'" (click)="onGroupToggleClick($event, image)"></i>
           </ng-container>
         </div>
       </div>

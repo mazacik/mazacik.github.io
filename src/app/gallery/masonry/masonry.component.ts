@@ -38,7 +38,7 @@ export class MasonryComponent {
   public scrollToTarget(): void {
     const target: GalleryImage = this.stateService.target();
     if (target) {
-      const targetRepresent: GalleryImage = target.hasGroup() ? this.stateService.getGroupRepresent(target) : target;
+      const targetRepresent: GalleryImage = target.hasGroup() ? target.getGroupImages().find(groupImage => groupImage.passesFilter) : target;
       const brickElement: HTMLImageElement = this.bricks[targetRepresent?.id];
       if (brickElement && !ScreenUtils.isElementVisible(brickElement)) {
         const containerElement: HTMLElement = document.getElementsByClassName('masonry-scroll-container')[0] as HTMLElement;
@@ -77,12 +77,12 @@ export class MasonryComponent {
 
       for (const image of filter) {
         if (image.hasGroup() && image.group.open) {
-          if (image == image.group.images[0]) {
+          if (image == image.group.images.filter(image => image.passesFilter)[0]) {
             const groupColumnIndexes: number[] = [this.getShortestColumnIndex(top)];
             const groupColumnSpans: { top: number, bottom: number }[] = [];
             for (let i = 0; i < columnCount; i++) groupColumnSpans.push({ top: 0, bottom: 0 });
 
-            for (const groupImage of image.getGroupImages()) {
+            for (const groupImage of image.getGroupImages().filter(image => image.passesFilter)) {
               const availableColumnIndexes: number[] = [...groupColumnIndexes];
 
               const leftColumnIndex: number = Math.min(...groupColumnIndexes);
@@ -195,6 +195,10 @@ export class MasonryComponent {
   protected onMasonryContainerCreate(elementRef: ElementRef): void {
     this.masonryContainer = elementRef.nativeElement;
     this.updateLayout();
+  }
+
+  protected shouldDisableGroupToggleButton(image: GalleryImage): boolean {
+    return image.hasGroup() && image.getGroupImages().filter(image => image.passesFilter).length < 2;
   }
 
   @HostListener('window:resize')

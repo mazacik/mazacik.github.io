@@ -218,32 +218,28 @@ export class GalleryStateService {
   public setRandomGroupTarget(): void {
     const target: GalleryImage = this.target();
     if (target?.hasGroup()) {
-      this.target.set(ArrayUtils.getRandom(target.getGroupImages().filter(image => this.doesPassFilter(image)), [target]));
+      this.target.set(ArrayUtils.getRandom(target.getGroupImages().filter(image => this.doesPassFilter(image)), [target])); // TODO use image.passesFilter
     }
   }
 
   public refreshFilter(forImage?: GalleryImage): void {
-    this.filter.set(this.images.filter(image => {
-      if (forImage == undefined || forImage == image) {
-        if (image.hasGroup()) {
-          if (image.group.open) {
-            image.passesFilter = this.doesPassFilter(image);
-          } else {
-            image.passesFilter = this.getGroupRepresent(image) == image;
-          }
-        } else {
-          image.passesFilter = this.doesPassFilter(image);
-        }
-      }
-      return image.passesFilter;
-    }));
+    forImage ? this.actuallyRefreshFilter(forImage) : this.images.forEach(image => this.actuallyRefreshFilter(image));
+    this.filter.set(this.images.filter(image => image.passesFilter));
   }
 
-  public getGroupRepresent(image: GalleryImage): GalleryImage {
+  private actuallyRefreshFilter(image: GalleryImage): void {
     if (image.hasGroup()) {
-      return image.group.images.find(image => this.doesPassFilter(image));
+      if (image.group.open) {
+        image.passesFilter = this.doesPassFilter(image);
+      } else {
+        image.getGroupImages().forEach(groupImage => groupImage.passesFilter = false);
+        const groupRepresent: GalleryImage = image.getGroupImages().find(groupImage => this.doesPassFilter(groupImage));
+        if (groupRepresent) {
+          groupRepresent.passesFilter = true;
+        }
+      }
     } else {
-      return image;
+      image.passesFilter = this.doesPassFilter(image);
     }
   }
 

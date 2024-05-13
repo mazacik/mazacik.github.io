@@ -139,10 +139,10 @@
 
 .sidebar-item {
   width: 100%;
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr max-content auto;
   align-items: center;
-  justify-content: space-between;
-  gap: $gap * 0.5;
+  gap: 0.5rem;
   border-radius: $gap * 2;
 
   &:nth-child(2n+1) {
@@ -157,6 +157,7 @@
 .sidebar-group-header {
   font-size: 18px;
   text-decoration: underline;
+  text-align: center;
 }
 
 .sidebar-item-label {
@@ -191,8 +192,5 @@
 
   .sidebar-filter-list {
     font-size: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: $gap * 0.5;
   }
 }

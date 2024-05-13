@@ -45,18 +45,14 @@
         <div class="sidebar-filter-list">
           <div class="sidebar-item">
             <app-switch [tri]="true" [state]="stateService.heartsFilter" (stateChange)="onLikesStateChange($event)" tp="Filter: Heart"></app-switch>
-            <div>
-              <i class="fa-solid fa-heart"></i>
-              <span class="sidebar-item-label">{{ ' ('+ (stateService.tagCounts['_heart'] || 0) +')' }}</span>
-            </div>
+            <i class="fa-solid fa-heart"></i>
+            <span class="sidebar-item-label">{{ ' ('+ (stateService.tagCounts['_heart'] || 0) +')' }}</span>
             <app-switch [state]="target?.heart ? 1 : -1" (stateChange)="stateService.toggleHeart(target)" tp="Image: Heart"></app-switch>
           </div>
           <div class="sidebar-item">
             <app-switch [tri]="true" [state]="stateService.bookmarksFilter" (stateChange)="onBookmarksStateChange($event)" tp="Filter: Bookmark"></app-switch>
-            <div>
-              <i class="fa-solid fa-bookmark"></i>
-              <span class="sidebar-item-label">{{ ' ('+ (stateService.tagCounts['_bookmark'] || 0) +')' }}</span>
-            </div>
+            <i class="fa-solid fa-bookmark"></i>
+            <span class="sidebar-item-label">{{ ' ('+ (stateService.tagCounts['_bookmark'] || 0) +')' }}</span>
             <app-switch [state]="target?.bookmark ? 1 : -1" (stateChange)="stateService.toggleBookmark(target)" tp="Image: Bookmark"></app-switch>
           </div>
           <div *ngFor="let group of stateService.tagGroups" class="sidebar-group">
@@ -68,7 +64,8 @@
             </div>
             <div *ngFor="let tag of group.tags" class="sidebar-item">
               <app-switch [tri]="true" [state]="tag.state" (stateChange)="onFilterStateChange(tag, $event)" [tp]="'Filter: ' + tag.name"></app-switch>
-              <span class="sidebar-item-label" (click)="openTagEditor($event, group, tag)">{{ tag.name + ' (' + (stateService.tagCounts[tag.id] || 0) + ')' }}</span>
+              <span class="sidebar-item-label" (click)="openTagEditor($event, group, tag)">{{ tag.name }}</span>
+              <span class="sidebar-item-label">{{ (stateService.tagCounts[tag.id] || 0) }}</span>
               <app-switch [state]="target?.tags.includes(tag.id) ? 1 : -1" (stateChange)="stateService.toggleTag(target, tag.id)" [tp]="'Image: ' + tag.name"></app-switch>
             </div>
           </div>

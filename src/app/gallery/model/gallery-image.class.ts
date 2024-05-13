@@ -17,6 +17,7 @@ export class GalleryImage extends GoogleMetadata {
   public contentLink: string;
   public group: GalleryGroup;
   public passesFilter: boolean;
+  public isMasonryBrick: boolean;
 
   public hasGroup(): boolean {
     return this.group?.images.length > 1;
