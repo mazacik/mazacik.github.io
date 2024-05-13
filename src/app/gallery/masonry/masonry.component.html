@@ -1,9 +1,9 @@
 <!-- TODO Always render, reduce image resolution when reduceBandwidth -->
 <ng-container *ngIf="!applicationService.reduceBandwidth">
   <div class="masonry-scroll-container">
-    <div *ngIf="stateService.filter" class="masonry-container" (onCreate)="onMasonryContainerCreate($event)">
+    <div class="masonry-container" (onCreate)="onMasonryContainerCreate($event)">
       <!-- TODO split styles -->
-      <div *ngFor="let image of stateService.filter()" @leave class="masonry-brick" [style]="'width: ' + image.width + 'px; height: ' + image.height + 'px; top: ' + image.top + 'px; left: ' + image.left + 'px; '" (click)="onImageClick(image)" [class.modifying-group]="stateService.modifyingGroup?.includes(image)">
+      <div *ngFor="let image of masonryImages" @leave class="masonry-brick" [style]="'width: ' + image.width + 'px; height: ' + image.height + 'px; top: ' + image.top + 'px; left: ' + image.left + 'px; '" (click)="onImageClick(image)" [class.modifying-group]="stateService.modifyingGroup?.includes(image)">
         <div class="brick-container">
           <img [src]="image.thumbnailLink" (onCreate)="onBrickCreate($event, image)" #imageElement (load)="imageElement.style.opacity = '1'">
         </div>

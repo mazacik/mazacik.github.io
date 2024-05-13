@@ -7,7 +7,6 @@ import { OnCreateDirective } from 'src/app/shared/directives/on-create.directive
 import { ApplicationService } from 'src/app/shared/services/application.service';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 import { ScreenUtils } from '../../shared/utils/screen.utils';
-import { GalleryGroup } from '../model/gallery-group.class';
 import { GalleryStateService } from '../services/gallery-state.service';
 
 @Component({
@@ -23,6 +22,8 @@ import { GalleryStateService } from '../services/gallery-state.service';
   animations: [leave]
 })
 export class MasonryComponent {
+
+  protected masonryImages: GalleryImage[];
 
   private bricks: { [key: string]: HTMLImageElement } = {};
   private masonryContainer: HTMLElement;
@@ -51,8 +52,19 @@ export class MasonryComponent {
 
   public updateLayout(): void {
     if (this.masonryContainer) {
-      const filter: GalleryImage[] = this.stateService.filter();
-      if (filter.length == 0) return;
+      this.masonryImages = this.stateService.filter().filter(image => {
+        if (image.hasGroup()) {
+          if (image.group.open) {
+            return true;
+          } else {
+            return image == image.group.images.filter(groupImage => groupImage.passesFilter)[0];
+          }
+        } else {
+          return true;
+        }
+      });
+
+      if (this.masonryImages.length == 0) return;
 
       const minColumnWidth: number = ScreenUtils.isLargeScreen() ? 200 : 150;
       const masonryGap: number = 6;
@@ -68,14 +80,14 @@ export class MasonryComponent {
         left[i] = i * (columnWidth + masonryGap);
       }
 
-      for (const image of filter) {
+      for (const image of this.masonryImages) {
         if (image.width != columnWidth) {
           image.width = columnWidth;
           image.height = columnWidth / image.aspectRatio;
         }
       }
 
-      for (const image of filter) {
+      for (const image of this.masonryImages) {
         if (image.hasGroup() && image.group.open) {
           if (image == image.group.images.filter(image => image.passesFilter)[0]) {
             const groupColumnIndexes: number[] = [this.getShortestColumnIndex(top)];
