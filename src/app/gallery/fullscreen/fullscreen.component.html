@@ -15,8 +15,11 @@
     <div style="justify-content: start;">
       <i class="icon-button fa-solid fa-trash" tp="Trash" (click)="stateService.moveTargetToTrash()"></i>
     </div>
-    <div style="justify-content: center;">
-
+    <div style="display: flex; justify-content: center;">
+      <ng-container *ngIf="target?.hasGroup()">
+        <i [class.disabled]="isFirstGroupImage(target)" class="icon-button fa-solid fa-arrow-left" (click)="moveTargetGroupLeft(target)"></i>
+        <i [class.disabled]="isLastGroupImage(target)" class="icon-button fa-solid fa-arrow-right" (click)="moveTargetGroupRight(target)"></i>
+      </ng-container>
     </div>
     <div style="justify-content: end;">
       <i *ngIf="target?.hasGroup()" class="icon-button fa-solid fa-arrows-spin" (click)="stateService.setRandomGroupTarget()"></i>

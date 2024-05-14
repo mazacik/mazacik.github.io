@@ -5,6 +5,7 @@ import { fade } from 'src/app/shared/consntants/animations.constants';
 import { VariableDirective } from 'src/app/shared/directives/variable.directive';
 import { ApplicationService } from 'src/app/shared/services/application.service';
 import { DialogService } from 'src/app/shared/services/dialog.service';
+import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 import { GoogleFileUtils } from 'src/app/shared/utils/google-file.utils';
 import { GalleryImage } from '../model/gallery-image.class';
 import { GalleryStateService } from '../services/gallery-state.service';
@@ -86,6 +87,24 @@ export class FullscreenComponent {
       const newTab: Window = window.open('about:blank', 'Video Snapshot');
       newTab.document.write("<img src='" + canvas.toDataURL('image/png') + "' alt='from canvas'/>");
     }
+  }
+
+  protected isFirstGroupImage(image: GalleryImage): boolean {
+    return ArrayUtils.isFirst(image.getGroupImages(), image);
+  }
+
+  protected isLastGroupImage(image: GalleryImage): boolean {
+    return ArrayUtils.isLast(image.getGroupImages(), image);
+  }
+
+  protected moveTargetGroupLeft(image: GalleryImage): void {
+    const groupImages: GalleryImage[] = image.getGroupImages();
+    this.stateService.target.set(groupImages[groupImages.indexOf(image) - 1]);
+  }
+
+  protected moveTargetGroupRight(image: GalleryImage): void {
+    const groupImages: GalleryImage[] = image.getGroupImages();
+    this.stateService.target.set(groupImages[groupImages.indexOf(image) + 1]);
   }
 
 }
