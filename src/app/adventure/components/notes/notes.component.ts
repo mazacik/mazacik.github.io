@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, HostListener, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { OnCreateDirective } from 'src/app/shared/directives/on-create.directive';
+import { CreateDirective } from 'src/app/shared/directives/create.directive';
 import { VariableDirective } from 'src/app/shared/directives/variable.directive';
 import { ApplicationService } from 'src/app/shared/services/application.service';
 import { StringUtils } from 'src/app/shared/utils/string.utils';
@@ -17,7 +17,7 @@ import { GraphRendererService } from '../../services/graph-renderer.service';
   imports: [
     CommonModule,
     FormsModule,
-    OnCreateDirective,
+    CreateDirective,
     VariableDirective
   ],
   templateUrl: './notes.component.html',

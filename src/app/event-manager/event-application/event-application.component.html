@@ -3,7 +3,7 @@
     <span class="auth-text">Prihláška</span>
     <span class="user-name">{{ authService.userS()?.displayName }}</span>
   </div>
-  <div *ngIf="!authService.userS()" class="auth-button auth-ui-button" (onCreate)="createAuthButton($event)"></div>
+  <div *ngIf="!authService.userS()" class="auth-button auth-ui-button" (create)="createAuthButton($event)"></div>
   <ng-container *ngIf="authService.userS()">
     <!-- <span>{{ this.authService.userS().displayName }}</span> -->
     <div class="h-separator"></div>

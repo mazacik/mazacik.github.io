@@ -3,7 +3,7 @@ import { Component, ElementRef, HostListener, effect } from '@angular/core';
 import { TippyDirective } from '@ngneat/helipopper';
 import { GalleryImage } from 'src/app/gallery/model/gallery-image.class';
 import { leave } from 'src/app/shared/consntants/animations.constants';
-import { OnCreateDirective } from 'src/app/shared/directives/on-create.directive';
+import { CreateDirective } from 'src/app/shared/directives/create.directive';
 import { ApplicationService } from 'src/app/shared/services/application.service';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 import { ScreenUtils } from '../../shared/utils/screen.utils';
@@ -14,7 +14,7 @@ import { GalleryStateService } from '../services/gallery-state.service';
   standalone: true,
   imports: [
     CommonModule,
-    OnCreateDirective,
+    CreateDirective,
     TippyDirective
   ],
   templateUrl: './masonry.component.html',
@@ -22,8 +22,6 @@ import { GalleryStateService } from '../services/gallery-state.service';
   animations: [leave]
 })
 export class MasonryComponent {
-
-  protected masonryImages: GalleryImage[];
 
   private bricks: { [key: string]: HTMLImageElement } = {};
   private masonryContainer: HTMLElement;
@@ -36,10 +34,10 @@ export class MasonryComponent {
     effect(() => this.updateLayout());
   }
 
-  public scrollToTarget(): void {
+  private scrollToTarget(): void {
     const target: GalleryImage = this.stateService.target();
     if (target) {
-      const targetRepresent: GalleryImage = target.hasGroup() ? target.getGroupImages().find(groupImage => groupImage.passesFilter) : target;
+      const targetRepresent: GalleryImage = target.group ? target.group.images.find(groupImage => groupImage.passesFilter) : target;
       const brickElement: HTMLImageElement = this.bricks[targetRepresent?.id];
       if (brickElement && !ScreenUtils.isElementVisible(brickElement)) {
         const containerElement: HTMLElement = document.getElementsByClassName('masonry-scroll-container')[0] as HTMLElement;
@@ -50,10 +48,10 @@ export class MasonryComponent {
     }
   }
 
-  public updateLayout(): void {
+  private updateLayout(): void {
     if (this.masonryContainer) {
-      this.masonryImages = this.stateService.filter().filter(image => {
-        if (image.hasGroup()) {
+      this.stateService.masonryImages = this.stateService.filter().filter(image => {
+        if (image.group) {
           if (image.group.open) {
             return true;
           } else {
@@ -64,7 +62,7 @@ export class MasonryComponent {
         }
       });
 
-      if (this.masonryImages.length == 0) return;
+      if (this.stateService.masonryImages.length == 0) return;
 
       const minColumnWidth: number = ScreenUtils.isLargeScreen() ? 200 : 150;
       const masonryGap: number = 6;
@@ -80,21 +78,21 @@ export class MasonryComponent {
         left[i] = i * (columnWidth + masonryGap);
       }
 
-      for (const image of this.masonryImages) {
+      for (const image of this.stateService.masonryImages) {
         if (image.width != columnWidth) {
           image.width = columnWidth;
           image.height = columnWidth / image.aspectRatio;
         }
       }
 
-      for (const image of this.masonryImages) {
-        if (image.hasGroup() && image.group.open) {
+      for (const image of this.stateService.masonryImages) {
+        if (image.group?.open) {
           if (image == image.group.images.filter(image => image.passesFilter)[0]) {
             const groupColumnIndexes: number[] = [this.getShortestColumnIndex(top)];
             const groupColumnSpans: { top: number, bottom: number }[] = [];
             for (let i = 0; i < columnCount; i++) groupColumnSpans.push({ top: 0, bottom: 0 });
 
-            for (const groupImage of image.getGroupImages().filter(image => image.passesFilter)) {
+            for (const groupImage of image.group.images.filter(groupImage => groupImage.passesFilter)) {
               const availableColumnIndexes: number[] = [...groupColumnIndexes];
 
               const leftColumnIndex: number = Math.min(...groupColumnIndexes);
@@ -146,7 +144,7 @@ export class MasonryComponent {
   protected onImageClick(image: GalleryImage): void {
     if (this.stateService.modifyingGroup) {
       const target: GalleryImage = this.stateService.target();
-      if (image.hasGroup() && target.hasGroup() && !target.group.images.includes(image)) {
+      if (image.group && target.group && !target.group.images.includes(image)) {
         return;
       }
 
@@ -193,7 +191,7 @@ export class MasonryComponent {
   protected onGroupToggleClick(event: MouseEvent, image: GalleryImage): void {
     if (ScreenUtils.isLargeScreen()) {
       event.stopPropagation();
-      if (image.hasGroup()) {
+      if (image.group) {
         image.group.open = !image.group.open;
         this.stateService.refreshFilter();
       }
@@ -210,7 +208,7 @@ export class MasonryComponent {
   }
 
   protected shouldDisableGroupToggleButton(image: GalleryImage): boolean {
-    return image.hasGroup() && image.getGroupImages().filter(image => image.passesFilter).length < 2;
+    return image.group && image.group.images.filter(groupImage => groupImage.passesFilter).length < 2;
   }
 
   @HostListener('window:resize')

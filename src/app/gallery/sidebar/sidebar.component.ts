@@ -3,7 +3,7 @@ import { AfterViewInit, Component, ElementRef, effect } from '@angular/core';
 import { TippyDirective } from '@ngneat/helipopper';
 import { SwitchComponent } from 'src/app/shared/components/switch/switch.component';
 import { SwitchEvent } from 'src/app/shared/components/switch/switch.event';
-import { OnCreateDirective } from 'src/app/shared/directives/on-create.directive';
+import { CreateDirective } from 'src/app/shared/directives/create.directive';
 import { VariableDirective } from 'src/app/shared/directives/variable.directive';
 import { ApplicationService } from 'src/app/shared/services/application.service';
 import { DialogService } from 'src/app/shared/services/dialog.service';
@@ -22,7 +22,7 @@ import { GalleryStateService } from '../services/gallery-state.service';
   imports: [
     CommonModule,
     SwitchComponent,
-    OnCreateDirective,
+    CreateDirective,
     VariableDirective,
     TippyDirective
   ],
@@ -48,7 +48,7 @@ export class SidebarComponent implements AfterViewInit {
       beforeEffect(() => previousTarget = currentTarget);
       this.sidebarGroupPreviewsLoaded = 0;
       const currentTarget: GalleryImage = this.stateService.target();
-      if (currentTarget?.hasGroup() && previousTarget && currentTarget.getGroupImages().includes(previousTarget)) this.moveTargetGroupPreviewIntoView(true);
+      if (currentTarget?.group && previousTarget && currentTarget.group.images.includes(previousTarget)) this.moveTargetGroupPreviewIntoView(true);
     });
   }
 
@@ -83,24 +83,16 @@ export class SidebarComponent implements AfterViewInit {
 
   private setupGroupPreviewMouseDragEvents(): void {
     if (ScreenUtils.isLargeScreen()) {
-      let timeout: NodeJS.Timeout;
       let groupPreviewScrollLeft: number;
       let groupPreviewMouseDown: boolean;
       const container: HTMLElement = document.getElementsByClassName('sidebar-preview-group-scroll-container')[0] as HTMLElement;
-      const removeHovering = () => {
-        container.classList.remove('hovering');
-        clearTimeout(timeout);
-        timeout = null;
+      const removeMouseDownClass = () => {
+        container.classList.remove('mouse-down');
         this.moveTargetGroupPreviewIntoView(true);
       }
-      container.addEventListener('mouseenter', () => {
-        if (!timeout) timeout = setTimeout(() => {
-          container.classList.add('hovering');
-        }, 250);
-      });
       container.addEventListener('mouseleave', () => {
         if (!groupPreviewMouseDown) {
-          removeHovering();
+          removeMouseDownClass();
         }
       });
       const mouseMoveEventListener = (event: MouseEvent) => {
@@ -111,6 +103,7 @@ export class SidebarComponent implements AfterViewInit {
       }
       container.addEventListener('mousedown', event => {
         groupPreviewMouseDown = true;
+        container.classList.add('mouse-down');
         groupPreviewScrollLeft = container.scrollLeft;
         this.groupPreviewContainerOffsetLeft = container.offsetLeft;
         this.groupPreviewClickX = event.pageX + container.offsetLeft;
@@ -120,7 +113,7 @@ export class SidebarComponent implements AfterViewInit {
         groupPreviewMouseDown = false;
         window.removeEventListener('mousemove', mouseMoveEventListener);
         if (!document.elementsFromPoint(event.x, event.y).includes(container)) {
-          removeHovering();
+          removeMouseDownClass();
         }
       });
     }
@@ -132,7 +125,7 @@ export class SidebarComponent implements AfterViewInit {
 
   protected onGroupPreviewLoad(image: GalleryImage): void {
     this.sidebarGroupPreviewsLoaded++;
-    if (this.sidebarGroupPreviewsLoaded == image.getGroupImages().length) {
+    if (this.sidebarGroupPreviewsLoaded == image.group.images.filter(groupImage => groupImage.passesFilter).length) {
       this.moveTargetGroupPreviewIntoView(false);
     }
   }
@@ -148,6 +141,14 @@ export class SidebarComponent implements AfterViewInit {
         containerElement.scrollTo({ left: position, behavior: smooth ? 'smooth' : 'auto' });
       }
     }
+  }
+
+  protected isGroupPreviewContainerVisible(image: GalleryImage): boolean {
+    return this.getGroupPreviewImages(image)?.length > 1;
+  }
+
+  protected getGroupPreviewImages(image: GalleryImage): GalleryImage[] {
+    return image?.group.images.filter(groupImage => groupImage.passesFilter);
   }
 
   protected openTagEditor(event?: MouseEvent, group?: TagGroup, tag?: Tag): void {
@@ -190,6 +191,12 @@ export class SidebarComponent implements AfterViewInit {
 
   protected onBookmarksStateChange(event: SwitchEvent): void {
     this.stateService.bookmarksFilter = event.state;
+    this.stateService.refreshFilter();
+    this.stateService.updateData();
+  }
+
+  protected onArchiveFilterStateChange(event: SwitchEvent): void {
+    this.stateService.archiveFilter = event.state;
     this.stateService.refreshFilter();
     this.stateService.updateData();
   }

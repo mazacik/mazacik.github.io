@@ -12,6 +12,7 @@ export abstract class GalleryUtils {
     return ArrayUtils.getFirst(images);
   }
 
+  // TODO this doesn't work with masonry
   public static getNearestImageRight(image: GalleryImage, images: GalleryImage[]): GalleryImage {
     return images[images.indexOf(image) + 1] || ArrayUtils.getLast(images);
   }
@@ -24,6 +25,7 @@ export abstract class GalleryUtils {
     return ArrayUtils.getLast(images);
   }
 
+  // TODO this doesn't work with masonry
   public static getNearestImageLeft(image: GalleryImage, images: GalleryImage[]): GalleryImage {
     return images[images.indexOf(image) - 1] || ArrayUtils.getFirst(images);
   }

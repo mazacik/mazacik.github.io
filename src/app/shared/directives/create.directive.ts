@@ -1,19 +1,19 @@
 import { Directive, ElementRef, Output, EventEmitter } from '@angular/core';
 
 @Directive({
-  selector: '[onCreate]',
+  selector: '[create]',
   standalone: true
 })
-export class OnCreateDirective {
+export class CreateDirective {
 
-  @Output() onCreate: EventEmitter<ElementRef> = new EventEmitter<ElementRef>();
+  @Output() create: EventEmitter<ElementRef> = new EventEmitter<ElementRef>();
 
   constructor(
     private elementRef: ElementRef
   ) { }
 
   ngOnInit() {
-    this.onCreate.emit(this.elementRef);
+    this.create.emit(this.elementRef);
   }
 
 }

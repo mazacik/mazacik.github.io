@@ -1,6 +1,6 @@
 <ng-container *ngVar="stateService.getCurrentNote() as currentNote">
   <ng-container *ngIf="currentNote">
     <input class="note-title" placeholder="Title" [(ngModel)]="currentNote.label" (input)="googleService.updateAdventure()">
-    <textarea class="note-content" placeholder="Text" [(ngModel)]="currentNote.text" (input)="onNoteInput()" (onCreate)="initTab($event)"></textarea>
+    <textarea class="note-content" placeholder="Text" [(ngModel)]="currentNote.text" (input)="onNoteInput()" (create)="initTab($event)"></textarea>
   </ng-container>
 </ng-container>

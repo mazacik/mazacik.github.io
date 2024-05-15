@@ -98,7 +98,7 @@
       overflow: hidden;
     }
 
-    &.hovering {
+    &.mouse-down {
       position: absolute;
       z-index: 21;
       padding-left: calc(100vw - $sidebar-width);
@@ -142,7 +142,7 @@
   display: grid;
   grid-template-columns: auto 1fr max-content auto;
   align-items: center;
-  gap: 0.5rem;
+  gap: $gap;
   border-radius: $gap * 2;
 
   &:nth-child(2n+1) {
