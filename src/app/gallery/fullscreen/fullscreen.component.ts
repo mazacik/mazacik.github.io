@@ -7,15 +7,18 @@ import { ApplicationService } from 'src/app/shared/services/application.service'
 import { DialogService } from 'src/app/shared/services/dialog.service';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 import { GoogleFileUtils } from 'src/app/shared/utils/google-file.utils';
+import { GalleryUtils } from '../gallery.utils';
 import { GalleryImage } from '../model/gallery-image.class';
 import { GalleryStateService } from '../services/gallery-state.service';
+import { TippyDirective } from '@ngneat/helipopper';
 
 @Component({
   selector: 'app-fullscreen',
   standalone: true,
   imports: [
     CommonModule,
-    VariableDirective
+    VariableDirective,
+    TippyDirective
   ],
   templateUrl: './fullscreen.component.html',
   styleUrls: ['./fullscreen.component.scss'],
@@ -90,21 +93,19 @@ export class FullscreenComponent {
   }
 
   protected isFirstGroupImage(image: GalleryImage): boolean {
-    return ArrayUtils.isFirst(image.getGroupImages(), image);
+    return ArrayUtils.isFirst(image.group.images.filter(groupImage => groupImage.passesFilter), image);
   }
 
   protected isLastGroupImage(image: GalleryImage): boolean {
-    return ArrayUtils.isLast(image.getGroupImages(), image);
+    return ArrayUtils.isLast(image.group.images.filter(groupImage => groupImage.passesFilter), image);
   }
 
   protected moveTargetGroupLeft(image: GalleryImage): void {
-    const groupImages: GalleryImage[] = image.getGroupImages();
-    this.stateService.target.set(groupImages[groupImages.indexOf(image) - 1]);
+    this.stateService.target.set(GalleryUtils.getNearestImageLeft(image, image.group.images.filter(groupImage => groupImage.passesFilter)));
   }
 
   protected moveTargetGroupRight(image: GalleryImage): void {
-    const groupImages: GalleryImage[] = image.getGroupImages();
-    this.stateService.target.set(groupImages[groupImages.indexOf(image) + 1]);
+    this.stateService.target.set(GalleryUtils.getNearestImageRight(image, image.group.images.filter(groupImage => groupImage.passesFilter)));
   }
 
 }

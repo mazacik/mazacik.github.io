@@ -3,7 +3,7 @@ import { Component, HostBinding, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { TippyDirective } from '@ngneat/helipopper';
-import { OnCreateDirective } from 'src/app/shared/directives/on-create.directive';
+import { CreateDirective } from 'src/app/shared/directives/create.directive';
 import { VariableDirective } from 'src/app/shared/directives/variable.directive';
 import { crossfade } from '../../consntants/animations.constants';
 
@@ -16,7 +16,7 @@ import { crossfade } from '../../consntants/animations.constants';
     RouterLink,
     TippyDirective,
     VariableDirective,
-    OnCreateDirective
+    CreateDirective
   ],
   templateUrl: './fuck-messenger-browser.component.html',
   styleUrls: ['./fuck-messenger-browser.component.scss'],

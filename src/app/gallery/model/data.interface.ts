@@ -14,6 +14,7 @@ export interface Data {
 
   heartsFilter: number;
   bookmarksFilter: number;
+  archiveFilter: number;
   groupSizeFilterMin: number;
   groupSizeFilterMax: number;
 

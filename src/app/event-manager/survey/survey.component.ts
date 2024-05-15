@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TippyDirective } from '@ngneat/helipopper';
 import { crossfade, drawer2, fade, skip } from 'src/app/shared/consntants/animations.constants';
-import { OnCreateDirective } from 'src/app/shared/directives/on-create.directive';
+import { CreateDirective } from 'src/app/shared/directives/create.directive';
 import { VariableDirective } from 'src/app/shared/directives/variable.directive';
 import { FirebaseAuthService } from 'src/app/shared/services/firebase-auth.service';
 import { FirestoreService } from 'src/app/shared/services/firestore.service';
@@ -23,7 +23,7 @@ import { EventManagerService } from '../services/event-manager.service';
     RouterLink,
     TippyDirective,
     VariableDirective,
-    OnCreateDirective
+    CreateDirective
   ],
   templateUrl: './survey.component.html',
   styleUrls: ['./survey.component.scss'],

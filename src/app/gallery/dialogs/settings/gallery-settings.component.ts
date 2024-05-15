@@ -56,7 +56,7 @@ export class GallerySettingsComponent extends DialogContent<boolean> implements 
   protected modifyGroup(): void {
     let open: boolean;
     const target: GalleryImage = this.stateService.target();
-    if (target.hasGroup()) {
+    if (target.group) {
       open = target.group.open;
       target.group.open = true;
       this.stateService.modifyingGroup = target.group.images.slice();
@@ -68,7 +68,7 @@ export class GallerySettingsComponent extends DialogContent<boolean> implements 
     this.dialogService.create(null, { buttons: buttons }, false, 'bottom').then((success: boolean) => {
       if (success) {
         if (this.stateService.modifyingGroup.length > 1) {
-          if (target.hasGroup()) {
+          if (target.group) {
             target.group.images = this.stateService.modifyingGroup;
             target.group.images.forEach(image => image.group = target.group);
           } else {
@@ -80,37 +80,37 @@ export class GallerySettingsComponent extends DialogContent<boolean> implements 
 
           this.stateService.updateData();
         } else {
-          if (target.hasGroup()) {
+          if (target.group) {
             target.group.images.forEach(image => image.group = null);
             ArrayUtils.remove(this.stateService.groups, target.group);
           }
         }
       }
 
-      if (target.hasGroup()) {
+      if (target.group) {
         target.group.open = open;
       }
 
       this.stateService.modifyingGroup = null;
 
-      if (target.hasGroup()) {
-        target.getGroupImages().forEach(image => this.stateService.refreshFilter(image));
+      if (target.group) {
+        target.group.images.forEach(image => this.stateService.refreshFilter(image));
       }
     });
 
-    if (target.hasGroup()) {
-      target.getGroupImages().forEach(image => this.stateService.refreshFilter(image));
+    if (target.group) {
+      target.group.images.forEach(image => this.stateService.refreshFilter(image));
     }
 
     this.close();
   }
 
   protected reorderGroup(): void {
-    this.dialogService.create(GroupOrderComponent, { images: this.stateService.target().getGroupImages().slice() }).then(images => {
+    this.dialogService.create(GroupOrderComponent, { images: this.stateService.target().group.images.slice() }).then(images => {
       if (images) {
         const map = new Map<string, number>();
         images.forEach((image, index) => map.set(image.id, index));
-        this.stateService.target().getGroupImages().sort((a, b) => map.get(a.id) - map.get(b.id));
+        this.stateService.target().group.images.sort((a, b) => map.get(a.id) - map.get(b.id));
         this.stateService.refreshFilter();
         this.stateService.updateData();
       }
@@ -124,7 +124,7 @@ export class GallerySettingsComponent extends DialogContent<boolean> implements 
   }
 
   protected startImageComparison(): void {
-    this.dialogService.create(ImageComparisonComponent, { images: this.stateService.filter() });
+    this.dialogService.create(ImageComparisonComponent, { images: this.stateService.images.filter(i => i.passesFilter) });
     this.close();
   }
 

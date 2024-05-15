@@ -5,7 +5,7 @@ import { FirebaseAuthService } from 'src/app/shared/services/firebase-auth.servi
 import { FirestoreService } from 'src/app/shared/services/firestore.service';
 import { Event } from '../models/event.interface';
 import { EventManagerService } from '../services/event-manager.service';
-import { OnCreateDirective } from 'src/app/shared/directives/on-create.directive';
+import { CreateDirective } from 'src/app/shared/directives/create.directive';
 import { raftingRules } from '../data/rafting-rules';
 
 @Component({
@@ -13,7 +13,7 @@ import { raftingRules } from '../data/rafting-rules';
   standalone: true,
   imports: [
     CommonModule,
-    OnCreateDirective
+    CreateDirective
   ],
   templateUrl: './event-application.component.html',
   styleUrls: ['./event-application.component.scss']
