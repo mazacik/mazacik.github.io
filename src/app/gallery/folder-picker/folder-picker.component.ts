@@ -55,8 +55,8 @@ export class FolderPickerComponent implements OnInit {
         groupProperties: [],
         tagGroups: [],
         heartsFilter: 0,
-        bookmarksFilter: 1,
-        archiveFilter: 0,
+        bookmarksFilter: 0,
+        archiveFilter: 1,
         groupSizeFilterMin: 0,
         groupSizeFilterMax: 999
       } as Data).then(() => {

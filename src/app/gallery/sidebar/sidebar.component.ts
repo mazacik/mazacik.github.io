@@ -148,7 +148,7 @@ export class SidebarComponent implements AfterViewInit {
   }
 
   protected getGroupPreviewImages(image: GalleryImage): GalleryImage[] {
-    return image?.group.images.filter(groupImage => groupImage.passesFilter);
+    return image?.group?.images.filter(groupImage => groupImage.passesFilter);
   }
 
   protected openTagEditor(event?: MouseEvent, group?: TagGroup, tag?: Tag): void {
