@@ -36,7 +36,7 @@ export class GalleryTagEditorComponent extends DialogContent<Tag> implements OnI
   public configuration: DialogConfiguration = {
     title: 'Tag Editor',
     buttons: [{
-      text: () => this.group.name.length > 0 ? 'Save' : 'Create',
+      text: () => this.group ? 'Save' : 'Create',
       disabled: () => !this.canSubmit(),
       click: () => this.submit()
     }, {
@@ -59,13 +59,14 @@ export class GalleryTagEditorComponent extends DialogContent<Tag> implements OnI
   ngOnInit(): void {
     if (this.group) {
       this.currentGroup = this.group;
+      this.canDelete = true;
     } else {
-      this.group = { name: '', state: 0, tags: [] };
+      this.currentGroup = { name: '', state: 0, tags: [] };
+      this.canDelete = false;
     }
 
     if (!this.tag) this.tag = { id: nanoid(), name: '', state: 0 };
     this.tagName = this.tag.name;
-    this.canDelete = this.group.tags.includes(this.tag);
   }
 
   protected editGroup(before?: TagGroup): void {
@@ -90,7 +91,7 @@ export class GalleryTagEditorComponent extends DialogContent<Tag> implements OnI
             ArrayUtils.remove(image.tags, this.tag.id);
           }
 
-          ArrayUtils.remove(this.stateService.tagGroups.find(tagGroup => tagGroup.tags.includes(this.tag)).tags, this.tag);
+          ArrayUtils.remove(this.group.tags, this.tag);
 
           this.stateService.updateData();
           this.resolve(null);
@@ -116,7 +117,7 @@ export class GalleryTagEditorComponent extends DialogContent<Tag> implements OnI
     if (this.canSubmit()) {
       this.tag.name = this.tagName;
 
-      if (this.currentGroup != this.group) {
+      if (this.group && this.group != this.currentGroup) {
         ArrayUtils.remove(this.group.tags, this.tag);
       }
 
