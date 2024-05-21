@@ -5,7 +5,6 @@ export class GalleryImage extends GoogleMetadata {
 
   public heart: boolean;
   public bookmark: boolean;
-  public archive: boolean;
   public tags: string[];
   public likes: number;
 
@@ -18,5 +17,6 @@ export class GalleryImage extends GoogleMetadata {
   public contentLink: string;
   public group: GalleryGroup;
   public passesFilter: boolean;
+  public parentFolderId: string;
 
 }

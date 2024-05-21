@@ -3,8 +3,9 @@ import { Component, HostListener, OnInit } from '@angular/core';
 import { enter } from '../shared/consntants/animations.constants';
 import { ApplicationService } from '../shared/services/application.service';
 import { DialogService } from '../shared/services/dialog.service';
+import { ArrayUtils } from '../shared/utils/array.utils';
 import { FullscreenComponent } from './fullscreen/fullscreen.component';
-import { GalleryUtils } from './gallery.utils';
+import { MasonryUtils } from './masonry.utils';
 import { MasonryComponent } from './masonry/masonry.component';
 import { GalleryImage } from './model/gallery-image.class';
 import { GallerySettings } from './model/gallery-settings.interface';
@@ -61,26 +62,26 @@ export class GalleryComponent implements OnInit {
           break;
         case 'KeyW':
         case 'ArrowUp':
-          this.stateService.target.set(GalleryUtils.getNearestImageUp(target, this.stateService.masonryImages));
+          this.stateService.target.set(MasonryUtils.getNearestImageUp(this.stateService.masonryImages, this.stateService.masonryTargetReference));
           break;
         case 'KeyA':
         case 'ArrowLeft':
           if (event.shiftKey) {
-            this.stateService.target.set(GalleryUtils.getNearestImageLeft(target, target.group.images.filter(groupImage => groupImage.passesFilter)));
+            this.stateService.target.set(ArrayUtils.getPrevious(target.group.images, target, true));
           } else {
-            this.stateService.target.set(GalleryUtils.getNearestImageLeft(target, this.stateService.masonryImages));
+            this.stateService.target.set(MasonryUtils.getNearestImageLeft(this.stateService.masonryImages, this.stateService.masonryTargetReference));
           }
           break;
         case 'KeyS':
         case 'ArrowDown':
-          this.stateService.target.set(GalleryUtils.getNearestImageDown(target, this.stateService.masonryImages));
+          this.stateService.target.set(MasonryUtils.getNearestImageDown(this.stateService.masonryImages, this.stateService.masonryTargetReference));
           break;
         case 'KeyD':
         case 'ArrowRight':
           if (event.shiftKey) {
-            this.stateService.target.set(GalleryUtils.getNearestImageRight(target, target.group.images.filter(groupImage => groupImage.passesFilter)));
+            this.stateService.target.set(ArrayUtils.getNext(target.group.images, target, true));
           } else {
-            this.stateService.target.set(GalleryUtils.getNearestImageRight(target, this.stateService.masonryImages));
+            this.stateService.target.set(MasonryUtils.getNearestImageRight(this.stateService.masonryImages, this.stateService.masonryTargetReference));
           }
           break;
       }

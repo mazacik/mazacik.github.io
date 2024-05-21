@@ -136,6 +136,76 @@ export abstract class ArrayUtils {
     }
   }
 
+  public static getPrevious<T>(array: T[], object: T, loop: boolean = false): T {
+    if (!this.isEmpty(array)) {
+      return array[array.indexOf(object) - 1] || (loop ? array[array.length - 1] : undefined);
+    }
+  }
+
+  public static findPrevious<T>(array: T[], start: T, predicate: (t: T) => boolean, loop: boolean = false): T {
+    if (!this.isEmpty(array)) {
+      const startIndex: number = array.indexOf(start);
+      let index: number = startIndex;
+      while (index > 0) {
+        if (predicate(array[--index])) return array[index];
+      }
+      if (loop) {
+        index = array.length - 1;
+        while (index > startIndex) {
+          if (predicate(array[--index])) return array[index];
+        }
+      }
+      return undefined;
+    }
+  }
+
+  public static getNext<T>(array: T[], object: T, loop: boolean = false): T {
+    if (!this.isEmpty(array)) {
+      return array[array.indexOf(object) + 1] || (loop ? array[0] : undefined);
+    }
+  }
+
+  public static findNext<T>(array: T[], start: T, predicate: (t: T) => boolean, loop: boolean = false): T {
+    if (!this.isEmpty(array)) {
+      const startIndex: number = array.indexOf(start);
+      let index: number = startIndex;
+      while (index < array.length - 1) {
+        if (predicate(array[++index])) return array[index];
+      }
+      if (loop) {
+        index = 0;
+        while (index < startIndex) {
+          if (predicate(array[++index])) return array[index];
+        }
+      }
+      return undefined;
+    }
+  }
+
+  public static findClosest<T>(array: T[], start: T, predicate?: (t: T) => boolean): T {
+    if (!this.isEmpty(array)) {
+      const startIndex: number = array.indexOf(start);
+      let indexOffset: number = 0;
+      let element: T;
+      let goLeft: boolean = true;
+      let goRight: boolean = true;
+      while (goLeft || goRight) {
+        indexOffset++;
+        if (goRight) {
+          element = array[startIndex + indexOffset];
+          if (!element) goRight = false;
+          if (element && (!predicate || predicate(element))) return element;
+        }
+        if (goLeft) {
+          element = array[startIndex - indexOffset];
+          if (!element) goLeft = false;
+          if (element && (!predicate || predicate(element))) return element;
+        }
+      }
+      return undefined;
+    }
+  }
+
   public static getRandom<T>(array: T[], except?: T[]): T {
     if (this.isEmpty(array)) return null;
     if (array.length == 1) return array[0];

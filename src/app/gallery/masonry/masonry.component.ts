@@ -30,22 +30,9 @@ export class MasonryComponent {
     protected applicationService: ApplicationService,
     protected stateService: GalleryStateService
   ) {
-    effect(() => this.scrollToTarget());
     effect(() => this.updateLayout());
-  }
-
-  private scrollToTarget(): void {
-    const target: GalleryImage = this.stateService.target();
-    if (target) {
-      const targetRepresent: GalleryImage = target.group ? target.group.images.find(groupImage => groupImage.passesFilter) : target;
-      const brickElement: HTMLImageElement = this.bricks[targetRepresent?.id];
-      if (brickElement && !ScreenUtils.isElementVisible(brickElement)) {
-        const containerElement: HTMLElement = document.getElementsByClassName('masonry-scroll-container')[0] as HTMLElement;
-        const position: number = targetRepresent.top - (containerElement.clientHeight - brickElement.height) / 2;
-        // scrollIntoView is bugged on Chrome when scrolling multiple elements at once (masonry+sidebar)
-        containerElement.scrollTo({ top: position, behavior: 'smooth' });
-      }
-    }
+    effect(() => this.scrollToTarget());
+    effect(() => this.updateMasonryTargetReference());
   }
 
   private updateLayout(): void {
@@ -129,10 +116,35 @@ export class MasonryComponent {
           }
         } else {
           const shortestColumnIndex: number = this.getShortestColumnIndex(top);
-          image.left = left[shortestColumnIndex];
           image.top = top[shortestColumnIndex];
+          image.left = left[shortestColumnIndex];
           top[shortestColumnIndex] = top[shortestColumnIndex] + image.height + masonryGap;
         }
+      }
+    }
+  }
+
+  private scrollToTarget(): void {
+    const target: GalleryImage = this.stateService.target();
+    if (target) {
+      const targetRepresent: GalleryImage = target.group ? target.group.images.find(groupImage => groupImage.passesFilter) : target;
+      const brickElement: HTMLImageElement = this.bricks[targetRepresent?.id];
+      if (brickElement && !ScreenUtils.isElementVisible(brickElement)) {
+        const containerElement: HTMLElement = document.getElementsByClassName('masonry-scroll-container')[0] as HTMLElement;
+        const position: number = targetRepresent.top - (containerElement.clientHeight - brickElement.height) / 2;
+        // scrollIntoView is bugged on Chrome when scrolling multiple elements at once (masonry+sidebar)
+        containerElement.scrollTo({ top: position, behavior: 'smooth' });
+      }
+    }
+  }
+
+  private updateMasonryTargetReference(): void {
+    const target: GalleryImage = this.stateService.target();
+    if (target && this.stateService.masonryImages) {
+      if (this.stateService.masonryImages.includes(target)) {
+        this.stateService.masonryTargetReference = target;
+      } else if (target.group && target.group.images.some(groupImage => this.stateService.masonryImages.includes(groupImage))) {
+        this.stateService.masonryTargetReference = ArrayUtils.findClosest(target.group.images, target, groupImage => this.stateService.masonryImages.includes(groupImage));
       }
     }
   }

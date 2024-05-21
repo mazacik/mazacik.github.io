@@ -8,7 +8,6 @@ import { ApplicationService } from "src/app/shared/services/application.service"
 import { ArrayUtils } from "src/app/shared/utils/array.utils";
 import { GoogleFileUtils } from "src/app/shared/utils/google-file.utils";
 import { ScreenUtils } from "src/app/shared/utils/screen.utils";
-import { GalleryUtils } from "../gallery.utils";
 import { Data } from "../model/data.interface";
 import { GallerySettings } from "../model/gallery-settings.interface";
 import { ImageProperties } from "../model/image-properties.interface";
@@ -22,7 +21,8 @@ export class GalleryStateService {
 
   private updateDelay: Delay = new Delay(5000);
 
-  public rootFolderId: string;
+  public dataFolderId: string;
+  public archiveFolderId: string;
   public settings: GallerySettings;
 
   public targetEntireGroup: boolean = false;
@@ -33,14 +33,15 @@ export class GalleryStateService {
   public groups: GalleryGroup[];
   public filter: WritableSignal<GalleryImage[]> = signal([]);
   public target: WritableSignal<GalleryImage> = signal(null);
+
   public masonryImages: GalleryImage[];
+  public masonryTargetReference: GalleryImage;
 
   public tagGroups: TagGroup[];
   public tagCounts: { [tagId: string]: number } = {};
 
   public heartsFilter: number;
   public bookmarksFilter: number;
-  public archiveFilter: number;
   public groupSizeFilterMin: number;
   public groupSizeFilterMax: number;
 
@@ -54,10 +55,10 @@ export class GalleryStateService {
 
   public async processData(): Promise<Data> {
     const data = await this.googleService.getData();
-    this.rootFolderId = data.rootFolderId;
+    this.dataFolderId = data.dataFolderId;
+    this.archiveFolderId = data.archiveFolderId;
     this.heartsFilter = data.heartsFilter;
     this.bookmarksFilter = data.bookmarksFilter;
-    this.archiveFilter = data.archiveFilter;
     this.settings = data.settings;
     this.groupSizeFilterMin = data.groupSizeFilterMin;
     this.groupSizeFilterMax = data.groupSizeFilterMax;
@@ -65,7 +66,7 @@ export class GalleryStateService {
     return data;
   }
 
-  public processImages(data: Data, folderId: string = this.rootFolderId, imageCollector: GalleryImage[] = [], recursionTracker = { calls: 0 }): void {
+  public processImages(data: Data, folderId: string = this.dataFolderId, imageCollector: GalleryImage[] = [], recursionTracker = { calls: 0 }): void {
     recursionTracker.calls++;
 
     this.googleService.getFolderMetadata(folderId).then(metas => {
@@ -74,11 +75,12 @@ export class GalleryStateService {
       }
 
       ArrayUtils.push(imageCollector, metas.filter(meta => GoogleFileUtils.isImage(meta) || GoogleFileUtils.isVideo(meta)).map(meta => {
-        return this.metaToImage(meta, data.imageProperties.find(imageProperty => imageProperty.id == meta.id), this.applicationService.reduceBandwidth)
+        return this.metaToImage(meta, data.imageProperties.find(imageProperty => imageProperty.id == meta.id), folderId, this.applicationService.reduceBandwidth);
       }));
 
       if (--recursionTracker.calls == 0) {
         this.images = imageCollector;
+
         this.groups = data.groupProperties.map(groupProperties => {
           const group: GalleryGroup = new GalleryGroup();
           group.images = this.images.filter(image => groupProperties.imageIds.includes(image.id));
@@ -96,32 +98,19 @@ export class GalleryStateService {
           ArrayUtils.remove(this.images, this.images.find(_image => _image.id == image.id));
         }
 
-        this.tagCounts['_heart'] = this.images.filter(image => image.heart).length;
-        this.tagCounts['_bookmark'] = this.images.filter(image => image.bookmark).length;
-        this.tagCounts['_archive'] = this.images.filter(image => image.archive).length;
-
-        for (const filterGroup of this.tagGroups) {
-          for (const tag of filterGroup.tags) {
-            this.tagCounts[tag.id] = 0;
-          }
-        }
-
-        for (const image of this.images) {
-          for (const tagId of image.tags) {
-            this.tagCounts[tagId]++;
-          }
-        }
+        this.refreshTagCounts();
 
         this.applicationService.loading.next(false);
       };
     });
   }
 
-  private metaToImage(metadata: GoogleMetadata, imageProperties: ImageProperties, bReduceBandwidth: boolean): GalleryImage {
+  private metaToImage(metadata: GoogleMetadata, imageProperties: ImageProperties, folderId: string, bReduceBandwidth: boolean): GalleryImage {
     const image: GalleryImage = new GalleryImage();
     image.id = metadata.id;
     image.name = metadata.name;
     image.mimeType = metadata.mimeType;
+    image.parentFolderId = folderId;
 
     if (metadata.thumbnailLink) {
       if (bReduceBandwidth) {
@@ -148,7 +137,6 @@ export class GalleryStateService {
     if (imageProperties) {
       image.heart = imageProperties.heart;
       image.bookmark = imageProperties.bookmark;
-      image.archive = imageProperties.archive;
       image.tags = imageProperties.tags || [];
       image.likes = imageProperties.likes || 0;
     } else {
@@ -163,14 +151,14 @@ export class GalleryStateService {
   public updateData(): void {
     this.applicationService.changes.next(true);
     this.updateDelay.restart(() => {
-      this.googleService.updateContent(this.googleService.fileId, {
-        rootFolderId: this.rootFolderId,
+      this.googleService.updateContent(this.googleService.dataFileId, {
+        dataFolderId: this.dataFolderId,
+        archiveFolderId: this.archiveFolderId,
         settings: this.settings,
         imageProperties: this.images.map(image => {
           return {
             id: image.id,
             heart: image.heart,
-            archive: image.archive,
             bookmark: image.bookmark,
             tags: image.tags,
             likes: image.likes
@@ -184,7 +172,6 @@ export class GalleryStateService {
         tagGroups: this.tagGroups,
         heartsFilter: this.heartsFilter,
         bookmarksFilter: this.bookmarksFilter,
-        archiveFilter: this.archiveFilter,
         groupSizeFilterMin: this.groupSizeFilterMin,
         groupSizeFilterMax: this.groupSizeFilterMax
       } as Data).then(metadata => {
@@ -195,6 +182,30 @@ export class GalleryStateService {
         this.applicationService.changes.next(false);
       });
     });
+  }
+
+  public refreshTagCounts(): void {
+    if (Object.keys(this.tagCounts).length == 0) {
+      for (const filterGroup of this.tagGroups) {
+        for (const tag of filterGroup.tags) {
+          this.tagCounts[tag.id] = 0;
+        }
+      }
+    } else {
+      for (const key in this.tagCounts) {
+        this.tagCounts[key] = 0;
+      }
+    }
+
+    this.tagCounts['_heart'] = this.images.filter(image => image.heart).length;
+    this.tagCounts['_bookmark'] = this.images.filter(image => image.bookmark).length;
+
+    for (const image of this.images) {
+      for (const tagId of image.tags) {
+        this.tagCounts[tagId]++;
+      }
+    }
+
   }
 
   public setRandomTarget(): void {
@@ -221,7 +232,7 @@ export class GalleryStateService {
   public setRandomGroupTarget(): void {
     const target: GalleryImage = this.target();
     if (target?.group) {
-      this.target.set(ArrayUtils.getRandom(target.group.images.filter(groupImage => groupImage.passesFilter), [target]));
+      this.target.set(ArrayUtils.getRandom(target.group.images, [target]));
     }
   }
 
@@ -260,14 +271,6 @@ export class GalleryStateService {
     }
 
     if (this.bookmarksFilter == 1 && !image.bookmark) {
-      return false;
-    }
-
-    if (this.archiveFilter == -1 && image.archive) {
-      return false;
-    }
-
-    if (this.archiveFilter == 1 && !image.archive) {
       return false;
     }
 
@@ -333,19 +336,6 @@ export class GalleryStateService {
     this.updateData();
   }
 
-  public toggleArchive(image: GalleryImage): void {
-    const newValue: boolean = !image.archive;
-    if (image.group && this.targetEntireGroup) {
-      image.group.images.forEach(groupImage => groupImage.archive = newValue);
-    } else {
-      image.archive = newValue;
-    }
-
-    this.tagCounts['_archive'] = this.images.filter(i => i.archive).length;
-    this.refreshFilter(image);
-    this.updateData();
-  }
-
   public toggleTag(image: GalleryImage, tag: string): void {
     const tags: string[] = image.tags;
     let groupTags: string[];
@@ -386,62 +376,40 @@ export class GalleryStateService {
     }
   }
 
-  public async moveTargetToTrash(): Promise<void> {
+  public async remove(image: GalleryImage, archive: boolean): Promise<void> {
     this.applicationService.loading.next(true);
-
-    const target: GalleryImage = this.target();
-    if (target) {
-      const nextTarget: GalleryImage = await this.moveImageToTrash(target);
-      this.refreshFilter(); // TODO why is refreshFilter needed here
-      this.target.set(nextTarget);
-
-      for (const key in this.tagCounts) {
-        this.tagCounts[key] = 0;
-      }
-
-      this.tagCounts['_heart'] = this.images.filter(i => i.heart).length;
-      this.tagCounts['_bookmark'] = this.images.filter(i => i.bookmark).length;
-      this.tagCounts['_archive'] = this.images.filter(i => i.archive).length;
-
-      for (const image of this.images) {
-        for (const tagId of image.tags) {
-          this.tagCounts[tagId]++;
-        }
-      }
-
-      this.updateData();
-    }
-
-    this.applicationService.loading.next(false);
-  }
-
-  // TODO this method shouldn't worry about nextTarget
-  private async moveImageToTrash(image: GalleryImage): Promise<GalleryImage> {
-    let index: number;
     let nextTarget: GalleryImage;
     if (image.group) {
-      index = image.group.images.indexOf(image);
-      if (ArrayUtils.isLast(image.group.images, image)) {
-        nextTarget = image.group.images[index - 1];
-      } else {
-        nextTarget = image.group.images[index + 1];
-      }
+      nextTarget = ArrayUtils.getNext(image.group.images, image);
+      if (!nextTarget) nextTarget = ArrayUtils.getPrevious(image.group.images, image);
     } else {
-      if (ArrayUtils.isLast(this.masonryImages, image)) {
-        nextTarget = GalleryUtils.getNearestImageLeft(image, this.masonryImages);
-      } else {
-        nextTarget = GalleryUtils.getNearestImageRight(image, this.masonryImages);
-      }
+      nextTarget = ArrayUtils.getNext(this.masonryImages, this.masonryTargetReference);
+      if (!nextTarget) nextTarget = ArrayUtils.getPrevious(this.masonryImages, this.masonryTargetReference);
     }
 
-    this.googleService.trash(image.id);
+    if (archive) {
+      await this.googleService.move(image.id, image.parentFolderId, this.archiveFolderId);
+    } else {
+      await this.googleService.trash(image.id);
+    }
+
     ArrayUtils.remove(this.images, this.images.find(i => i.id == image.id));
 
     if (image.group) {
-      ArrayUtils.remove(image.group.images, image.group.images.find(i => i.id == image.id));
+      if (image.group.images.length > 2) {
+        ArrayUtils.remove(image.group.images, image);
+      } else {
+        image.group.images.forEach(groupImage => delete groupImage.group);
+        ArrayUtils.remove(this.groups, image.group);
+      }
     }
 
-    return nextTarget;
+    this.refreshFilter(); // TODO only needed for masonry layout update
+    this.target.set(nextTarget);
+    this.refreshTagCounts();
+
+    this.updateData();
+    this.applicationService.loading.next(false);
   }
 
 }

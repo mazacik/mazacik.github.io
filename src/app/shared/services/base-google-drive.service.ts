@@ -13,9 +13,9 @@ export abstract class BaseGoogleDriveService {
     protected http: HttpClient
   ) { }
 
-  public createFile(name: string, parents: string[], mimeType: string): Promise<GoogleMetadata> {
+  public createFile(name: string, parentFolderIds: string[], mimeType: string): Promise<GoogleMetadata> {
     const url: string = 'https://content.googleapis.com/drive/v3/files?key=' + this.API_KEY;
-    return lastValueFrom(this.http.post<GoogleMetadata>(url, { name, parents, mimeType }));
+    return lastValueFrom(this.http.post<GoogleMetadata>(url, { name, parents: parentFolderIds, mimeType }));
   }
 
   public createFolder(name: string, parentFolderId: string): Promise<GoogleMetadata> {

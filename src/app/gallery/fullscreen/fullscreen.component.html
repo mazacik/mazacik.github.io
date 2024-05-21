@@ -13,8 +13,8 @@
   </div>
   <div class="fullscreen-footer">
     <div style="justify-content: start;">
-      <i class="icon-button fa-solid" [ngClass]="target?.archive ? 'fa-box-open' : 'fa-box'" [tp]="target?.archive ? 'Unarchive' : 'Archive'" (click)="stateService.toggleArchive(target)"></i>
-      <i class="icon-button fa-solid fa-trash" tp="Trash" (click)="stateService.moveTargetToTrash()"></i>
+      <i class="icon-button fa-solid fa-box" tp="Archive" (click)="stateService.remove(target, true)"></i>
+      <i class="icon-button fa-solid fa-trash" tp="Trash" (click)="stateService.remove(target, false)"></i>
     </div>
     <div style="display: flex; justify-content: center;">
       <ng-container *ngIf="target?.group">
