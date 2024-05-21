@@ -148,7 +148,7 @@ export class SidebarComponent implements AfterViewInit {
   }
 
   protected getGroupPreviewImages(image: GalleryImage): GalleryImage[] {
-    return image?.group?.images.filter(groupImage => groupImage.passesFilter);
+    return image?.group?.images;
   }
 
   protected openTagEditor(event?: MouseEvent, group?: TagGroup, tag?: Tag): void {
@@ -191,12 +191,6 @@ export class SidebarComponent implements AfterViewInit {
 
   protected onBookmarksStateChange(event: SwitchEvent): void {
     this.stateService.bookmarksFilter = event.state;
-    this.stateService.refreshFilter();
-    this.stateService.updateData();
-  }
-
-  protected onArchiveFilterStateChange(event: SwitchEvent): void {
-    this.stateService.archiveFilter = event.state;
     this.stateService.refreshFilter();
     this.stateService.updateData();
   }

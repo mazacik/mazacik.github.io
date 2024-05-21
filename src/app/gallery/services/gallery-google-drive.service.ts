@@ -1,7 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { lastValueFrom } from "rxjs";
-import { GoogleMetadata } from "src/app/shared/classes/google-api/google-metadata.class";
 import { BaseGoogleDriveService } from "../../shared/services/base-google-drive.service";
 import { Data } from "../model/data.interface";
 
@@ -19,7 +18,7 @@ export class GalleryGoogleDriveService extends BaseGoogleDriveService {
     super(http);
   }
 
-  public get fileId(): string {
+  public get dataFileId(): string {
     if (!this._fileId) {
       const dataFileId: string = sessionStorage.getItem('dataFileId');
       if (dataFileId) {
@@ -29,17 +28,13 @@ export class GalleryGoogleDriveService extends BaseGoogleDriveService {
     return this._fileId;
   }
 
-  public set fileId(fileId: string) {
+  public set dataFileId(fileId: string) {
     this._fileId = fileId;
     sessionStorage.setItem('dataFileId', fileId);
   }
 
-  public createDataFile(folderName: string): Promise<GoogleMetadata> {
-    return this.createFile(folderName + '.tagallery', ['root'], 'application/json');
-  }
-
   public async getData(): Promise<Data> {
-    const url: string = 'https://www.googleapis.com/drive/v3/files/' + this.fileId;
+    const url: string = 'https://www.googleapis.com/drive/v3/files/' + this.dataFileId;
     return await lastValueFrom(this.http.get<Data>(url, { params: { 'alt': 'media' }, responseType: 'json' })).catch(error => error);
   }
 

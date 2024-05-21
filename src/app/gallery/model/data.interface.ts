@@ -5,7 +5,8 @@ import { TagGroup } from "./tag-group.interface";
 
 export interface Data {
 
-  rootFolderId: string;
+  dataFolderId: string;
+  archiveFolderId: string;
   settings: GallerySettings;
 
   imageProperties: ImageProperties[];
@@ -14,7 +15,6 @@ export interface Data {
 
   heartsFilter: number;
   bookmarksFilter: number;
-  archiveFilter: number;
   groupSizeFilterMin: number;
   groupSizeFilterMax: number;
 

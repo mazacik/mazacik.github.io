@@ -67,7 +67,7 @@ export class GalleryComponent implements OnInit {
         case 'KeyA':
         case 'ArrowLeft':
           if (event.shiftKey) {
-            this.stateService.target.set(ArrayUtils.getPrevious(target.group.images.filter(groupImage => groupImage.passesFilter), target, true));
+            this.stateService.target.set(ArrayUtils.getPrevious(target.group.images, target, true));
           } else {
             this.stateService.target.set(MasonryUtils.getNearestImageLeft(this.stateService.masonryImages, this.stateService.masonryTargetReference));
           }
@@ -79,7 +79,7 @@ export class GalleryComponent implements OnInit {
         case 'KeyD':
         case 'ArrowRight':
           if (event.shiftKey) {
-            this.stateService.target.set(ArrayUtils.getNext(target.group.images.filter(groupImage => groupImage.passesFilter), target, true));
+            this.stateService.target.set(ArrayUtils.getNext(target.group.images, target, true));
           } else {
             this.stateService.target.set(MasonryUtils.getNearestImageRight(this.stateService.masonryImages, this.stateService.masonryTargetReference));
           }

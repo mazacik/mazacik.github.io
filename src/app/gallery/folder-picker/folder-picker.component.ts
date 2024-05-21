@@ -18,6 +18,12 @@ import { Data } from '../model/data.interface';
 })
 export class FolderPickerComponent implements OnInit {
 
+  private readonly FOLDER_ROOT: string = 'root';
+  private readonly FOLDER_GALLERY_DATA: string = 'gallerydata';
+  private readonly SUFFIX_DATA_FILE: string = '-data.json';
+  private readonly SUFFIX_ARCHIVE_FOLDER: string = '-archive';
+
+  private dataFolder: GoogleMetadata;
   protected dataFiles: GoogleMetadata[];
   protected folders: GoogleMetadata[];
 
@@ -29,39 +35,40 @@ export class FolderPickerComponent implements OnInit {
     this.applicationService.loading.next(true);
   }
 
-  ngOnInit(): void {
-    this.googleService.getFolderMetadata().then(metas => {
-      this.dataFiles = metas.filter(meta => meta.name.endsWith('.tagallery'));
-      const helper: string[] = this.dataFiles.map(meta => meta.name.substring(0, meta.name.indexOf('.tagallery')));
-      this.folders = metas.filter(meta => GoogleFileUtils.isFolder(meta) && !helper.includes(meta.name));
-    }).finally(() => {
-      this.applicationService.loading.next(false);
-    });
+  async ngOnInit(): Promise<void> {
+    const rootFolderFiles = await this.googleService.getFolderMetadata();
+    this.dataFolder = rootFolderFiles.find(file => file.name == this.FOLDER_GALLERY_DATA);
+    if (!this.dataFolder) this.dataFolder = await this.googleService.createFolder(this.FOLDER_GALLERY_DATA, this.FOLDER_ROOT);
+    const dataFolderFiles = await this.googleService.getFolderMetadata(this.dataFolder.id);
+    this.dataFiles = dataFolderFiles.filter(file => file.name.endsWith(this.SUFFIX_DATA_FILE));
+    const helper: string[] = this.dataFiles.map(meta => meta.name.substring(0, meta.name.indexOf(this.SUFFIX_DATA_FILE)));
+    this.folders = rootFolderFiles.filter(file => GoogleFileUtils.isFolder(file) && !helper.includes(file.name) && file.name != this.FOLDER_GALLERY_DATA);
+    this.applicationService.loading.next(false);
   }
 
   protected onDataFileClick(dataFile: GoogleMetadata): void {
     this.applicationService.loading.next(true);
-    this.googleService.fileId = dataFile.id;
+    this.googleService.dataFileId = dataFile.id;
     this.router.navigate(['/gallery']);
   }
 
-  protected onFolderClick(folder: GoogleMetadata): void {
+  protected async onFolderClick(folder: GoogleMetadata): Promise<void> {
     this.applicationService.loading.next(true);
-    this.googleService.createDataFile(folder.name).then(dataFile => {
-      this.googleService.fileId = dataFile.id;
-      this.googleService.updateContent(dataFile.id, {
-        rootFolderId: folder.id,
-        imageProperties: [],
-        groupProperties: [],
-        tagGroups: [],
-        heartsFilter: 0,
-        bookmarksFilter: 0,
-        archiveFilter: 1,
-        groupSizeFilterMin: 0,
-        groupSizeFilterMax: 999
-      } as Data).then(() => {
-        this.router.navigate(['/gallery']);
-      });
+    const dataFile: GoogleMetadata = await this.googleService.createFile(folder.name + this.SUFFIX_DATA_FILE, [this.dataFolder.id], 'application/json');
+    const archiveFolder: GoogleMetadata = await this.googleService.createFolder(folder.name + this.SUFFIX_ARCHIVE_FOLDER, this.dataFolder.id);
+    this.googleService.dataFileId = dataFile.id;
+    this.googleService.updateContent(dataFile.id, {
+      dataFolderId: folder.id,
+      archiveFolderId: archiveFolder.id,
+      imageProperties: [],
+      groupProperties: [],
+      tagGroups: [],
+      heartsFilter: 0,
+      bookmarksFilter: 0,
+      groupSizeFilterMin: 0,
+      groupSizeFilterMax: 999
+    } as Data).then(() => {
+      this.router.navigate(['/gallery']);
     });
   }
 

@@ -47,7 +47,7 @@ export class FullscreenComponent {
   }
 
   private update(image: GalleryImage): void {
-    if (this.crossfadeHelper[0] != image) {
+    if (image && this.crossfadeHelper[0] != image) {
       this.crossfadeHelper[0] = image;
 
       if (GoogleFileUtils.isVideo(image)) {
