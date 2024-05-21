@@ -8,7 +8,7 @@ import { ApplicationService } from "src/app/shared/services/application.service"
 import { ArrayUtils } from "src/app/shared/utils/array.utils";
 import { GoogleFileUtils } from "src/app/shared/utils/google-file.utils";
 import { ScreenUtils } from "src/app/shared/utils/screen.utils";
-import { GalleryUtils } from "../gallery.utils";
+import { MasonryUtils } from "../masonry.utils";
 import { Data } from "../model/data.interface";
 import { GallerySettings } from "../model/gallery-settings.interface";
 import { ImageProperties } from "../model/image-properties.interface";
@@ -33,7 +33,9 @@ export class GalleryStateService {
   public groups: GalleryGroup[];
   public filter: WritableSignal<GalleryImage[]> = signal([]);
   public target: WritableSignal<GalleryImage> = signal(null);
+
   public masonryImages: GalleryImage[];
+  public masonryTargetReference: GalleryImage;
 
   public tagGroups: TagGroup[];
   public tagCounts: { [tagId: string]: number } = {};
@@ -428,9 +430,9 @@ export class GalleryStateService {
       }
     } else {
       if (ArrayUtils.isLast(this.masonryImages, image)) {
-        nextTarget = GalleryUtils.getNearestImageLeft(image, this.masonryImages);
+        nextTarget = MasonryUtils.getNearestImageLeft(this.masonryImages, this.masonryTargetReference);
       } else {
-        nextTarget = GalleryUtils.getNearestImageRight(image, this.masonryImages);
+        nextTarget = MasonryUtils.getNearestImageRight(this.masonryImages, this.masonryTargetReference);
       }
     }
 

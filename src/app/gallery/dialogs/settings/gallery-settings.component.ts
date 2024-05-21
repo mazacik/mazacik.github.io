@@ -8,6 +8,7 @@ import { SwitchComponent } from 'src/app/shared/components/switch/switch.compone
 import { SwitchEvent } from 'src/app/shared/components/switch/switch.event';
 import { ApplicationService } from 'src/app/shared/services/application.service';
 import { DialogService } from 'src/app/shared/services/dialog.service';
+import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 import { GalleryUtils } from '../../gallery.utils';
 import { GalleryGroup } from '../../model/gallery-group.class';
 import { GalleryImage } from '../../model/gallery-image.class';
@@ -15,7 +16,6 @@ import { GalleryGoogleDriveService } from '../../services/gallery-google-drive.s
 import { GalleryStateService } from '../../services/gallery-state.service';
 import { GroupOrderComponent } from '../group-order/group-order.component';
 import { ImageComparisonComponent } from '../image-comparison/image-comparison.component';
-import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 
 @Component({
   selector: 'app-gallery-settings',

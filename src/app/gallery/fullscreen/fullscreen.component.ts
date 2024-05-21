@@ -1,16 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, effect } from '@angular/core';
 import { SafeUrl } from '@angular/platform-browser';
+import { TippyDirective } from '@ngneat/helipopper';
 import { fade } from 'src/app/shared/consntants/animations.constants';
 import { VariableDirective } from 'src/app/shared/directives/variable.directive';
 import { ApplicationService } from 'src/app/shared/services/application.service';
 import { DialogService } from 'src/app/shared/services/dialog.service';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 import { GoogleFileUtils } from 'src/app/shared/utils/google-file.utils';
-import { GalleryUtils } from '../gallery.utils';
 import { GalleryImage } from '../model/gallery-image.class';
 import { GalleryStateService } from '../services/gallery-state.service';
-import { TippyDirective } from '@ngneat/helipopper';
 
 @Component({
   selector: 'app-fullscreen',
@@ -101,11 +100,11 @@ export class FullscreenComponent {
   }
 
   protected moveTargetGroupLeft(image: GalleryImage): void {
-    this.stateService.target.set(GalleryUtils.getNearestImageLeft(image, image.group.images.filter(groupImage => groupImage.passesFilter)));
+    this.stateService.target.set(ArrayUtils.getPrevious(image.group.images.filter(groupImage => groupImage.passesFilter), image, true));
   }
 
   protected moveTargetGroupRight(image: GalleryImage): void {
-    this.stateService.target.set(GalleryUtils.getNearestImageRight(image, image.group.images.filter(groupImage => groupImage.passesFilter)));
+    this.stateService.target.set(ArrayUtils.getNext(image.group.images.filter(groupImage => groupImage.passesFilter), image, true));
   }
 
 }
