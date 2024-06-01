@@ -7,7 +7,7 @@
       <div class="sidebar-preview-group-container" [class.display-none]="!isGroupPreviewContainerVisible(target)">
         <div class="sidebar-preview-group-scroll-container">
           <div class="sidebar-preview-group-border-container">
-            <img *ngFor="let groupImage of getGroupPreviewImages(target)" class="sidebar-preview-group-image" [style.aspect-ratio]="groupImage.aspectRatio" [src]="groupImage.thumbnailLink" [draggable]="false" (create)="onGroupPreviewCreate($event, groupImage)" (load)="onGroupPreviewLoad(groupImage)" (click)="onGroupPreviewClick($event, groupImage)" (dblclick)="onGroupPreviewDoubleClick($event, groupImage)">
+            <img *ngFor="let groupImage of getGroupPreviewImages(target)" class="sidebar-preview-group-image" [style.aspect-ratio]="groupImage.aspectRatio" [src]="groupImage.thumbnailLink" [draggable]="false" (create)="onGroupPreviewCreate($event, groupImage)" (load)="onGroupPreviewLoad(groupImage)" (click)="onGroupPreviewClick($event, groupImage)" (dblclick)="onGroupPreviewDoubleClick($event)">
           </div>
         </div>
       </div>
@@ -55,6 +55,14 @@
             <i class="fa-solid fa-bookmark"></i>
             <span class="sidebar-item-label">{{ ' ('+ (stateService.tagCounts['_bookmark'] || 0) +')' }}</span>
             <app-switch [state]="target?.bookmark ? 1 : -1" (stateChange)="stateService.toggleBookmark(target)" tp="Image: Bookmark"></app-switch>
+          </div>
+          <div class="h-separator"></div>
+          <div style="display: flex; position: relative;">
+            <div style="width: 100%;">
+              <input style="position: absolute; width: 100%; border: 0; user-select: none; pointer-events: none;" [placeholder]="tagMatch?.name || (tagInputQuery?.length > 0 ? '' : 'Tag Search')">
+              <input style="position: relative; width: 100%; border: 0;" (input)="onTagInput($event)" (keypress)="onTagInputSubmit($event)">
+            </div>
+            <i class="icon-button fa-solid fa-plus" tp="Add Tag" [class.disabled]="!tagMatch" (click)="onTagInputSubmit()"></i>
           </div>
           <div *ngFor="let group of stateService.tagGroups" class="sidebar-group">
             <div class="h-separator"></div>

@@ -21,11 +21,15 @@ export class GalleryStateService {
 
   private updateDelay: Delay = new Delay(5000);
 
+  public usePlaceholder: boolean = false;
+  // https://commons.wikimedia.org/wiki/File:A_black_image.jpg
+  private placeholderThumb: string = 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/A_black_image.jpg/320px-A_black_image.jpg';
+  private placeholderImage: string = 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/A_black_image.jpg/1280px-A_black_image.jpg';
+
   public dataFolderId: string;
   public archiveFolderId: string;
   public settings: GallerySettings;
 
-  public targetEntireGroup: boolean = false;
   public fullscreenVisible: WritableSignal<boolean> = signal(false);
   public sidebarVisible: boolean = ScreenUtils.isLargeScreen() || this.applicationService.reduceBandwidth;
 
@@ -63,6 +67,7 @@ export class GalleryStateService {
     this.groupSizeFilterMin = data.groupSizeFilterMin;
     this.groupSizeFilterMax = data.groupSizeFilterMax;
     this.tagGroups = data.tagGroups;
+    this.tagGroups.forEach(group => group.tags.forEach(tag => tag.lowerCaseName = tag.name.toLowerCase()));
     return data;
   }
 
@@ -112,7 +117,12 @@ export class GalleryStateService {
     image.mimeType = metadata.mimeType;
     image.parentFolderId = folderId;
 
-    if (metadata.thumbnailLink) {
+    if (this.usePlaceholder) {
+      image.thumbnailLink = this.placeholderThumb;
+      image.imageMediaMetadata = { width: 1280, height: 960 };
+      image.aspectRatio = 1.333;
+      image.contentLink = this.placeholderImage;
+    } else if (metadata.thumbnailLink) {
       if (bReduceBandwidth) {
         image.thumbnailLink = metadata.thumbnailLink;
       } else {
@@ -311,52 +321,34 @@ export class GalleryStateService {
   }
 
   public toggleHeart(image: GalleryImage): void {
-    const newValue: boolean = !image.heart;
-    if (image.group && this.targetEntireGroup) {
-      image.group.images.forEach(groupImage => groupImage.heart = newValue);
-    } else {
-      image.heart = newValue;
-    }
-
+    image.heart = !image.heart;
     this.tagCounts['_heart'] = this.images.filter(i => i.heart).length;
     this.refreshFilter(image);
     this.updateData();
   }
 
   public toggleBookmark(image: GalleryImage): void {
-    const newValue: boolean = !image.bookmark;
-    if (image.group && this.targetEntireGroup) {
-      image.group.images.forEach(groupImage => groupImage.bookmark = newValue);
-    } else {
-      image.bookmark = newValue;
-    }
-
+    image.bookmark = !image.bookmark;
     this.tagCounts['_bookmark'] = this.images.filter(i => i.bookmark).length;
     this.refreshFilter(image);
     this.updateData();
   }
 
+  public addTag(image: GalleryImage, tag: string): void {
+    if (!image.tags.includes(tag)) {
+      image.tags.push(tag);
+    }
+
+    this.tagCounts[tag] = this.images.filter(i => i.tags.includes(tag)).length;
+    this.refreshFilter(image);
+    this.updateData();
+  }
+
   public toggleTag(image: GalleryImage, tag: string): void {
-    const tags: string[] = image.tags;
-    let groupTags: string[];
-    if (image.group && this.targetEntireGroup) {
-      if (tags.includes(tag)) {
-        for (const groupImage of image.group.images) {
-          groupTags = groupImage.tags;
-          if (groupTags.includes(tag)) {
-            ArrayUtils.remove(groupTags, tag);
-          }
-        }
-      } else {
-        for (const groupImage of image.group.images) {
-          groupTags = groupImage.tags;
-          if (!groupTags.includes(tag)) {
-            groupTags.push(tag);
-          }
-        }
-      }
+    if (image.tags.includes(tag)) {
+      ArrayUtils.remove(image.tags, tag)
     } else {
-      tags.includes(tag) ? ArrayUtils.remove(tags, tag) : tags.push(tag);
+      image.tags.push(tag)
     }
 
     this.tagCounts[tag] = this.images.filter(i => i.tags.includes(tag)).length;

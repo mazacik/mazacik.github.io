@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, effect } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { TippyDirective } from '@ngneat/helipopper';
 import { SwitchComponent } from 'src/app/shared/components/switch/switch.component';
 import { SwitchEvent } from 'src/app/shared/components/switch/switch.event';
@@ -21,6 +22,7 @@ import { GalleryStateService } from '../services/gallery-state.service';
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     SwitchComponent,
     CreateDirective,
     VariableDirective,
@@ -205,9 +207,38 @@ export class SidebarComponent implements AfterViewInit {
     }
   }
 
-  protected onGroupPreviewDoubleClick(event: MouseEvent, image: GalleryImage): void {
+  protected onGroupPreviewDoubleClick(event: MouseEvent): void {
     if (Math.abs(event.pageX + this.groupPreviewContainerOffsetLeft - this.groupPreviewClickX) < ScreenUtils.MOUSE_MOVEMENT_TOLERANCE) {
       this.stateService.fullscreenVisible.set(true);
+    }
+  }
+
+  protected tagMatch: Tag;
+  protected tagInputQuery: string;
+  protected onTagInput(event: Event): void {
+    const lowerCaseQueryCharacters: string = (event.target as HTMLInputElement).value.toLowerCase();
+    if (lowerCaseQueryCharacters.length > 0) {
+      for (const group of this.stateService.tagGroups) {
+        for (const tag of group.tags) {
+          if (tag.lowerCaseName.startsWith(lowerCaseQueryCharacters)) {
+            this.tagMatch = tag;
+            this.tagInputQuery = tag.name.substring(0, lowerCaseQueryCharacters.length);
+            (event.target as HTMLInputElement).value = this.tagInputQuery;
+            return;
+          }
+        }
+      }
+    }
+    this.tagMatch = null;
+  }
+
+  protected onTagInputSubmit(event?: KeyboardEvent): void {
+    if (!event || event.key === 'Enter') {
+      if (this.tagMatch) {
+        this.stateService.addTag(this.stateService.target(), this.tagMatch.id)
+        this.tagMatch = null;
+        this.tagInputQuery = '';
+      }
     }
   }
 

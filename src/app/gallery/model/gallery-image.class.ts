@@ -8,7 +8,7 @@ export class GalleryImage extends GoogleMetadata {
   public tags: string[];
   public likes: number;
 
-  // transient props
+  // transient
   public top: number;
   public left: number;
   public width: number;
