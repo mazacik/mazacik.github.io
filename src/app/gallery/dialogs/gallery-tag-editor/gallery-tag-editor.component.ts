@@ -65,7 +65,7 @@ export class GalleryTagEditorComponent extends DialogContent<Tag> implements OnI
       this.canDelete = false;
     }
 
-    if (!this.tag) this.tag = { id: nanoid(), name: '', state: 0 };
+    if (!this.tag) this.tag = { id: nanoid(), name: '', state: 0, lowerCaseName: '' };
     this.tagName = this.tag.name;
   }
 
@@ -116,6 +116,7 @@ export class GalleryTagEditorComponent extends DialogContent<Tag> implements OnI
   protected submit(): void {
     if (this.canSubmit()) {
       this.tag.name = this.tagName;
+      this.tag.lowerCaseName = this.tagName.toLowerCase();
 
       if (this.group && this.group != this.currentGroup) {
         ArrayUtils.remove(this.group.tags, this.tag);
