@@ -284,6 +284,10 @@ export class GalleryStateService {
       return false;
     }
 
+    if (this.settings.showVideos == -1 && GoogleFileUtils.isVideo(image)) {
+      return false;
+    }
+
     const groupSize: number = image.group ? image.group.images.length : 0;
     if (groupSize < this.groupSizeFilterMin) {
       return false;

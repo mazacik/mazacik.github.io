@@ -37,7 +37,8 @@ export class GallerySettingsComponent extends DialogContent<boolean> implements 
     }]
   };
 
-  private needsUpdate: boolean = false;
+  private needsFilterRefresh: boolean = false;
+  private needsDataUpdate: boolean = false;
 
   constructor(
     protected applicationService: ApplicationService,
@@ -138,15 +139,28 @@ export class GallerySettingsComponent extends DialogContent<boolean> implements 
     this.close();
   }
 
+  protected onShowVideosStateChange(event: SwitchEvent): void {
+    this.needsFilterRefresh = true;
+    this.needsDataUpdate = true;
+    this.stateService.settings.showVideos = event.state;
+  }
+
   protected onAutoBookmarkStateChange(event: SwitchEvent): void {
-    this.needsUpdate = true;
+    this.needsDataUpdate = true;
     this.stateService.settings.autoBookmark = event.state;
   }
 
   @HostListener('window:keydown.enter', ['$event'])
   @HostListener('window:keydown.escape', ['$event'])
   public close(): void {
-    if (this.needsUpdate && this.stateService.images) this.stateService.updateData();
+    if (this.stateService.images) {
+      if (this.needsFilterRefresh) {
+        this.stateService.refreshFilter();
+      }
+      if (this.needsDataUpdate) {
+        this.stateService.updateData();
+      }
+    }
     this.resolve(true);
   }
 
