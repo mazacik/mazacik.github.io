@@ -3,8 +3,8 @@
 <span class="button" tp="Yandex Reverse Image Search" (click)="openYandexReverseImageSearch($event)">Yandex RIS</span>
 <span class="button" tp="Pairwise Comparison" (click)="startImageComparison()">Comparison</span>
 <span class="button" tp="Toggle Brightness Mode" (click)="applicationService.toggleTheme()">Theme</span>
-<span class="button mobile-hidden" tp="Copy Base64 Data" (click)="copyTargetBase64()">Base64</span>
-<span class="button mobile-hidden" tp="Open in Google Drive" (click)="openTargetInGoogleDrive()">Google Drive</span>
+<span class="button mobile-display-none" tp="Copy Base64 Data" (click)="copyTargetBase64()">Base64</span>
+<span class="button mobile-display-none" tp="Open in Google Drive" (click)="openTargetInGoogleDrive()">Google Drive</span>
 <div class="h-separator"></div>
 <div class="switch-container">
   <app-switch [state]="stateService.settings.showVideos" tp="Show videos" (stateChange)="onShowVideosStateChange($event)"></app-switch>

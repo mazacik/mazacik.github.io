@@ -12,9 +12,9 @@
 </div>
 <div class="content">
   <!-- Editor/Browser -->
-  <app-scenario-browser [class.flex-0]="!editorService.sidebarVisible.value"></app-scenario-browser>
-  <div class="v-separator mobile-hidden" [class.desktop-hidden]="!editorService.sidebarVisible.value"></div>
-  <div class="modules" [class.mobile-flex-0]="editorService.sidebarVisible.value">
+  <app-scenario-browser [class.display-none]="!editorService.sidebarVisible.value"></app-scenario-browser>
+  <div class="v-separator mobile-display-none" [class.desktop-display-none]="!editorService.sidebarVisible.value"></div>
+  <div class="modules" [class.mobile-display-none]="editorService.sidebarVisible.value">
     <!-- Notes -->
     <app-notes></app-notes>
     <!-- Flowchart -->

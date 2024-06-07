@@ -42,28 +42,6 @@
   }
 }
 
-// desktop
-@media screen and (min-width:768px) {
-  .desktop-hidden {
-    display: none !important;
-  }
-
-  .desktop-flex-0 {
-    flex: 0 !important;
-  }
-}
-
-// mobile
-@media screen and (max-width:768px) {
-  .mobile-hidden {
-    display: none !important;
-  }
-
-  .mobile-flex-0 {
-    flex: 0 !important;
-  }
-}
-
 .fa-regular::before,
 .fa-solid::before {
   min-width: 16px;
@@ -226,6 +204,18 @@ input[type=number] {
 
 .display-none {
   display: none !important;
+}
+
+@media screen and (min-width:768px) {
+  .desktop-display-none {
+    display: none !important;
+  }
+}
+
+@media screen and (max-width:768px) {
+  .mobile-display-none {
+    display: none !important;
+  }
 }
 
 .transparent {
