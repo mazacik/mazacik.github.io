@@ -12,7 +12,7 @@
         </div>
       </div>
       <div class="absolute top left">
-        <i *ngIf="!applicationService.reduceBandwidth" class="icon-button fa-solid fa-arrow-left desktop-hidden" (click)="stateService.sidebarVisible = false"></i>
+        <i *ngIf="!applicationService.reduceBandwidth" class="icon-button fa-solid fa-arrow-left desktop-display-none" (click)="stateService.sidebarVisible = false"></i>
         <i class="icon-button fa-solid fa-gear" tp="Settings" (click)="dialogService.openSettings()"></i>
       </div>
       <div class="absolute top right">

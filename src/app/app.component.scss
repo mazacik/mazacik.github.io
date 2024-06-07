@@ -1,12 +1,12 @@
 @import 'src/styles/variables.scss';
 
 :host-context(.light-theme) {
-  --color-background-primary: rgb(255, 255, 255);
+  --color-background-primary: white;
   --color-border: rgba(0, 0, 0, 0.2);
   --color-hover: rgba(0, 0, 0, 0.1);
   --color-text: black;
   --color-text-hover: rgb(28, 28, 28);
-  --color-text-shadow: #e1e1e1;
+  --color-text-shadow: white;
   --color-highlight: blueviolet;
   --color-primary: #0075ff;
   --color-secondary: #155197;
