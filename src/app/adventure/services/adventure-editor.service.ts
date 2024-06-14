@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { AdventureGoogleDriveService } from "src/app/adventure/services/adventure-google-drive.service";
 import { BooleanBehaviorSubject } from "src/app/shared/classes/boolean-behavior-subject.class";
 import { DialogService } from "src/app/shared/services/dialog.service";
+import { ScreenUtils } from "src/app/shared/utils/screen.utils";
 import { ButtonEditorComponent } from "../components/editors/button-editor/button-editor.component";
 import { CharacterEditorComponent } from "../components/editors/character-editor/character-editor.component";
 import { DialogueLineEditorComponent } from "../components/editors/dialogue-line-editor/dialogue-line-editor.component";
@@ -24,6 +25,7 @@ export class AdventureEditorService {
   sidebarVisible: BooleanBehaviorSubject = new BooleanBehaviorSubject(true);
   storyVisible: boolean = false;
   flowchartVisible: boolean = false;
+  focusMode: boolean = ScreenUtils.isLargeScreen();
 
   constructor(
     private googleService: AdventureGoogleDriveService,

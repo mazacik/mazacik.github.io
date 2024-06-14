@@ -33,6 +33,13 @@
       transition-property: flex;
       transition-duration: $transition-duration;
 
+      &.focus-mode {
+        justify-content: center;
+        >app-notes {
+          max-width: 50%;
+        }
+      }
+
       .adventure-container {
         flex: 1;
         display: flex;
