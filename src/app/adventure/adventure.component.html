@@ -1,6 +1,7 @@
 <div class="header">
   <div class="header-left">
     <i class="icon-button fa-solid fa-bars" tp="Sidebar" (click)="editorService.sidebarVisible.toggle()"></i>
+    <i class="icon-button fa-solid mobile-display-none" [ngClass]="editorService.focusMode ? 'fa-up-right-and-down-left-from-center' : 'fa-down-left-and-up-right-to-center'" tp="Focus Mode" (click)="editorService.focusMode = !editorService.focusMode"></i>
     <!-- <i class="icon-button fa-solid fa-book" tp="Story" (click)="adventureService.storyVisible = !adventureService.storyVisible"></i> -->
     <!-- <i class="icon-button fa-solid fa-diagram-next" tp="Flowchart" (click)="adventureService.flowchartVisible = !adventureService.flowchartVisible"></i> -->
     <!-- <i class="icon-button fa-solid fa-file-import" tp="Import Data" (click)="import()"></i> -->
@@ -14,7 +15,7 @@
   <!-- Editor/Browser -->
   <app-scenario-browser [class.display-none]="!editorService.sidebarVisible.value"></app-scenario-browser>
   <div class="v-separator mobile-display-none" [class.desktop-display-none]="!editorService.sidebarVisible.value"></div>
-  <div class="modules" [class.mobile-display-none]="editorService.sidebarVisible.value">
+  <div class="modules" [class.mobile-display-none]="editorService.sidebarVisible.value" [class.focus-mode]="editorService.focusMode">
     <!-- Notes -->
     <app-notes></app-notes>
     <!-- Flowchart -->
