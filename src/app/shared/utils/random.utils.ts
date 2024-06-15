@@ -1,3 +1,4 @@
+
 export abstract class RandomUtils {
 
   public static random(max: number): number;
@@ -6,7 +7,16 @@ export abstract class RandomUtils {
     return Math.random() * (arg2 ? arg2 - arg1 : arg1) + (arg2 ? arg1 : 0);
   }
 
-  public static from<T>(array: T[]): T {
+  public static from<T>(array: T[], except?: T | T[]): T {
+    if (except) {
+      if (Array.isArray(except)) {
+        array = array.filter(object => !except.includes(object));
+      } else {
+        array = array.filter(object => object != except);
+      }
+    }
+
+    console.log(array);
     return array[Math.floor(this.random(array.length))];
   }
 

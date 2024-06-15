@@ -7,6 +7,8 @@ import { SurveyResultsComponent } from './event-manager/survey-results/survey-re
 import { SurveyComponent } from './event-manager/survey/survey.component';
 import { FolderPickerComponent } from './gallery/folder-picker/folder-picker.component';
 import { GalleryComponent } from './gallery/gallery.component';
+import { TwisterComponent } from './games/twister/twister.component';
+import { LandingComponent } from './landing/landing.component';
 import { LoginComponent } from './login/login.component';
 import { GoogleAuthGuard } from './router/google-auth.guard';
 import { HasFolderGuard } from './router/has-folder.guard';
@@ -58,8 +60,20 @@ export const routes: Routes = [{
     redirectTo: 'hlasovanie'
   }]
 }, {
+  path: 'home',
+  component: LandingComponent
+}, {
+  path: 'games',
+  children: [{
+    path: 'twister',
+    component: TwisterComponent
+  }, {
+    path: '**',
+    redirectTo: '/'
+  }]
+}, {
   path: '**',
-  redirectTo: 'event/2024-splav'
+  redirectTo: 'home'
 }];
 
 // {
