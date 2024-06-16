@@ -16,6 +16,7 @@ import { MessengerBrowserGuard } from './router/messenger-browser.guard';
 import { NotMessengerBrowserGuard } from './router/not-messenger-browser.guard copy';
 import { FuckMessengerBrowserComponent } from './shared/components/fuck-messenger-browser/fuck-messenger-browser.component';
 import { TournamentComponent } from './tournament/tournament.component';
+import { ActivityComponent } from './games/activity/activity.component';
 
 export const routes: Routes = [{
   path: 'messenger-browser',
@@ -65,6 +66,9 @@ export const routes: Routes = [{
 }, {
   path: 'games',
   children: [{
+    path: 'activity',
+    component: ActivityComponent
+  }, {
     path: 'twister',
     component: TwisterComponent
   }, {

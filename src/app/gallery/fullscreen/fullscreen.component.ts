@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, effect } from '@angular/core';
 import { SafeUrl } from '@angular/platform-browser';
 import { TippyDirective } from '@ngneat/helipopper';
-import { fade } from 'src/app/shared/consntants/animations.constants';
+import { fade } from 'src/app/shared/constants/animations.constants';
 import { VariableDirective } from 'src/app/shared/directives/variable.directive';
 import { ApplicationService } from 'src/app/shared/services/application.service';
 import { DialogService } from 'src/app/shared/services/dialog.service';

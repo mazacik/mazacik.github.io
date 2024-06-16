@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, HostBinding, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { fade, skip } from '../shared/consntants/animations.constants';
+import { fade, skip } from '../shared/constants/animations.constants';
 import { LargeScreenDirective } from '../shared/directives/largescreen.directive';
 import { SmallScreenDirective } from '../shared/directives/smallscreen.directive';
 import { FirebaseAuthService } from '../shared/services/firebase-auth.service';

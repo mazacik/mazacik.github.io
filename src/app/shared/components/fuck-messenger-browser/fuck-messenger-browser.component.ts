@@ -5,7 +5,7 @@ import { RouterLink } from '@angular/router';
 import { TippyDirective } from '@ngneat/helipopper';
 import { CreateDirective } from 'src/app/shared/directives/create.directive';
 import { VariableDirective } from 'src/app/shared/directives/variable.directive';
-import { crossfade } from '../../consntants/animations.constants';
+import { crossfade } from '../../constants/animations.constants';
 
 @Component({
   selector: 'app-fuck-messenger-browser',

@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, ElementRef, HostListener, effect } from '@angular/core';
 import { TippyDirective } from '@ngneat/helipopper';
 import { GalleryImage } from 'src/app/gallery/model/gallery-image.class';
-import { leave } from 'src/app/shared/consntants/animations.constants';
+import { leave } from 'src/app/shared/constants/animations.constants';
 import { CreateDirective } from 'src/app/shared/directives/create.directive';
 import { ApplicationService } from 'src/app/shared/services/application.service';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';

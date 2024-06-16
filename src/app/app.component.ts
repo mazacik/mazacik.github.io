@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Delay } from './shared/classes/delay.class';
-import { fade } from './shared/consntants/animations.constants';
+import { fade } from './shared/constants/animations.constants';
 import { ApplicationService } from './shared/services/application.service';
 import { DialogService } from './shared/services/dialog.service';
 import { ArrayUtils } from './shared/utils/array.utils';
