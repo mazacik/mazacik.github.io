@@ -1,0 +1,52 @@
+@import 'src/styles/variables.scss';
+
+:host {
+  font-size: 2rem;
+
+  * {
+    user-select: none;
+  }
+
+  .settings-container {
+    width: fit-content;
+    display: flex;
+    flex-direction: column;
+    gap: $gap * 6;
+
+    span.button {
+      align-self: center;
+    }
+  }
+
+  .instructions-container {
+    display: flex;
+    flex-direction: column;
+    gap: $gap * 6;
+    align-items: center;
+  }
+
+  .countdown-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $gap * 6;
+  }
+
+  .result-container {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    gap: $gap * 6;
+
+    >span {
+      width: 100%;
+    }
+  }
+
+  .score-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $gap * 3;
+  }
+}

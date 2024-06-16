@@ -3,7 +3,7 @@ import { Component, ElementRef, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TippyDirective } from '@ngneat/helipopper';
-import { crossfade, drawer2, fade, skip } from 'src/app/shared/consntants/animations.constants';
+import { crossfade, drawer2, fade, skip } from 'src/app/shared/constants/animations.constants';
 import { CreateDirective } from 'src/app/shared/directives/create.directive';
 import { VariableDirective } from 'src/app/shared/directives/variable.directive';
 import { FirebaseAuthService } from 'src/app/shared/services/firebase-auth.service';

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, OnInit } from '@angular/core';
-import { enter } from '../shared/consntants/animations.constants';
+import { enter } from '../shared/constants/animations.constants';
 import { ApplicationService } from '../shared/services/application.service';
 import { DialogService } from '../shared/services/dialog.service';
 import { ArrayUtils } from '../shared/utils/array.utils';

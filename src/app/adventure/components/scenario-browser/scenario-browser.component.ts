@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { AdventureGoogleDriveService } from 'src/app/adventure/services/adventure-google-drive.service';
 import { GraphRendererService } from 'src/app/adventure/services/graph-renderer.service';
-import { drawer } from 'src/app/shared/consntants/animations.constants';
+import { drawer } from 'src/app/shared/constants/animations.constants';
 import { DragDropDirective } from 'src/app/shared/directives/dragdrop.directive';
 import { DialogService } from 'src/app/shared/services/dialog.service';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';

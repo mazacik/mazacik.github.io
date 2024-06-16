@@ -14,7 +14,7 @@ import { RandomUtils } from 'src/app/shared/utils/random.utils';
 export class TwisterComponent implements OnInit {
 
   private limbs: string[] = ['pravá ruka', 'ľavá ruka', 'pravá noha', 'ľavá noha'];
-  private colors: string[][] = [['červená', 'firebrick'], ['zelená', 'limegreen'], ['modrá', 'blue'], ['žltá', 'yellow']];
+  private colors: string[][] = [['červená', 'red'], ['zelená', 'limegreen'], ['modrá', 'blue'], ['žltá', 'yellow']];
 
   protected limb: string;
   protected color: string;
