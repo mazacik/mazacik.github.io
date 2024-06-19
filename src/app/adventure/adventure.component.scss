@@ -13,10 +13,23 @@
     border-bottom: 1px solid var(--color-border);
     justify-content: space-between;
 
-    .header-left,
-    .header-right {
+    .header-start,
+    .header-center,
+    .header-end {
       display: flex;
       gap: $gap;
+    }
+
+    .countdown-input {
+      border: none;
+      text-align: center;
+      caret-color: var(--color-text);
+      font-variant-numeric: tabular-nums;
+      user-select: none;
+
+      &.error {
+        color: var(--color-negative);
+      }
     }
   }
 
