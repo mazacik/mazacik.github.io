@@ -321,6 +321,10 @@ hr {
   overflow-y: auto;
 }
 
+.user-select-none {
+  user-select: none;
+}
+
 .flex {
   display: flex;
 }

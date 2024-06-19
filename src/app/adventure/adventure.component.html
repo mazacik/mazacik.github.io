@@ -1,5 +1,5 @@
 <div class="header">
-  <div class="header-left">
+  <div class="header-start">
     <i class="icon-button fa-solid fa-bars" tp="Sidebar" (click)="editorService.sidebarVisible.toggle()"></i>
     <i class="icon-button fa-solid mobile-display-none" [ngClass]="editorService.focusMode ? 'fa-up-right-and-down-left-from-center' : 'fa-down-left-and-up-right-to-center'" tp="Focus Mode" (click)="editorService.focusMode = !editorService.focusMode"></i>
     <!-- <i class="icon-button fa-solid fa-book" tp="Story" (click)="adventureService.storyVisible = !adventureService.storyVisible"></i> -->
@@ -7,7 +7,10 @@
     <!-- <i class="icon-button fa-solid fa-file-import" tp="Import Data" (click)="import()"></i> -->
     <!-- <i class="icon-button fa-solid fa-file-export" tp="Export Data" (click)="export()"></i> -->
   </div>
-  <div class="header-right">
+  <div class="header-center">
+    <input class="countdown-input" #countdownInput [class.user-select-none]="countdownInput.readOnly" (click)="onCountdownInputClick(countdownInput)" (input)="onCountdownInputChange(countdownInput)" (keypress)="onCountdownInputSubmit($event, countdownInput)" (focus)="countdownInput.select()" placeholder="Countdown" />
+  </div>
+  <div class="header-end">
     <i class="icon-button fa-solid" [ngClass]="applicationService.isDarkTheme() ? 'fa-moon' : 'fa-sun'" tp="Toggle Brightness Mode" (click)="applicationService.toggleTheme()"></i>
   </div>
 </div>
