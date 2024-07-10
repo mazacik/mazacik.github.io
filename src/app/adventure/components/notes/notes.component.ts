@@ -5,11 +5,9 @@ import { CreateDirective } from 'src/app/shared/directives/create.directive';
 import { VariableDirective } from 'src/app/shared/directives/variable.directive';
 import { ApplicationService } from 'src/app/shared/services/application.service';
 import { StringUtils } from 'src/app/shared/utils/string.utils';
-import { Note } from '../../models/components/note.interface';
-import { AdventureEditorService } from '../../services/adventure-editor.service';
 import { AdventureGoogleDriveService } from '../../services/adventure-google-drive.service';
 import { AdventureStateService } from '../../services/adventure-state.service';
-import { GraphRendererService } from '../../services/graph-renderer.service';
+import { NotesService } from './notes.service';
 
 @Component({
   selector: 'app-notes',
@@ -28,9 +26,8 @@ export class NotesComponent implements OnInit {
   constructor(
     public googleService: AdventureGoogleDriveService,
     private applicationService: ApplicationService,
-    private adventureService: AdventureEditorService,
-    private graphService: GraphRendererService,
-    protected stateService: AdventureStateService
+    protected stateService: AdventureStateService,
+    protected notesService: NotesService
   ) {
     this.applicationService.loading.next(true);
   }
@@ -54,13 +51,8 @@ export class NotesComponent implements OnInit {
   }
 
   onNoteInput(): void {
-    const note: Note = this.stateService.getCurrentNote();
-    note.wordCount = StringUtils.getWordCount(note.text);
+    this.notesService.focusNote.wordCount = StringUtils.getWordCount(this.notesService.focusNote.text);
     this.googleService.updateAdventure();
-
-    if (note.label == 'Flowchart') {
-      this.graphService.renderNotes();
-    }
   }
 
   @HostListener('window:keydown', ['$event'])
@@ -68,13 +60,12 @@ export class NotesComponent implements OnInit {
     if (event.ctrlKey && event.code == 'KeyX') {
       const noteContent: HTMLTextAreaElement = document.getElementsByClassName('note-content')[0] as HTMLTextAreaElement;
       if (noteContent.selectionEnd == noteContent.selectionStart) {
-        const note: Note = this.stateService.getCurrentNote();
-        const text: string = note.text;
+        const text: string = this.notesService.focusNote.text;
         const start: number = text.substring(0, noteContent.selectionEnd).lastIndexOf('\n') + 1;
         const end: number = text.indexOf('\n', noteContent.selectionEnd) + 1;
         navigator.clipboard.writeText(text.substring(start, end));
-        note.text = text.substring(0, start) + text.substring(end == 0 ? text.length : end);
-        note.wordCount = StringUtils.getWordCount(note.text);
+        this.notesService.focusNote.text = text.substring(0, start) + text.substring(end == 0 ? text.length : end);
+        this.notesService.focusNote.wordCount = StringUtils.getWordCount(this.notesService.focusNote.text);
         setTimeout(() => noteContent.setSelectionRange(start, start));
         this.googleService.updateAdventure();
       }

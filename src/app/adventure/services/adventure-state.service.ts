@@ -10,6 +10,7 @@ import { Identifiable } from "../models/logic/identifiable.model";
 import { Operator } from "../models/logic/operator.enum";
 import { Variable } from "../models/logic/variable.model";
 import { AdventureFactory } from "../utils/adventure.factory";
+import { NotesService } from "../components/notes/notes.service";
 
 @Injectable({
   providedIn: 'root',
@@ -21,14 +22,12 @@ export class AdventureStateService {
 
   public story: Identifiable[];
 
-  constructor() { }
+  constructor(
+    private notesService: NotesService
+  ) { }
 
   public getCurrentNode(): DialogueNode {
     return this.currentScenario?.currentNode;
-  }
-
-  public getCurrentNote(): Note {
-    return this.currentScenario?.currentNote;
   }
 
   public getScenario(scenarioId: string): Scenario {
@@ -97,15 +96,17 @@ export class AdventureStateService {
 
         }
 
+        this.notesService.openNote(this.scenarios[0].notes[0], true);
+
         for (const scenario of this.scenarios) {
           scenario.currentNode = scenario.nodes[0];
-          scenario.currentNote = scenario.notes[0];
 
           for (const node of scenario.nodes) {
             node.parentScenarioId = scenario.id;
           }
 
           for (const note of scenario.notes) {
+            note.parentScenario = scenario;
             note.wordCount = StringUtils.getWordCount(note.text);
           }
 

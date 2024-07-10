@@ -1,7 +1,7 @@
 <div class="content-container y-scrollbar-container">
   <div *ngFor="let scenario of stateService.scenarios; let scenarioIndex = index;" class="scenario-container">
     <div class="scenario-label-container" (click)="setCurrentScenario(scenario)" [dragdrop]="scenario" [dragdropParent]="stateService.scenarios" (dragend)="googleService.updateAdventure()">
-      <span class="scenario-label" [class.highlight]="scenario == stateService.currentScenario">{{ scenario.label }}</span>
+      <span class="scenario-label" [class.highlight]="scenario == notesService.focusNote.parentScenario">{{ scenario.label }}</span>
       <div class="scenario-info">
         <span class="scenario-notes-word-count">{{ getNotesWordCount(scenario) }}</span>
         <div class="scenario-buttons">
@@ -13,10 +13,11 @@
     </div>
     <div *ngIf="stateService.currentScenario == scenario" @drawer class="scenario-notes-container">
       <div *ngFor="let note of scenario.notes" class="note-container" (click)="setCurrentNote(scenario, note)" [dragdrop]="note" [dragdropParent]="scenario.notes" (dragend)="googleService.updateAdventure()">
-        <span class="note-label" [class.highlight]="note == stateService.currentScenario.currentNote">{{ note.label }}</span>
+        <span class="note-label" [class.highlight]="note == notesService.focusNote">{{ note.label }}</span>
         <div class="note-info">
           <span class="note-word-count">{{ note.wordCount }}</span>
           <div class="note-buttons">
+            <i *ngIf="!notesService.openNotes.includes(note)" class="icon-button fa-solid fa-arrow-up-right-from-square" tp="Open Note in Separate View" (click)="notesService.openNote(note, true)"></i>
             <i class="icon-button fa-solid fa-times" tp="Remove Note" (click)="removeNote(scenario, note)"></i>
           </div>
         </div>

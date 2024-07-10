@@ -12,6 +12,7 @@ import { Scenario } from '../../models/components/scenario.interface';
 import { AdventureEditorService } from '../../services/adventure-editor.service';
 import { AdventureStateService } from '../../services/adventure-state.service';
 import { AdventureFactory } from '../../utils/adventure.factory';
+import { NotesService } from '../notes/notes.service';
 
 @Component({
   selector: 'app-scenario-browser',
@@ -31,7 +32,8 @@ export class ScenarioBrowserComponent implements OnInit {
     private graphService: GraphRendererService,
     private dialogService: DialogService,
     protected googleService: AdventureGoogleDriveService,
-    protected stateService: AdventureStateService
+    protected stateService: AdventureStateService,
+    protected notesService: NotesService
   ) { }
 
   ngOnInit(): void {
@@ -40,7 +42,7 @@ export class ScenarioBrowserComponent implements OnInit {
 
   setCurrentNote(scenario: Scenario, note: Note): void {
     this.setCurrentScenario(scenario);
-    this.stateService.currentScenario.currentNote = note;
+    this.notesService.openNote(note, false);
   }
 
   setCurrentScenario(scenario: Scenario): void {
@@ -93,9 +95,9 @@ export class ScenarioBrowserComponent implements OnInit {
 
   createNote(scenario: Scenario): void {
     if (!scenario.notes) scenario.notes = [];
-    const note: Note = { label: 'New Note', text: '', wordCount: 0 };
+    const note: Note = { label: 'New Note', text: '', wordCount: 0, parentScenario: scenario };
     scenario.notes.push(note);
-    scenario.currentNote = note;
+    this.notesService.openNote(note, true);
     this.googleService.updateAdventure();
   }
 
@@ -103,7 +105,7 @@ export class ScenarioBrowserComponent implements OnInit {
     const notes: Note[] = scenario.notes;
     this.dialogService.createConfirmation('Delete Note', ['Do you really want to delete "' + note.label + '"?'], 'Yes', 'No').then(result => {
       if (result) {
-        scenario.currentNote = ArrayUtils.nearestRightFirst(notes, notes.indexOf(note));
+        this.notesService.closeNote(note);
         ArrayUtils.remove(notes, note);
         this.googleService.updateAdventure();
       }

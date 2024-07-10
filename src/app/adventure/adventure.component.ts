@@ -25,12 +25,8 @@ import { GraphRendererService } from './services/graph-renderer.service';
 export class AdventureComponent implements OnInit {
 
   private countdownInputRegex = /^([0-9]*[1-9]+[0-9]*[hms])+$/gi;
+  private countdown = { hours: 0, minutes: 0, seconds: 0 };
   private countdownInterval: NodeJS.Timeout;
-  protected countdown = {
-    hours: 0,
-    minutes: 0,
-    seconds: 0
-  }
 
   constructor(
     public googleService: AdventureGoogleDriveService,
@@ -51,11 +47,11 @@ export class AdventureComponent implements OnInit {
     });
   }
 
-  import(): void {
+  protected import(): void {
     navigator.clipboard.readText().then(text => this.stateService.initialize(JSON.parse(text)));
   }
 
-  export(): void {
+  protected export(): void {
     const jsonData: string = JSON.stringify(this.stateService.serialize());
     navigator.clipboard.writeText(jsonData);
     console.log(jsonData);

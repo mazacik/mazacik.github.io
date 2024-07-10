@@ -15,6 +15,5 @@ export interface Scenario {
   notes: Note[];
 
   currentNode: DialogueNode;
-  currentNote: Note;
 
 }
