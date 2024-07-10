@@ -1,6 +1,14 @@
-<ng-container *ngVar="stateService.getCurrentNote() as currentNote">
-  <ng-container *ngIf="currentNote">
-    <input class="note-title" placeholder="Title" [(ngModel)]="currentNote.label" (input)="googleService.updateAdventure()">
-    <textarea class="note-content" placeholder="Text" [(ngModel)]="currentNote.text" (input)="onNoteInput()" (create)="initTab($event)"></textarea>
-  </ng-container>
+<ng-container *ngFor="let note of notesService.openNotes; let i = index;">
+  <div *ngIf="i != 0" class="v-separator"></div>
+  <div class="note-container" (click)="this.notesService.focusNote = note">
+    <div class="note-header">
+      <div class="note-navigation" [class.highlight]="note == notesService.focusNote">
+        <span>{{ note.parentScenario.label }}</span>
+        <span>/</span>
+        <input class="note-title" placeholder="Title" [(ngModel)]="note.label" (input)="googleService.updateAdventure()">
+      </div>
+      <i class="icon-button fa-solid fa-times" tp="Close" (click)="notesService.closeNote(note)"></i>
+    </div>
+    <textarea class="note-content" placeholder="Text" [(ngModel)]="note.text" (input)="onNoteInput()" (create)="initTab($event)"></textarea>
+  </div>
 </ng-container>
