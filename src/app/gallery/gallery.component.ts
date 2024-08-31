@@ -30,7 +30,7 @@ export class GalleryComponent implements OnInit {
   constructor(
     private dialogService: DialogService,
     private applicationService: ApplicationService,
-    private stateService: GalleryStateService
+    protected stateService: GalleryStateService
   ) {
     this.applicationService.loading.next(true);
   }

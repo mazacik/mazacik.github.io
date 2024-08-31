@@ -7,7 +7,6 @@ import { GoogleMetadata } from "src/app/shared/classes/google-api/google-metadat
 import { ApplicationService } from "src/app/shared/services/application.service";
 import { ArrayUtils } from "src/app/shared/utils/array.utils";
 import { GoogleFileUtils } from "src/app/shared/utils/google-file.utils";
-import { ScreenUtils } from "src/app/shared/utils/screen.utils";
 import { Data } from "../model/data.interface";
 import { GallerySettings } from "../model/gallery-settings.interface";
 import { ImageProperties } from "../model/image-properties.interface";
@@ -31,7 +30,6 @@ export class GalleryStateService {
   public settings: GallerySettings;
 
   public fullscreenVisible: WritableSignal<boolean> = signal(false);
-  public sidebarVisible: boolean = ScreenUtils.isLargeScreen() || this.applicationService.reduceBandwidth;
 
   public images: GalleryImage[];
   public groups: GalleryGroup[];

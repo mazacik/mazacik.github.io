@@ -1,5 +1,7 @@
 <div class="content-container">
   <app-masonry @enter></app-masonry>
-  <app-fullscreen></app-fullscreen>
+  <div class="fullscreen-container"  [class.transparent]="!stateService.fullscreenVisible()">
+    <app-fullscreen></app-fullscreen>
+    <app-sidebar @enter></app-sidebar>
+  </div>
 </div>
-<app-sidebar @enter></app-sidebar>

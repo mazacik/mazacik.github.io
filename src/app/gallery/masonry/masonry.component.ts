@@ -164,12 +164,8 @@ export class MasonryComponent {
       return;
     }
 
-    if (ScreenUtils.isLargeScreen() && image == this.stateService.target()) {
-      this.stateService.fullscreenVisible.set(true);
-    }
-
     this.stateService.target.set(image);
-    this.stateService.sidebarVisible = true;
+    this.stateService.fullscreenVisible.set(true);
   }
 
   protected onHeartClick(event: MouseEvent, image: GalleryImage): void {

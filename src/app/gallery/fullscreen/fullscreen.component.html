@@ -1,4 +1,4 @@
-<div *ngVar="stateService.target() as target" class="fullscreen-container" [class.transparent]="!stateService.fullscreenVisible()">
+<ng-container *ngVar="stateService.target() as target">
   <div class="fullscreen-header">
     <div>
       <i class="icon-button fa-solid fa-arrow-left" (click)="stateService.fullscreenVisible.set(false)"></i>
@@ -36,4 +36,4 @@
       <img *ngIf="image.contentLink" style="display: none;" [src]="image.contentLink" (load)="loadingC = false">
     </ng-container>
   </div>
-</div>
+</ng-container>
