@@ -20,11 +20,6 @@ export class GalleryStateService {
 
   private updateDelay: Delay = new Delay(5000);
 
-  public usePlaceholder: boolean = false;
-  // https://commons.wikimedia.org/wiki/File:A_black_image.jpg
-  private placeholderThumb: string = 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/A_black_image.jpg/320px-A_black_image.jpg';
-  private placeholderImage: string = 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/A_black_image.jpg/1280px-A_black_image.jpg';
-
   public dataFolderId: string;
   public archiveFolderId: string;
   public settings: GallerySettings;
@@ -115,31 +110,24 @@ export class GalleryStateService {
     image.mimeType = metadata.mimeType;
     image.parentFolderId = folderId;
 
-    if (this.usePlaceholder) {
-      image.thumbnailLink = this.placeholderThumb;
-      image.imageMediaMetadata = { width: 1280, height: 960 };
-      image.aspectRatio = 1.333;
-      image.contentLink = this.placeholderImage;
-    } else if (metadata.thumbnailLink) {
-      if (bReduceBandwidth) {
-        image.thumbnailLink = metadata.thumbnailLink;
-      } else {
-        image.thumbnailLink = metadata.thumbnailLink.replace('=s220', '=s440');
-      }
+    if (bReduceBandwidth) {
+      image.thumbnailLink = metadata.thumbnailLink;
+    } else {
+      image.thumbnailLink = metadata.thumbnailLink.replace('=s220', '=s440');
+    }
 
-      if (GoogleFileUtils.isImage(image)) {
-        image.imageMediaMetadata = metadata.imageMediaMetadata;
-        image.aspectRatio = image.imageMediaMetadata.width / image.imageMediaMetadata.height;
-        image.contentLink = metadata.thumbnailLink.replace('=s220', '=s' + Math.max(window.screen.width, window.screen.height));
-      } else if (GoogleFileUtils.isVideo(image)) {
-        image.videoMediaMetadata = metadata.videoMediaMetadata;
-        if (!image.videoMediaMetadata) image.videoMediaMetadata = {};
-        if (!image.videoMediaMetadata.width || image.videoMediaMetadata.width == 0) image.videoMediaMetadata.width = 1920;
-        if (!image.videoMediaMetadata.height || image.videoMediaMetadata.height == 0) image.videoMediaMetadata.height = 1080;
+    if (GoogleFileUtils.isImage(image)) {
+      image.imageMediaMetadata = metadata.imageMediaMetadata;
+      image.aspectRatio = image.imageMediaMetadata.width / image.imageMediaMetadata.height;
+      image.contentLink = metadata.thumbnailLink.replace('=s220', '=s' + Math.max(window.screen.width, window.screen.height));
+    } else if (GoogleFileUtils.isVideo(image)) {
+      image.videoMediaMetadata = metadata.videoMediaMetadata;
+      if (!image.videoMediaMetadata) image.videoMediaMetadata = {};
+      if (!image.videoMediaMetadata.width || image.videoMediaMetadata.width == 0) image.videoMediaMetadata.width = 1920;
+      if (!image.videoMediaMetadata.height || image.videoMediaMetadata.height == 0) image.videoMediaMetadata.height = 1080;
 
-        image.aspectRatio = image.videoMediaMetadata.width / image.videoMediaMetadata.height;
-        image.contentLink = this.sanitizer.bypassSecurityTrustResourceUrl('https://drive.google.com/file/d/' + image.id + '/preview') as string; // used in <iframe> display method
-      }
+      image.aspectRatio = image.videoMediaMetadata.width / image.videoMediaMetadata.height;
+      image.contentLink = this.sanitizer.bypassSecurityTrustResourceUrl('https://drive.google.com/file/d/' + image.id + '/preview') as string; // used in <iframe> display method
     }
 
     if (imageProperties) {
