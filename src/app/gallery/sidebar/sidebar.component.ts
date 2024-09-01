@@ -56,7 +56,7 @@ export class SidebarComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.setupTagListMouseDragEvents();
-    this.setupGroupPreviewMouseDragEvents();
+    // this.setupGroupPreviewMouseDragEvents();
   }
 
   private setupTagListMouseDragEvents(): void {

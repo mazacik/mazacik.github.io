@@ -5,21 +5,5 @@
   height: 100%;
   overflow: hidden;
   position: relative;
-
-  @media screen and (min-width:768px) {
-    display: flex;
-  }
-
-  .content-container {
-    width: 100%;
-
-    @media screen and (max-width:768px) {
-      position: absolute;
-      height: 100%;
-    }
-
-    @media screen and (min-width:768px) {
-      position: relative;
-    }
-  }
+  display: flex;
 }

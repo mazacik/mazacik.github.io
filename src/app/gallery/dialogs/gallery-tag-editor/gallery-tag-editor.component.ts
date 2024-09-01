@@ -26,10 +26,9 @@ export class GalleryTagEditorComponent extends DialogContent<Tag> implements OnI
 
   @Input() protected group: TagGroup;
   @Input() protected tag: Tag;
+  @Input() protected tagName: string;
 
   protected currentGroup: TagGroup;
-
-  protected tagName: string;
 
   protected canDelete: boolean;
 
@@ -57,16 +56,9 @@ export class GalleryTagEditorComponent extends DialogContent<Tag> implements OnI
   }
 
   ngOnInit(): void {
-    if (this.group) {
-      this.currentGroup = this.group;
-      this.canDelete = true;
-    } else {
-      this.currentGroup = { name: '', state: 0, tags: [] };
-      this.canDelete = false;
-    }
-
-    if (!this.tag) this.tag = { id: nanoid(), name: '', state: 0, lowerCaseName: '' };
-    this.tagName = this.tag.name;
+    this.currentGroup = this.group;
+    this.canDelete = this.currentGroup != null;
+    if (this.tag) this.tagName = this.tag.name;
   }
 
   protected editGroup(before?: TagGroup): void {
@@ -105,7 +97,7 @@ export class GalleryTagEditorComponent extends DialogContent<Tag> implements OnI
       return false;
     }
 
-    if (this.tagName == this.tag.name) {
+    if (this.tag && this.tagName == this.tag.name) {
       return true;
     }
 
@@ -115,6 +107,7 @@ export class GalleryTagEditorComponent extends DialogContent<Tag> implements OnI
   @HostListener('window:keydown.enter', ['$event'])
   protected submit(): void {
     if (this.canSubmit()) {
+      if (!this.tag) this.tag = { id: nanoid(), name: '', state: 0, lowerCaseName: '' };
       this.tag.name = this.tagName;
       this.tag.lowerCaseName = this.tagName.toLowerCase();
 

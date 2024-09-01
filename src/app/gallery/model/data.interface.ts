@@ -18,4 +18,6 @@ export interface Data {
   groupSizeFilterMin: number;
   groupSizeFilterMax: number;
 
+  comparison: { [key: string]: string[] };
+
 }

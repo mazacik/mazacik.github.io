@@ -7,7 +7,6 @@ import { GoogleMetadata } from "src/app/shared/classes/google-api/google-metadat
 import { ApplicationService } from "src/app/shared/services/application.service";
 import { ArrayUtils } from "src/app/shared/utils/array.utils";
 import { GoogleFileUtils } from "src/app/shared/utils/google-file.utils";
-import { ScreenUtils } from "src/app/shared/utils/screen.utils";
 import { Data } from "../model/data.interface";
 import { GallerySettings } from "../model/gallery-settings.interface";
 import { ImageProperties } from "../model/image-properties.interface";
@@ -21,17 +20,11 @@ export class GalleryStateService {
 
   private updateDelay: Delay = new Delay(5000);
 
-  public usePlaceholder: boolean = false;
-  // https://commons.wikimedia.org/wiki/File:A_black_image.jpg
-  private placeholderThumb: string = 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/A_black_image.jpg/320px-A_black_image.jpg';
-  private placeholderImage: string = 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/A_black_image.jpg/1280px-A_black_image.jpg';
-
   public dataFolderId: string;
   public archiveFolderId: string;
   public settings: GallerySettings;
 
   public fullscreenVisible: WritableSignal<boolean> = signal(false);
-  public sidebarVisible: boolean = ScreenUtils.isLargeScreen() || this.applicationService.reduceBandwidth;
 
   public images: GalleryImage[];
   public groups: GalleryGroup[];
@@ -48,6 +41,8 @@ export class GalleryStateService {
   public bookmarksFilter: number;
   public groupSizeFilterMin: number;
   public groupSizeFilterMax: number;
+
+  public comparison: { [key: string]: string[] };
 
   public modifyingGroup: GalleryImage[];
 
@@ -66,6 +61,7 @@ export class GalleryStateService {
     this.settings = data.settings;
     this.groupSizeFilterMin = data.groupSizeFilterMin;
     this.groupSizeFilterMax = data.groupSizeFilterMax;
+    this.comparison = data.comparison;
     this.tagGroups = data.tagGroups;
     this.tagGroups.forEach(group => group.tags.forEach(tag => tag.lowerCaseName = tag.name.toLowerCase()));
     return data;
@@ -117,31 +113,24 @@ export class GalleryStateService {
     image.mimeType = metadata.mimeType;
     image.parentFolderId = folderId;
 
-    if (this.usePlaceholder) {
-      image.thumbnailLink = this.placeholderThumb;
-      image.imageMediaMetadata = { width: 1280, height: 960 };
-      image.aspectRatio = 1.333;
-      image.contentLink = this.placeholderImage;
-    } else if (metadata.thumbnailLink) {
-      if (bReduceBandwidth) {
-        image.thumbnailLink = metadata.thumbnailLink;
-      } else {
-        image.thumbnailLink = metadata.thumbnailLink.replace('=s220', '=s440');
-      }
+    if (bReduceBandwidth) {
+      image.thumbnailLink = metadata.thumbnailLink;
+    } else {
+      image.thumbnailLink = metadata.thumbnailLink.replace('=s220', '=s440');
+    }
 
-      if (GoogleFileUtils.isImage(image)) {
-        image.imageMediaMetadata = metadata.imageMediaMetadata;
-        image.aspectRatio = image.imageMediaMetadata.width / image.imageMediaMetadata.height;
-        image.contentLink = metadata.thumbnailLink.replace('=s220', '=s' + Math.max(window.screen.width, window.screen.height));
-      } else if (GoogleFileUtils.isVideo(image)) {
-        image.videoMediaMetadata = metadata.videoMediaMetadata;
-        if (!image.videoMediaMetadata) image.videoMediaMetadata = {};
-        if (!image.videoMediaMetadata.width || image.videoMediaMetadata.width == 0) image.videoMediaMetadata.width = 1920;
-        if (!image.videoMediaMetadata.height || image.videoMediaMetadata.height == 0) image.videoMediaMetadata.height = 1080;
+    if (GoogleFileUtils.isImage(image)) {
+      image.imageMediaMetadata = metadata.imageMediaMetadata;
+      image.aspectRatio = image.imageMediaMetadata.width / image.imageMediaMetadata.height;
+      image.contentLink = metadata.thumbnailLink.replace('=s220', '=s' + Math.max(window.screen.width, window.screen.height));
+    } else if (GoogleFileUtils.isVideo(image)) {
+      image.videoMediaMetadata = metadata.videoMediaMetadata;
+      if (!image.videoMediaMetadata) image.videoMediaMetadata = {};
+      if (!image.videoMediaMetadata.width || image.videoMediaMetadata.width == 0) image.videoMediaMetadata.width = 1920;
+      if (!image.videoMediaMetadata.height || image.videoMediaMetadata.height == 0) image.videoMediaMetadata.height = 1080;
 
-        image.aspectRatio = image.videoMediaMetadata.width / image.videoMediaMetadata.height;
-        image.contentLink = this.sanitizer.bypassSecurityTrustResourceUrl('https://drive.google.com/file/d/' + image.id + '/preview') as string; // used in <iframe> display method
-      }
+      image.aspectRatio = image.videoMediaMetadata.width / image.videoMediaMetadata.height;
+      image.contentLink = this.sanitizer.bypassSecurityTrustResourceUrl('https://drive.google.com/file/d/' + image.id + '/preview') as string; // used in <iframe> display method
     }
 
     if (imageProperties) {
@@ -183,7 +172,8 @@ export class GalleryStateService {
         heartsFilter: this.heartsFilter,
         bookmarksFilter: this.bookmarksFilter,
         groupSizeFilterMin: this.groupSizeFilterMin,
-        groupSizeFilterMax: this.groupSizeFilterMax
+        groupSizeFilterMax: this.groupSizeFilterMax,
+        comparison: this.comparison
       } as Data).then(metadata => {
         if (!metadata) {
           this.applicationService.errors.next(true);

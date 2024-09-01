@@ -16,7 +16,6 @@ export abstract class RandomUtils {
       }
     }
 
-    console.log(array);
     return array[Math.floor(this.random(array.length))];
   }
 

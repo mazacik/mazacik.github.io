@@ -7,6 +7,8 @@ import { SurveyResultsComponent } from './event-manager/survey-results/survey-re
 import { SurveyComponent } from './event-manager/survey/survey.component';
 import { FolderPickerComponent } from './gallery/folder-picker/folder-picker.component';
 import { GalleryComponent } from './gallery/gallery.component';
+import { ActivityComponent } from './games/activity/activity.component';
+import { NikdySomComponent } from './games/nikdy-som/nikdy-som.component';
 import { TwisterComponent } from './games/twister/twister.component';
 import { LandingComponent } from './landing/landing.component';
 import { LoginComponent } from './login/login.component';
@@ -16,7 +18,6 @@ import { MessengerBrowserGuard } from './router/messenger-browser.guard';
 import { NotMessengerBrowserGuard } from './router/not-messenger-browser.guard copy';
 import { FuckMessengerBrowserComponent } from './shared/components/fuck-messenger-browser/fuck-messenger-browser.component';
 import { TournamentComponent } from './tournament/tournament.component';
-import { ActivityComponent } from './games/activity/activity.component';
 
 export const routes: Routes = [{
   path: 'messenger-browser',
@@ -71,6 +72,9 @@ export const routes: Routes = [{
   }, {
     path: 'twister',
     component: TwisterComponent
+  }, {
+    path: 'nikdy-som',
+    component: NikdySomComponent
   }, {
     path: '**',
     redirectTo: '/'

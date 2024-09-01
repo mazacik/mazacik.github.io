@@ -1,6 +1,6 @@
-<div class="sidebar-visibility-container" [class.visible]="stateService.sidebarVisible">
+<div class="sidebar-visibility-container visible">
   <div *ngVar="stateService.target() as target" class="sidebar-content">
-    <div class="sidebar-half sidebar-half-top">
+    <!-- <div class="sidebar-half sidebar-half-top">
       <div class="sidebar-preview-container">
         <img class="sidebar-preview" [src]="target?.thumbnailLink" (click)="onPreviewClick()">
       </div>
@@ -27,7 +27,7 @@
       <div class="absolute bottom right">
 
       </div>
-    </div>
+    </div> -->
     <div class="sidebar-half" style="position: relative;">
       <div class="sidebar-filter-header">
         <div class="flex" style="justify-content: start;">
