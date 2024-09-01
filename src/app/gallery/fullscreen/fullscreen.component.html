@@ -12,19 +12,33 @@
     </div>
   </div>
   <div class="fullscreen-footer">
-    <div style="justify-content: start;">
-      <i class="icon-button fa-solid fa-box" tp="Archive" (click)="stateService.remove(target, true)"></i>
-      <i class="icon-button fa-solid fa-trash" tp="Trash" (click)="stateService.remove(target, false)"></i>
-    </div>
-    <div style="display: flex; justify-content: center;">
-      <ng-container *ngIf="target?.group">
-        <i [class.disabled]="isFirstGroupImage(target)" class="icon-button fa-solid fa-arrow-left" (click)="moveTargetGroupLeft(target)"></i>
-        <i [class.disabled]="isLastGroupImage(target)" class="icon-button fa-solid fa-arrow-right" (click)="moveTargetGroupRight(target)"></i>
-      </ng-container>
-    </div>
-    <div style="justify-content: end;">
-      <i *ngIf="target?.group" class="icon-button fa-solid fa-arrows-spin" (click)="stateService.setRandomGroupTarget()"></i>
-      <i class="icon-button fa-solid fa-shuffle" (click)="stateService.setRandomTarget()"></i>
+    <div class="buttons">
+      <div style="justify-content: start;">
+        <i class="icon-button fa-solid fa-box" tp="Archive" (click)="stateService.remove(target, true)"></i>
+        <i class="icon-button fa-solid fa-trash" tp="Trash" (click)="stateService.remove(target, false)"></i>
+      </div>
+      <div class="flex column center">
+        <div class="tags">
+          <div *ngFor="let tagId of target?.tags" class="tag-bubble" [tp]="contextmenu" [tpData]="tagId" tpVariation="contextmenu">
+            <span>{{ getTag(tagId).name }}</span>
+          </div>
+          <div class="tag-bubble" style="display: flex; position: relative; padding-right: 0;">
+            <div style="width: 100%;">
+              <input style="position: absolute; width: 100%; border: 0; padding: 0; user-select: none; pointer-events: none;" [placeholder]="tagMatch?.name || (tagInput.value.length > 0 ? '' : 'Tag Search')">
+              <input #tagInput id="tag-input" style="position: relative; width: 100%; border: 0; padding: 0;" (input)="onTagInput($event)" (keypress)="onTagInputSubmit($event)" autocomplete="off">
+            </div>
+            <i class="icon-button fa-solid fa-plus" (click)="onTagInputSubmit()"></i>
+          </div>
+        </div>
+        <div *ngIf="target?.group" class="flex">
+          <i [class.disabled]="isFirstGroupImage(target)" class="icon-button fa-solid fa-arrow-left" (click)="moveTargetGroupLeft(target)"></i>
+          <i [class.disabled]="isLastGroupImage(target)" class="icon-button fa-solid fa-arrow-right" (click)="moveTargetGroupRight(target)"></i>
+        </div>
+      </div>
+      <div style="justify-content: end;">
+        <i *ngIf="target?.group" class="icon-button fa-solid fa-arrows-spin" (click)="stateService.setRandomGroupTarget()"></i>
+        <i class="icon-button fa-solid fa-shuffle" (click)="stateService.setRandomTarget()"></i>
+      </div>
     </div>
   </div>
   <div *ngFor="let image of crossfadeHelper" @fade class="fullscreen-crossfade">
@@ -37,3 +51,10 @@
     </ng-container>
   </div>
 </ng-container>
+
+<ng-template #contextmenu let-item="data">
+  <div class="tippy-hover-menu-container">
+    <span class="tippy-hover-menu-button" (click)="editTag(item)">Edit</span>
+    <span class="tippy-hover-menu-button" (click)="removeTag(item)">Remove</span>
+  </div>
+</ng-template>

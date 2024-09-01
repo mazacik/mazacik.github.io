@@ -1,34 +1,5 @@
 @import 'src/styles/variables.scss';
 
-:host-context(.light-theme) {
-  --color-background-primary: white;
-  --color-border: rgba(0, 0, 0, 0.2);
-  --color-hover: rgba(0, 0, 0, 0.1);
-  --color-text: black;
-  --color-text-hover: rgb(28, 28, 28);
-  --color-text-shadow: white;
-  --color-highlight: deepskyblue;
-  --color-primary: #0075ff;
-  --color-secondary: #155197;
-  --color-positive: forestgreen;
-  --color-negative: orangered;
-}
-
-:host-context(.dark-theme) {
-  --color-background-primary: #202124;
-  --color-background-secondary: #2b2c2f;
-  --color-border: rgba(255, 255, 255, 0.2);
-  --color-hover: rgba(255, 255, 255, 0.1);
-  --color-text-shadow: black;
-  --color-text: #e1e1e1;
-  --color-text-hover: white;
-  --color-primary: #0075ff;
-  --color-secondary: #155197;
-  --color-highlight: deepskyblue;
-  --color-positive: yellowgreen;
-  --color-negative: lightcoral;
-}
-
 :host {
   width: 100%;
   height: 100%;

@@ -10,7 +10,6 @@ import { MasonryComponent } from './masonry/masonry.component';
 import { GalleryImage } from './model/gallery-image.class';
 import { GallerySettings } from './model/gallery-settings.interface';
 import { GalleryStateService } from './services/gallery-state.service';
-import { SidebarComponent } from './sidebar/sidebar.component';
 
 @Component({
   selector: 'app-gallery',
@@ -18,8 +17,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
   imports: [
     CommonModule,
     MasonryComponent,
-    FullscreenComponent,
-    SidebarComponent
+    FullscreenComponent
   ],
   templateUrl: './gallery.component.html',
   styleUrls: ['./gallery.component.scss'],

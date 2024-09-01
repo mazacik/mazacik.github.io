@@ -34,7 +34,15 @@ bootstrapApplication(AppComponent, {
           animation: 'fade',
           trigger: 'mouseenter',
           hideOnClick: false,
-          offset: [0, 6]
+          offset: [0, 8]
+        },
+        contextmenu: {
+          arrow: true,
+          animation: 'fade',
+          trigger: 'mouseenter',
+          hideOnClick: false,
+          offset: [0, 8],
+          interactive: true
         }
       }
     })

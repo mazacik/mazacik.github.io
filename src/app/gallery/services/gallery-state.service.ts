@@ -42,6 +42,8 @@ export class GalleryStateService {
   public groupSizeFilterMin: number;
   public groupSizeFilterMax: number;
 
+  public comparison: { [key: string]: string[] };
+
   public modifyingGroup: GalleryImage[];
 
   constructor(
@@ -59,6 +61,7 @@ export class GalleryStateService {
     this.settings = data.settings;
     this.groupSizeFilterMin = data.groupSizeFilterMin;
     this.groupSizeFilterMax = data.groupSizeFilterMax;
+    this.comparison = data.comparison;
     this.tagGroups = data.tagGroups;
     this.tagGroups.forEach(group => group.tags.forEach(tag => tag.lowerCaseName = tag.name.toLowerCase()));
     return data;
@@ -169,7 +172,8 @@ export class GalleryStateService {
         heartsFilter: this.heartsFilter,
         bookmarksFilter: this.bookmarksFilter,
         groupSizeFilterMin: this.groupSizeFilterMin,
-        groupSizeFilterMax: this.groupSizeFilterMax
+        groupSizeFilterMax: this.groupSizeFilterMax,
+        comparison: this.comparison
       } as Data).then(metadata => {
         if (!metadata) {
           this.applicationService.errors.next(true);

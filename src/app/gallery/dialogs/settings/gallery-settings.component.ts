@@ -125,7 +125,7 @@ export class GallerySettingsComponent extends DialogContent<boolean> implements 
   }
 
   protected startImageComparison(): void {
-    this.dialogService.create(ImageComparisonComponent, { images: this.stateService.images.filter(i => i.passesFilter) });
+    this.dialogService.create(ImageComparisonComponent, { images: this.stateService.images });
     this.close();
   }
 

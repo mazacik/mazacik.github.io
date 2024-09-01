@@ -35,10 +35,88 @@
 //   }
 // }
 
+body.light-theme {
+  --color-background-primary: white;
+  --color-border: rgba(0, 0, 0, 0.2);
+  --color-hover: rgba(0, 0, 0, 0.1);
+  --color-text: black;
+  --color-text-hover: rgb(28, 28, 28);
+  --color-text-shadow: rgba(255, 255, 255, 0.65);
+  --color-highlight: deepskyblue;
+  --color-primary: #0075ff;
+  --color-secondary: #155197;
+  --color-positive: forestgreen;
+  --color-negative: orangered;
+  --color-overlay: rgba(255, 255, 255, 0.65);
+}
+
+body.dark-theme {
+  --color-background-primary: #202124;
+  --color-background-secondary: #2b2c2f;
+  --color-border: rgba(255, 255, 255, 0.2);
+  --color-hover: rgba(255, 255, 255, 0.1);
+  --color-text-shadow: rgba(0, 0, 0, 0.65);
+  --color-text: #e1e1e1;
+  --color-text-hover: white;
+  --color-primary: #0075ff;
+  --color-secondary: #155197;
+  --color-highlight: deepskyblue;
+  --color-positive: yellowgreen;
+  --color-negative: lightcoral;
+  --color-overlay: rgba(0, 0, 0, 0.65);
+}
+
 // tippy
 @media screen and (max-width:768px) {
   body>[data-tippy-root] {
     display: none;
+  }
+}
+
+.tippy-box {
+  background-color: var(--color-overlay);
+  border-radius: $gap * 1.5;
+
+  .tippy-content {
+    color: var(--color-text);
+    padding: $gap;
+  }
+}
+
+.tippy-box[data-placement^='top']>.tippy-arrow::before {
+  bottom: -8px;
+  border-top-color: var(--color-overlay);
+}
+
+.tippy-box[data-placement^='bottom']>.tippy-arrow::before {
+  top: -8px;
+  border-bottom-color: var(--color-overlay);
+}
+
+.tippy-box[data-placement^='left']>.tippy-arrow::before {
+  right: -8px;
+  border-left-color: var(--color-overlay);
+}
+
+.tippy-box[data-placement^='right']>.tippy-arrow::before {
+  left: -8px;
+  border-right-color: var(--color-overlay);
+}
+
+.tippy-hover-menu-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  .tippy-hover-menu-button {
+    text-align: center;
+    cursor: pointer;
+    border-radius: 4px;
+    padding: 4px 8px;
+
+    &:hover {
+      background-color: var(--color-border);
+    }
   }
 }
 
@@ -255,6 +333,19 @@ hr {
   color: var(--color-highlight);
 }
 
+.stack-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  position: relative;
+
+  >* {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+  }
+}
+
 .button {
   width: fit-content;
   // height: 2rem;
@@ -305,6 +396,11 @@ hr {
       background-color: rgba(255, 255, 255, 0.3) !important;
     }
   }
+}
+
+span.button,
+span.icon-button {
+  user-select: none;
 }
 
 .dragging {

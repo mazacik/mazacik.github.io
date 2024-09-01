@@ -4,7 +4,7 @@ export class Tournament<T>  {
 
   public data: T[];
   private getKey: (item: T) => string;
-  private directlyBetterThan: { [key: string]: T[] };
+  public directlyBetterThan: { [key: string]: T[] };
 
   private queue: [T, T][] = [];
   public comparison: [T, T];

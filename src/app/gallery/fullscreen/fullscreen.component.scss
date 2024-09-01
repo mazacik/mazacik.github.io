@@ -1,20 +1,20 @@
 @import 'src/styles/variables.scss';
 
 :host {
-  position: relative;
-  width: 100%;
-  height: 100%;
+  z-index: 20;
+  background-color: rgba(0, 0, 0, 0.9);
+  transition: $transition-duration;
 
   .fullscreen-header {
+    z-index: 30;
     padding: $gap;
     position: absolute;
+    top: 0;
     right: 0;
+    left: 0;
     display: flex;
     justify-content: space-between;
-    top: 0;
-    left: 0;
     pointer-events: none;
-    z-index: 30;
 
     >* {
       pointer-events: all;
@@ -22,19 +22,47 @@
   }
 
   .fullscreen-footer {
+    z-index: 30;
     padding: $gap;
     position: absolute;
     right: 0;
-    display: flex;
-    justify-content: space-between;
     bottom: 0;
     left: 0;
     pointer-events: none;
-    z-index: 30;
-    align-items: flex-end;
+    display: flex;
+    flex-direction: column;
 
     >* {
       pointer-events: all;
+    }
+
+    .buttons {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: $gap;
+
+      @media screen and (min-width:768px) {
+        margin-bottom: $gap;
+      }
+
+      .tag-bubble {
+        min-width: 2rem;
+        min-height: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: $gap;
+        padding: 0 $gap;
+        background-color: var(--color-overlay);
+        cursor: default;
+      }
     }
   }
 
