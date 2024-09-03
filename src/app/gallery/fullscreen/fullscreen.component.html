@@ -14,8 +14,8 @@
   <div class="fullscreen-footer">
     <div class="buttons">
       <div style="justify-content: start;">
-        <i class="icon-button fa-solid fa-box" tp="Archive" (click)="stateService.remove(target, true)"></i>
-        <i class="icon-button fa-solid fa-trash" tp="Trash" (click)="stateService.remove(target, false)"></i>
+        <i class="icon-button fa-solid fa-box" tp="Archive" (click)="stateService.delete(target, true)"></i>
+        <i class="icon-button fa-solid fa-trash" tp="Delete" (click)="stateService.delete(target, false)"></i>
       </div>
       <div class="flex column center">
         <div class="tags">

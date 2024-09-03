@@ -64,7 +64,7 @@ export class ImageComparisonComponent extends DialogContent<boolean> implements 
     }
 
     this.stateService.comparison = comparison;
-    this.stateService.updateData();
+    this.stateService.updateData(true);
     this.resolve(false);
   }
 

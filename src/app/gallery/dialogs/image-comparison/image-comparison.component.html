@@ -9,6 +9,7 @@
 </div>
 <div class="h-separator"></div>
 <div class="results">
+  <span *ngIf="tournament.outcome.length == 0">Approximate comparisons until preliminary results are shown: {{ tournament.getQueueLength() }}.</span>
   <div *ngFor="let image of tournament.outcome" class="image-container">
     <img class="image" [src]="image.thumbnailLink">
   </div>
