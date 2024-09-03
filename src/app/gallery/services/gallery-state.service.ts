@@ -5,6 +5,7 @@ import { GalleryImage } from "src/app/gallery/model/gallery-image.class";
 import { Delay } from "src/app/shared/classes/delay.class";
 import { GoogleMetadata } from "src/app/shared/classes/google-api/google-metadata.class";
 import { ApplicationService } from "src/app/shared/services/application.service";
+import { DialogService } from "src/app/shared/services/dialog.service";
 import { ArrayUtils } from "src/app/shared/utils/array.utils";
 import { GoogleFileUtils } from "src/app/shared/utils/google-file.utils";
 import { Data } from "../model/data.interface";
@@ -49,7 +50,8 @@ export class GalleryStateService {
   constructor(
     private sanitizer: DomSanitizer,
     private applicationService: ApplicationService,
-    private googleService: GalleryGoogleDriveService
+    private googleService: GalleryGoogleDriveService,
+    private dialogService: DialogService
   ) { }
 
   public async processData(): Promise<Data> {
@@ -100,7 +102,6 @@ export class GalleryStateService {
         }
 
         this.refreshTagCounts();
-
         this.applicationService.loading.next(false);
       };
     });
@@ -147,7 +148,7 @@ export class GalleryStateService {
     return image;
   }
 
-  public updateData(): void {
+  public updateData(instant: boolean = false): void {
     this.applicationService.changes.next(true);
     this.updateDelay.restart(() => {
       this.googleService.updateContent(this.googleService.dataFileId, {
@@ -163,7 +164,7 @@ export class GalleryStateService {
             likes: image.likes
           }
         }),
-        groupProperties: this.groups.map(group => {
+        groupProperties: this.groups.filter(group => group.images?.length > 1).map(group => {
           return {
             imageIds: group.images.map(image => image.id)
           }
@@ -182,6 +183,8 @@ export class GalleryStateService {
         this.applicationService.changes.next(false);
       });
     });
+
+    if (instant) this.updateDelay.complete();
   }
 
   public refreshTagCounts(): void {
@@ -205,7 +208,6 @@ export class GalleryStateService {
         this.tagCounts[tagId]++;
       }
     }
-
   }
 
   public setRandomTarget(): void {
@@ -362,7 +364,11 @@ export class GalleryStateService {
     }
   }
 
-  public async remove(image: GalleryImage, archive: boolean): Promise<void> {
+  public async delete(image: GalleryImage, archive: boolean, askForConfirmation: boolean = true): Promise<void> {
+    if (askForConfirmation && !await this.dialogService.createConfirmation('Confirmation', ['Are you sure you want to ' + (archive ? 'archive' : 'delete') + ' this image?'], 'Yes', 'No')) {
+      return;
+    }
+
     this.applicationService.loading.next(true);
     let nextTarget: GalleryImage;
     if (image.group) {
@@ -390,11 +396,19 @@ export class GalleryStateService {
       }
     }
 
-    this.refreshFilter(); // TODO only needed for masonry layout update
+    if (this.comparison != null) {
+      for (const imageIds of Object.values(this.comparison)) {
+        if (imageIds.includes(image.id)) {
+          ArrayUtils.remove(imageIds, image.id);
+        }
+      }
+    }
+
+    this.refreshFilter(); // TODO only triggers masonry layout update
     this.target.set(nextTarget);
     this.refreshTagCounts();
 
-    this.updateData();
+    this.updateData(true);
     this.applicationService.loading.next(false);
   }
 

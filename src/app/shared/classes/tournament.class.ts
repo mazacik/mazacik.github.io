@@ -1,6 +1,6 @@
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 
-export class Tournament<T>  {
+export class Tournament<T> {
 
   public data: T[];
   private getKey: (item: T) => string;
@@ -26,8 +26,17 @@ export class Tournament<T>  {
       }
     });
 
-    this.createQueue(this.data);
+    const elementsToCompare = data.slice();
+    for (const betterThan of Object.values(this.directlyBetterThan)) {
+      ArrayUtils.remove(elementsToCompare, betterThan);
+    }
+
+    this.createQueue(elementsToCompare);
     this.nextComparison();
+  }
+
+  public getQueueLength(): number {
+    return this.queue?.length;
   }
 
   private createQueue(source: T[]): void {
@@ -97,7 +106,6 @@ export class Tournament<T>  {
         this.resolveTies(this.directlyBetterThan[this.getKey(winner)][0]);
       } else if (length == 0) {
         this.comparison = null;
-        // console.log(this.comparisonCount);
       }
     }
   }
@@ -113,7 +121,6 @@ export class Tournament<T>  {
     }
 
     this.directlyBetterThan[this.getKey(winner)].push(loser);
-
     this.nextComparison();
   }
 

@@ -9,6 +9,6 @@
       </div>
       <i class="icon-button fa-solid fa-times" tp="Close" (click)="notesService.closeNote(note)"></i>
     </div>
-    <textarea class="note-content" placeholder="Text" [(ngModel)]="note.text" (input)="onNoteInput()" (create)="initTab($event)"></textarea>
+    <textarea class="note-content" spellcheck="false" placeholder="Text" [(ngModel)]="note.text" (input)="onNoteInput()" (create)="initTab($event)"></textarea>
   </div>
 </ng-container>
