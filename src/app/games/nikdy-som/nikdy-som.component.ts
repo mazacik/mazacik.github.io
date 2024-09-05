@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
+import { questionsGeneric, questionsNsfw, questionsSpicy } from './nikdy-som-questions';
 
 @Component({
   selector: 'app-nikdy-som',
@@ -13,18 +14,21 @@ import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 })
 export class NikdySomComponent implements OnInit {
 
-  private questions: string[] = [
-    'nikdy som si neochutnal šušník',
-    'nikdy som si neskúšal niečo strčiť do zadku',
-    'nikdy som sa dospelý neposral'
-  ];
-  protected availableQuestions: string[];
+  protected availableQuestions: string[] = [];
   protected currentQuestion: string;
 
   constructor() { }
 
   ngOnInit(): void {
-    this.availableQuestions = ArrayUtils.shuffle(this.questions.slice());
+    this.reset();
+  }
+
+  protected reset(): void {
+    this.availableQuestions.length = 0;
+    ArrayUtils.push(this.availableQuestions, questionsGeneric);
+    ArrayUtils.push(this.availableQuestions, questionsNsfw);
+    ArrayUtils.push(this.availableQuestions, questionsSpicy);
+    ArrayUtils.shuffle(this.availableQuestions);
     this.next();
   }
 
