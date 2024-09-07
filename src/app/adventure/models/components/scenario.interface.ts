@@ -14,6 +14,8 @@ export interface Scenario {
   buttons: Button[];
   notes: Note[];
 
-  currentNode: DialogueNode;
+  // transient
+  currentNode?: DialogueNode;
+  notesVisible?: boolean;
 
 }

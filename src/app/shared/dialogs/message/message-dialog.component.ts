@@ -1,9 +1,14 @@
+import { CommonModule } from '@angular/common';
 import { Component, HostListener, Input, OnInit } from '@angular/core';
 import { DialogConfiguration } from 'src/app/shared/components/dialog/dialog-configuration.class';
 import { DialogContent } from 'src/app/shared/components/dialog/dialog-content.class';
 
 @Component({
   selector: 'app-message-dialog',
+  standalone: true,
+  imports: [
+    CommonModule
+  ],
   templateUrl: 'message-dialog.component.html',
   styleUrls: ['./message-dialog.component.scss'],
 })
