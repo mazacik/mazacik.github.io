@@ -28,6 +28,7 @@
       display: flex;
       align-items: center;
       gap: $gap;
+      flex: 1;
     }
   }
 
@@ -36,6 +37,7 @@
     border: 0;
     border-radius: 0;
     padding: 0;
+    flex: 1;
   }
 
   .note-content {
@@ -43,5 +45,6 @@
     resize: none;
     border: none;
     padding: 0.5 * $gap 0;
+    line-height: 1.25rem;
   }
 }

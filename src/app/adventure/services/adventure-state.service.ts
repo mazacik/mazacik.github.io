@@ -116,6 +116,7 @@ export class AdventureStateService {
         }
 
         this.currentScenario = serializable.scenarios[0];
+        this.currentScenario.notesVisible = true;
         this.story = [];
       }
     }

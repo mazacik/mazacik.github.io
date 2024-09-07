@@ -18,7 +18,8 @@ export abstract class AdventureFactory {
       variables: [],
       nodes: [],
       buttons: [],
-      notes: []
+      notes: [],
+      notesVisible: true
     } as Scenario;
   }
 
