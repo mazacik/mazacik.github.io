@@ -162,7 +162,7 @@ export class AdventureStateService {
           }),
           notes: scenario.notes.map(note => {
             return {
-              label: note.label,
+              title: note.title,
               text: note.text
             } as Note;
           })

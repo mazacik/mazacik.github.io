@@ -2,7 +2,7 @@ import { Scenario } from "./scenario.interface";
 
 export interface Note {
 
-  label: string;
+  title: string;
   text: string;
   wordCount: number;
 
