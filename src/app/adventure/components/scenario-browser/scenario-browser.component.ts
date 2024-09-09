@@ -97,7 +97,6 @@ export class ScenarioBrowserComponent implements OnInit {
     if (!scenario.notes) scenario.notes = [];
     const note: Note = { label: 'New Note', text: '', wordCount: 0, parentScenario: scenario };
     scenario.notes.push(note);
-    this.notesService.openNote(note, true);
     this.googleService.updateAdventure();
   }
 
