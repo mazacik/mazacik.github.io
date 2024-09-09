@@ -5,7 +5,7 @@
       <div class="note-navigation" [class.highlight]="note == notesService.focusNote">
         <span>{{ note.parentScenario.label }}</span>
         <span>/</span>
-        <input class="note-title" placeholder="Title" [(ngModel)]="note.label" (input)="googleService.updateAdventure()">
+        <input class="note-title" placeholder="Title" [(ngModel)]="note.title" (input)="googleService.updateAdventure()">
       </div>
       <i class="icon-button fa-solid fa-times" tp="Close" (click)="notesService.closeNote(note)"></i>
     </div>

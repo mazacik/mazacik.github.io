@@ -13,7 +13,7 @@
     </div>
     <div *ngIf="scenario.notesVisible" @drawer class="scenario-notes-container">
       <div *ngFor="let note of scenario.notes" class="note-container" (click)="setCurrentNote(scenario, note)" [dragdrop]="note" [dragdropParent]="scenario.notes" (dragend)="googleService.updateAdventure()">
-        <span class="note-label" [class.highlight]="note == notesService.focusNote">{{ note.label }}</span>
+        <span class="note-title" [class.highlight]="note == notesService.focusNote">{{ note.title }}</span>
         <div class="note-info">
           <span class="note-word-count">{{ note.wordCount }}</span>
           <div class="note-buttons">

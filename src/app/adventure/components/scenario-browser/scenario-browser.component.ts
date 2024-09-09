@@ -95,14 +95,14 @@ export class ScenarioBrowserComponent implements OnInit {
 
   createNote(scenario: Scenario): void {
     if (!scenario.notes) scenario.notes = [];
-    const note: Note = { label: 'New Note', text: '', wordCount: 0, parentScenario: scenario };
+    const note: Note = { title: 'New Note', text: '', wordCount: 0, parentScenario: scenario };
     scenario.notes.push(note);
     this.googleService.updateAdventure();
   }
 
   removeNote(scenario: Scenario, note: Note): void {
     const notes: Note[] = scenario.notes;
-    this.dialogService.createConfirmation('Delete Note', ['Do you really want to delete "' + note.label + '"?'], 'Yes', 'No').then(result => {
+    this.dialogService.createConfirmation('Delete Note', ['Do you really want to delete "' + note.title + '"?'], 'Yes', 'No').then(result => {
       if (result) {
         this.notesService.closeNote(note);
         ArrayUtils.remove(notes, note);
