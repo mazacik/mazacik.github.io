@@ -36,7 +36,7 @@ export class TournamentComponent implements OnInit {
 
   onEntryClick(winner: string, loser: string): void {
     this.tournament.addComparisonResult(winner, loser);
-    this.text = this.tournament.outcome.join('\n');
+    this.text = this.tournament.leaderboard.join('\n');
   }
 
 }
