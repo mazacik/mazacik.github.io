@@ -3,8 +3,8 @@
   <span *ngIf="!tournament" class="button" (click)="parseText()">Parse</span>
 </div>
 <ng-container *ngIf="tournament">
-  <div class="comparison" *ngIf="tournament.comparison">
-    <span class="button" (click)="onEntryClick(tournament.comparison[0], tournament.comparison[1])">{{ tournament.comparison[0] }}</span>
-    <span class="button" (click)="onEntryClick(tournament.comparison[1], tournament.comparison[0])">{{ tournament.comparison[1] }}</span>
+  <div class="comparison" *ngIf="tournament.currentComparison">
+    <span class="button" (click)="onEntryClick(tournament.currentComparison[0], tournament.currentComparison[1])">{{ tournament.currentComparison[0].id }}</span>
+    <span class="button" (click)="onEntryClick(tournament.currentComparison[1], tournament.currentComparison[0])">{{ tournament.currentComparison[1].id }}</span>
   </div>
 </ng-container>
