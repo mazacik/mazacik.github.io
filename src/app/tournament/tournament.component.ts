@@ -16,7 +16,9 @@ import { Contender } from '../shared/classes/contender.class';
 })
 export class TournamentComponent implements OnInit {
 
-  text: string = '1\n2\n3\n4\n5\n6\n7\n8\n';
+  // text: string = '01\n02\n03\n04\n05\n06\n07\n08\n';
+  // text: string = '03\n08\n05\n06\n01\n04\n02\n07\n';
+  text: string = '13\n09\n04\n08\n15\n02\n06\n03\n01\n11\n16\n07\n12\n10\n14\n05\n';
   entries: string[] = [];
   tournament: Tournament2<string>;
   result: string[][] = [];
@@ -36,8 +38,8 @@ export class TournamentComponent implements OnInit {
   }
 
   onEntryClick(winner: Contender<string>, loser: Contender<string>): void {
-    this.tournament.addComparisonResult(winner, loser);
-    this.text = this.tournament.leaderboard.join('\n');
+    this.tournament.handleUserDecision(winner, loser);
+    this.text = this.tournament.leaderboard.map(item => item.id).join('\n');
   }
 
 }
