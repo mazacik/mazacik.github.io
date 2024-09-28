@@ -11,7 +11,7 @@ export class Tournament<T> {
   private waitingForOpponent: T = null;
   private previousWinner: T = null;
 
-  public outcome: T[] = [];
+  public leaderboard: T[] = [];
 
   constructor(data: T[], getKey: (item: T) => string, directlyBetterThan: { [key: string]: T[] } = {}) {
     this.data = data.slice();
@@ -90,7 +90,7 @@ export class Tournament<T> {
     this.waitingForOpponent = null;
 
     if (winner) {
-      this.outcome.push(winner);
+      this.leaderboard.push(winner);
 
       if (this.previousWinner) {
         this.directlyBetterThan[this.getKey(this.previousWinner)] = [winner];
@@ -101,6 +101,7 @@ export class Tournament<T> {
       if (length > 1) {
         this.previousWinner = winner;
         this.createQueue(this.directlyBetterThan[this.getKey(winner)]);
+        // tu urobit viacero paralelnych queues, pre kazdu entitu ktora ma length>1 separatna queue a po kazdom comparison prejst na dalsiu queue, aby sa to tolko neopakovalo
         this.nextComparison();
       } else if (length == 1) {
         this.resolveTies(this.directlyBetterThan[this.getKey(winner)][0]);
@@ -135,7 +136,7 @@ export class Tournament<T> {
   }
 
   public reset(): void {
-    this.outcome.length = 0;
+    this.leaderboard.length = 0;
     this.comparisonCount = 0;
     for (const key of Object.keys(this.directlyBetterThan)) {
       this.directlyBetterThan[key].length = 0;
