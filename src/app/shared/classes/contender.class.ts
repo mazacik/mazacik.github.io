@@ -5,6 +5,7 @@ export class Contender<T> {
   public id: string;
   public object: T;
   public directlyBetterThan: Contender<T>[];
+  private betterThan: Contender<T>[];
 
   constructor(id: string, object: T) {
     this.id = id;
@@ -13,18 +14,22 @@ export class Contender<T> {
   }
 
   public isBetterThan(other: Contender<T>): boolean {
-    if (this.directlyBetterThan.includes(other)) return true;
-    for (const anotherItem of this.directlyBetterThan) {
-      if (anotherItem.isBetterThan(other)) return true;
-    }
+    if (!this.betterThan) this.getBetterThan();
+    return this.betterThan.includes(other);
   }
 
-  public getBetterThan(collector: Contender<T>[] = []): Contender<T>[] {
-    for (const otherItem of this.directlyBetterThan) {
-      ArrayUtils.push(collector, otherItem);
-      otherItem.getBetterThan(collector);
+  public getBetterThan(): Contender<T>[] {
+    if (!this.betterThan) {
+      this.betterThan = this.directlyBetterThan.slice();
+      for (const otherItem of this.directlyBetterThan) {
+        ArrayUtils.push(this.betterThan, otherItem.getBetterThan());
+      }
     }
-    return collector;
+    return this.betterThan;
+  }
+
+  public clearBetterThan(): void {
+    if (this.betterThan) this.betterThan.length = 0;
   }
 
 }

@@ -2,13 +2,15 @@
 
 :host {
   display: flex;
+  flex-direction: column;
 
   .masonry-scroll-container {
     overflow-x: hidden;
     overflow-y: scroll;
     background-color: var(--color-background-primary);
-    width: 100%;
-    padding: $gap;
+    // width: 100%;
+    height: 100%;
+    padding: 1px $gap $gap $gap;
 
     @media screen and (min-width:768px) {
       // swap between these for (no) separator
@@ -28,7 +30,6 @@
         &.modifying-group {
           .brick-container {
             outline-color: var(--color-border);
-            background-color: var(--color-background-secondary);
 
             img {
               margin: $gap;
@@ -41,6 +42,7 @@
           width: 100%;
           height: 100%;
           display: flex;
+          background-color: var(--color-background-secondary);
           transition-property: outline, background-color;
           transition-duration: $transition-duration;
           outline: 1px solid transparent;
@@ -58,16 +60,31 @@
         }
 
         @media screen and (min-width:768px) {
-          &:hover .brick-header .icon-button {
-            opacity: 1;
-            pointer-events: all;
+          &:hover {
+
+            .brick-header,
+            .brick-footer {
+              .icon-button {
+                opacity: 1;
+                pointer-events: all;
+              }
+            }
           }
         }
 
         .brick-header {
+          top: 0;
+
+        }
+
+        .brick-footer {
+          bottom: 0;
+        }
+
+        .brick-header,
+        .brick-footer {
           width: 100%;
           position: absolute;
-          top: 0;
           display: flex;
           padding: $gap;
           box-sizing: border-box;

@@ -1,0 +1,11 @@
+<div class="header-start">
+  <i class="icon-button fa-solid fa-code-compare" tp="Comparison" (click)="openImageComparison()"></i>
+  <i class="icon-button fa-solid fa-folder-plus" tp="Create Group" (click)="galleryService.editGroup()"></i>
+</div>
+<div class="header-center">
+  <!-- TODO tag filtering -->
+</div>
+<div class="header-end">
+  <i class="icon-button fa-solid" [ngClass]="applicationService.isDarkTheme() ? 'fa-moon' : 'fa-sun'" tp="Brightness Mode" (click)="applicationService.toggleTheme()"></i>
+  <i class="icon-button fa-solid fa-gear" tp="Settings" (click)="dialogService.openSettings()"></i>
+</div>

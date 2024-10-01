@@ -1,0 +1,28 @@
+@import 'src/styles/variables.scss';
+
+:host {
+  padding: $gap;
+  height: $header-height;
+  display: flex;
+  justify-content: space-between;
+
+  .header-start,
+  .header-center,
+  .header-end {
+    flex: 1;
+    display: flex;
+    gap: $gap;
+  }
+
+  .header-start {
+    justify-content: start;
+  }
+
+  .header-center {
+    justify-content: center;
+  }
+
+  .header-end {
+    justify-content: end;
+  }
+}

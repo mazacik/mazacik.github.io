@@ -30,7 +30,7 @@ export class GalleryStateService {
   public images: GalleryImage[];
   public groups: GalleryGroup[];
   public filter: WritableSignal<GalleryImage[]> = signal([]);
-  public target: WritableSignal<GalleryImage> = signal(null);
+  public target: WritableSignal<GalleryImage> = signal(null); // TODO maybe target is not necessary anymore? only used in fullscreen?
 
   public masonryImages: GalleryImage[];
   public masonryTargetReference: GalleryImage;
@@ -45,7 +45,7 @@ export class GalleryStateService {
 
   public comparison: { [key: string]: string[] };
 
-  public modifyingGroup: GalleryImage[];
+  public editingGroup: GalleryImage[]; // TODO move to GalleryService
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -91,6 +91,13 @@ export class GalleryStateService {
           group.images.forEach(image => image.group = group);
           return group;
         });
+
+        // if (this.comparison && Object.keys(this.comparison).length > 0) {
+        //   // TODO clean comparison (remove missing entries)
+        //   const contenders: Contender<GalleryImage>[] = this.images.map(image => new Contender<GalleryImage>(image.id, image));
+        //   contenders.forEach(contender => contender.directlyBetterThan = this.comparison[contender.id].map(directlyBetterThanId => contenders.find(c => c.id == directlyBetterThanId)));
+        //   this.images = TournamentUtils.getLeaderboard(TournamentUtils.getFirst(contenders), contenders).map(contender => contender.object);
+        // }
 
         this.refreshFilter();
         this.target.set(ArrayUtils.getFirst(this.filter()));
