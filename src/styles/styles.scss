@@ -3,6 +3,7 @@
 @import '@fortawesome/fontawesome-free/css/fontawesome.css';
 @import '@fortawesome/fontawesome-free/css/regular.css';
 @import '@fortawesome/fontawesome-free/css/solid.css';
+@import '@fortawesome/fontawesome-free/css/brands.css';
 
 @import 'tippy.js/dist/tippy.css';
 
@@ -223,6 +224,10 @@ body {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+i {
+  font-style: normal;
 }
 
 input,

@@ -2,7 +2,6 @@
   <div class="fullscreen-header">
     <div>
       <i class="icon-button fa-solid fa-arrow-left" (click)="stateService.fullscreenVisible.set(false)"></i>
-      <i class="icon-button fa-solid fa-gear" tp="Settings" (click)="dialogService.openSettings()"></i>
     </div>
     <div>
       <i class="icon-button fa-heart" [ngClass]="target?.heart ? 'fa-solid' : 'fa-regular'" tp="Favorite" (click)="stateService.toggleHeart(target)"></i>
@@ -19,7 +18,7 @@
       </div>
       <div class="flex column center">
         <div class="tags">
-          <div *ngFor="let tagId of target?.tags" class="tag-bubble" [tp]="contextmenu" [tpData]="tagId" tpVariation="contextmenu">
+          <div *ngFor="let tagId of target?.tags" class="tag-bubble" [tp]="tagHoverMenu" [tpData]="tagId" tpVariation="contextmenu">
             <span>{{ getTag(tagId).name }}</span>
           </div>
           <div class="tag-bubble" style="display: flex; position: relative; padding-right: 0;">
@@ -36,8 +35,8 @@
         </div>
       </div>
       <div style="justify-content: end;">
-        <i *ngIf="target?.group" class="icon-button fa-solid fa-arrows-spin" (click)="stateService.setRandomGroupTarget()"></i>
-        <i class="icon-button fa-solid fa-shuffle" (click)="stateService.setRandomTarget()"></i>
+        <i *ngIf="target?.group" class="icon-button fa-solid fa-arrows-spin" tp="Random Image from Group" (click)="stateService.setRandomGroupTarget()"></i>
+        <i class="icon-button fa-solid fa-shuffle" tp="Random Image" (click)="stateService.setRandomTarget()"></i>
       </div>
     </div>
   </div>
@@ -52,7 +51,7 @@
   </div>
 </ng-container>
 
-<ng-template #contextmenu let-item="data">
+<ng-template #tagHoverMenu let-item="data">
   <div class="tippy-hover-menu-container">
     <span class="tippy-hover-menu-button" (click)="editTag(item)">Edit</span>
     <span class="tippy-hover-menu-button" (click)="removeTag(item)">Remove</span>

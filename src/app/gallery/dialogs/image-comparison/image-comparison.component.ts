@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
 import { GalleryImage } from 'src/app/gallery/model/gallery-image.class';
 import { Contender } from 'src/app/shared/classes/contender.class';
-import { Tournament2 } from 'src/app/shared/classes/tournament2.class';
+import { Tournament } from 'src/app/shared/classes/tournament.class';
 import { DialogConfiguration } from 'src/app/shared/components/dialog/dialog-configuration.class';
 import { DialogContent } from 'src/app/shared/components/dialog/dialog-content.class';
 import { GalleryStateService } from '../../services/gallery-state.service';
@@ -20,7 +20,7 @@ export class ImageComparisonComponent extends DialogContent<boolean> implements 
 
   @Input() images: GalleryImage[];
 
-  tournament: Tournament2<GalleryImage>;
+  tournament: Tournament<GalleryImage>;
 
   configuration: DialogConfiguration = {
     title: 'Image Comparison',
@@ -40,11 +40,11 @@ export class ImageComparisonComponent extends DialogContent<boolean> implements 
   }
 
   ngOnInit(): void {
-    this.tournament = new Tournament2(this.images, image => image.id, this.stateService.comparison);
+    this.tournament = new Tournament(this.images, image => image.id, this.stateService.comparison);
   }
 
   protected onImageClick(winner: Contender<GalleryImage>, loser: Contender<GalleryImage>): void {
-    this.tournament.handleUserDecision(winner, loser);
+    this.tournament.handleUserInput(winner, loser);
   }
 
   protected reset(): void {

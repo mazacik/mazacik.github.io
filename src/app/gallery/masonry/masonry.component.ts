@@ -2,11 +2,14 @@ import { CommonModule } from '@angular/common';
 import { Component, ElementRef, HostListener, effect } from '@angular/core';
 import { TippyDirective } from '@ngneat/helipopper';
 import { GalleryImage } from 'src/app/gallery/model/gallery-image.class';
-import { leave } from 'src/app/shared/constants/animations.constants';
+import { fade } from 'src/app/shared/constants/animations.constants';
 import { CreateDirective } from 'src/app/shared/directives/create.directive';
 import { ApplicationService } from 'src/app/shared/services/application.service';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 import { ScreenUtils } from '../../shared/utils/screen.utils';
+import { GalleryService } from '../gallery.service';
+import { HeaderComponent } from '../header/header.component';
+import { GalleryGoogleDriveService } from '../services/gallery-google-drive.service';
 import { GalleryStateService } from '../services/gallery-state.service';
 
 @Component({
@@ -15,11 +18,12 @@ import { GalleryStateService } from '../services/gallery-state.service';
   imports: [
     CommonModule,
     CreateDirective,
-    TippyDirective
+    TippyDirective,
+    HeaderComponent
   ],
   templateUrl: './masonry.component.html',
   styleUrls: ['./masonry.component.scss'],
-  animations: [leave]
+  animations: [fade]
 })
 export class MasonryComponent {
 
@@ -28,10 +32,12 @@ export class MasonryComponent {
 
   constructor(
     protected applicationService: ApplicationService,
-    protected stateService: GalleryStateService
+    protected stateService: GalleryStateService,
+    protected googleService: GalleryGoogleDriveService,
+    protected galleryService: GalleryService
   ) {
     effect(() => this.updateLayout());
-    effect(() => this.scrollToTarget());
+    effect(() => this.scrollTo(this.stateService.target()));
     effect(() => this.updateMasonryTargetReference());
   }
 
@@ -124,10 +130,9 @@ export class MasonryComponent {
     }
   }
 
-  private scrollToTarget(): void {
-    const target: GalleryImage = this.stateService.target();
-    if (target) {
-      const targetRepresent: GalleryImage = target.group ? target.group.images.find(groupImage => groupImage.passesFilter) : target;
+  private scrollTo(image: GalleryImage): void {
+    if (image) {
+      const targetRepresent: GalleryImage = image.group ? image.group.images.find(groupImage => groupImage.passesFilter) : image;
       const brickElement: HTMLImageElement = this.bricks[targetRepresent?.id];
       if (brickElement && !ScreenUtils.isElementVisible(brickElement)) {
         const containerElement: HTMLElement = document.getElementsByClassName('masonry-scroll-container')[0] as HTMLElement;
@@ -154,46 +159,18 @@ export class MasonryComponent {
   }
 
   protected onImageClick(image: GalleryImage): void {
-    if (this.stateService.modifyingGroup) {
+    if (this.stateService.editingGroup) {
       const target: GalleryImage = this.stateService.target();
       if (image.group && target.group && !target.group.images.includes(image)) {
         return;
       }
 
-      ArrayUtils.toggle(this.stateService.modifyingGroup, image);
+      ArrayUtils.toggle(this.stateService.editingGroup, image);
       return;
     }
 
     this.stateService.target.set(image);
     this.stateService.fullscreenVisible.set(true);
-  }
-
-  protected onHeartClick(event: MouseEvent, image: GalleryImage): void {
-    if (ScreenUtils.isLargeScreen()) {
-      event.stopPropagation();
-      this.stateService.toggleHeart(image);
-    }
-  }
-
-  protected onBookmarkClick(event: MouseEvent, image: GalleryImage): void {
-    if (ScreenUtils.isLargeScreen()) {
-      event.stopPropagation();
-      this.stateService.toggleBookmark(image);
-    }
-  }
-
-  protected onLikeClick(event: MouseEvent, image: GalleryImage): void {
-    if (ScreenUtils.isLargeScreen()) {
-      event.stopPropagation();
-      this.stateService.like(image);
-    }
-  }
-
-  protected onDislikeClick(event: MouseEvent, image: GalleryImage): void {
-    if (ScreenUtils.isLargeScreen()) {
-      event.preventDefault();
-      this.stateService.dislike(image);
-    }
   }
 
   protected onGroupToggleClick(event: MouseEvent, image: GalleryImage): void {
@@ -215,6 +192,7 @@ export class MasonryComponent {
     this.updateLayout();
   }
 
+  // TODO show tippy: Other images in group are filtered out
   protected shouldDisableGroupToggleButton(image: GalleryImage): boolean {
     return image.group && image.group.images.filter(groupImage => groupImage.passesFilter).length < 2;
   }

@@ -71,7 +71,7 @@ export abstract class BaseGoogleDriveService {
   }
 
   public openSearch(query: string): void {
-    const url: string = 'https://drive.google.com/drive/search?q=' + query;
+    const url: string = 'https://drive.google.com/drive/search?q=' + query + '%20title:' + query;
     window.open(url, '_blank');
   }
 

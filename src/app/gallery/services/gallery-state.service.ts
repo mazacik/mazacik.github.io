@@ -13,6 +13,7 @@ import { GallerySettings } from "../model/gallery-settings.interface";
 import { ImageProperties } from "../model/image-properties.interface";
 import { TagGroup } from "../model/tag-group.interface";
 import { GalleryGoogleDriveService } from "./gallery-google-drive.service";
+import { TournamentUtils } from "src/app/shared/utils/tournament.utils";
 
 @Injectable({
   providedIn: 'root',
@@ -30,7 +31,7 @@ export class GalleryStateService {
   public images: GalleryImage[];
   public groups: GalleryGroup[];
   public filter: WritableSignal<GalleryImage[]> = signal([]);
-  public target: WritableSignal<GalleryImage> = signal(null);
+  public target: WritableSignal<GalleryImage> = signal(null); // TODO maybe target is not necessary anymore? only used in fullscreen?
 
   public masonryImages: GalleryImage[];
   public masonryTargetReference: GalleryImage;
@@ -45,7 +46,7 @@ export class GalleryStateService {
 
   public comparison: { [key: string]: string[] };
 
-  public modifyingGroup: GalleryImage[];
+  public editingGroup: GalleryImage[]; // TODO move to GalleryService
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -99,6 +100,11 @@ export class GalleryStateService {
           console.log(image);
           console.log('This image does not exist, but has a data entry. Removing image entry from data.');
           ArrayUtils.remove(this.images, this.images.find(_image => _image.id == image.id));
+        }
+
+        if (this.comparison && Object.keys(this.comparison).length > 0) {
+          // TODO clean comparison (remove missing entries)
+          // console.log(TournamentUtils.a(this.images, this.comparison));
         }
 
         this.refreshTagCounts();

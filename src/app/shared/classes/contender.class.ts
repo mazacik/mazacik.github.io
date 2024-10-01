@@ -5,6 +5,10 @@ export class Contender<T> {
   public id: string;
   public object: T;
   public directlyBetterThan: Contender<T>[];
+  public betterThan: Contender<T>[];
+
+  private static counter: number = 0;
+  private static test: Map<Contender<unknown>, Contender<unknown>[]> = new Map();
 
   constructor(id: string, object: T) {
     this.id = id;
@@ -12,19 +16,28 @@ export class Contender<T> {
     this.directlyBetterThan = [];
   }
 
-  public isBetterThan(other: Contender<T>): boolean {
-    if (this.directlyBetterThan.includes(other)) return true;
-    for (const anotherItem of this.directlyBetterThan) {
-      if (anotherItem.isBetterThan(other)) return true;
-    }
+  public updateBetterThan(): void {
+    this.betterThan = this.getBetterThan(true);
   }
 
-  public getBetterThan(collector: Contender<T>[] = []): Contender<T>[] {
-    for (const otherItem of this.directlyBetterThan) {
-      ArrayUtils.push(collector, otherItem);
-      otherItem.getBetterThan(collector);
+  public isBetterThan(other: Contender<T>, forceUpdate: boolean = false): boolean {
+    if (!this.betterThan || forceUpdate) {
+      this.updateBetterThan();
     }
-    return collector;
+
+    return this.betterThan.includes(other);
+  }
+
+  public getBetterThan(forceUpdate: boolean = false): Contender<T>[] {
+    console.log(++Contender.counter);
+    if (!this.betterThan || forceUpdate) {
+      this.betterThan = this.directlyBetterThan.slice();
+      for (const otherItem of this.directlyBetterThan) {
+        ArrayUtils.push(this.betterThan, otherItem.getBetterThan(forceUpdate));
+      }
+    }
+
+    return this.betterThan;
   }
 
 }

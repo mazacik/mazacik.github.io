@@ -17,8 +17,10 @@ export class ApplicationService {
   public initTheme(): void {
     if (this.darkTheme) {
       document.body.classList.add('dark-theme');
+      document.body.style.colorScheme = 'dark';
     } else {
       document.body.classList.add('light-theme');
+      document.body.style.colorScheme = 'light';
     }
   }
 
@@ -27,9 +29,17 @@ export class ApplicationService {
   }
 
   public toggleTheme(): void {
-    this.darkTheme = !this.darkTheme;
-    document.body.classList.toggle('light-theme', !this.darkTheme);
-    document.body.classList.toggle('dark-theme', this.darkTheme);
+    if (this.darkTheme) {
+      this.darkTheme = false;
+      document.body.classList.toggle('dark-theme', false);
+      document.body.classList.toggle('light-theme', true);
+      document.body.style.colorScheme = 'light';
+    } else {
+      this.darkTheme = true;
+      document.body.classList.toggle('dark-theme', true);
+      document.body.classList.toggle('light-theme', false);
+      document.body.style.colorScheme = 'dark';
+    }
   }
 
   public get reduceBandwidth(): boolean {

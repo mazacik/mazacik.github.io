@@ -1,148 +1,202 @@
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
+import { Contender } from './contender.class';
 
 export class Tournament<T> {
 
-  public data: T[];
-  private getKey: (item: T) => string;
-  public directlyBetterThan: { [key: string]: T[] };
+  public data: Contender<T>[] = [];
 
-  private queue: [T, T][] = [];
-  public comparison: [T, T];
-  private waitingForOpponent: T = null;
-  private previousWinner: T = null;
+  private queue: Contender<T>[] = [];
+  private winnersQueue: Contender<T>[] = [];
+  private losersQueue: Contender<T>[] = [];
 
-  public leaderboard: T[] = [];
+  private currentQueueType: 'start' | 'winners' | 'losers' | 'tiebreaker';
 
-  constructor(data: T[], getKey: (item: T) => string, directlyBetterThan: { [key: string]: T[] } = {}) {
-    this.data = data.slice();
-    this.getKey = getKey;
-    this.directlyBetterThan = directlyBetterThan;
+  public currentComparison: [Contender<T>, Contender<T>];
+  public leaderboard: Contender<T>[] = [];
 
-    let key: string;
-    this.data.forEach(item => {
-      key = this.getKey(item);
-      if (!this.directlyBetterThan[key]) {
-        this.directlyBetterThan[key] = [];
+  private first: Contender<T> = null;
+
+  private resolvingTiesFor: Contender<T> = null;
+  private history: Contender<T>[] = [];
+  private maxHistoryLength: number;
+
+  constructor(input: T[], getId: (object: T) => string, directlyBetterData?: { [key: string]: string[] }) {
+    this.data = input.map(object => new Contender<T>(getId(object), object));
+    this.maxHistoryLength = Math.min(10, Math.round(this.data.length / 4));
+
+    if (directlyBetterData && Object.keys(directlyBetterData).length > 0) {
+      let directlyBetterThan: Contender<T>[];
+      for (const item of this.data) {
+        directlyBetterThan = directlyBetterData[item.id]?.map(id => this.data.find(item => item.id == id));
+        if (directlyBetterThan?.length > 0) item.directlyBetterThan = directlyBetterThan;
       }
-    });
-
-    const elementsToCompare = data.slice();
-    for (const betterThan of Object.values(this.directlyBetterThan)) {
-      ArrayUtils.remove(elementsToCompare, betterThan);
     }
 
-    this.createQueue(elementsToCompare);
+    this.currentQueueType = 'start';
+    this.queue = this.data.slice();
+    this.leaderboard = this.data.slice();
     this.nextComparison();
-  }
-
-  public getQueueLength(): number {
-    return this.queue?.length;
-  }
-
-  private createQueue(source: T[]): void {
-    this.queue.length = 0;
-
-    let item1: T;
-    let item2: T;
-
-    const shuffle: T[] = ArrayUtils.shuffle(source.slice());
-    while (shuffle.length > 0) {
-      item1 = shuffle.shift();
-      item2 = shuffle.shift();
-      if (item2) {
-        this.queue.push([item1, item2]);
-      } else {
-        this.waitingForOpponent = item1;
-      }
-    }
   }
 
   private nextComparison(): void {
-    const comparison: [T, T] = this.queue.shift();
-    if (!comparison) {
-      this.resolveTies(this.waitingForOpponent);
-      return;
-    }
-
-    let autoWinner: T = null;
-    if (this.getBetterThan(comparison[0]).includes(comparison[1])) {
-      autoWinner = comparison[0];
-    } else if (this.getBetterThan(comparison[1]).includes(comparison[0])) {
-      autoWinner = comparison[1];
-    }
-
-    if (autoWinner) {
-      if (this.waitingForOpponent) {
-        this.queue.push([this.waitingForOpponent, autoWinner]);
-        this.waitingForOpponent = null;
-      } else {
-        this.waitingForOpponent = autoWinner;
-      }
-
-      this.nextComparison();
-    } else {
-      this.comparison = comparison;
-      // this.addComparisonResult(this.comparison[0], this.comparison[1]); // AUTO-RESOLVE
+    switch (this.currentQueueType) {
+      case 'start':
+      case 'winners':
+      case 'losers':
+        this.nextComparisonUntilFirst();
+        break;
+      case 'tiebreaker':
+        this.nextComparisonTiebreaker();
+        break;
     }
   }
 
-  private resolveTies(winner: T): void {
-    this.waitingForOpponent = null;
+  private nextComparisonUntilFirst(): void {
+    console.log(this.queue.length);
 
-    if (winner) {
-      this.leaderboard.push(winner);
+    const left = this.queue.shift();
+    const right = this.queue.shift();
 
-      if (this.previousWinner) {
-        this.directlyBetterThan[this.getKey(this.previousWinner)] = [winner];
-        this.previousWinner = null;
+    console.log(left);
+    console.log(right);
+    console.log('---');
+
+    if (left.isBetterThan(right)) {
+      this.handleUserInput(left, right);
+    } else if (right.isBetterThan(left)) {
+      this.handleUserInput(right, left);
+    } else {
+      this.currentComparison = [left, right];
+      this.updateLeaderboard();
+    }
+
+    // AUTO-COMPARE
+    // this.currentComparison.sort((left, right) => Number.parseInt(left.id) - Number.parseInt(right.id));
+    // this.handleUserDecision(this.currentComparison[0], this.currentComparison[1]);
+  }
+
+  private nextComparisonTiebreaker(): void {
+    this.resolvingTiesFor = null;
+    this.history.length = Math.min(this.history.length, this.maxHistoryLength);
+    const history: Contender<T>[] = this.history.slice();
+
+    let mostWinsCount: number = 1;
+    let mostWinsArray: Contender<T>[];
+    let availableForComparison: Contender<T>[];
+    do {
+      for (const item of this.data) {
+        availableForComparison = item.directlyBetterThan.filter(win => !history.includes(win));
+        if (availableForComparison.length > mostWinsCount) {
+          mostWinsCount = availableForComparison.length;
+          mostWinsArray = availableForComparison;
+          this.resolvingTiesFor = item;
+        }
       }
+      if (history.length == 0) break;
+      history.length = history.length - 2;
+    } while (this.resolvingTiesFor == null);
 
-      const length: number = this.directlyBetterThan[this.getKey(winner)].length;
-      if (length > 1) {
-        this.previousWinner = winner;
-        this.createQueue(this.directlyBetterThan[this.getKey(winner)]);
-        // tu urobit viacero paralelnych queues, pre kazdu entitu ktora ma length>1 separatna queue a po kazdom comparison prejst na dalsiu queue, aby sa to tolko neopakovalo
+    if (this.resolvingTiesFor) {
+      const left: Contender<T> = mostWinsArray[0];
+      const right: Contender<T> = mostWinsArray[1];
+
+      if (left.isBetterThan(right)) {
+        ArrayUtils.remove(this.resolvingTiesFor.directlyBetterThan, right);
+        ArrayUtils.push(left.directlyBetterThan, right);
         this.nextComparison();
-      } else if (length == 1) {
-        this.resolveTies(this.directlyBetterThan[this.getKey(winner)][0]);
-      } else if (length == 0) {
-        this.comparison = null;
+      } else if (right.isBetterThan(left)) {
+        ArrayUtils.remove(this.resolvingTiesFor.directlyBetterThan, left);
+        ArrayUtils.push(right.directlyBetterThan, left);
+        this.nextComparison();
+      } else {
+        this.currentComparison = [left, right];
+        this.history.unshift(left, right);
+        this.updateLeaderboard();
       }
+    } else {
+      this.currentComparison = null;
     }
   }
 
-  private comparisonCount: number = 0;
-  public addComparisonResult(winner: T, loser: T): void {
-    this.comparisonCount++;
-    if (this.waitingForOpponent) {
-      this.queue.push([this.waitingForOpponent, winner]);
-      this.waitingForOpponent = null;
-    } else {
-      this.waitingForOpponent = winner;
+  private updateLeaderboard(): void {
+    this.leaderboard.length = 0;
+
+    let someItem: Contender<T> = this.first;
+    while (someItem) {
+      this.leaderboard.push(someItem);
+      if (someItem.directlyBetterThan.length == 1) {
+        someItem = someItem.directlyBetterThan[0];
+      } else {
+        someItem = null;
+      }
     }
 
-    this.directlyBetterThan[this.getKey(winner)].push(loser);
+    const uncertain: [Contender<T>, number][] = [];
+    this.data.filter(item => !this.leaderboard.includes(item)).forEach(item => uncertain.push([item, item.getBetterThan().length]));
+    uncertain.sort((i1, i2) => i2[1] - i1[1]);
+    ArrayUtils.push(this.leaderboard, uncertain.map(item => item[0]));
+  }
+
+  public handleUserInput(winner: Contender<T>, loser: Contender<T>): void {
+    switch (this.currentQueueType) {
+      case 'start':
+        ArrayUtils.push(this.winnersQueue, winner);
+        ArrayUtils.push(this.losersQueue, loser);
+        ArrayUtils.push(winner.directlyBetterThan, loser);
+        if (this.queue.length <= 1) {
+          const renegade: Contender<T> = this.queue.shift();
+          if (renegade) this.winnersQueue.unshift(renegade);
+          this.queue = this.winnersQueue.slice();
+          this.winnersQueue.length = 0;
+          this.currentQueueType = 'winners';
+        }
+        break;
+      case 'winners':
+        ArrayUtils.push(this.winnersQueue, winner);
+        ArrayUtils.push(winner.directlyBetterThan, loser);
+        if (this.queue.length <= 1) {
+          if (this.queue.length == 1) {
+            this.winnersQueue.unshift(this.queue[0]);
+          }
+          this.queue = this.losersQueue.slice();
+          this.losersQueue.length = 0;
+          this.currentQueueType = 'losers';
+        }
+        break;
+      case 'losers':
+        ArrayUtils.push(this.losersQueue, loser);
+        ArrayUtils.push(winner.directlyBetterThan, loser);
+        if (this.queue.length <= 1) {
+          if (this.queue.length == 1) {
+            this.losersQueue.unshift(this.queue[0]);
+          }
+          this.queue = this.winnersQueue.slice();
+          if (this.queue.length == 1) {
+            this.first = this.winnersQueue.shift();
+            console.log(this.first);
+            this.queue.length = 0;
+            this.currentQueueType = 'tiebreaker';
+          } else {
+            this.winnersQueue.length = 0;
+            this.currentQueueType = 'winners';
+          }
+        }
+        break;
+      case 'tiebreaker':
+        ArrayUtils.remove(this.resolvingTiesFor.directlyBetterThan, loser);
+        ArrayUtils.push(winner.directlyBetterThan, loser);
+        break;
+    }
+
+    winner.updateBetterThan();
     this.nextComparison();
   }
 
-  private getBetterThan(image: T, collector: T[] = []): T[] {
-    for (const _image of this.directlyBetterThan[this.getKey(image)]) {
-      if (!collector.includes(_image)) {
-        collector.push(_image);
-        this.getBetterThan(_image, collector);
-      }
-    }
-    return collector;
-  }
-
   public reset(): void {
-    this.leaderboard.length = 0;
-    this.comparisonCount = 0;
-    for (const key of Object.keys(this.directlyBetterThan)) {
-      this.directlyBetterThan[key].length = 0;
-    }
-
-    this.createQueue(this.data);
+    this.currentQueueType = 'start';
+    this.leaderboard = this.data.slice();
+    this.data.forEach(item => item.directlyBetterThan.length = 0);
+    this.queue = this.data.slice();
     this.nextComparison();
   }
 
