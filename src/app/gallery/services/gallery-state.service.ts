@@ -13,7 +13,6 @@ import { GallerySettings } from "../model/gallery-settings.interface";
 import { ImageProperties } from "../model/image-properties.interface";
 import { TagGroup } from "../model/tag-group.interface";
 import { GalleryGoogleDriveService } from "./gallery-google-drive.service";
-import { TournamentUtils } from "src/app/shared/utils/tournament.utils";
 
 @Injectable({
   providedIn: 'root',
@@ -93,6 +92,13 @@ export class GalleryStateService {
           return group;
         });
 
+        // if (this.comparison && Object.keys(this.comparison).length > 0) {
+        //   // TODO clean comparison (remove missing entries)
+        //   const contenders: Contender<GalleryImage>[] = this.images.map(image => new Contender<GalleryImage>(image.id, image));
+        //   contenders.forEach(contender => contender.directlyBetterThan = this.comparison[contender.id].map(directlyBetterThanId => contenders.find(c => c.id == directlyBetterThanId)));
+        //   this.images = TournamentUtils.getLeaderboard(TournamentUtils.getFirst(contenders), contenders).map(contender => contender.object);
+        // }
+
         this.refreshFilter();
         this.target.set(ArrayUtils.getFirst(this.filter()));
 
@@ -100,11 +106,6 @@ export class GalleryStateService {
           console.log(image);
           console.log('This image does not exist, but has a data entry. Removing image entry from data.');
           ArrayUtils.remove(this.images, this.images.find(_image => _image.id == image.id));
-        }
-
-        if (this.comparison && Object.keys(this.comparison).length > 0) {
-          // TODO clean comparison (remove missing entries)
-          // console.log(TournamentUtils.a(this.images, this.comparison));
         }
 
         this.refreshTagCounts();

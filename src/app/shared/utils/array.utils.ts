@@ -82,6 +82,7 @@ export abstract class ArrayUtils {
     }
   }
 
+  // TODO can compare arrays of different types, just use <T, U>
   public static difference<T>(array1: T[], array2: T[], equal: (t1: T, t2: T) => boolean): T[] {
     if (!this.isEmpty(array1) && !this.isEmpty(array2)) {
       const result: T[] = [];

@@ -53,7 +53,7 @@ export class ImageComparisonComponent extends DialogContent<boolean> implements 
 
   protected save(): void {
     const comparison: { [key: string]: string[] } = {};
-    for (const item of this.tournament.data) {
+    for (const item of this.tournament.contenders) {
       comparison[item.id] = item.directlyBetterThan.map(dbt => dbt.id);
     }
 
