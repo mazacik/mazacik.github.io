@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { AdventureComponent } from './adventure/adventure.component';
 import { EventApplicationComponent } from './event-manager/event-application/event-application.component';
 import { EventManagerComponent } from './event-manager/event-manager.component';
 import { RulesComponent } from './event-manager/rules/rules.component';
@@ -17,6 +16,7 @@ import { HasFolderGuard } from './router/has-folder.guard';
 import { MessengerBrowserGuard } from './router/messenger-browser.guard';
 import { NotMessengerBrowserGuard } from './router/not-messenger-browser.guard copy';
 import { FuckMessengerBrowserComponent } from './shared/components/fuck-messenger-browser/fuck-messenger-browser.component';
+import { StoryManagerComponent } from './story-manager/story-manager.component';
 import { TournamentComponent } from './tournament/tournament.component';
 
 export const routes: Routes = [{
@@ -27,9 +27,9 @@ export const routes: Routes = [{
   path: 'login',
   component: LoginComponent
 }, {
-  path: 'adventure',
+  path: 'story-manager',
   canActivate: [GoogleAuthGuard],
-  component: AdventureComponent
+  component: StoryManagerComponent
 }, {
   path: 'folder-picker',
   canActivate: [GoogleAuthGuard],
@@ -39,7 +39,7 @@ export const routes: Routes = [{
   canActivate: [GoogleAuthGuard, HasFolderGuard],
   component: GalleryComponent
 }, {
-  path: 'tournament',
+  path: 'comparison',
   component: TournamentComponent
 }, {
   path: 'event/:id',

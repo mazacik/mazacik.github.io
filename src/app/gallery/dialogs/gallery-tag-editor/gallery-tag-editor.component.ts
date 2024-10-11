@@ -77,7 +77,7 @@ export class GalleryTagEditorComponent extends DialogContent<Tag> implements OnI
 
   protected deleteTag(): void {
     if (this.canDelete) {
-      this.dialogService.createConfirmation('Delete Tag', ['Do you really want to delete tag "' + this.tag.name + '"?'], 'Yes', 'No').then(result => {
+      this.dialogService.createConfirmation('Delete Tag', ['Are you sure you want to delete tag "' + this.tag.name + '"?'], 'Yes', 'No').then(result => {
         if (result) {
           for (const image of this.stateService.images) {
             ArrayUtils.remove(image.tags, this.tag.id);

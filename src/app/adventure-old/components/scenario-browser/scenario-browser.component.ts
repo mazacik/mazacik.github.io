@@ -72,7 +72,7 @@ export class ScenarioBrowserComponent implements OnInit {
   }
 
   removeScenario(scenario: Scenario): void {
-    this.dialogService.createConfirmation('Delete Scenario', ['Do you really want to delete "' + scenario.label + '"?'], 'Yes', 'No').then(result => {
+    this.dialogService.createConfirmation('Delete Scenario', ['Are you sure you want to delete "' + scenario.label + '"?'], 'Yes', 'No').then(result => {
       if (result) {
         if (scenario == this.stateService.currentScenario) {
           this.setCurrentScenario(ArrayUtils.nearestRightFirst(this.stateService.scenarios, this.stateService.scenarios.indexOf(scenario)));
@@ -102,7 +102,7 @@ export class ScenarioBrowserComponent implements OnInit {
 
   removeNote(scenario: Scenario, note: Note): void {
     const notes: Note[] = scenario.notes;
-    this.dialogService.createConfirmation('Delete Note', ['Do you really want to delete "' + note.title + '"?'], 'Yes', 'No').then(result => {
+    this.dialogService.createConfirmation('Delete Note', ['Are you sure you want to delete "' + note.title + '"?'], 'Yes', 'No').then(result => {
       if (result) {
         this.notesService.closeNote(note);
         ArrayUtils.remove(notes, note);

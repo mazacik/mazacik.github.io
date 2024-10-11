@@ -341,15 +341,29 @@ hr {
 .stack-container {
   width: 100%;
   height: 100%;
-  display: flex;
-  position: relative;
+  display: grid;
+  place-items: center;
+  grid-template-areas: "inner-div";
 
   >* {
     width: 100%;
     height: 100%;
-    position: absolute;
+    grid-area: inner-div;
   }
 }
+
+// .stack-container {
+//   width: 100%;
+//   height: 100%;
+//   display: flex;
+//   position: relative;
+
+//   >* {
+//     width: 100%;
+//     height: 100%;
+//     position: absolute;
+//   }
+// }
 
 .button {
   width: fit-content;
@@ -377,7 +391,8 @@ hr {
   }
 }
 
-.icon-button {
+.icon-button,
+.icon-button-smaller {
   width: 2rem;
   height: 2rem;
   min-width: 2rem;
@@ -388,6 +403,14 @@ hr {
   border-radius: $gap;
   text-shadow: -1px 0 var(--color-text-shadow), 0 1px var(--color-text-shadow), 1px 0 var(--color-text-shadow), 0 -1px var(--color-text-shadow);
   box-sizing: border-box;
+
+  &-smaller {
+    width: 1.5rem;
+    height: 1.5rem;
+    min-width: 1.5rem;
+    min-height: 1.5rem;
+    font-size: 10px;
+  }
 
   @media screen and (min-width:768px) {
     cursor: pointer;
@@ -428,14 +451,18 @@ span.icon-button {
 
 .flex {
   display: flex;
-}
 
-.row {
-  flex-direction: row;
-}
+  &.row {
+    flex-direction: row;
+  }
 
-.column {
-  flex-direction: column;
+  &.column {
+    flex-direction: column;
+  }
+
+  &.grow {
+    flex: 1;
+  }
 }
 
 .gap {

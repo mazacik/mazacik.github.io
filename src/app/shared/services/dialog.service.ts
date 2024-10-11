@@ -3,6 +3,7 @@ import { GallerySettingsComponent } from 'src/app/gallery/dialogs/settings/galle
 import { DialogBaseComponent } from '../components/dialog/dialog-base.component';
 import { DialogContent } from '../components/dialog/dialog-content.class';
 import { ConfirmationDialogComponent } from '../dialogs/confirmation/confirmation-dialog.component';
+import { InputDialogComponent } from '../dialogs/input/input-dialog.component';
 import { MessageDialogComponent } from '../dialogs/message/message-dialog.component';
 import { ArrayUtils } from '../utils/array.utils';
 
@@ -28,6 +29,10 @@ export class DialogService {
 
   public createConfirmation(title: string, messages: string[], positiveButtonText: string, negativeButtonText: string): Promise<boolean> {
     return this.create(ConfirmationDialogComponent, { title, messages, positiveButtonText, negativeButtonText });
+  }
+
+  public createInput(title: string, placeholder: string, defaultValue: string, positiveButtonText: string): Promise<string> {
+    return this.create(InputDialogComponent, { title, placeholder, defaultValue, positiveButtonText });
   }
 
   public create<ResultType>(contentComponentType: Type<DialogContent<ResultType>>, inputs?: { [key: string]: unknown }, blurOverlay: boolean = true, position: 'center' | 'bottom' = 'center'): Promise<ResultType> {

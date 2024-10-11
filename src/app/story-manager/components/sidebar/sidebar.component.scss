@@ -1,0 +1,142 @@
+@import 'src/styles/variables.scss';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.content-container {
+  display: flex;
+  flex-direction: column;
+  padding: $gap;
+  flex: 1;
+
+  .story-container {
+    display: flex;
+    flex-direction: column;
+
+    &:not(:first-child) {
+      padding-top: $gap * 0.5;
+    }
+
+    &:not(:last-child) {
+      padding-bottom: $gap * 0.5;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .story-label-container {
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      line-height: 2rem;
+      
+      border-radius: $gap;
+
+      &:hover {
+        background-color: var(--color-hover);
+
+        .story-notes-word-count {
+          display: none;
+        }
+
+        .story-buttons {
+          display: flex !important;
+        }
+      }
+
+      .story-label {
+        margin: 0 $gap;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+
+      .story-info {
+        text-align: end;
+
+        .story-notes-word-count {
+          margin: 0 $gap;
+        }
+
+        .story-buttons {
+          display: none;
+        }
+      }
+    }
+  }
+
+  .notes-container {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    .note-container {
+      display: flex;
+      border-radius: $gap;
+      justify-content: space-between;
+      padding: $gap * 0.5;
+      align-items: center;
+      cursor: pointer;
+      
+      &:hover {
+        background-color: var(--color-hover);
+
+        .note-word-count {
+          visibility: hidden;
+        }
+
+        .note-buttons {
+          visibility: visible !important;
+        }
+      }
+
+      .note-title-container {
+        display: flex;
+        flex-direction: column;
+        padding-left: $gap * 2;
+  
+        .navigation-note-label {
+          width: 100%;
+        }
+  
+        .note-title {
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+        }
+
+        .note-tag-container {
+          display: flex;
+          font-size: 10px;
+          padding-left: $gap * 2;
+          gap: $gap;
+        }
+      }
+
+      .note-info-container {
+        justify-content: end;
+
+        .note-word-count {
+          margin: 0 $gap;
+          text-align: end;
+          align-content: center;
+        }
+
+        .note-buttons {
+          display: flex;
+          visibility: hidden;
+        }
+      }
+    }
+  }
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  padding: $gap 0;
+  gap: $gap;
+}
