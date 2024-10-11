@@ -58,7 +58,7 @@ export class GalleryTagGroupEditorComponent extends DialogContent<TagGroup> impl
 
   protected deleteGroup(): void {
     if (this.canDelete) {
-      this.dialogService.createConfirmation('Delete Group', ['Do you really want to delete tag group "' + this.group.name + '"?'], 'Yes', 'No').then(result => {
+      this.dialogService.createConfirmation('Delete Group', ['Are you sure you want to delete tag group "' + this.group.name + '"?'], 'Yes', 'No').then(result => {
         if (result) {
           const tagIds: string[] = this.group.tags.map(tag => tag.id);
 

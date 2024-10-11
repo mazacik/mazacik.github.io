@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, HostListener, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CreateDirective } from 'src/app/shared/directives/create.directive';
 import { VariableDirective } from 'src/app/shared/directives/variable.directive';

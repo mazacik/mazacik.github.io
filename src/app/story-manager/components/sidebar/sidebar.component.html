@@ -1,0 +1,38 @@
+<div class="content-container y-scrollbar-container">
+  <div *ngFor="let story of stateService.stories; let storyIndex = index;" class="story-container">
+    <div class="story-label-container" (click)="setCurrentStory(story)" [dragdrop]="story" [dragdropParent]="stateService.stories" (dragend)="googleService.update()">
+      <span class="story-label" [class.highlight]="story == stateService.currentNote?.parent">{{ story.title }}</span>
+      <div class="story-info">
+        <span class="story-notes-word-count">{{ getNotesWordCount(story) }}</span>
+        <div class="story-buttons">
+          <i class="icon-button fa-solid fa-pen-to-square" tp="Rename" (click)="renameStory(story); $event.stopPropagation();"></i>
+          <i class="icon-button fa-solid fa-times" tp="Delete" (click)="deleteStory(story); $event.stopPropagation();"></i>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="story == stateService.currentStory" @drawer class="notes-container">
+      <div *ngFor="let note of story.notes" class="note-container" (click)="setCurrentNote(story, note)" [dragdrop]="note" [dragdropParent]="story.notes" (dragend)="googleService.update()">
+        <div class="note-title-container">
+          <span class="note-title" [class.highlight]="note == stateService.currentNote">{{ note.title }}</span>
+          <div class="note-tag-container">
+            <span *ngFor="let tag of note.tags">{{ tag }}</span>
+          </div>
+        </div>
+        <div class="note-info-container stack-container">
+          <span class="note-word-count">{{ note.wordCount }}</span>
+          <div class="note-buttons">
+          <i class="icon-button fa-solid fa-tag" tp="Tags" (click)="editTags(note); $event.stopPropagation();"></i>
+          <i class="icon-button fa-solid fa-pen-to-square" tp="Rename" (click)="renameNote(note); $event.stopPropagation();"></i>
+            <i class="icon-button fa-solid fa-times" tp="Delete" (click)="deleteNote(story, note); $event.stopPropagation();"></i>
+          </div>
+        </div>
+      </div>
+      <i class="note-container fa-solid fa-plus" style="justify-content: center;" tp="Create Note" (click)="createNote(story); $event.stopPropagation();"></i>
+    </div>
+  </div>
+</div>
+<div class="h-separator margins"></div>
+<div class="button-container">
+  <i class="icon-button fa-solid fa-plus" tp="Create Story" (click)="createStory()"></i>
+  <i class="icon-button fa-solid fa-shuffle" tp="Select Random Story and Note" (click)="setRandom()"></i>
+</div>

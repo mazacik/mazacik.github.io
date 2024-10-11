@@ -39,6 +39,14 @@ bootstrapApplication(AppComponent, {
         contextmenu: {
           arrow: true,
           animation: 'fade',
+          trigger: 'click',
+          hideOnClick: false,
+          offset: [0, 8],
+          interactive: true
+        },
+        hovermenu: {
+          arrow: true,
+          animation: 'fade',
           trigger: 'mouseenter',
           hideOnClick: false,
           offset: [0, 8],
