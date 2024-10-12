@@ -1,5 +1,10 @@
 @import 'src/styles/variables.scss';
 
-.container {
+:host {
+  width: 650px;
   padding: $gap * 1.5;
+
+  input {
+    width: 100%;
+  }
 }

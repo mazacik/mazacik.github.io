@@ -65,8 +65,12 @@ export class SidebarComponent implements OnInit {
   }
 
   createStory(): void {
-    this.stateService.stories.push({ title: 'New Story', notes: [] });
-    this.googleService.update(true);
+    this.dialogService.createInput('Story Title', 'Title', null, 'OK').then(title => {
+      if (title) {
+        this.stateService.stories.push({ title: title, notes: [], noteTags: [] });
+        this.googleService.update(true);
+      }
+    });
   }
 
   renameStory(story: Story): void {
@@ -97,7 +101,7 @@ export class SidebarComponent implements OnInit {
   }
 
   editTags(note: Note): void {
-    this.dialogService.create(NoteTagManagerComponent, { tags: note.tags }).then(tags => {
+    this.dialogService.create(NoteTagManagerComponent, { note }).then(tags => {
       if (tags && Array.isArray(tags)) {
         note.tags = tags;
         this.googleService.update(true);
@@ -106,10 +110,15 @@ export class SidebarComponent implements OnInit {
   }
 
   createNote(story: Story): void {
-    if (!story.notes) story.notes = [];
-    const note: Note = { title: 'New Note', text: '', tags: [], wordCount: 0, parent: story };
-    story.notes.push(note);
-    this.googleService.update(true);
+    this.dialogService.createInput('Note Title', 'Title', null, 'OK').then(title => {
+      if (title) {
+        const note: Note = { title: title, text: '', tags: [], wordCount: 0, parent: story };
+        story.notes.push(note);
+        this.stateService.currentNote = note;
+        this.stateService.currentStory = story;
+        this.googleService.update(true);
+      }
+    });
   }
 
   renameNote(note: Note): void {
