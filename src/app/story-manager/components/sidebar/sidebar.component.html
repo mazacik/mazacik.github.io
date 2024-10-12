@@ -15,7 +15,7 @@
         <div class="note-title-container">
           <span class="note-title" [class.highlight]="note == stateService.currentNote">{{ note.title }}</span>
           <div class="note-tag-container">
-            <span *ngFor="let tag of note.tags">{{ tag }}</span>
+            <span *ngFor="let tag of note.tags" style="text-wrap: nowrap;">{{ tag }}</span>
           </div>
         </div>
         <div class="note-info-container stack-container">
@@ -27,7 +27,7 @@
           </div>
         </div>
       </div>
-      <i class="note-container fa-solid fa-plus" style="justify-content: center;" tp="Create Note" (click)="createNote(story); $event.stopPropagation();"></i>
+      <i class="icon-button fa-solid fa-plus" style="align-self: center;" tp="Create Note" (click)="createNote(story); $event.stopPropagation();"></i>
     </div>
   </div>
 </div>

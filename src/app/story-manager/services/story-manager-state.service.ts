@@ -11,7 +11,6 @@ import { Story } from "../models/story.interface";
 export class StoryManagerStateService {
 
   public stories: Story[];
-  public tags: string[];
 
   public currentStory: Story;
   public currentNote: Note;
@@ -21,7 +20,6 @@ export class StoryManagerStateService {
   public initialize(data: Data): void {
     if (data && !ArrayUtils.isEmpty(data.stories)) {
       this.stories = data.stories;
-      this.tags = data.tags;
       this.currentStory = this.stories[0]; // TODO open either nothing (show message) or last opened
 
       if (!ArrayUtils.isEmpty(this.currentStory.notes)) {
@@ -37,7 +35,6 @@ export class StoryManagerStateService {
     }
 
     if (!this.stories) this.stories = [];
-    if (!this.tags) this.tags = ['Tag 1', 'Tag 2', 'Tag 3'];
   }
 
   public serialize(): Data {
@@ -48,12 +45,13 @@ export class StoryManagerStateService {
           notes: story.notes.map(note => {
             return {
               title: note.title,
-              text: note.text
+              text: note.text,
+              tags: note.tags
             } as Note;
-          })
+          }),
+          noteTags: story.noteTags
         }
-      }),
-      tags: this.tags
+      })
     } as Data;
   }
 

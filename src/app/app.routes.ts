@@ -42,26 +42,26 @@ export const routes: Routes = [{
   path: 'comparison',
   component: TournamentComponent
 }, {
-  path: 'event/:id',
-  component: EventManagerComponent,
-  children: [{
-    path: 'hlasovanie/vysledky',
-    component: SurveyResultsComponent
-  }, {
-    path: 'hlasovanie',
-    canActivate: [MessengerBrowserGuard],
-    component: SurveyComponent
-  }, {
-    path: 'prihlaska',
-    component: EventApplicationComponent
-  }, {
-    path: 'pravidla',
-    component: RulesComponent
-  }, {
-    path: '**',
-    redirectTo: 'hlasovanie'
-  }]
-}, {
+//   path: 'event/:id',
+//   component: EventManagerComponent,
+//   children: [{
+//     path: 'hlasovanie/vysledky',
+//     component: SurveyResultsComponent
+//   }, {
+//     path: 'hlasovanie',
+//     canActivate: [MessengerBrowserGuard],
+//     component: SurveyComponent
+//   }, {
+//     path: 'prihlaska',
+//     component: EventApplicationComponent
+//   }, {
+//     path: 'pravidla',
+//     component: RulesComponent
+//   }, {
+//     path: '**',
+//     redirectTo: 'hlasovanie'
+//   }]
+// }, {
   path: 'home',
   component: LandingComponent
 }, {

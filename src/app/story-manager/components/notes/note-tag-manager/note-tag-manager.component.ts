@@ -6,8 +6,8 @@ import { DragDropDirective } from 'src/app/shared/directives/dragdrop.directive'
 import { DialogService } from 'src/app/shared/services/dialog.service';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 import { StringUtils } from 'src/app/shared/utils/string.utils';
+import { Note } from 'src/app/story-manager/models/note.interface';
 import { StoryManagerGoogleDriveService } from 'src/app/story-manager/services/story-manager-google-drive.service';
-import { StoryManagerStateService } from 'src/app/story-manager/services/story-manager-state.service';
 
 @Component({
   selector: 'app-note-tag-manager',
@@ -21,8 +21,9 @@ import { StoryManagerStateService } from 'src/app/story-manager/services/story-m
 })
 export class NoteTagManagerComponent extends DialogContent<string[]> implements OnInit {
 
-  @Input() tags: string[] = [];
+  @Input() note: Note;
 
+  protected currentTags: string[];
   protected availableTags: string[];
 
   public configuration: DialogConfiguration = {
@@ -37,7 +38,6 @@ export class NoteTagManagerComponent extends DialogContent<string[]> implements 
   };
 
   constructor(
-    private stateService: StoryManagerStateService,
     private dialogService: DialogService,
     private googleService: StoryManagerGoogleDriveService
   ) {
@@ -45,23 +45,23 @@ export class NoteTagManagerComponent extends DialogContent<string[]> implements 
   }
 
   ngOnInit(): void {
-    if (this.tags) {
-      this.tags = this.tags.slice();
+    if (this.note.tags) {
+      this.currentTags = this.note.tags.slice();
     } else {
-      this.tags = [];
+      this.currentTags = [];
     }
 
-    this.availableTags = this.stateService.tags.filter(tag => !this.tags.includes(tag));
+    this.availableTags = this.note.parent.noteTags.filter(tag => !this.currentTags.includes(tag));
   }
 
   protected add(tag: string): void {
-    this.tags.push(tag);
+    this.currentTags.push(tag);
     ArrayUtils.remove(this.availableTags, tag);
 
   }
 
   protected remove(tag: string): void {
-    ArrayUtils.remove(this.tags, tag);
+    ArrayUtils.remove(this.currentTags, tag);
     this.availableTags.push(tag);
     this.availableTags.sort((t1, t2) => t1.localeCompare(t2));
   }
@@ -69,28 +69,28 @@ export class NoteTagManagerComponent extends DialogContent<string[]> implements 
   protected editTag(tag?: string): void {
     this.dialogService.createInput('Tag', 'Tag Title', tag, 'OK').then(result => {
       if (!StringUtils.isEmpty(result)) {
-        if (this.stateService.tags.includes(result)) return;
+        if (this.note.parent.noteTags.includes(result)) return;
         if (tag) {
           if (result != tag) {
-            if (this.tags.includes(tag)) {
-              ArrayUtils.remove(this.tags, tag);
-              this.tags.push(result);
-              this.tags.sort((t1, t2) => t1.localeCompare(t2));
+            if (this.currentTags.includes(tag)) {
+              ArrayUtils.remove(this.currentTags, tag);
+              this.currentTags.push(result);
+              this.currentTags.sort((t1, t2) => t1.localeCompare(t2));
             } else {
               ArrayUtils.remove(this.availableTags, tag);
               this.availableTags.push(result);
               this.availableTags.sort((t1, t2) => t1.localeCompare(t2));
             }
 
-            ArrayUtils.remove(this.stateService.tags, tag);
-            this.stateService.tags.push(result);
-            this.stateService.tags.sort((t1, t2) => t1.localeCompare(t2));
+            ArrayUtils.remove(this.note.parent.noteTags, tag);
+            this.note.parent.noteTags.push(result);
+            this.note.parent.noteTags.sort((t1, t2) => t1.localeCompare(t2));
           }
         } else {
           this.availableTags.push(result);
           this.availableTags.sort((t1, t2) => t1.localeCompare(t2));
-          this.stateService.tags.push(result);
-          this.stateService.tags.sort((t1, t2) => t1.localeCompare(t2));
+          this.note.parent.noteTags.push(result);
+          this.note.parent.noteTags.sort((t1, t2) => t1.localeCompare(t2));
         }
 
         this.googleService.update(true);
@@ -101,13 +101,14 @@ export class NoteTagManagerComponent extends DialogContent<string[]> implements 
   protected deleteTag(tag: string): void {
     this.dialogService.createConfirmation('Delete', ['Are you sure you want to delete "' + tag + '"?'], 'Yes', 'No').then(result => {
       if (result) {
-        if (this.tags.includes(tag)) {
-          ArrayUtils.remove(this.tags, tag);
+        if (this.currentTags.includes(tag)) {
+          ArrayUtils.remove(this.currentTags, tag);
         } else {
           ArrayUtils.remove(this.availableTags, tag);
         }
 
-        ArrayUtils.remove(this.stateService.tags, tag);
+        this.note.parent.notes.forEach(note => ArrayUtils.remove(note.tags, tag));
+        ArrayUtils.remove(this.note.parent.noteTags, tag);
         this.googleService.update(true);
       }
     });
@@ -115,7 +116,7 @@ export class NoteTagManagerComponent extends DialogContent<string[]> implements 
 
   @HostListener('window:keydown.enter', ['$event'])
   submit(): void {
-    this.resolve(this.tags);
+    this.resolve(this.currentTags);
   }
 
   @HostListener('window:keydown.escape', ['$event'])

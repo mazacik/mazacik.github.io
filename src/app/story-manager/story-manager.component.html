@@ -8,9 +8,10 @@
     <!-- <i class="icon-button fa-solid fa-file-export" tp="Export Data" (click)="export()"></i> -->
   </div>
   <div class="header-center">
-    <input class="countdown-input" #countdownInput [class.user-select-none]="countdownInput.readOnly" (click)="onCountdownInputClick(countdownInput)" (input)="onCountdownInputChange(countdownInput)" (keypress)="onCountdownInputSubmit($event, countdownInput)" (focus)="countdownInput.select()" placeholder="Countdown" />
+
   </div>
   <div class="header-end">
+    <input class="countdown-input" #countdownInput [class.user-select-none]="countdownInput.readOnly" (click)="onCountdownInputClick(countdownInput)" (input)="onCountdownInputChange(countdownInput)" (keypress)="onCountdownInputSubmit($event, countdownInput)" (focus)="countdownInput.select()" placeholder="Countdown" />
     <i class="icon-button fa-solid" [ngClass]="applicationService.isDarkTheme() ? 'fa-moon' : 'fa-sun'" tp="Toggle Brightness Mode" (click)="applicationService.toggleTheme()"></i>
   </div>
 </div>
