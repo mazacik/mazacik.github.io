@@ -36,29 +36,36 @@ export class SidebarComponent implements OnInit {
 
   }
 
-  setCurrentNote(story: Story, note: Note): void {
-    this.setCurrentStory(story);
+  setCurrentNote(note: Note): void {
+    this.setCurrentStory(note.parent);
     this.stateService.currentNote = note;
+  }
+
+  setRandomNote(story: Story): void {
+    this.setCurrentNote(ArrayUtils.getRandom(story.notes, [this.stateService.currentNote]));
   }
 
   setCurrentStory(story: Story): void {
     this.stateService.currentStory = story;
   }
 
-  setRandom(): void {
+  setRandomStory(): void {
     const story: Story = ArrayUtils.getRandom(this.stateService.stories, [this.stateService.currentStory]);
     const note: Note = ArrayUtils.getRandom(story.notes);
-    this.setCurrentNote(story, note);
+    this.setCurrentNote(note);
+    this.scrollToNote(note);
+  }
 
+  scrollToNote(note: Note): void {
     const storiesDiv: Element = document.querySelector('.content-container');
-    const storyDiv: Element = storiesDiv.children[this.stateService.stories.indexOf(story)];
+    const storyDiv: Element = storiesDiv.children[this.stateService.stories.indexOf(note.parent)];
 
     if (storyDiv.children[1]) {
-      const noteDiv: Element = storyDiv.children[1].children[story.notes.indexOf(note)];
+      const noteDiv: Element = storyDiv.children[1].children[note.parent.notes.indexOf(note)];
       noteDiv.scrollIntoView({ block: 'center', behavior: 'instant' });
     } else {
       setTimeout(() => {
-        const noteDiv: Element = storyDiv.children[1].children[story.notes.indexOf(note)];
+        const noteDiv: Element = storyDiv.children[1].children[note.parent.notes.indexOf(note)];
         noteDiv.scrollIntoView({ block: 'center', behavior: 'instant' });
       }, 500);
     }
