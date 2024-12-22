@@ -1,6 +1,6 @@
 <div class="header">
   <div class="header-start">
-    <i class="icon-button fa-solid fa-bars" tp="Sidebar" (click)="sidebarVisible = !sidebarVisible"></i>
+    <i class="icon-button fa-solid fa-bars" tp="Sidebar" (click)="stateService.sidebarVisible = !stateService.sidebarVisible"></i>
     <i class="icon-button fa-solid mobile-display-none" [ngClass]="focusMode ? 'fa-up-right-and-down-left-from-center' : 'fa-down-left-and-up-right-to-center'" tp="Focus Mode" (click)="focusMode = !focusMode"></i>
     <!-- <i class="icon-button fa-solid fa-book" tp="Story" (click)="adventureService.storyVisible = !adventureService.storyVisible"></i> -->
     <!-- <i class="icon-button fa-solid fa-diagram-next" tp="Flowchart" (click)="adventureService.flowchartVisible = !adventureService.flowchartVisible"></i> -->
@@ -8,18 +8,17 @@
     <!-- <i class="icon-button fa-solid fa-file-export" tp="Export Data" (click)="export()"></i> -->
   </div>
   <div class="header-center">
-
+    <input class="countdown-input" #countdownInput [class.user-select-none]="countdownInput.readOnly" (click)="onCountdownInputClick(countdownInput)" (input)="onCountdownInputChange(countdownInput)" (keypress)="onCountdownInputSubmit($event, countdownInput)" (focus)="countdownInput.select()" placeholder="Countdown" />
   </div>
   <div class="header-end">
-    <input class="countdown-input" #countdownInput [class.user-select-none]="countdownInput.readOnly" (click)="onCountdownInputClick(countdownInput)" (input)="onCountdownInputChange(countdownInput)" (keypress)="onCountdownInputSubmit($event, countdownInput)" (focus)="countdownInput.select()" placeholder="Countdown" />
     <i class="icon-button fa-solid" [ngClass]="applicationService.isDarkTheme() ? 'fa-moon' : 'fa-sun'" tp="Toggle Brightness Mode" (click)="applicationService.toggleTheme()"></i>
   </div>
 </div>
 <div class="content">
   <!-- Editor/Browser -->
-  <app-sidebar [class.display-none]="!sidebarVisible"></app-sidebar>
-  <div class="v-separator mobile-display-none" [class.desktop-display-none]="!sidebarVisible"></div>
-  <div class="modules" [class.mobile-display-none]="sidebarVisible" [class.focus-mode]="focusMode">
+  <app-sidebar [class.display-none]="!stateService.sidebarVisible"></app-sidebar>
+  <div class="v-separator mobile-display-none" [class.desktop-display-none]="!stateService.sidebarVisible"></div>
+  <div class="modules" [class.mobile-display-none]="stateService.sidebarVisible" [class.focus-mode]="focusMode">
     <!-- Note Editor -->
     <app-note-editor></app-note-editor>
   </div>

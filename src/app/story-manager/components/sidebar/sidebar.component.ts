@@ -5,6 +5,7 @@ import { drawer } from 'src/app/shared/constants/animations.constants';
 import { DragDropDirective } from 'src/app/shared/directives/dragdrop.directive';
 import { DialogService } from 'src/app/shared/services/dialog.service';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
+import { ScreenUtils } from 'src/app/shared/utils/screen.utils';
 import { StringUtils } from 'src/app/shared/utils/string.utils';
 import { Note } from '../../models/note.interface';
 import { Story } from '../../models/story.interface';
@@ -39,6 +40,9 @@ export class SidebarComponent implements OnInit {
   setCurrentNote(note: Note): void {
     this.setCurrentStory(note.parent);
     this.stateService.currentNote = note;
+    if (!ScreenUtils.isLargeScreen()) {
+      this.stateService.sidebarVisible = false;
+    }
   }
 
   setRandomNote(story: Story): void {

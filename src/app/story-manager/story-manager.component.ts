@@ -25,7 +25,6 @@ export class StoryManagerComponent implements OnInit {
   private countdown = { hours: 0, minutes: 0, seconds: 0 };
   private countdownInterval: NodeJS.Timeout;
 
-  protected sidebarVisible: boolean = true;
   protected focusMode: boolean = false;
 
   constructor(
