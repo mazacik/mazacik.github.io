@@ -15,6 +15,8 @@ export class StoryManagerStateService {
   public currentStory: Story;
   public currentNote: Note;
 
+  public sidebarVisible: boolean = true;
+
   constructor() { }
 
   public initialize(data: Data): void {
