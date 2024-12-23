@@ -4,7 +4,7 @@
       <div class="sidebar-preview-container">
         <img class="sidebar-preview" [src]="target?.thumbnailLink" (click)="onPreviewClick()">
       </div>
-      <div class="sidebar-preview-group-container" [class.display-none]="!isGroupPreviewContainerVisible(target)">
+      <div class="sidebar-preview-group-container" [class.hidden]="!isGroupPreviewContainerVisible(target)">
         <div class="sidebar-preview-group-scroll-container">
           <div class="sidebar-preview-group-border-container">
             <img *ngFor="let groupImage of getGroupPreviewImages(target)" class="sidebar-preview-group-image" [style.aspect-ratio]="groupImage.aspectRatio" [src]="groupImage.thumbnailLink" [draggable]="false" (create)="onGroupPreviewCreate($event, groupImage)" (load)="onGroupPreviewLoad(groupImage)" (click)="onGroupPreviewClick($event, groupImage)" (dblclick)="onGroupPreviewDoubleClick($event)">
@@ -12,7 +12,7 @@
         </div>
       </div>
       <div class="absolute top left">
-        <i *ngIf="!applicationService.reduceBandwidth" class="icon-button fa-solid fa-arrow-left desktop-display-none" (click)="stateService.sidebarVisible = false"></i>
+        <i *ngIf="!applicationService.reduceBandwidth" class="icon-button fa-solid fa-arrow-left mobile-only" (click)="stateService.sidebarVisible = false"></i>
         <i class="icon-button fa-solid fa-gear" tp="Settings" (click)="dialogService.openSettings()"></i>
       </div>
       <div class="absolute top right">
