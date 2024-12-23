@@ -30,11 +30,7 @@ export class NoteEditorComponent implements OnInit {
 
   }
 
-  onNoteInput(event?: Event): void {
-    if (event) {
-      this.stateService.currentNote.text = (event.target as HTMLDivElement).textContent;
-    }
-
+  onInput(): void {
     this.stateService.currentNote.wordCount = StringUtils.getWordCount(this.stateService.currentNote.text);
     this.googleService.update();
   }
