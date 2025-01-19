@@ -45,34 +45,8 @@ export class SidebarComponent implements OnInit {
     }
   }
 
-  setRandomNote(story: Story): void {
-    this.setCurrentNote(ArrayUtils.getRandom(story.notes, [this.stateService.currentNote]));
-  }
-
   setCurrentStory(story: Story): void {
     this.stateService.currentStory = story;
-  }
-
-  setRandomStory(): void {
-    const story: Story = ArrayUtils.getRandom(this.stateService.stories, [this.stateService.currentStory]);
-    const note: Note = ArrayUtils.getRandom(story.notes);
-    this.setCurrentNote(note);
-    this.scrollToNote(note);
-  }
-
-  scrollToNote(note: Note): void {
-    const storiesDiv: Element = document.querySelector('.content-container');
-    const storyDiv: Element = storiesDiv.children[this.stateService.stories.indexOf(note.parent)];
-
-    if (storyDiv.children[1]) {
-      const noteDiv: Element = storyDiv.children[1].children[note.parent.notes.indexOf(note)];
-      noteDiv.scrollIntoView({ block: 'center', behavior: 'instant' });
-    } else {
-      setTimeout(() => {
-        const noteDiv: Element = storyDiv.children[1].children[note.parent.notes.indexOf(note)];
-        noteDiv.scrollIntoView({ block: 'center', behavior: 'instant' });
-      }, 500);
-    }
   }
 
   createStory(): void {

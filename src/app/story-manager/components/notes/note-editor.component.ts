@@ -30,7 +30,7 @@ export class NoteEditorComponent implements OnInit {
 
   }
 
-  onInput(): void {
+  onChange(): void {
     this.stateService.currentNote.wordCount = StringUtils.getWordCount(this.stateService.currentNote.text);
     this.googleService.update();
   }
