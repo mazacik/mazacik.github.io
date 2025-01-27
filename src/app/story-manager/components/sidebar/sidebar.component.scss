@@ -8,6 +8,18 @@
   overflow-y: auto;
 }
 
+.search-input {
+  border: none;
+  text-align: center;
+  caret-color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+
+  &.error {
+    color: var(--color-negative);
+  }
+}
+
 .content-container {
   display: flex;
   flex-direction: column;
