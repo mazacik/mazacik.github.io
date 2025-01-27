@@ -334,8 +334,12 @@ hr {
   border-left: 0;
 }
 
-.highlight {
+.highlight-1 {
   color: var(--color-highlight);
+}
+
+.highlight-2 {
+  color: var(--color-negative);
 }
 
 .stack-container {

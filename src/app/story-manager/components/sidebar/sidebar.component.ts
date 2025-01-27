@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { TippyDirective } from '@ngneat/helipopper';
 import { drawer } from 'src/app/shared/constants/animations.constants';
 import { DragDropDirective } from 'src/app/shared/directives/dragdrop.directive';
@@ -18,6 +19,7 @@ import { NoteTagManagerComponent } from '../notes/note-tag-manager/note-tag-mana
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     DragDropDirective,
     TippyDirective
   ],
@@ -26,6 +28,10 @@ import { NoteTagManagerComponent } from '../notes/note-tag-manager/note-tag-mana
   animations: [drawer]
 })
 export class SidebarComponent implements OnInit {
+
+  protected searchQuery: string;
+  protected searchStories: Story[] = [];
+  protected searchNotes: Note[] = [];
 
   constructor(
     private dialogService: DialogService,
@@ -124,6 +130,22 @@ export class SidebarComponent implements OnInit {
         this.googleService.update(true);
       }
     });
+  }
+
+  protected onSearchInputChange(element: HTMLInputElement): void {
+    this.searchQuery = element.value;
+    this.searchStories.length = 0;
+    this.searchNotes.length = 0;
+    if (!StringUtils.isEmpty(this.searchQuery)) {
+      for (const story of this.stateService.stories) {
+        for (const note of story.notes) {
+          if (note.text.match(new RegExp(this.searchQuery, 'i'))) {
+            ArrayUtils.push(this.searchStories, story);
+            ArrayUtils.push(this.searchNotes, note);
+          }
+        }
+      }
+    }
   }
 
 }
