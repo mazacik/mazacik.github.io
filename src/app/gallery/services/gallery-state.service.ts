@@ -32,9 +32,6 @@ export class GalleryStateService {
   public filter: WritableSignal<GalleryImage[]> = signal([]);
   public target: WritableSignal<GalleryImage> = signal(null);
 
-  public masonryImages: GalleryImage[];
-  public masonryTargetReference: GalleryImage;
-
   public tags: Tag[];
   public tagCounts: { [tagId: string]: number } = {};
 
@@ -98,7 +95,6 @@ export class GalleryStateService {
         // }
 
         this.refreshFilter();
-        this.target.set(ArrayUtils.getFirst(this.filter()));
 
         for (const image of ArrayUtils.difference(data.imageProperties, this.images as any, (i1, i2) => i1.id == i2.id)) {
           console.log(image);
@@ -122,7 +118,7 @@ export class GalleryStateService {
     if (bReduceBandwidth) {
       image.thumbnailLink = metadata.thumbnailLink;
     } else {
-      image.thumbnailLink = metadata.thumbnailLink.replace('=s220', '=s440');
+      image.thumbnailLink = metadata.thumbnailLink.replace('=s220', '=w440');
     }
 
     if (GoogleFileUtils.isImage(image)) {
@@ -216,34 +212,6 @@ export class GalleryStateService {
       for (const tagId of image.tagIds) {
         this.tagCounts[tagId]++;
       }
-    }
-  }
-
-  public setRandomTarget(): void {
-    if (!ArrayUtils.isEmpty(this.filter())) {
-      let nextTarget: GalleryImage;
-      const currentTarget: GalleryImage = this.target();
-
-      if (currentTarget) {
-        if (currentTarget.group) {
-          nextTarget = ArrayUtils.getRandom(this.filter(), currentTarget.group.images);
-        } else {
-          nextTarget = ArrayUtils.getRandom(this.filter(), [currentTarget]);
-        }
-      } else {
-        nextTarget = ArrayUtils.getRandom(this.filter());
-      }
-
-      if (nextTarget) {
-        this.target.set(nextTarget);
-      }
-    }
-  }
-
-  public setRandomGroupTarget(): void {
-    const target: GalleryImage = this.target();
-    if (target?.group) {
-      this.target.set(ArrayUtils.getRandom(target.group.images, [target]));
     }
   }
 
@@ -367,14 +335,6 @@ export class GalleryStateService {
     }
 
     this.applicationService.loading.next(true);
-    let nextTarget: GalleryImage;
-    if (image.group) {
-      nextTarget = ArrayUtils.getNext(image.group.images, image);
-      if (!nextTarget) nextTarget = ArrayUtils.getPrevious(image.group.images, image);
-    } else {
-      nextTarget = ArrayUtils.getNext(this.masonryImages, this.masonryTargetReference);
-      if (!nextTarget) nextTarget = ArrayUtils.getPrevious(this.masonryImages, this.masonryTargetReference);
-    }
 
     if (archive) {
       await this.googleService.move(image.id, image.parentFolderId, this.archiveFolderId);
@@ -402,7 +362,7 @@ export class GalleryStateService {
     }
 
     this.refreshFilter(); // TODO only triggers masonry layout update
-    this.target.set(nextTarget);
+    this.fullscreenVisible.set(false);
     this.refreshTagCounts();
 
     this.updateData(true);

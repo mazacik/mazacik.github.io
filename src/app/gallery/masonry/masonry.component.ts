@@ -30,6 +30,8 @@ export class MasonryComponent {
   private bricks: { [key: string]: HTMLImageElement } = {};
   private masonryContainer: HTMLElement;
 
+  protected masonryImages: GalleryImage[];
+
   constructor(
     protected applicationService: ApplicationService,
     protected stateService: GalleryStateService,
@@ -38,12 +40,11 @@ export class MasonryComponent {
   ) {
     effect(() => this.updateLayout());
     effect(() => this.scrollTo(this.stateService.target()));
-    effect(() => this.updateMasonryTargetReference());
   }
 
   private updateLayout(): void {
     if (this.masonryContainer) {
-      this.stateService.masonryImages = this.stateService.filter().filter(image => {
+      this.masonryImages = this.stateService.filter().filter(image => {
         if (image.group) {
           if (image.group.open) {
             return true;
@@ -55,10 +56,10 @@ export class MasonryComponent {
         }
       });
 
-      if (this.stateService.masonryImages.length == 0) return;
+      if (this.masonryImages.length == 0) return;
 
-      const minColumnWidth: number = ScreenUtils.isLargeScreen() ? 200 : 150;
-      const masonryGap: number = 6;
+      const minColumnWidth: number = ScreenUtils.isLargeScreen() ? 250 : 200;
+      const masonryGap: number = ScreenUtils.isLargeScreen() ? 12 : 6;
 
       const containerWidth: number = this.masonryContainer.clientWidth;
       const columnCount: number = Math.floor(containerWidth / minColumnWidth);
@@ -71,14 +72,14 @@ export class MasonryComponent {
         left[i] = i * (columnWidth + masonryGap);
       }
 
-      for (const image of this.stateService.masonryImages) {
+      for (const image of this.masonryImages) {
         if (image.width != columnWidth) {
           image.width = columnWidth;
           image.height = columnWidth / image.aspectRatio;
         }
       }
 
-      for (const image of this.stateService.masonryImages) {
+      for (const image of this.masonryImages) {
         if (image.group?.open) {
           if (image == image.group.images.filter(image => image.passesFilter)[0]) {
             const groupColumnIndexes: number[] = [this.getShortestColumnIndex(top)];
@@ -139,17 +140,6 @@ export class MasonryComponent {
         const position: number = targetRepresent.top - (containerElement.clientHeight - brickElement.height) / 2;
         // scrollIntoView is bugged on Chrome when scrolling multiple elements at once (masonry+sidebar)
         containerElement.scrollTo({ top: position, behavior: 'smooth' });
-      }
-    }
-  }
-
-  private updateMasonryTargetReference(): void {
-    const target: GalleryImage = this.stateService.target();
-    if (target && this.stateService.masonryImages) {
-      if (this.stateService.masonryImages.includes(target)) {
-        this.stateService.masonryTargetReference = target;
-      } else if (target.group && target.group.images.some(groupImage => this.stateService.masonryImages.includes(groupImage))) {
-        this.stateService.masonryTargetReference = ArrayUtils.findClosest(target.group.images, target, groupImage => this.stateService.masonryImages.includes(groupImage));
       }
     }
   }
