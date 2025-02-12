@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect } from '@angular/core';
+import { Component, effect, HostListener } from '@angular/core';
 import { SafeUrl } from '@angular/platform-browser';
 import { TippyDirective } from '@ngneat/helipopper';
 import { fade } from 'src/app/shared/constants/animations.constants';
@@ -68,6 +68,53 @@ export class FullscreenComponent {
     //     image.contentLink = this.sanitizer.bypassSecurityTrustResourceUrl(base64) as string;
     //   });
     // }
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  protected initKeybinds(event: KeyboardEvent): void {
+    if (['BODY', 'VIDEO'].includes(document.activeElement.nodeName) && this.dialogService.stack.length == 0) {
+      if (this.stateService.fullscreenVisible()) {
+        switch (event.code) {
+          case 'Escape':
+            this.stateService.fullscreenVisible.update(value => !value);
+            break;
+          case 'KeyR':
+            this.setRandomTarget();
+            break;
+          case 'KeyG':
+            this.setRandomGroupTarget();
+            break;
+        }
+      }
+    }
+  }
+
+  protected setRandomTarget(): void {
+    if (!ArrayUtils.isEmpty(this.stateService.filter())) {
+      let nextTarget: GalleryImage;
+      const currentTarget: GalleryImage = this.stateService.target();
+
+      if (currentTarget) {
+        if (currentTarget.group) {
+          nextTarget = ArrayUtils.getRandom(this.stateService.filter(), currentTarget.group.images);
+        } else {
+          nextTarget = ArrayUtils.getRandom(this.stateService.filter(), [currentTarget]);
+        }
+      } else {
+        nextTarget = ArrayUtils.getRandom(this.stateService.filter());
+      }
+
+      if (nextTarget) {
+        this.stateService.target.set(nextTarget);
+      }
+    }
+  }
+
+  protected setRandomGroupTarget(): void {
+    const target: GalleryImage = this.stateService.target();
+    if (target?.group) {
+      this.stateService.target.set(ArrayUtils.getRandom(target.group.images, [target]));
+    }
   }
 
   protected getSrc(image: GalleryImage): SafeUrl {

@@ -2,6 +2,8 @@
   <div class="fullscreen-header">
     <div>
       <i class="icon-button fa-solid fa-arrow-left" (click)="stateService.fullscreenVisible.set(false)"></i>
+      <i *ngIf="target?.group" class="icon-button fa-solid fa-arrows-spin" tp="Random Image from Group" (click)="setRandomGroupTarget()"></i>
+      <i class="icon-button fa-solid fa-shuffle" tp="Random Image" (click)="setRandomTarget()"></i>
     </div>
     <div>
       <i class="icon-button fa-heart" [ngClass]="target?.heart ? 'fa-solid' : 'fa-regular'" tp="Favorite" (click)="stateService.toggleHeart(target)"></i>
@@ -35,8 +37,7 @@
         </div>
       </div>
       <div style="justify-content: end;">
-        <i *ngIf="target?.group" class="icon-button fa-solid fa-arrows-spin" tp="Random Image from Group" (click)="stateService.setRandomGroupTarget()"></i>
-        <i class="icon-button fa-solid fa-shuffle" tp="Random Image" (click)="stateService.setRandomTarget()"></i>
+
       </div>
     </div>
   </div>
