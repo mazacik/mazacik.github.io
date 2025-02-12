@@ -3,7 +3,7 @@
 <div class="content-container y-scrollbar-container">
   <div *ngFor="let story of stateService.stories; let storyIndex = index;" class="story-container">
     <div class="story-label-container" (click)="setCurrentStory(story)" [dragdrop]="story" [dragdropParent]="stateService.stories" (dragend)="googleService.update()">
-      <span class="story-label" [class.highlight-1]="story == stateService.currentNote?.parent" [class.highlight-2]="searchStories.includes(story)">{{ story.title }}</span>
+      <span class="story-label" [class.highlight]="story == stateService.currentNote?.parent" [class.negative]="searchStories.includes(story)">{{ story.title }}</span>
       <div class="story-info">
         <span class="story-notes-word-count">{{ getNotesWordCount(story) }}</span>
         <div class="story-buttons">
@@ -15,7 +15,7 @@
     <div *ngIf="story == stateService.currentStory" @drawer class="notes-container">
       <div *ngFor="let note of story.notes" class="note-container" (click)="setCurrentNote(note)" [dragdrop]="note" [dragdropParent]="story.notes" (dragend)="googleService.update()">
         <div class="note-title-container">
-          <span class="note-title" [class.highlight-1]="note == stateService.currentNote" [class.highlight-2]="searchNotes.includes(note)">{{ note.title }}</span>
+          <span class="note-title" [class.highlight]="note == stateService.currentNote" [class.negative]="searchNotes.includes(note)">{{ note.title }}</span>
           <div class="note-tag-container">
             <ng-container *ngFor="let tag of note.tags; let i = index;">
               <div *ngIf="i != 0" class="v-separator"></div>

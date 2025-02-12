@@ -334,11 +334,15 @@ hr {
   border-left: 0;
 }
 
-.highlight-1 {
+.highlight {
   color: var(--color-highlight);
 }
 
-.highlight-2 {
+.positive {
+  color: var(--color-positive);
+}
+
+.negative {
   color: var(--color-negative);
 }
 

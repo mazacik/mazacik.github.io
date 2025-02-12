@@ -62,7 +62,7 @@ export class FolderPickerComponent implements OnInit {
       archiveFolderId: archiveFolder.id,
       imageProperties: [],
       groupProperties: [],
-      tagGroups: [],
+      tags: [],
       heartsFilter: 0,
       bookmarksFilter: 0,
       groupSizeFilterMin: 0,

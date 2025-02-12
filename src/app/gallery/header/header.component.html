@@ -3,9 +3,28 @@
   <i class="icon-button fa-solid fa-folder-plus" tp="Create Group" (click)="galleryService.editGroup()"></i>
 </div>
 <div class="header-center">
-  <!-- TODO tag filtering -->
+  <div class="tags">
+    <i class="icon-button fa-heart" [ngClass]="getTagBubbleClass(stateService.heartsFilter, true)" (click)="toggleHeartsFilter()" (contextmenu)="$event.preventDefault(); toggleHeartsFilter(true);"></i>
+    <i class="icon-button fa-bookmark" [ngClass]="getTagBubbleClass(stateService.bookmarksFilter, true)" (click)="toggleBookmarksFilter()" (contextmenu)="$event.preventDefault(); toggleBookmarksFilter(true);"></i>
+    <div *ngFor="let tag of getFilterTags()" class="filter-bubble">
+      <span class="filter-bubble-text" [ngClass]="getTagBubbleClass(tag.state)" (click)="toggleFilter(tag)" (contextmenu)="$event.preventDefault(); toggleFilter(tag);" [tp]="tagHoverMenu" [tpData]="tag" tpVariation="hovermenu">{{ tag.name }}</span>
+      <i class="icon-button fa-solid fa-xmark" (click)="removeFilter(tag)"></i>
+    </div>
+    <div class="filter-input-container" style="display: flex; position: relative; padding-right: 0;">
+      <div class="filter-input-text">
+        <input [placeholder]="tagMatch?.name || (filterInput.value.length > 0 ? '' : 'Filter')">
+        <input #filterInput id="filter-input" (input)="onFilterInput($event)" (keypress)="onFilterInputSubmit($event)" autocomplete="off">
+      </div>
+      <i class="icon-button fa-solid fa-plus" (click)="onFilterInputSubmit()"></i>
+    </div>
+  </div>
 </div>
 <div class="header-end">
   <i class="icon-button fa-solid" [ngClass]="applicationService.isDarkTheme() ? 'fa-moon' : 'fa-sun'" tp="Brightness Mode" (click)="applicationService.toggleTheme()"></i>
   <i class="icon-button fa-solid fa-gear" tp="Settings" (click)="dialogService.openSettings()"></i>
 </div>
+<ng-template #tagHoverMenu let-item="data">
+  <div class="tippy-hover-menu-container">
+    <span class="tippy-hover-menu-button" (click)="editTag(item)">Edit</span>
+  </div>
+</ng-template>

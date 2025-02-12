@@ -20,6 +20,66 @@
 
   .header-center {
     justify-content: center;
+
+    .tags {
+      display: flex;
+      justify-content: center;
+      gap: $gap;
+
+      @media screen and (min-width:768px) {
+        margin-bottom: $gap;
+      }
+
+      >i {
+        background-color: var(--color-hover);
+      }
+
+      .filter-bubble {
+        min-width: 2rem;
+        min-height: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: $gap;
+        background-color: var(--color-hover);
+        cursor: pointer;
+
+        .filter-bubble-text {
+          padding: 0 $gap;
+        }
+      }
+
+      .filter-input-container {
+        min-width: 2rem;
+        min-height: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: $gap;
+        background-color: var(--color-hover);
+
+        .filter-input-text {
+          width: 100%;
+          padding: 0 $gap;
+
+          >input#filter-input {
+            position: absolute;
+            width: 100%;
+            border: 0;
+            padding: 0;
+            user-select: none;
+            pointer-events: none;
+          }
+
+          >input:not(#filter-input) {
+            position: relative;
+            width: 100%;
+            border: 0;
+            padding: 0;
+          }
+        }
+      }
+    }
   }
 
   .header-end {
