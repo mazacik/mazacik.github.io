@@ -87,7 +87,7 @@ export class HeaderComponent {
   }
 
   protected tagMatch: Tag;
-  protected onTagInput(event: Event): void {
+  protected onFilterInput(event: Event): void {
     const lowerCaseQueryCharacters: string = (event.target as HTMLInputElement).value.toLowerCase();
     if (lowerCaseQueryCharacters.length > 0) {
       for (const tag of this.stateService.tags) {
@@ -102,7 +102,7 @@ export class HeaderComponent {
     this.tagMatch = null;
   }
 
-  protected async onTagInputSubmit(event?: KeyboardEvent): Promise<void> {
+  protected async onFilterInputSubmit(event?: KeyboardEvent): Promise<void> {
     if (!event || event.key === 'Enter') {
       const tagInput: HTMLInputElement = (document.getElementById('filter-input') as HTMLInputElement);
       if (!this.tagMatch) {

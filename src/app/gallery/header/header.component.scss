@@ -34,7 +34,7 @@
         background-color: var(--color-hover);
       }
 
-      .tag-bubble {
+      .filter-bubble {
         min-width: 2rem;
         min-height: 2rem;
         display: flex;
@@ -44,12 +44,12 @@
         background-color: var(--color-hover);
         cursor: pointer;
 
-        .tag-text {
+        .filter-bubble-text {
           padding: 0 $gap;
         }
       }
 
-      .tag-filter {
+      .filter-input-container {
         min-width: 2rem;
         min-height: 2rem;
         display: flex;
@@ -58,8 +58,25 @@
         border-radius: $gap;
         background-color: var(--color-hover);
 
-        .tag-text {
+        .filter-input-text {
+          width: 100%;
           padding: 0 $gap;
+
+          >input#filter-input {
+            position: absolute;
+            width: 100%;
+            border: 0;
+            padding: 0;
+            user-select: none;
+            pointer-events: none;
+          }
+
+          >input:not(#filter-input) {
+            position: relative;
+            width: 100%;
+            border: 0;
+            padding: 0;
+          }
         }
       }
     }
