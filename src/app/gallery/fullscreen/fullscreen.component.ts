@@ -109,22 +109,8 @@ export class FullscreenComponent {
     this.stateService.target.set(ArrayUtils.getNext(image.group.images.filter(groupImage => groupImage.passesFilter), image, true));
   }
 
-  protected getTag(tagId: string): Tag {
-    for (const tagGroup of this.stateService.tagGroups) {
-      for (const tag of tagGroup.tags) {
-        if (tag.id == tagId) {
-          return tag;
-        }
-      }
-    }
-  }
-
   protected editTag(tagId: string): void {
-    const tag: Tag = this.getTag(tagId);
-    this.dialogService.create(GalleryTagEditorComponent, {
-      group: this.stateService.tagGroups.find(tagGroup => tagGroup.tags.includes(tag)),
-      tag: tag
-    });
+    this.dialogService.create(GalleryTagEditorComponent, { tag: this.stateService.getTag(tagId) });
   }
 
   protected removeTag(tagId: string): void {
@@ -139,13 +125,11 @@ export class FullscreenComponent {
   protected onTagInput(event: Event): void {
     const lowerCaseQueryCharacters: string = (event.target as HTMLInputElement).value.toLowerCase();
     if (lowerCaseQueryCharacters.length > 0) {
-      for (const group of this.stateService.tagGroups) {
-        for (const tag of group.tags) {
-          if (tag.lowerCaseName.startsWith(lowerCaseQueryCharacters)) {
-            this.tagMatch = tag;
-            (event.target as HTMLInputElement).value = tag.name.substring(0, lowerCaseQueryCharacters.length);
-            return;
-          }
+      for (const tag of this.stateService.tags) {
+        if (tag.lowerCaseName.startsWith(lowerCaseQueryCharacters)) {
+          this.tagMatch = tag;
+          (event.target as HTMLInputElement).value = tag.name.substring(0, lowerCaseQueryCharacters.length);
+          return;
         }
       }
     }

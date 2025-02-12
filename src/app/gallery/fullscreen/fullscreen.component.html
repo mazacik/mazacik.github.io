@@ -18,8 +18,8 @@
       </div>
       <div class="flex column center">
         <div class="tags">
-          <div *ngFor="let tagId of target?.tags" class="tag-bubble" [tp]="tagHoverMenu" [tpData]="tagId" tpVariation="hovermenu">
-            <span>{{ getTag(tagId).name }}</span>
+          <div *ngFor="let tagId of target?.tagIds" class="tag-bubble" [tp]="tagHoverMenu" [tpData]="tagId" tpVariation="hovermenu">
+            <span>{{ stateService.getTag(tagId).name }}</span>
           </div>
           <div class="tag-bubble" style="display: flex; position: relative; padding-right: 0;">
             <div style="width: 100%;">

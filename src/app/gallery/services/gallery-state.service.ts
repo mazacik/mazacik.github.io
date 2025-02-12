@@ -11,7 +11,7 @@ import { GoogleFileUtils } from "src/app/shared/utils/google-file.utils";
 import { Data } from "../model/data.interface";
 import { GallerySettings } from "../model/gallery-settings.interface";
 import { ImageProperties } from "../model/image-properties.interface";
-import { TagGroup } from "../model/tag-group.interface";
+import { Tag } from "../model/tag.interface";
 import { GalleryGoogleDriveService } from "./gallery-google-drive.service";
 
 @Injectable({
@@ -30,12 +30,12 @@ export class GalleryStateService {
   public images: GalleryImage[];
   public groups: GalleryGroup[];
   public filter: WritableSignal<GalleryImage[]> = signal([]);
-  public target: WritableSignal<GalleryImage> = signal(null); // TODO maybe target is not necessary anymore? only used in fullscreen?
+  public target: WritableSignal<GalleryImage> = signal(null);
 
   public masonryImages: GalleryImage[];
   public masonryTargetReference: GalleryImage;
 
-  public tagGroups: TagGroup[];
+  public tags: Tag[];
   public tagCounts: { [tagId: string]: number } = {};
 
   public heartsFilter: number;
@@ -45,8 +45,6 @@ export class GalleryStateService {
 
   public comparison: { [key: string]: string[] };
 
-  public editingGroup: GalleryImage[]; // TODO move to GalleryService
-
   constructor(
     private sanitizer: DomSanitizer,
     private applicationService: ApplicationService,
@@ -55,7 +53,7 @@ export class GalleryStateService {
   ) { }
 
   public async processData(): Promise<Data> {
-    const data = await this.googleService.getData();
+    const data: Data = await this.googleService.getData();
     this.dataFolderId = data.dataFolderId;
     this.archiveFolderId = data.archiveFolderId;
     this.heartsFilter = data.heartsFilter;
@@ -64,8 +62,8 @@ export class GalleryStateService {
     this.groupSizeFilterMin = data.groupSizeFilterMin;
     this.groupSizeFilterMax = data.groupSizeFilterMax;
     this.comparison = data.comparison;
-    this.tagGroups = data.tagGroups;
-    this.tagGroups.forEach(group => group.tags.forEach(tag => tag.lowerCaseName = tag.name.toLowerCase()));
+    this.tags = data.tags;
+    this.tags.forEach(tag => tag.lowerCaseName = tag.name.toLowerCase());
     return data;
   }
 
@@ -102,7 +100,7 @@ export class GalleryStateService {
         this.refreshFilter();
         this.target.set(ArrayUtils.getFirst(this.filter()));
 
-        for (const image of ArrayUtils.difference(data.imageProperties, this.images, (i1, i2) => i1.id == i2.id)) {
+        for (const image of ArrayUtils.difference(data.imageProperties, this.images as any, (i1, i2) => i1.id == i2.id)) {
           console.log(image);
           console.log('This image does not exist, but has a data entry. Removing image entry from data.');
           ArrayUtils.remove(this.images, this.images.find(_image => _image.id == image.id));
@@ -144,11 +142,11 @@ export class GalleryStateService {
     if (imageProperties) {
       image.heart = imageProperties.heart;
       image.bookmark = imageProperties.bookmark;
-      image.tags = imageProperties.tags || [];
+      image.tagIds = imageProperties.tagIds || [];
       image.likes = imageProperties.likes || 0;
     } else {
       if (this.settings.autoBookmark) image.bookmark = true;
-      image.tags = [];
+      image.tagIds = [];
       image.likes = 0;
     }
 
@@ -167,7 +165,7 @@ export class GalleryStateService {
             id: image.id,
             heart: image.heart,
             bookmark: image.bookmark,
-            tags: image.tags,
+            tagIds: image.tagIds,
             likes: image.likes
           }
         }),
@@ -176,7 +174,13 @@ export class GalleryStateService {
             imageIds: group.images.map(image => image.id)
           }
         }),
-        tagGroups: this.tagGroups,
+        tags: this.tags.map(tag => {
+          return {
+            id: tag.id,
+            name: tag.name,
+            state: tag.state
+          }
+        }),
         heartsFilter: this.heartsFilter,
         bookmarksFilter: this.bookmarksFilter,
         groupSizeFilterMin: this.groupSizeFilterMin,
@@ -196,10 +200,8 @@ export class GalleryStateService {
 
   public refreshTagCounts(): void {
     if (Object.keys(this.tagCounts).length == 0) {
-      for (const filterGroup of this.tagGroups) {
-        for (const tag of filterGroup.tags) {
-          this.tagCounts[tag.id] = 0;
-        }
+      for (const tag of this.tags) {
+        this.tagCounts[tag.id] = 0;
       }
     } else {
       for (const key in this.tagCounts) {
@@ -211,7 +213,7 @@ export class GalleryStateService {
     this.tagCounts['_bookmark'] = this.images.filter(image => image.bookmark).length;
 
     for (const image of this.images) {
-      for (const tagId of image.tags) {
+      for (const tagId of image.tagIds) {
         this.tagCounts[tagId]++;
       }
     }
@@ -296,26 +298,14 @@ export class GalleryStateService {
       return false;
     }
 
-    let hasGroup: boolean;
-    for (const tagGroup of this.tagGroups) {
-      hasGroup = tagGroup.tags.some(tag => image.tags.includes(tag.id));
-      if (tagGroup.state == -1 && hasGroup) {
+    let hasTag: boolean;
+    for (const tag of this.tags) {
+      hasTag = image.tagIds.includes(tag.id);
+      if (tag.state == -1 && hasTag) {
         return false;
       }
 
-      if (tagGroup.state == 1 && !hasGroup) {
-        return false;
-      }
-    }
-
-    let includes: boolean;
-    for (const tag of this.tagGroups.flatMap(group => group.tags)) {
-      includes = image.tags.includes(tag.id);
-      if (tag.state == -1 && includes) {
-        return false;
-      }
-
-      if (tag.state == 1 && !includes) {
+      if (tag.state == 1 && !hasTag) {
         return false;
       }
     }
@@ -338,23 +328,23 @@ export class GalleryStateService {
   }
 
   public addTag(image: GalleryImage, tag: string): void {
-    if (!image.tags.includes(tag)) {
-      image.tags.push(tag);
+    if (!image.tagIds.includes(tag)) {
+      image.tagIds.push(tag);
     }
 
-    this.tagCounts[tag] = this.images.filter(i => i.tags.includes(tag)).length;
+    this.tagCounts[tag] = this.images.filter(i => i.tagIds.includes(tag)).length;
     this.refreshFilter(image);
     this.updateData();
   }
 
   public toggleTag(image: GalleryImage, tag: string): void {
-    if (image.tags.includes(tag)) {
-      ArrayUtils.remove(image.tags, tag)
+    if (image.tagIds.includes(tag)) {
+      ArrayUtils.remove(image.tagIds, tag)
     } else {
-      image.tags.push(tag)
+      image.tagIds.push(tag)
     }
 
-    this.tagCounts[tag] = this.images.filter(i => i.tags.includes(tag)).length;
+    this.tagCounts[tag] = this.images.filter(i => i.tagIds.includes(tag)).length;
     this.refreshFilter(image);
     this.updateData();
   }
@@ -417,6 +407,10 @@ export class GalleryStateService {
 
     this.updateData(true);
     this.applicationService.loading.next(false);
+  }
+
+  public getTag(tagId: string): Tag {
+    return this.tags.find(tag => tag.id == tagId);
   }
 
 }

@@ -5,11 +5,11 @@
   <div class="masonry-scroll-container">
     <div class="masonry-container" (create)="onMasonryContainerCreate($event)">
       <!-- TODO split styles -->
-      <div *ngFor="let image of stateService.masonryImages" @fade class="masonry-brick" [style]="'width: ' + image.width + 'px; height: ' + image.height + 'px; top: ' + image.top + 'px; left: ' + image.left + 'px; '" (click)="onImageClick(image)" [class.modifying-group]="stateService.editingGroup?.includes(image)">
+      <div *ngFor="let image of stateService.masonryImages" @fade class="masonry-brick" [style]="'width: ' + image.width + 'px; height: ' + image.height + 'px; top: ' + image.top + 'px; left: ' + image.left + 'px; '" (click)="onImageClick(image)" [class.modifying-group]="galleryService.editingGroupImages?.includes(image)">
         <div class="brick-container">
           <img [src]="image.thumbnailLink" (create)="onBrickCreate($event, image)" #imageElement (load)="imageElement.style.opacity = '1'">
         </div>
-        <ng-container *ngIf="!stateService.editingGroup">
+        <ng-container *ngIf="areBrickButtonsVisible()">
           <div class="brick-header">
             <i class="icon-button fa-heart" [ngClass]="image.heart ? 'fa-solid active' : 'fa-regular'" tp="Favorite" (click)="$event.stopPropagation(); stateService.toggleHeart(image);"></i>
             <i class="icon-button fa-bookmark" [ngClass]="image.bookmark ? 'fa-solid active' : 'fa-regular'" tp="Bookmark" (click)="$event.stopPropagation(); stateService.toggleBookmark(image);"></i>

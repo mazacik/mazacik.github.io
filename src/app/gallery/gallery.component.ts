@@ -45,43 +45,52 @@ export class GalleryComponent implements OnInit {
 
   @HostListener('document:keydown', ['$event'])
   protected initKeybinds(event: KeyboardEvent): void {
-    // TODO restrict keybinds context
-    if (['BODY', 'VIDEO'].includes(document.activeElement.nodeName)) {
+    if (['BODY', 'VIDEO'].includes(document.activeElement.nodeName) && this.dialogService.stack.length == 0) {
       const target: GalleryImage = this.stateService.target();
+
       switch (event.code) {
         case 'KeyF':
           this.stateService.fullscreenVisible.update(value => !value);
           break;
-        case 'KeyR':
-          this.stateService.setRandomTarget();
-          break;
-        case 'KeyG':
-          this.stateService.setRandomGroupTarget();
-          break;
-        case 'KeyW':
-        case 'ArrowUp':
-          this.stateService.target.set(MasonryUtils.getNearestImageUp(this.stateService.masonryImages, this.stateService.masonryTargetReference));
-          break;
-        case 'KeyA':
-        case 'ArrowLeft':
-          if (event.shiftKey) {
-            this.stateService.target.set(ArrayUtils.getPrevious(target.group.images, target, true));
-          } else {
-            this.stateService.target.set(MasonryUtils.getNearestImageLeft(this.stateService.masonryImages, this.stateService.masonryTargetReference));
-          }
-          break;
-        case 'KeyS':
-        case 'ArrowDown':
-          this.stateService.target.set(MasonryUtils.getNearestImageDown(this.stateService.masonryImages, this.stateService.masonryTargetReference));
-          break;
-        case 'KeyD':
-        case 'ArrowRight':
-          if (event.shiftKey) {
-            this.stateService.target.set(ArrayUtils.getNext(target.group.images, target, true));
-          } else {
-            this.stateService.target.set(MasonryUtils.getNearestImageRight(this.stateService.masonryImages, this.stateService.masonryTargetReference));
-          }
-          break;
+      }
+
+      if (this.stateService.fullscreenVisible) {
+        switch (event.code) {
+          case 'KeyR':
+            if (this.stateService.fullscreenVisible) {
+              this.stateService.setRandomTarget();
+            }
+            break;
+          case 'KeyG':
+            if (this.stateService.fullscreenVisible) {
+              this.stateService.setRandomGroupTarget();
+            }
+            break;
+          case 'KeyW':
+          case 'ArrowUp':
+            this.stateService.target.set(MasonryUtils.getNearestImageUp(this.stateService.masonryImages, this.stateService.masonryTargetReference));
+            break;
+          case 'KeyA':
+          case 'ArrowLeft':
+            if (event.shiftKey) {
+              this.stateService.target.set(ArrayUtils.getPrevious(target.group.images, target, true));
+            } else {
+              this.stateService.target.set(MasonryUtils.getNearestImageLeft(this.stateService.masonryImages, this.stateService.masonryTargetReference));
+            }
+            break;
+          case 'KeyS':
+          case 'ArrowDown':
+            this.stateService.target.set(MasonryUtils.getNearestImageDown(this.stateService.masonryImages, this.stateService.masonryTargetReference));
+            break;
+          case 'KeyD':
+          case 'ArrowRight':
+            if (event.shiftKey) {
+              this.stateService.target.set(ArrayUtils.getNext(target.group.images, target, true));
+            } else {
+              this.stateService.target.set(MasonryUtils.getNearestImageRight(this.stateService.masonryImages, this.stateService.masonryTargetReference));
+            }
+            break;
+        }
       }
     }
   }

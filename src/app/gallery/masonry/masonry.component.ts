@@ -159,13 +159,12 @@ export class MasonryComponent {
   }
 
   protected onImageClick(image: GalleryImage): void {
-    if (this.stateService.editingGroup) {
-      const target: GalleryImage = this.stateService.target();
-      if (image.group && target.group && !target.group.images.includes(image)) {
+    if (this.galleryService.editingGroupImages) {
+      if (image.group && this.galleryService.editingGroup != image.group) {
         return;
       }
 
-      ArrayUtils.toggle(this.stateService.editingGroup, image);
+      ArrayUtils.toggle(this.galleryService.editingGroupImages, image);
       return;
     }
 
@@ -200,6 +199,10 @@ export class MasonryComponent {
   @HostListener('window:resize')
   protected onResize() {
     this.updateLayout();
+  }
+
+  protected areBrickButtonsVisible(): boolean {
+    return ScreenUtils.isLargeScreen() && !this.galleryService.editingGroup;
   }
 
 }
