@@ -17,7 +17,13 @@ export class DialogService {
   constructor(
     private appRef: ApplicationRef,
     private injector: EnvironmentInjector
-  ) { }
+  ) {
+    window.addEventListener('keydown', event => {
+      if (event.code == 'Escape') {
+        ArrayUtils.getLast(this.stack)?.close();
+      }
+    });
+  }
 
   public openSettings(): Promise<boolean> {
     return this.create(GallerySettingsComponent);

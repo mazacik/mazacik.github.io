@@ -5,7 +5,7 @@
   <div class="masonry-scroll-container">
     <div class="masonry-container" (create)="onMasonryContainerCreate($event)">
       <!-- TODO split styles -->
-      <div *ngFor="let image of masonryImages" @fade class="masonry-brick" [style]="'width: ' + image.width + 'px; height: ' + image.height + 'px; top: ' + image.top + 'px; left: ' + image.left + 'px; '" (click)="onImageClick(image)" [class.modifying-group]="galleryService.editingGroupImages?.includes(image)">
+      <div *ngFor="let image of masonryImages" @fade class="masonry-brick" [style]="'width: ' + image.width + 'px; height: ' + image.height + 'px; top: ' + image.top + 'px; left: ' + image.left + 'px; '" (click)="onImageClick(image)" [class.modifying-group]="stateService.editingGroupImages?.includes(image)">
         <div class="brick-container">
           <img [src]="image.thumbnailLink" (create)="onBrickCreate($event, image)" #imageElement (load)="imageElement.style.opacity = '1'">
         </div>

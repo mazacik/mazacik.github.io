@@ -13,19 +13,12 @@ import { GalleryStateService } from "./services/gallery-state.service";
 })
 export class GalleryService {
 
-  // TODO move more stuff here? from GalleryStateService?
-
-  public editingGroup: GalleryGroup;
-  public editingGroupImages: GalleryImage[];
-
   public constructor(
     private stateService: GalleryStateService,
     private dialogService: DialogService,
     private tippyService: TippyService
   ) { }
 
-  // TODO refactor
-  // TODO when editing group, images in other groups are grayed out (0.5 opa) or hidden
   public editGroup(image?: GalleryImage): void {
     let open: boolean;
     if (image) {
@@ -33,29 +26,30 @@ export class GalleryService {
         open = image.group.open;
         image.group.open = true;
         image.group.images.forEach(image => this.stateService.refreshFilter(image));
-        this.editingGroup = image.group;
-        this.editingGroupImages = image.group.images.slice();
+        this.stateService.editingGroup = image.group;
+        this.stateService.editingGroupImages = image.group.images.slice();
       } else {
-        this.editingGroup = null;
-        this.editingGroupImages = [image];
+        this.stateService.editingGroup = null;
+        this.stateService.editingGroupImages = [image];
       }
     } else {
-      this.editingGroup = null;
-      this.editingGroupImages = [];
+      this.stateService.editingGroup = null;
+      this.stateService.editingGroupImages = [];
     }
 
-    // TODO remove click: () => null; careful - this breaks .then((success: boolean) => {
-    const buttons: DialogButton[] = [{ text: () => 'Save Group: ' + this.editingGroupImages?.length + ' images', click: () => null }, { iconClass: () => 'fa-solid fa-times' }];
-    this.dialogService.create(null, { buttons: buttons }, false, 'bottom').then((success: boolean) => {
+    this.stateService.refreshFilter();
+
+    const buttons: DialogButton[] = [{ text: () => 'Save Group: ' + this.stateService.editingGroupImages?.length + ' images', resolveValue: true }, { iconClass: () => 'fa-solid fa-times' }];
+    this.dialogService.create<boolean>(null, { buttons: buttons }, false, 'bottom').then(success => {
       if (success) {
-        if (this.editingGroupImages.length > 1) {
+        if (this.stateService.editingGroupImages.length > 1) {
           if (image?.group) {
             image.group.images.forEach(image => image.group = null);
-            image.group.images = this.editingGroupImages;
+            image.group.images = this.stateService.editingGroupImages;
             image.group.images.forEach(image => image.group = image.group);
           } else {
             const group: GalleryGroup = new GalleryGroup();
-            group.images = this.editingGroupImages;
+            group.images = this.stateService.editingGroupImages;
             group.images.forEach(image => image.group = group);
             this.stateService.groups.push(group);
           }
@@ -73,9 +67,9 @@ export class GalleryService {
         image.group.open = open;
       }
 
-      this.editingGroup = null;
-      this.editingGroupImages = null;
-      image?.group.images.forEach(image => this.stateService.refreshFilter(image));
+      this.stateService.editingGroup = null;
+      this.stateService.editingGroupImages = null;
+      this.stateService.refreshFilter();
     });
   }
 
@@ -83,10 +77,7 @@ export class GalleryService {
     if (target && target.group) {
       this.dialogService.create(GroupOrderComponent, { images: target.group.images.slice() }).then(images => {
         if (images) {
-          const map = new Map<string, number>();
-          // TODO this can probably be done without a map, just [] and use indices
-          images.forEach((image, index) => map.set(image.id, index));
-          target.group.images.sort((a, b) => map.get(a.id) - map.get(b.id));
+          target.group.images.sort((a, b) => images.indexOf(a) - images.indexOf(b));
           this.stateService.refreshFilter();
           this.stateService.updateData();
         }

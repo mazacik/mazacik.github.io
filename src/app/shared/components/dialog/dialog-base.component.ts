@@ -76,17 +76,9 @@ export class DialogBaseComponent<ResultType> implements AfterViewInit {
       this.visible = true;
       contentRef.changeDetectorRef.detectChanges();
     } else {
-      const buttons = this.inputs['buttons'] as DialogButton[];
+      const buttons: DialogButton[] = this.inputs['buttons'] as DialogButton[];
       for (const button of buttons) {
-        if (button.click) {
-          const currentClick = button.click;
-          button.click = () => {
-            currentClick();
-            this.resolve(true as ResultType);
-          }
-        } else {
-          button.click = () => this.resolve(false as ResultType);
-        }
+        button.click = () => this.resolve(button.resolveValue as ResultType);
       }
 
       this.contentInstance = {
@@ -108,8 +100,7 @@ export class DialogBaseComponent<ResultType> implements AfterViewInit {
     }
   }
 
-  @HostListener('window:keydown.escape', ['$event'])
-  protected close(): void {
+  public close(): void {
     this.contentInstance?.close();
   }
 

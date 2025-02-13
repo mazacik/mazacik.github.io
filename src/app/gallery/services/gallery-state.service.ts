@@ -33,12 +33,14 @@ export class GalleryStateService {
   public target: WritableSignal<GalleryImage> = signal(null);
 
   public tags: Tag[];
-  public tagCounts: { [tagId: string]: number } = {};
 
   public heartsFilter: number;
   public bookmarksFilter: number;
   public groupSizeFilterMin: number;
   public groupSizeFilterMax: number;
+
+  public editingGroup: GalleryGroup;
+  public editingGroupImages: GalleryImage[];
 
   public comparison: { [key: string]: string[] };
 
@@ -96,13 +98,12 @@ export class GalleryStateService {
 
         this.refreshFilter();
 
-        for (const image of ArrayUtils.difference(data.imageProperties, this.images as any, (i1, i2) => i1.id == i2.id)) {
-          console.log(image);
+        for (const imageProperty of data.imageProperties.filter(imageProperty => !this.images.some(galleryImage => imageProperty.id == galleryImage.id))) {
+          console.log(imageProperty);
           console.log('This image does not exist, but has a data entry. Removing image entry from data.');
-          ArrayUtils.remove(this.images, this.images.find(_image => _image.id == image.id));
+          ArrayUtils.remove(this.images, this.images.find(galleryImage => galleryImage.id == imageProperty.id));
         }
 
-        this.refreshTagCounts();
         this.applicationService.loading.next(false);
       };
     });
@@ -194,27 +195,6 @@ export class GalleryStateService {
     if (instant) this.updateDelay.complete();
   }
 
-  public refreshTagCounts(): void {
-    if (Object.keys(this.tagCounts).length == 0) {
-      for (const tag of this.tags) {
-        this.tagCounts[tag.id] = 0;
-      }
-    } else {
-      for (const key in this.tagCounts) {
-        this.tagCounts[key] = 0;
-      }
-    }
-
-    this.tagCounts['_heart'] = this.images.filter(image => image.heart).length;
-    this.tagCounts['_bookmark'] = this.images.filter(image => image.bookmark).length;
-
-    for (const image of this.images) {
-      for (const tagId of image.tagIds) {
-        this.tagCounts[tagId]++;
-      }
-    }
-  }
-
   public refreshFilter(forImage?: GalleryImage): void {
     forImage ? this.actuallyRefreshFilter(forImage) : this.images.forEach(image => this.actuallyRefreshFilter(image));
     this.filter.set(this.images.filter(image => image.passesFilter));
@@ -257,6 +237,10 @@ export class GalleryStateService {
       return false;
     }
 
+    if (this.editingGroup && image.group && this.editingGroup != image.group) {
+      return false;
+    }
+
     const groupSize: number = image.group ? image.group.images.length : 0;
     if (groupSize < this.groupSizeFilterMin) {
       return false;
@@ -283,14 +267,12 @@ export class GalleryStateService {
 
   public toggleHeart(image: GalleryImage): void {
     image.heart = !image.heart;
-    this.tagCounts['_heart'] = this.images.filter(i => i.heart).length;
     this.refreshFilter(image);
     this.updateData();
   }
 
   public toggleBookmark(image: GalleryImage): void {
     image.bookmark = !image.bookmark;
-    this.tagCounts['_bookmark'] = this.images.filter(i => i.bookmark).length;
     this.refreshFilter(image);
     this.updateData();
   }
@@ -300,7 +282,6 @@ export class GalleryStateService {
       image.tagIds.push(tag);
     }
 
-    this.tagCounts[tag] = this.images.filter(i => i.tagIds.includes(tag)).length;
     this.refreshFilter(image);
     this.updateData();
   }
@@ -312,7 +293,6 @@ export class GalleryStateService {
       image.tagIds.push(tag)
     }
 
-    this.tagCounts[tag] = this.images.filter(i => i.tagIds.includes(tag)).length;
     this.refreshFilter(image);
     this.updateData();
   }
@@ -361,9 +341,8 @@ export class GalleryStateService {
       }
     }
 
-    this.refreshFilter(); // TODO only triggers masonry layout update
+    this.filter.set(this.images.filter(image => image.passesFilter));
     this.fullscreenVisible.set(false);
-    this.refreshTagCounts();
 
     this.updateData(true);
     this.applicationService.loading.next(false);

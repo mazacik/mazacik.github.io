@@ -93,7 +93,6 @@ export class GalleryTagEditorComponent extends DialogContent<Tag> implements OnI
         };
 
         this.stateService.tags.push(this.tag);
-        this.stateService.tagCounts[this.tag.id] = this.stateService.images.filter(image => image.tagIds.includes(this.tag.id)).length;
       } else {
         this.tag.name = this.tagName;
         this.tag.lowerCaseName = this.tagName.toLowerCase();

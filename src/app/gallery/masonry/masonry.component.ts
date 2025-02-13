@@ -149,12 +149,12 @@ export class MasonryComponent {
   }
 
   protected onImageClick(image: GalleryImage): void {
-    if (this.galleryService.editingGroupImages) {
-      if (image.group && this.galleryService.editingGroup != image.group) {
+    if (this.stateService.editingGroupImages) {
+      if (image.group && this.stateService.editingGroup != image.group) {
         return;
       }
 
-      ArrayUtils.toggle(this.galleryService.editingGroupImages, image);
+      ArrayUtils.toggle(this.stateService.editingGroupImages, image);
       return;
     }
 
@@ -192,7 +192,7 @@ export class MasonryComponent {
   }
 
   protected areBrickButtonsVisible(): boolean {
-    return ScreenUtils.isLargeScreen() && !this.galleryService.editingGroup;
+    return ScreenUtils.isLargeScreen() && !this.stateService.editingGroup;
   }
 
 }
