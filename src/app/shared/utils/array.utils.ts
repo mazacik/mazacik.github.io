@@ -82,21 +82,7 @@ export abstract class ArrayUtils {
     }
   }
 
-  // TODO can compare arrays of different types, just use <T, U>
-  public static difference<T>(array1: T[], array2: T[], equal: (t1: T, t2: T) => boolean): T[] {
-    if (!this.isEmpty(array1) && !this.isEmpty(array2)) {
-      const result: T[] = [];
-      for (const item1 of array1) {
-        if (!array2.some(item2 => equal(item1, item2))) {
-          result.push(item1);
-        }
-      }
-      return result;
-    }
-    return [];
-  }
-
-  public static unique<T>(array: T[], getKey: (t: T) => any): T[] {
+  public static distinct<T>(array: T[], getKey: (t: T) => any): T[] {
     if (!this.isEmpty(array)) {
       const result: T[] = [];
       const map = new Map();

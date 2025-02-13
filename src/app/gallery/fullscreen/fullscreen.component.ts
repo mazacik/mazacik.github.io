@@ -72,18 +72,23 @@ export class FullscreenComponent {
 
   @HostListener('document:keydown', ['$event'])
   protected initKeybinds(event: KeyboardEvent): void {
-    if (['BODY', 'VIDEO'].includes(document.activeElement.nodeName) && this.dialogService.stack.length == 0) {
-      if (this.stateService.fullscreenVisible()) {
-        switch (event.code) {
-          case 'Escape':
-            this.stateService.fullscreenVisible.update(value => !value);
-            break;
-          case 'KeyR':
-            this.setRandomTarget();
-            break;
-          case 'KeyG':
-            this.setRandomGroupTarget();
-            break;
+    if (this.dialogService.stack.length == 0) {
+      switch (event.code) {
+        case 'Escape':
+          this.stateService.fullscreenVisible.update(value => !value);
+          return;
+      }
+
+      if (['BODY', 'VIDEO'].includes((event.target as HTMLElement).nodeName)) {
+        if (this.stateService.fullscreenVisible()) {
+          switch (event.code) {
+            case 'KeyR':
+              this.setRandomTarget();
+              return;
+            case 'KeyG':
+              this.setRandomGroupTarget();
+              return;
+          }
         }
       }
     }

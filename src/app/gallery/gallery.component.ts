@@ -1,11 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { enter } from '../shared/constants/animations.constants';
 import { ApplicationService } from '../shared/services/application.service';
 import { DialogService } from '../shared/services/dialog.service';
 import { FullscreenComponent } from './fullscreen/fullscreen.component';
 import { MasonryComponent } from './masonry/masonry.component';
-import { GalleryImage } from './model/gallery-image.class';
 import { GallerySettings } from './model/gallery-settings.interface';
 import { GalleryStateService } from './services/gallery-state.service';
 
