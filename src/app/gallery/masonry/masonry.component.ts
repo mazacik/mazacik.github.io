@@ -62,7 +62,7 @@ export class MasonryComponent {
       const masonryGap: number = ScreenUtils.isLargeScreen() ? 12 : 6;
 
       const containerWidth: number = this.masonryContainer.clientWidth;
-      const columnCount: number = Math.floor(containerWidth / minColumnWidth);
+      const columnCount: number = Math.max(Math.floor(containerWidth / minColumnWidth), 2);
       const columnWidth: number = (containerWidth - masonryGap * (columnCount - 1)) / columnCount;
 
       const top: number[] = [];
