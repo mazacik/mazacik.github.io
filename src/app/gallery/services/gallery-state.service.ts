@@ -27,7 +27,7 @@ export class GalleryStateService {
 
   public fullscreenVisible: WritableSignal<boolean> = signal(false);
 
-  public images: GalleryImage[];
+  public readonly images: GalleryImage[] = [];
   public groups: GalleryGroup[];
   public filter: WritableSignal<GalleryImage[]> = signal([]);
   public target: WritableSignal<GalleryImage> = signal(null);
@@ -51,62 +51,61 @@ export class GalleryStateService {
     private dialogService: DialogService
   ) { }
 
-  public async processData(): Promise<Data> {
+  public async processData(): Promise<void> {
     const data: Data = await this.googleService.getData();
     this.dataFolderId = data.dataFolderId;
     this.archiveFolderId = data.archiveFolderId;
     this.heartsFilter = data.heartsFilter;
     this.bookmarksFilter = data.bookmarksFilter;
-    this.settings = data.settings;
     this.groupSizeFilterMin = data.groupSizeFilterMin;
     this.groupSizeFilterMax = data.groupSizeFilterMax;
     this.comparison = data.comparison;
     this.tags = data.tags;
     this.tags.forEach(tag => tag.lowerCaseName = tag.name.toLowerCase());
-    return data;
+
+    if (data.settings) {
+      this.settings = data.settings;
+    } else {
+      await this.dialogService.openSettings();
+    }
+
+    const recursionTracker: Set<Promise<void>> = new Set<Promise<void>>();
+    await this.processImages(data, this.dataFolderId, this.images, recursionTracker);
+    await Promise.all(recursionTracker);
+
+    for (const imageProperty of data.imageProperties.filter(imageProperty => !this.images.some(galleryImage => imageProperty.id == galleryImage.id))) {
+      console.log(imageProperty);
+      console.log('This image does not exist, but has a data entry. Removing image entry from data.');
+      ArrayUtils.remove(this.images, this.images.find(galleryImage => galleryImage.id == imageProperty.id));
+    }
+
+    this.groups = data.groupProperties.map(groupProperties => {
+      const group: GalleryGroup = new GalleryGroup();
+      group.images = this.images.filter(image => groupProperties.imageIds.includes(image.id));
+      group.images.sort((a, b) => groupProperties.imageIds.indexOf(a.id) - groupProperties.imageIds.indexOf(b.id));
+      group.images.forEach(image => image.group = group);
+      return group;
+    });
+
+    // if (this.comparison && Object.keys(this.comparison).length > 0) {
+    //   // TODO clean comparison (remove missing entries)
+    //   const contenders: Contender<GalleryImage>[] = this.images.map(image => new Contender<GalleryImage>(image.id, image));
+    //   contenders.forEach(contender => contender.directlyBetterThan = this.comparison[contender.id].map(directlyBetterThanId => contenders.find(c => c.id == directlyBetterThanId)));
+    //   this.images = TournamentUtils.getLeaderboard(TournamentUtils.getFirst(contenders), contenders).map(contender => contender.object);
+    // }
+
+    this.refreshFilter();
+    this.applicationService.loading.next(false);
+    this.updateData();
   }
 
-  public processImages(data: Data, folderId: string = this.dataFolderId, imageCollector: GalleryImage[] = [], recursionTracker = { calls: 0 }): void {
-    recursionTracker.calls++;
+  private async processImages(data: Data, folderId: string, imageCollector: GalleryImage[], recursionTracker: Set<Promise<void>>): Promise<void> {
+    const metadata: GoogleMetadata[] = await this.googleService.getFolderMetadata(folderId);
+    for (const folder of metadata.filter(entity => GoogleFileUtils.isFolder(entity))) {
+      recursionTracker.add(this.processImages(data, folder.id, imageCollector, recursionTracker));
+    }
 
-    this.googleService.getFolderMetadata(folderId).then(metas => {
-      for (const folder of metas.filter(entity => GoogleFileUtils.isFolder(entity))) {
-        this.processImages(data, folder.id, imageCollector, recursionTracker);
-      }
-
-      ArrayUtils.push(imageCollector, metas.filter(meta => GoogleFileUtils.isImage(meta) || GoogleFileUtils.isVideo(meta)).map(meta => {
-        return this.metaToImage(meta, data.imageProperties.find(imageProperty => imageProperty.id == meta.id), folderId, this.applicationService.reduceBandwidth);
-      }));
-
-      if (--recursionTracker.calls == 0) {
-        this.images = imageCollector;
-
-        this.groups = data.groupProperties.map(groupProperties => {
-          const group: GalleryGroup = new GalleryGroup();
-          group.images = this.images.filter(image => groupProperties.imageIds.includes(image.id));
-          group.images.sort((a, b) => groupProperties.imageIds.indexOf(a.id) - groupProperties.imageIds.indexOf(b.id));
-          group.images.forEach(image => image.group = group);
-          return group;
-        });
-
-        // if (this.comparison && Object.keys(this.comparison).length > 0) {
-        //   // TODO clean comparison (remove missing entries)
-        //   const contenders: Contender<GalleryImage>[] = this.images.map(image => new Contender<GalleryImage>(image.id, image));
-        //   contenders.forEach(contender => contender.directlyBetterThan = this.comparison[contender.id].map(directlyBetterThanId => contenders.find(c => c.id == directlyBetterThanId)));
-        //   this.images = TournamentUtils.getLeaderboard(TournamentUtils.getFirst(contenders), contenders).map(contender => contender.object);
-        // }
-
-        this.refreshFilter();
-
-        for (const imageProperty of data.imageProperties.filter(imageProperty => !this.images.some(galleryImage => imageProperty.id == galleryImage.id))) {
-          console.log(imageProperty);
-          console.log('This image does not exist, but has a data entry. Removing image entry from data.');
-          ArrayUtils.remove(this.images, this.images.find(galleryImage => galleryImage.id == imageProperty.id));
-        }
-
-        this.applicationService.loading.next(false);
-      };
-    });
+    ArrayUtils.push(imageCollector, metadata.filter(meta => GoogleFileUtils.isImage(meta) || GoogleFileUtils.isVideo(meta)).map(imageMetadata => this.metaToImage(imageMetadata, data.imageProperties.find(imageProperty => imageProperty.id == imageMetadata.id), folderId, this.applicationService.reduceBandwidth)));
   }
 
   private metaToImage(metadata: GoogleMetadata, imageProperties: ImageProperties, folderId: string, bReduceBandwidth: boolean): GalleryImage {

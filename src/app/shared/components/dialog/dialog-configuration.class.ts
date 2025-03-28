@@ -4,5 +4,6 @@ export interface DialogConfiguration {
 
   title: string;
   buttons: DialogButton[];
+  hideTopRightCloseButton?: boolean;
 
 }

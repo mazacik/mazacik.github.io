@@ -83,7 +83,7 @@ export class DialogBaseComponent<ResultType> implements AfterViewInit {
 
       this.contentInstance = {
         resolve: this.resolve,
-        configuration: { title: null, buttons: buttons },
+        configuration: { title: null, buttons: buttons, hideTopRightCloseButton: true },
         close: () => this.resolve(false as ResultType)
       };
 

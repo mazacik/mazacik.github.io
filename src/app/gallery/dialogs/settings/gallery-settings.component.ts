@@ -4,6 +4,7 @@ import { DialogConfiguration } from 'src/app/shared/components/dialog/dialog-con
 import { DialogContent } from 'src/app/shared/components/dialog/dialog-content.class';
 import { SwitchComponent } from 'src/app/shared/components/switch/switch.component';
 import { SwitchEvent } from 'src/app/shared/components/switch/switch.event';
+import { GallerySettings } from '../../model/gallery-settings.interface';
 import { GalleryStateService } from '../../services/gallery-state.service';
 
 @Component({
@@ -21,9 +22,10 @@ export class GallerySettingsComponent extends DialogContent<boolean> implements 
   public configuration: DialogConfiguration = {
     title: 'Settings',
     buttons: [{
-      text: () => 'Close',
+      text: () => 'OK',
       click: () => this.close()
-    }]
+    }],
+    hideTopRightCloseButton: true
   };
 
   private needsFilterRefresh: boolean = false;
@@ -36,7 +38,9 @@ export class GallerySettingsComponent extends DialogContent<boolean> implements 
   }
 
   ngOnInit(): void {
-
+    if (!this.stateService.settings) {
+      this.stateService.settings = {} as GallerySettings;
+    }
   }
 
   protected onShowVideosStateChange(event: SwitchEvent): void {
