@@ -1,8 +1,10 @@
-<div class="switch-container">
-  <app-switch [state]="stateService.settings.showVideos" tp="Show videos" (stateChange)="onShowVideosStateChange($event)"></app-switch>
-  <span class="nowrap">Show Videos</span>
-</div>
-<div class="switch-container">
-  <app-switch [state]="stateService.settings.autoBookmark" tp="Bookmark new images automatically" (stateChange)="onAutoBookmarkStateChange($event)"></app-switch>
-  <span class="nowrap">Auto Bookmark</span>
-</div>
+<ng-container *ngIf="stateService.settings">
+  <div class="switch-container">
+    <app-switch [state]="stateService.settings.showVideos" tp="Show videos" (stateChange)="onShowVideosStateChange($event)"></app-switch>
+    <span class="nowrap">Show Videos</span>
+  </div>
+  <div class="switch-container">
+    <app-switch [state]="stateService.settings.autoBookmark" tp="Bookmark new images automatically" (stateChange)="onAutoBookmarkStateChange($event)"></app-switch>
+    <span class="nowrap">Auto Bookmark</span>
+  </div>
+</ng-container>
