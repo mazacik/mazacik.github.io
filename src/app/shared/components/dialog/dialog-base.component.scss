@@ -43,7 +43,7 @@
 }
 
 .header {
-  height: $header-height;
+  height: $button-height;
   padding: $gap $gap $gap $gap * 2;
   display: flex;
   align-items: center;
@@ -53,7 +53,7 @@
 .buttons {
   gap: $gap;
   padding: $gap;
-  height: $header-height;
+  height: $button-height;
   display: flex;
   align-items: center;
   justify-content: space-evenly;
