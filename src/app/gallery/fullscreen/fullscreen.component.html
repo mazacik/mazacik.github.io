@@ -23,10 +23,10 @@
           <div *ngFor="let tagId of target?.tagIds" class="tag-bubble" [tp]="tagHoverMenu" [tpData]="tagId" tpVariation="hovermenu">
             <span>{{ stateService.getTag(tagId).name }}</span>
           </div>
-          <div class="tag-bubble" style="display: flex; position: relative; padding-right: 0;">
-            <div style="width: 100%;">
-              <input style="position: absolute; width: 100%; border: 0; padding: 0; user-select: none; pointer-events: none;" [placeholder]="tagMatch?.name || (tagInput.value.length > 0 ? '' : 'Tag Search')">
-              <input #tagInput id="tag-input" style="position: relative; width: 100%; border: 0; padding: 0;" (input)="onTagInput($event)" (keypress)="onTagInputSubmit($event)" autocomplete="off">
+          <div class="tag-search-container" style="display: flex; position: relative;">
+            <div style="position: relative; padding-left: 1rem;">
+              <input style="position: absolute; border: 0; padding: 0; user-select: none; pointer-events: none;" [placeholder]="tagMatch?.name || (tagInput.value.length > 0 ? '' : 'Tag Search')">
+              <input #tagInput id="tag-input" style="position: relative; border: 0; padding: 0;" (input)="onTagInput($event)" (keypress)="onTagInputSubmit($event)" autocomplete="off">
             </div>
             <i class="icon-button fa-solid fa-plus" (click)="onTagInputSubmit()"></i>
           </div>
@@ -37,20 +37,21 @@
         </div>
       </div>
       <div style="justify-content: end;">
-        <span *ngIf="target">{{ target.imageMediaMetadata.width }} x {{ target.imageMediaMetadata.height }}</span>
+        <div *ngIf="target" class="resolution-info">
+          <span style="white-space: nowrap; padding: 1rem;">{{ target.imageMediaMetadata.width }} x {{ target.imageMediaMetadata.height }}</span>
+        </div>
       </div>
     </div>
   </div>
   <div *ngFor="let image of crossfadeHelper" @fade class="fullscreen-crossfade">
     <iframe *ngIf="video" class="fullscreen-content" [src]="image.contentLink" [style]="'max-width:' + image.videoMediaMetadata.width + 'px;max-height:' + image.videoMediaMetadata.height + 'px;'" frameborder="0" allowfullscreen></iframe>
     <!-- <video *ngIf="video" id="video-element" class="fullscreen-content" controls [src]="image.contentLink" [style]="'max-width:' + image.videoMediaMetadata.width + 'px;max-height:' + image.videoMediaMetadata.height + 'px;'"></video> -->
-    <ng-container *ngIf="!video">
-      <img class="fullscreen-content" [src]="getSrc(image)" (click)="onImageClick(image)">
-      <img style="display: none;" [src]="image.thumbnailLink" (load)="loadingT = false">
-      <img *ngIf="image.contentLink" style="display: none;" [src]="image.contentLink" (load)="loadingC = false">
-    </ng-container>
+    <img *ngIf="!video" class="fullscreen-content" [src]="getSrc(image)" (click)="onImageClick(image)">
   </div>
 </ng-container>
+
+<img style="display: none;" [src]="crossfadeHelper[0]?.thumbnailLink" (load)="loadingT = false">
+<img style="display: none;" [src]="crossfadeHelper[0]?.contentLink" (load)="loadingC = false">
 
 <ng-template #tagHoverMenu let-item="data">
   <div class="tippy-hover-menu-container">

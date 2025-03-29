@@ -14,13 +14,13 @@
   }
 
   .element-container {
-    height: $header-height;
+    height: $button-height;
     display: flex;
     gap: $gap;
 
     .element {
       flex: 1;
-      height: $header-height;
+      height: $button-height;
       box-sizing: border-box;
     }
   }
