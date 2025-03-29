@@ -37,7 +37,9 @@
         </div>
       </div>
       <div style="justify-content: end;">
-        <span *ngIf="target">{{ target.imageMediaMetadata.width }} x {{ target.imageMediaMetadata.height }}</span>
+        <div *ngIf="target" class="resolution-info">
+          <span style="white-space: nowrap; padding: 1rem;">{{ target.imageMediaMetadata.width }} x {{ target.imageMediaMetadata.height }}</span>
+        </div>
       </div>
     </div>
   </div>

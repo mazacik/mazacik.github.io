@@ -40,6 +40,19 @@
       display: flex;
       align-items: flex-end;
       justify-content: space-between;
+
+      .resolution-info {
+        width: $button-height;
+        height: $button-height;
+        min-width: $button-height;
+        min-height: $button-height;
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-end;
+        flex-direction: column;
+        box-sizing: border-box;
+        text-shadow: -1px 0 var(--color-text-shadow), 0 1px var(--color-text-shadow), 1px 0 var(--color-text-shadow), 0 -1px var(--color-text-shadow);
+      }
     }
 
     .tags {
