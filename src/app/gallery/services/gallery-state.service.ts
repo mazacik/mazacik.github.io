@@ -139,11 +139,9 @@ export class GalleryStateService {
       image.heart = imageProperties.heart;
       image.bookmark = imageProperties.bookmark;
       image.tagIds = imageProperties.tagIds || [];
-      image.likes = imageProperties.likes || 0;
     } else {
       if (this.settings.autoBookmark) image.bookmark = true;
       image.tagIds = [];
-      image.likes = 0;
     }
 
     return image;
@@ -161,8 +159,7 @@ export class GalleryStateService {
             id: image.id,
             heart: image.heart,
             bookmark: image.bookmark,
-            tagIds: image.tagIds,
-            likes: image.likes
+            tagIds: image.tagIds
           }
         }),
         groupProperties: this.groups.filter(group => group.images?.length > 1).map(group => {
@@ -176,7 +173,7 @@ export class GalleryStateService {
             name: tag.name,
             state: tag.state
           }
-        }),
+        }).sort((t1, t2) => t1.name.localeCompare(t2.name)),
         heartsFilter: this.heartsFilter,
         bookmarksFilter: this.bookmarksFilter,
         groupSizeFilterMin: this.groupSizeFilterMin,
@@ -294,18 +291,6 @@ export class GalleryStateService {
 
     this.refreshFilter(image);
     this.updateData();
-  }
-
-  public like(image: GalleryImage): void {
-    image.likes++;
-    this.updateData();
-  }
-
-  public dislike(image: GalleryImage): void {
-    if (image.likes > 0) {
-      image.likes--;
-      this.updateData();
-    }
   }
 
   public async delete(image: GalleryImage, archive: boolean, askForConfirmation: boolean = true): Promise<void> {

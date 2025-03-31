@@ -1,30 +1,26 @@
 <app-header></app-header>
 
-<!-- TODO Always render, reduce image resolution when reduceBandwidth -->
-<ng-container *ngIf="!applicationService.reduceBandwidth">
-  <div class="masonry-scroll-container">
-    <div class="masonry-container" (create)="onMasonryContainerCreate($event)">
-      <!-- TODO split styles -->
-      <div *ngFor="let image of masonryImages" @fade class="masonry-brick" [style]="'width: ' + image.width + 'px; height: ' + image.height + 'px; top: ' + image.top + 'px; left: ' + image.left + 'px; '" (click)="onImageClick(image)" [class.modifying-group]="stateService.editingGroupImages?.includes(image)">
-        <div class="brick-container">
-          <img [src]="image.thumbnailLink" (create)="onBrickCreate($event, image)" #imageElement (load)="imageElement.style.opacity = '1'">
-        </div>
-        <ng-container *ngIf="areBrickButtonsVisible()">
-          <div class="brick-header">
-            <i class="icon-button fa-heart" [ngClass]="image.heart ? 'fa-solid active' : 'fa-regular'" tp="Favorite" (click)="$event.stopPropagation(); stateService.toggleHeart(image);"></i>
-            <i class="icon-button fa-bookmark" [ngClass]="image.bookmark ? 'fa-solid active' : 'fa-regular'" tp="Bookmark" (click)="$event.stopPropagation(); stateService.toggleBookmark(image);"></i>
-            <i class="icon-button" tp="Like" (click)="$event.stopPropagation(); stateService.like(image);" (contextmenu)="$event.preventDefault(); stateService.dislike(image);">{{ image.likes }}</i>
-            <i *ngIf="image.group" class="icon-button active fa-solid fa-object-group" [tp]="groupButtonHoverMenu" [tpData]="image" tpVariation="hovermenu" (click)="$event.stopPropagation()"></i>
-          </div>
-          <div class="brick-footer">
-            <i class="icon-button fa-brands fa-google-drive" tp="Open in Google Drive" (click)="$event.stopPropagation(); googleService.openSearch(image.name);"></i>
-            <i class="icon-button fa-brands fa-yandex-international" tp="Open Yandex RIS" (click)="galleryService.openYandexReverseImageSearch($event, image)"></i>
-          </div>
-        </ng-container>
+<div class="masonry-scroll-container">
+  <div class="masonry-container" (create)="onMasonryContainerCreate($event)">
+    <!-- TODO split styles -->
+    <div *ngFor="let image of masonryImages" @fade class="masonry-brick" [style]="'width: ' + image.width + 'px; height: ' + image.height + 'px; top: ' + image.top + 'px; left: ' + image.left + 'px; '" (click)="onImageClick(image)" [class.modifying-group]="stateService.editingGroupImages?.includes(image)">
+      <div class="brick-container">
+        <img [src]="image.thumbnailLink" (create)="onBrickCreate($event, image)" #imageElement (load)="imageElement.style.opacity = '1'">
       </div>
+      <ng-container *ngIf="areBrickButtonsVisible()">
+        <div class="brick-header">
+          <i class="icon-button fa-heart" [ngClass]="image.heart ? 'fa-solid active' : 'fa-regular'" tp="Favorite" (click)="$event.stopPropagation(); stateService.toggleHeart(image);"></i>
+          <i class="icon-button fa-bookmark" [ngClass]="image.bookmark ? 'fa-solid active' : 'fa-regular'" tp="Bookmark" (click)="$event.stopPropagation(); stateService.toggleBookmark(image);"></i>
+          <i *ngIf="image.group" class="icon-button active fa-solid fa-object-group" [tp]="groupButtonHoverMenu" [tpData]="image" tpVariation="hovermenu" (click)="$event.stopPropagation()"></i>
+        </div>
+        <div class="brick-footer">
+          <i class="icon-button fa-brands fa-google-drive" tp="Open in Google Drive" (click)="$event.stopPropagation(); googleService.openSearch(image.name);"></i>
+          <i class="icon-button fa-brands fa-yandex-international" tp="Open Yandex RIS" (click)="galleryService.openYandexReverseImageSearch($event, image)"></i>
+        </div>
+      </ng-container>
     </div>
   </div>
-</ng-container>
+</div>
 
 <ng-template #groupButtonHoverMenu let-image="data">
   <div class="tippy-hover-menu-container row">

@@ -1,6 +1,6 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, ComponentRef, HostBinding, HostListener, Type, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, Component, ComponentRef, ElementRef, HostBinding, HostListener, Type, ViewChild, ViewContainerRef } from '@angular/core';
 import { DialogButton } from './dialog-button.class';
 import { DialogContent } from './dialog-content.class';
 
@@ -31,10 +31,6 @@ export class DialogBaseComponent<ResultType> implements AfterViewInit {
     return this.active();
   }
 
-  @HostBinding('class.bottom') get isBottom(): boolean {
-    return this.position == 'bottom';
-  }
-
   @HostBinding('@overlayFade') get isVisible(): string {
     return this.visible ? 'visible' : 'hidden';
   }
@@ -42,9 +38,8 @@ export class DialogBaseComponent<ResultType> implements AfterViewInit {
   public contentComponentType: Type<DialogContent<ResultType>>;
   public inputs: { [key: string]: unknown };
   public active: () => boolean;
-  public blurOverlay: boolean;
-  public position: 'center' | 'bottom';
 
+  @ViewChild('header') protected header: ElementRef<HTMLElement>;
   @ViewChild('content', { read: ViewContainerRef }) protected containerRef: ViewContainerRef;
 
   public result: Promise<ResultType>;
@@ -58,6 +53,8 @@ export class DialogBaseComponent<ResultType> implements AfterViewInit {
 
   ngAfterViewInit(): void {
     if (this.contentComponentType) {
+      console.log(this.contentComponentType.name);
+
       const contentRef: ComponentRef<DialogContent<ResultType>> = this.containerRef.createComponent(this.contentComponentType);
       this.contentInstance = contentRef.instance;
       this.contentInstance.resolve = this.resolve;
@@ -129,6 +126,58 @@ export class DialogBaseComponent<ResultType> implements AfterViewInit {
       }
 
       return button.iconClass;
+    }
+  }
+
+  @HostBinding('style.top.px')
+  private top: number;
+
+  @HostBinding('style.left.px')
+  private left: number;
+
+  private isMouseDown: boolean = false;
+  private mouseDownOffsetX: number;
+  private mouseDownOffsetY: number;
+  protected onHeaderMouseDown(event: MouseEvent): void {
+    if (event.buttons == 1) {
+      this.isMouseDown = true;
+      this.mouseDownOffsetX = event.offsetX;
+      this.mouseDownOffsetY = event.offsetY;
+      if ((this.top || this.top === 0) && (this.left || this.left === 0)) return;
+      const header: DOMRect = this.header.nativeElement.getBoundingClientRect();
+      this.top = header.top;
+      this.left = header.left;
+    }
+  }
+
+  @HostListener('document:mouseup', ['$event'])
+  protected onHeaderMouseUp(): void {
+    this.isMouseDown = false;
+  }
+
+  @HostListener('document:mousemove', ['$event'])
+  protected onHeaderMouseMove(event: MouseEvent): void {
+    event.preventDefault();
+    if (this.isMouseDown) {
+      const header: DOMRect = this.header.nativeElement.getBoundingClientRect();
+
+      const headerOffsetX: number = event.clientX - header.left;
+      if (event.movementX < 0 && headerOffsetX < this.mouseDownOffsetX) {
+        this.left = this.left + event.movementX;
+        if (this.left < 0) this.left = 0;
+      } else if (event.movementX > 0 && headerOffsetX > this.mouseDownOffsetX) {
+        this.left = this.left + event.movementX;
+        if (this.left + header.width > window.innerWidth - 1) this.left = window.innerWidth - header.width - 1;
+      }
+
+      const headerOffsetY: number = event.clientY - header.top;
+      if (event.movementY < 0 && headerOffsetY < this.mouseDownOffsetY) {
+        this.top = this.top + event.movementY;
+        if (this.top < 0) this.top = 0;
+      } else if (event.movementY > 0 && headerOffsetY > this.mouseDownOffsetY) {
+        this.top = this.top + event.movementY;
+        if (this.top + header.height > window.innerHeight) this.top = window.innerHeight - header.height;
+      }
     }
   }
 

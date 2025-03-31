@@ -1,6 +1,6 @@
 <ng-container *ngIf="contentInstance">
-  <div *ngIf="contentInstance.configuration.title" class="header">
-    <span>{{ contentInstance.configuration.title }}</span>
+  <div *ngIf="contentInstance.configuration.title" #header class="header" (mousedown)="onHeaderMouseDown($event)">
+    <span style="pointer-events: none;">{{ contentInstance.configuration.title }}</span>
     <i *ngIf="!contentInstance.configuration.hideTopRightCloseButton" class="icon-button fa-solid fa-times" (click)="close()"></i>
   </div>
 </ng-container>

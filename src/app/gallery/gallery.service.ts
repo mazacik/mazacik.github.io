@@ -3,9 +3,11 @@ import { TippyService } from "@ngneat/helipopper";
 import { DialogButton } from "../shared/components/dialog/dialog-button.class";
 import { DialogService } from "../shared/services/dialog.service";
 import { ArrayUtils } from "../shared/utils/array.utils";
+import { StringUtils } from "../shared/utils/string.utils";
 import { GroupOrderComponent } from "./dialogs/group-order/group-order.component";
 import { GalleryGroup } from "./model/gallery-group.class";
 import { GalleryImage } from "./model/gallery-image.class";
+import { Tag } from "./model/tag.interface";
 import { GalleryStateService } from "./services/gallery-state.service";
 
 @Injectable({
@@ -19,7 +21,14 @@ export class GalleryService {
     private tippyService: TippyService
   ) { }
 
+  public getTagListForInputTooltip(lowerCaseQueryCharacters: string): Tag[] {
+    if (ArrayUtils.isEmpty(this.stateService.tags)) return null;
+    return StringUtils.isEmpty(lowerCaseQueryCharacters) ? this.stateService.tags : this.stateService.tags.filter(tag => tag.lowerCaseName.startsWith(lowerCaseQueryCharacters));
+  }
+
   public editGroup(image?: GalleryImage): void {
+    if (this.stateService.editingGroupImages) return;
+
     let open: boolean;
     if (image) {
       if (image.group) {
@@ -40,7 +49,7 @@ export class GalleryService {
     this.stateService.refreshFilter();
 
     const buttons: DialogButton[] = [{ text: () => 'Save Group: ' + this.stateService.editingGroupImages?.length + ' images', resolveValue: true }, { iconClass: () => 'fa-solid fa-times' }];
-    this.dialogService.create<boolean>(null, { buttons: buttons }, false, 'bottom').then(success => {
+    this.dialogService.create<boolean>(null, { buttons: buttons }).then(success => {
       if (success) {
         if (this.stateService.editingGroupImages.length > 1) {
           if (image?.group) {

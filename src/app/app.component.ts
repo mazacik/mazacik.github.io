@@ -35,7 +35,7 @@ export class AppComponent {
   }
 
   protected isBlurOverlayVisible(): boolean {
-    return this.applicationService.loading.value || ArrayUtils.getLast(this.dialogService.stack)?.blurOverlay;
+    return this.applicationService.loading.value;
   }
 
   protected getLoadingBarColor(): string {

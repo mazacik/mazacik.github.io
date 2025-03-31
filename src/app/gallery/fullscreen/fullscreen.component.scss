@@ -99,6 +99,7 @@
     justify-content: center;
     position: absolute;
     box-sizing: border-box;
+    user-select: none;
 
     .fullscreen-content {
       width: 100%;

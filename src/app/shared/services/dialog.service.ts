@@ -41,14 +41,14 @@ export class DialogService {
     return this.create(InputDialogComponent, { title, placeholder, defaultValue, positiveButtonText });
   }
 
-  public create<ResultType>(contentComponentType: Type<DialogContent<ResultType>>, inputs?: { [key: string]: unknown }, blurOverlay: boolean = true, position: 'center' | 'bottom' = 'center'): Promise<ResultType> {
+  public create<ResultType>(contentComponentType: Type<DialogContent<ResultType>>, inputs?: { [key: string]: unknown }): Promise<ResultType> {
+    if (this.stack.some(instance => instance.contentComponentType == contentComponentType)) return;
+
     const baseRef: ComponentRef<DialogBaseComponent<ResultType>> = createComponent(DialogBaseComponent<ResultType>, { environmentInjector: this.injector });
     const baseInstance: DialogBaseComponent<ResultType> = baseRef.instance;
 
     baseInstance.contentComponentType = contentComponentType;
     baseInstance.inputs = inputs;
-    baseInstance.blurOverlay = blurOverlay;
-    baseInstance.position = position;
     baseInstance.active = () => ArrayUtils.isLast(this.stack, baseInstance);
 
     baseInstance.result.then(() => {
