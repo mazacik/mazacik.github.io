@@ -1,11 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, effect } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Delay } from './shared/classes/delay.class';
 import { fade } from './shared/constants/animations.constants';
 import { ApplicationService } from './shared/services/application.service';
 import { DialogService } from './shared/services/dialog.service';
-import { ArrayUtils } from './shared/utils/array.utils';
 
 @Component({
   selector: 'app-root',
@@ -27,21 +26,21 @@ export class AppComponent {
     protected dialogService: DialogService
   ) {
     this.applicationService.initTheme();
-    this.applicationService.changes.subscribe(changes => {
-      if (changes === false) {
+    effect(() => {
+      if (this.applicationService.changes()) {
         this.hideLoadingBarDelay.restart();
       }
     });
   }
 
   protected isBlurOverlayVisible(): boolean {
-    return this.applicationService.loading.value || ArrayUtils.getLast(this.dialogService.stack)?.blurOverlay;
+    return this.applicationService.loading();
   }
 
   protected getLoadingBarColor(): string {
-    if (this.applicationService.changes.value) {
+    if (this.applicationService.changes()) {
       return 'orange';
-    } else if (this.applicationService.errors.value) {
+    } else if (this.applicationService.errors()) {
       return 'red';
     } else if (this.hideLoadingBarDelay.isActive()) {
       return 'limegreen';

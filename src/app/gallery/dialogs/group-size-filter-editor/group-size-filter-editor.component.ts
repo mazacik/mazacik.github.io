@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DialogConfiguration } from 'src/app/shared/components/dialog/dialog-configuration.class';
-import { DialogContent } from 'src/app/shared/components/dialog/dialog-content.class';
+import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
+import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
 import { GalleryStateService } from '../../services/gallery-state.service';
 
 @Component({
@@ -15,12 +15,12 @@ import { GalleryStateService } from '../../services/gallery-state.service';
   templateUrl: './group-size-filter-editor.component.html',
   styleUrls: ['./group-size-filter-editor.component.scss'],
 })
-export class GroupSizeFilterEditor extends DialogContent<boolean> implements OnInit {
+export class GroupSizeFilterEditor extends DialogContentBase<boolean> implements OnInit {
 
   min: number;
   max: number;
 
-  public configuration: DialogConfiguration = {
+  public configuration: DialogContainerConfiguration = {
     title: 'Group Size Filter Editor',
     buttons: [{
       text: () => 'Submit',
@@ -39,8 +39,8 @@ export class GroupSizeFilterEditor extends DialogContent<boolean> implements OnI
   }
 
   ngOnInit(): void {
-    this.min = this.stateService.groupSizeFilterMin;
-    this.max = this.stateService.groupSizeFilterMax;
+    this.min = this.stateService.filterGroupSizeMin;
+    this.max = this.stateService.filterGroupSizeMax;
   }
 
   canSubmit(): boolean {
@@ -50,8 +50,8 @@ export class GroupSizeFilterEditor extends DialogContent<boolean> implements OnI
   @HostListener('window:keydown.enter', ['$event'])
   submit(): void {
     if (this.canSubmit()) {
-      this.stateService.groupSizeFilterMin = this.min;
-      this.stateService.groupSizeFilterMax = this.max;
+      this.stateService.filterGroupSizeMin = this.min;
+      this.stateService.filterGroupSizeMax = this.max;
       this.resolve(true);
     }
   }

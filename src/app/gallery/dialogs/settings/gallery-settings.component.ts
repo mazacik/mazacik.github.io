@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, OnInit } from '@angular/core';
-import { DialogConfiguration } from 'src/app/shared/components/dialog/dialog-configuration.class';
-import { DialogContent } from 'src/app/shared/components/dialog/dialog-content.class';
+import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
+import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
 import { SwitchComponent } from 'src/app/shared/components/switch/switch.component';
 import { SwitchEvent } from 'src/app/shared/components/switch/switch.event';
 import { GallerySettings } from '../../model/gallery-settings.interface';
@@ -17,15 +17,15 @@ import { GalleryStateService } from '../../services/gallery-state.service';
   templateUrl: './gallery-settings.component.html',
   styleUrls: ['./gallery-settings.component.scss']
 })
-export class GallerySettingsComponent extends DialogContent<boolean> implements OnInit {
+export class GallerySettingsComponent extends DialogContentBase<boolean> implements OnInit {
 
-  public configuration: DialogConfiguration = {
+  public configuration: DialogContainerConfiguration = {
     title: 'Settings',
     buttons: [{
       text: () => 'OK',
       click: () => this.close()
     }],
-    hideTopRightCloseButton: true
+    hideHeaderCloseButton: true
   };
 
   private needsFilterRefresh: boolean = false;
@@ -59,10 +59,10 @@ export class GallerySettingsComponent extends DialogContent<boolean> implements 
   public close(): void {
     if (this.stateService.images) {
       if (this.needsFilterRefresh) {
-        this.stateService.refreshFilter();
+        this.stateService.updateFilters();
       }
       if (this.needsDataUpdate) {
-        this.stateService.updateData();
+        this.stateService.save();
       }
     }
     this.resolve(true);

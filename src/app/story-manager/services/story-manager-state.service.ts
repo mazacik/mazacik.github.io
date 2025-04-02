@@ -22,10 +22,10 @@ export class StoryManagerStateService {
   public initialize(data: Data): void {
     if (data && !ArrayUtils.isEmpty(data.stories)) {
       this.stories = data.stories;
-      this.currentStory = this.stories[0]; // TODO open either nothing (show message) or last opened
+      this.currentStory = this.stories[0];
 
       if (!ArrayUtils.isEmpty(this.currentStory.notes)) {
-        this.currentNote = ArrayUtils.getFirst(this.currentStory.notes); // TODO open either nothing (show message) or last opened
+        this.currentNote = ArrayUtils.getFirst(this.currentStory.notes);
       }
 
       for (const story of this.stories) {

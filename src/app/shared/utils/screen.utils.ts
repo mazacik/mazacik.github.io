@@ -1,6 +1,6 @@
 export abstract class ScreenUtils {
 
-  public static readonly MOUSE_MOVEMENT_TOLERANCE: number = 10;
+  private constructor() { }
 
   public static isLargeScreen(): boolean {
     return window.innerWidth > 1000;

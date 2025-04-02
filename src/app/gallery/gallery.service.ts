@@ -1,11 +1,15 @@
 import { Injectable } from "@angular/core";
 import { TippyService } from "@ngneat/helipopper";
-import { DialogButton } from "../shared/components/dialog/dialog-button.class";
 import { DialogService } from "../shared/services/dialog.service";
 import { ArrayUtils } from "../shared/utils/array.utils";
-import { GroupOrderComponent } from "./dialogs/group-order/group-order.component";
+import { FilterComponent } from "./dialogs/filter/filter.component";
+import { GalleryTagEditorComponent } from "./dialogs/gallery-tag-editor/gallery-tag-editor.component";
+import { GroupEditorComponent } from "./dialogs/group-editor/group-editor.component";
+import { ImageComparisonComponent } from "./dialogs/image-comparison/image-comparison.component";
+import { GallerySettingsComponent } from "./dialogs/settings/gallery-settings.component";
 import { GalleryGroup } from "./model/gallery-group.class";
 import { GalleryImage } from "./model/gallery-image.class";
+import { Tag } from "./model/tag.interface";
 import { GalleryStateService } from "./services/gallery-state.service";
 
 @Injectable({
@@ -14,75 +18,29 @@ import { GalleryStateService } from "./services/gallery-state.service";
 export class GalleryService {
 
   public constructor(
-    private stateService: GalleryStateService,
     private dialogService: DialogService,
+    private stateService: GalleryStateService,
     private tippyService: TippyService
   ) { }
 
-  public editGroup(image?: GalleryImage): void {
-    let open: boolean;
-    if (image) {
-      if (image.group) {
-        open = image.group.open;
-        image.group.open = true;
-        image.group.images.forEach(image => this.stateService.refreshFilter(image));
-        this.stateService.editingGroup = image.group;
-        this.stateService.editingGroupImages = image.group.images.slice();
-      } else {
-        this.stateService.editingGroup = null;
-        this.stateService.editingGroupImages = [image];
-      }
-    } else {
-      this.stateService.editingGroup = null;
-      this.stateService.editingGroupImages = [];
-    }
-
-    this.stateService.refreshFilter();
-
-    const buttons: DialogButton[] = [{ text: () => 'Save Group: ' + this.stateService.editingGroupImages?.length + ' images', resolveValue: true }, { iconClass: () => 'fa-solid fa-times' }];
-    this.dialogService.create<boolean>(null, { buttons: buttons }, false, 'bottom').then(success => {
-      if (success) {
-        if (this.stateService.editingGroupImages.length > 1) {
-          if (image?.group) {
-            image.group.images.forEach(image => image.group = null);
-            image.group.images = this.stateService.editingGroupImages;
-            image.group.images.forEach(image => image.group = image.group);
-          } else {
-            const group: GalleryGroup = new GalleryGroup();
-            group.images = this.stateService.editingGroupImages;
-            group.images.forEach(image => image.group = group);
-            this.stateService.groups.push(group);
-          }
-
-          this.stateService.updateData();
-        } else {
-          if (image?.group) {
-            image.group.images.forEach(image => image.group = null);
-            ArrayUtils.remove(this.stateService.groups, image.group);
-          }
-        }
-      }
-
-      if (image?.group) {
-        image.group.open = open;
-      }
-
-      this.stateService.editingGroup = null;
-      this.stateService.editingGroupImages = null;
-      this.stateService.refreshFilter();
-    });
+  public openImageComparison(): void {
+    this.dialogService.create(ImageComparisonComponent, { images: ArrayUtils.shuffle(this.stateService.images.slice()) });
   }
 
-  public reorderGroup(target: GalleryImage): void {
-    if (target && target.group) {
-      this.dialogService.create(GroupOrderComponent, { images: target.group.images.slice() }).then(images => {
-        if (images) {
-          target.group.images.sort((a, b) => images.indexOf(a) - images.indexOf(b));
-          this.stateService.refreshFilter();
-          this.stateService.updateData();
-        }
-      });
-    }
+  public openGroupEditor(group?: GalleryGroup): void {
+    this.dialogService.create(GroupEditorComponent, { sourceGroup: group });
+  }
+
+  public openFilter(): void {
+    this.dialogService.create(FilterComponent);
+  }
+
+  public openSettings(): void {
+    this.dialogService.create(GallerySettingsComponent);
+  }
+
+  public openTagEditor(tag?: Tag): void {
+    this.dialogService.create(GalleryTagEditorComponent, { tag: tag });
   }
 
   public openYandexReverseImageSearch(event: MouseEvent, target: GalleryImage): void {

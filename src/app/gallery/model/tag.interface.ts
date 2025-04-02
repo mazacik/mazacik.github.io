@@ -1,7 +1,8 @@
-export interface Tag {
+import { Filter } from "./filter.interface";
+
+export interface Tag extends Filter {
   id: string;
   name: string;
-  state: number;
 
   // transient
   lowerCaseName: string;

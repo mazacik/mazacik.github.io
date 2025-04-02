@@ -134,7 +134,7 @@ export class ActivityComponent implements OnInit {
         this.interval = setInterval(() => {
           if (--this.timeLeft < 1) {
             clearInterval(this.interval);
-            // TODO play sound
+            // maybe play sound
             this.currentView = 'result';
           }
         }, 1000);

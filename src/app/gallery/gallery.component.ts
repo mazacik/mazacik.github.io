@@ -24,7 +24,7 @@ export class GalleryComponent implements OnInit {
     private applicationService: ApplicationService,
     protected stateService: GalleryStateService
   ) {
-    this.applicationService.loading.next(true);
+    this.applicationService.loading.set(true);
   }
 
   ngOnInit(): void {

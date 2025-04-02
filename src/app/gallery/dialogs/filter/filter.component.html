@@ -1,0 +1,25 @@
+<!-- TODO wtf are these styles -->
+<div style="display: flex; gap: 1rem; justify-content: center;">
+  <div class="filter-list-row flex gap center" (click)="toggleFilter(stateService.filterFavorite)" (contextmenu)="$event.preventDefault(); toggleFilter(stateService.filterFavorite);">
+    <i class="fa-heart" [ngClass]="getFilterClass(stateService.filterFavorite, true)"></i>
+    <span [ngClass]="getFilterClass(stateService.filterFavorite)">Favorites</span>
+  </div>
+  <div class="filter-list-row flex gap center" (click)="toggleFilter(stateService.filterBookmark)" (contextmenu)="$event.preventDefault(); toggleFilter(stateService.filterBookmark);">
+    <i class="fa-bookmark" [ngClass]="getFilterClass(stateService.filterBookmark, true)"></i>
+    <span [ngClass]="getFilterClass(stateService.filterBookmark)">Bookmarks</span>
+  </div>
+</div>
+<div class="h-separator"></div>
+<div class="filter-list-container">
+  <span *ngFor="let tag of this.stateService.tags" class="filter-list-row" [ngClass]="getFilterClass(tag)" (click)="toggleFilter(tag)" (contextmenu)="$event.preventDefault(); galleryService.openTagEditor(tag);">{{ tag.name }}</span>
+</div>
+<div class="buttons-container">
+  <div class="button" style="flex: 1; gap: 0.33333333rem;" (click)="galleryService.openTagEditor()">
+    <i class="fa-solid fa-plus"></i>
+    <span>Create</span>
+  </div>
+  <div class="button" style="flex: 1; gap: 0.33333333rem;" [class.disabled]="!isActiveFilter()" (click)="clearFilters()">
+    <i class="fa-solid fa-filter-circle-xmark"></i>
+    <span>Clear</span>
+  </div>
+</div>

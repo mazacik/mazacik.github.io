@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, Input, OnInit } from '@angular/core';
-import { DialogConfiguration } from 'src/app/shared/components/dialog/dialog-configuration.class';
-import { DialogContent } from 'src/app/shared/components/dialog/dialog-content.class';
+import { Component, HostListener, OnInit } from '@angular/core';
+import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
+import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
 
 @Component({
   selector: 'app-message-dialog',
@@ -12,16 +12,15 @@ import { DialogContent } from 'src/app/shared/components/dialog/dialog-content.c
   templateUrl: 'message-dialog.component.html',
   styleUrls: ['./message-dialog.component.scss'],
 })
-export class MessageDialogComponent extends DialogContent<void> implements OnInit {
+export class MessageDialogComponent extends DialogContentBase<void> implements OnInit {
 
-  @Input() title: string;
-  @Input() messages: string[];
+  public override inputs: { title: string, messages: string[] };
 
-  public configuration: DialogConfiguration;
+  public configuration: DialogContainerConfiguration;
 
   ngOnInit(): void {
     this.configuration = {
-      title: this.title,
+      title: this.inputs.title,
       buttons: [{
         text: () => 'OK',
         click: () => this.resolve()

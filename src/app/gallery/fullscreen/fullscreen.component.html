@@ -1,22 +1,21 @@
 <ng-container *ngVar="stateService.target() as target">
   <div class="fullscreen-header">
     <div>
-      <i class="icon-button fa-solid fa-arrow-left" (click)="stateService.fullscreenVisible.set(false)"></i>
-      <i *ngIf="target?.group" class="icon-button fa-solid fa-arrows-spin" tp="Random Image from Group" (click)="setRandomGroupTarget()"></i>
-      <i class="icon-button fa-solid fa-shuffle" tp="Random Image" (click)="setRandomTarget()"></i>
+      <i class="icon-button fa-solid fa-arrow-left" tp="Back" tpPlacement="right" (click)="stateService.target.set(null)"></i>
+      <i *ngIf="target?.group" class="icon-button fa-solid fa-arrows-spin" tp="Random Image from Group" tpPlacement="right" (click)="setRandomGroupTarget()"></i>
+      <i class="icon-button fa-solid fa-shuffle" tp="Random Image" tpPlacement="right" (click)="setRandomTarget()"></i>
     </div>
     <div>
-      <i class="icon-button fa-heart" [ngClass]="target?.heart ? 'fa-solid' : 'fa-regular'" tp="Favorite" (click)="stateService.toggleHeart(target)"></i>
-      <i class="icon-button fa-bookmark" [ngClass]="target?.bookmark ? 'fa-solid' : 'fa-regular'" tp="Bookmark" (click)="stateService.toggleBookmark(target)"></i>
-      <span class="icon-button" tp="Like" (click)="stateService.like(target)" (contextmenu)="$event.preventDefault(); stateService.dislike(target);">{{ target?.likes }}</span>
+      <i class="icon-button fa-heart" [ngClass]="target?.heart ? 'fa-solid' : 'fa-regular'" tp="Favorite" tpPlacement="left" (click)="stateService.toggleFavorite(target)"></i>
+      <i class="icon-button fa-bookmark" [ngClass]="target?.bookmark ? 'fa-solid' : 'fa-regular'" tp="Bookmark" tpPlacement="left" (click)="stateService.toggleBookmark(target)"></i>
       <!-- <i *ngIf="video" class="icon-button fa-regular fa-image" tp="Snapshot" (click)="snapshot()"></i> -->
     </div>
   </div>
   <div class="fullscreen-footer">
     <div class="buttons">
       <div style="justify-content: start;">
-        <i class="icon-button fa-solid fa-box" tp="Archive" (click)="stateService.delete(target, true)"></i>
-        <i class="icon-button fa-solid fa-trash" tp="Delete" (click)="stateService.delete(target, false)"></i>
+        <i class="icon-button fa-solid fa-box" tp="Archive" tpPlacement="right" (click)="stateService.delete(target, true)"></i>
+        <i class="icon-button fa-solid fa-trash" tp="Delete" tpPlacement="right" (click)="stateService.delete(target, false)"></i>
       </div>
       <div class="flex column center">
         <div class="tags">
@@ -28,7 +27,7 @@
               <input style="position: absolute; border: 0; padding: 0; user-select: none; pointer-events: none;" [placeholder]="tagMatch?.name || (tagInput.value.length > 0 ? '' : 'Tag Search')">
               <input #tagInput id="tag-input" style="position: relative; border: 0; padding: 0;" (input)="onTagInput($event)" (keypress)="onTagInputSubmit($event)" autocomplete="off">
             </div>
-            <i class="icon-button fa-solid fa-plus" (click)="onTagInputSubmit()"></i>
+            <i class="icon-button fa-solid fa-plus" tp="Create Tag" (click)="onTagInputSubmit()"></i>
           </div>
         </div>
         <div *ngIf="target?.group" class="flex">

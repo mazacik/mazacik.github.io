@@ -2,7 +2,7 @@
   <span>Tags</span>
   <div class="h-separator"></div>
   <div *ngFor="let tag of currentTags" class="tag-container-current" [dragdrop]="tag" [dragdropParent]="currentTags" (click)="remove(tag)">
-    <i class="icon-button-smaller fa-solid fa-pen-to-square" (click)="editTag(tag); $event.stopPropagation();"></i>
+    <i class="icon-button-small fa-solid fa-pen-to-square" (click)="editTag(tag); $event.stopPropagation();"></i>
     <span>{{ tag }}</span>
     <i class="fa-solid fa-caret-right" style="justify-self: end;"></i>
   </div>
@@ -15,9 +15,9 @@
     <i class="fa-solid fa-caret-left"></i>
     <span>{{ tag }}</span>
     <div class="flex" style="justify-content: end;">
-      <i class="icon-button-smaller fa-solid fa-pen-to-square" (click)="editTag(tag); $event.stopPropagation();"></i>
-      <i class="icon-button-smaller fa-solid fa-trash" (click)="deleteTag(tag); $event.stopPropagation();"></i>
+      <i class="icon-button-small fa-solid fa-pen-to-square" (click)="editTag(tag); $event.stopPropagation();"></i>
+      <i class="icon-button-small fa-solid fa-trash" (click)="deleteTag(tag); $event.stopPropagation();"></i>
     </div>
   </div>
-  <i class="icon-button-smaller fa-solid fa-plus create-tag-button" (click)="editTag()"></i>
+  <i class="icon-button-small fa-solid fa-plus create-tag-button" (click)="editTag()"></i>
 </div>

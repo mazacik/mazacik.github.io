@@ -72,15 +72,6 @@
           }
         }
 
-        .brick-header {
-          top: 0;
-
-        }
-
-        .brick-footer {
-          bottom: 0;
-        }
-
         .brick-header,
         .brick-footer {
           width: 100%;
@@ -108,6 +99,15 @@
               pointer-events: all;
             }
           }
+        }
+
+        .brick-header {
+          top: 0;
+        }
+
+        .brick-footer {
+          bottom: 0;
+          padding-bottom: $gap * 2;
         }
       }
     }

@@ -32,14 +32,14 @@ export class StoryManagerComponent implements OnInit {
     protected applicationService: ApplicationService,
     protected stateService: StoryManagerStateService
   ) {
-    this.applicationService.loading.next(true);
+    this.applicationService.loading.set(true);
   }
 
   ngOnInit(): void {
     this.googleService.request().then(data => {
       if (data) {
         this.stateService.initialize(data);
-        this.applicationService.loading.next(false);
+        this.applicationService.loading.set(false);
       }
     });
   }

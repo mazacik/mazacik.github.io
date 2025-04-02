@@ -34,44 +34,40 @@ export class SwitchComponent implements OnInit {
   }
 
   nextState(event: SwitchEvent): void {
-    if (Math.abs(event.pageX - this.clickX) < ScreenUtils.MOUSE_MOVEMENT_TOLERANCE && Math.abs(event.pageY - this.clickY) < ScreenUtils.MOUSE_MOVEMENT_TOLERANCE) {
-      switch (this.state) {
-        case -1:
-          this.state = this.tri ? 0 : 1;
-          event.state = this.tri ? 0 : 1;
-          break;
-        case 0:
-          this.state = 1;
-          event.state = 1;
-          break;
-        case 1:
-          this.state = -1;
-          event.state = -1;
-          break;
-      }
-      this.stateChange.emit(event);
+    switch (this.state) {
+      case -1:
+        this.state = this.tri ? 0 : 1;
+        event.state = this.tri ? 0 : 1;
+        break;
+      case 0:
+        this.state = 1;
+        event.state = 1;
+        break;
+      case 1:
+        this.state = -1;
+        event.state = -1;
+        break;
     }
+    this.stateChange.emit(event);
   }
 
   previousState(event: SwitchEvent): void {
-    if (Math.abs(event.pageX - this.clickX) < ScreenUtils.MOUSE_MOVEMENT_TOLERANCE && Math.abs(event.pageY - this.clickY) < ScreenUtils.MOUSE_MOVEMENT_TOLERANCE) {
-      event.preventDefault();
-      switch (this.state) {
-        case -1:
-          this.state = 1;
-          event.state = 1;
-          break;
-        case 0:
-          this.state = -1;
-          event.state = -1;
-          break;
-        case 1:
-          this.state = this.tri ? 0 : -1;
-          event.state = this.tri ? 0 : -1;
-          break;
-      }
-      this.stateChange.emit(event);
+    event.preventDefault();
+    switch (this.state) {
+      case -1:
+        this.state = 1;
+        event.state = 1;
+        break;
+      case 0:
+        this.state = -1;
+        event.state = -1;
+        break;
+      case 1:
+        this.state = this.tri ? 0 : -1;
+        event.state = this.tri ? 0 : -1;
+        break;
     }
+    this.stateChange.emit(event);
   }
 
 }

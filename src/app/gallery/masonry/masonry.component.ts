@@ -9,6 +9,7 @@ import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 import { ScreenUtils } from '../../shared/utils/screen.utils';
 import { GalleryService } from '../gallery.service';
 import { HeaderComponent } from '../header/header.component';
+import { GalleryGroup } from '../model/gallery-group.class';
 import { GalleryGoogleDriveService } from '../services/gallery-google-drive.service';
 import { GalleryStateService } from '../services/gallery-state.service';
 
@@ -46,11 +47,7 @@ export class MasonryComponent {
     if (this.masonryContainer) {
       this.masonryImages = this.stateService.filter().filter(image => {
         if (image.group) {
-          if (image.group.open) {
-            return true;
-          } else {
-            return image == image.group.images.filter(groupImage => groupImage.passesFilter)[0];
-          }
+          return image == image.group.images.find(groupImage => groupImage.passesFilter);
         } else {
           return true;
         }
@@ -65,11 +62,11 @@ export class MasonryComponent {
       const columnCount: number = Math.max(Math.floor(containerWidth / minColumnWidth), 2);
       const columnWidth: number = (containerWidth - masonryGap * (columnCount - 1)) / columnCount;
 
-      const top: number[] = [];
-      const left: number[] = [];
+      const columnsTop: number[] = [];
+      const columnsLeft: number[] = [];
       for (let i = 0; i < columnCount; i++) {
-        top[i] = 0;
-        left[i] = i * (columnWidth + masonryGap);
+        columnsTop[i] = 0;
+        columnsLeft[i] = i * (columnWidth + masonryGap);
       }
 
       for (const image of this.masonryImages) {
@@ -77,56 +74,11 @@ export class MasonryComponent {
           image.width = columnWidth;
           image.height = columnWidth / image.aspectRatio;
         }
-      }
 
-      for (const image of this.masonryImages) {
-        if (image.group?.open) {
-          if (image == image.group.images.filter(image => image.passesFilter)[0]) {
-            const groupColumnIndexes: number[] = [this.getShortestColumnIndex(top)];
-            const groupColumnSpans: { top: number, bottom: number }[] = [];
-            for (let i = 0; i < columnCount; i++) groupColumnSpans.push({ top: 0, bottom: 0 });
-
-            for (const groupImage of image.group.images.filter(groupImage => groupImage.passesFilter)) {
-              const availableColumnIndexes: number[] = [...groupColumnIndexes];
-
-              const leftColumnIndex: number = Math.min(...groupColumnIndexes);
-              if (leftColumnIndex > 0) {
-                const imageMidpointIfExpandLeft: number = top[leftColumnIndex - 1] + groupImage.height * 0.5;
-                if (imageMidpointIfExpandLeft > groupColumnSpans[leftColumnIndex].top && imageMidpointIfExpandLeft < groupColumnSpans[leftColumnIndex].bottom) {
-                  availableColumnIndexes.push(leftColumnIndex - 1);
-                }
-              }
-
-              const rightColumnIndex: number = Math.max(...groupColumnIndexes);
-              if (rightColumnIndex < columnCount - 1) {
-                const imageMidpointIfExpandRight: number = top[rightColumnIndex + 1] + groupImage.height * 0.5;
-                if (imageMidpointIfExpandRight > groupColumnSpans[rightColumnIndex].top && imageMidpointIfExpandRight < groupColumnSpans[rightColumnIndex].bottom) {
-                  availableColumnIndexes.push(rightColumnIndex + 1);
-                }
-              }
-
-              const chosenColumnIndex: number = this.getShortestColumnIndex(top.map((columnTop, columnIndex) => availableColumnIndexes.includes(columnIndex) ? columnTop : 999999999));
-              ArrayUtils.push(groupColumnIndexes, chosenColumnIndex);
-
-              groupImage.top = top[chosenColumnIndex];
-              groupImage.left = left[chosenColumnIndex];
-
-              top[chosenColumnIndex] += groupImage.height + masonryGap;
-
-              if (groupColumnSpans[chosenColumnIndex].top == 0) {
-                groupColumnSpans[chosenColumnIndex].top = groupImage.top;
-                groupColumnSpans[chosenColumnIndex].bottom = groupImage.top + groupImage.height;
-              } else {
-                groupColumnSpans[chosenColumnIndex].bottom += masonryGap + groupImage.height;
-              }
-            }
-          }
-        } else {
-          const shortestColumnIndex: number = this.getShortestColumnIndex(top);
-          image.top = top[shortestColumnIndex];
-          image.left = left[shortestColumnIndex];
-          top[shortestColumnIndex] = top[shortestColumnIndex] + image.height + masonryGap;
-        }
+        const shortestColumnIndex: number = this.getShortestColumnIndex(columnsTop);
+        image.top = columnsTop[shortestColumnIndex];
+        image.left = columnsLeft[shortestColumnIndex];
+        columnsTop[shortestColumnIndex] = columnsTop[shortestColumnIndex] + image.height + masonryGap;
       }
     }
   }
@@ -149,27 +101,17 @@ export class MasonryComponent {
   }
 
   protected onImageClick(image: GalleryImage): void {
-    if (this.stateService.editingGroupImages) {
-      if (image.group && this.stateService.editingGroup != image.group) {
+    const groupEditorGroup: GalleryGroup = this.stateService.groupEditorGroup;
+    if (groupEditorGroup) {
+      if (image.group && groupEditorGroup != image.group) {
         return;
       }
 
-      ArrayUtils.toggle(this.stateService.editingGroupImages, image);
+      ArrayUtils.toggle(groupEditorGroup.images, image);
       return;
     }
 
     this.stateService.target.set(image);
-    this.stateService.fullscreenVisible.set(true);
-  }
-
-  protected onGroupToggleClick(event: MouseEvent, image: GalleryImage): void {
-    if (ScreenUtils.isLargeScreen()) {
-      event.stopPropagation();
-      if (image.group) {
-        image.group.open = !image.group.open;
-        this.stateService.refreshFilter();
-      }
-    }
   }
 
   protected onBrickCreate(elementRef: ElementRef, image: GalleryImage): void {
@@ -181,18 +123,13 @@ export class MasonryComponent {
     this.updateLayout();
   }
 
-  // TODO show tippy: Other images in group are filtered out
-  protected shouldDisableGroupToggleButton(image: GalleryImage): boolean {
-    return image.group && image.group.images.filter(groupImage => groupImage.passesFilter).length < 2;
-  }
-
   @HostListener('window:resize')
   protected onResize() {
     this.updateLayout();
   }
 
   protected areBrickButtonsVisible(): boolean {
-    return ScreenUtils.isLargeScreen() && !this.stateService.editingGroup;
+    return ScreenUtils.isLargeScreen() && !this.stateService.groupEditorGroup;
   }
 
 }

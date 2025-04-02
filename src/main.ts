@@ -40,7 +40,7 @@ bootstrapApplication(AppComponent, {
           arrow: true,
           animation: 'fade',
           trigger: 'click',
-          hideOnClick: false,
+          hideOnClick: true,
           offset: [0, 8],
           interactive: true
         },
@@ -48,7 +48,15 @@ bootstrapApplication(AppComponent, {
           arrow: true,
           animation: 'fade',
           trigger: 'mouseenter',
-          hideOnClick: false,
+          hideOnClick: true,
+          offset: [0, 8],
+          interactive: true
+        },
+        focusmenu: {
+          arrow: true,
+          animation: 'fade',
+          trigger: 'focus',
+          hideOnClick: true,
           offset: [0, 8],
           interactive: true
         }

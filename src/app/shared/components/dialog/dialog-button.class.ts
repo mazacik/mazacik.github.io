@@ -5,6 +5,5 @@ export interface DialogButton {
   hidden?: () => boolean;
   disabled?: () => boolean;
   click?: () => void;
-  resolveValue?: boolean;
 
 }
