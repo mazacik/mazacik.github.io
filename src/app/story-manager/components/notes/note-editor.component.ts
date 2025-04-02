@@ -23,7 +23,7 @@ export class NoteEditorComponent implements OnInit {
     private applicationService: ApplicationService,
     protected stateService: StoryManagerStateService
   ) {
-    this.applicationService.loading.next(true);
+    this.applicationService.loading.set(true);
   }
 
   ngOnInit(): void {

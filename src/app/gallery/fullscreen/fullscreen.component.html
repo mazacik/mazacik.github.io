@@ -1,12 +1,12 @@
 <ng-container *ngVar="stateService.target() as target">
   <div class="fullscreen-header">
     <div>
-      <i class="icon-button fa-solid fa-arrow-left" tp="Back" tpPlacement="right" (click)="stateService.fullscreenVisible.set(false)"></i>
+      <i class="icon-button fa-solid fa-arrow-left" tp="Back" tpPlacement="right" (click)="stateService.target.set(null)"></i>
       <i *ngIf="target?.group" class="icon-button fa-solid fa-arrows-spin" tp="Random Image from Group" tpPlacement="right" (click)="setRandomGroupTarget()"></i>
       <i class="icon-button fa-solid fa-shuffle" tp="Random Image" tpPlacement="right" (click)="setRandomTarget()"></i>
     </div>
     <div>
-      <i class="icon-button fa-heart" [ngClass]="target?.heart ? 'fa-solid' : 'fa-regular'" tp="Favorite" tpPlacement="left" (click)="stateService.toggleHeart(target)"></i>
+      <i class="icon-button fa-heart" [ngClass]="target?.heart ? 'fa-solid' : 'fa-regular'" tp="Favorite" tpPlacement="left" (click)="stateService.toggleFavorite(target)"></i>
       <i class="icon-button fa-bookmark" [ngClass]="target?.bookmark ? 'fa-solid' : 'fa-regular'" tp="Bookmark" tpPlacement="left" (click)="stateService.toggleBookmark(target)"></i>
       <!-- <i *ngIf="video" class="icon-button fa-regular fa-image" tp="Snapshot" (click)="snapshot()"></i> -->
     </div>

@@ -63,7 +63,7 @@ body.dark-theme {
   --color-secondary: #155197;
   --color-highlight: deepskyblue;
   --color-positive: yellowgreen;
-  --color-negative: lightcoral;
+  --color-negative: orangered;
   --color-overlay: rgba(0, 0, 0, 0.65);
 }
 
@@ -399,25 +399,13 @@ hr {
 }
 
 .icon-button,
-.icon-button-smaller {
-  width: $button-height;
-  height: $button-height;
-  min-width: $button-height;
-  min-height: $button-height;
+.icon-button-small {
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: $gap;
   text-shadow: -1px 0 var(--color-text-shadow), 0 1px var(--color-text-shadow), 1px 0 var(--color-text-shadow), 0 -1px var(--color-text-shadow);
   box-sizing: border-box;
-
-  &-smaller {
-    width: $button-height * 0.66;
-    height: $button-height * 0.66;
-    min-width: $button-height * 0.66;
-    min-height: $button-height * 0.66;
-    font-size: 10px;
-  }
 
   @media screen and (min-width:768px) {
     cursor: pointer;
@@ -431,6 +419,20 @@ hr {
       background-color: rgba(255, 255, 255, 0.3) !important;
     }
   }
+}
+
+.icon-button {
+  width: $button-height;
+  height: $button-height;
+  min-width: $button-height;
+  min-height: $button-height;
+}
+
+.icon-button-small {
+  width: $button-height * 0.66;
+  height: $button-height * 0.66;
+  min-width: $button-height * 0.66;
+  min-height: $button-height * 0.66;
 }
 
 span.button,

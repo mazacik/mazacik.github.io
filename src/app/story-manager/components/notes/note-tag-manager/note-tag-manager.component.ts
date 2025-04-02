@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, Input, OnInit } from '@angular/core';
-import { DialogConfiguration } from 'src/app/shared/components/dialog/dialog-configuration.class';
-import { DialogContent } from 'src/app/shared/components/dialog/dialog-content.class';
+import { Component, HostListener, OnInit } from '@angular/core';
+import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
+import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
 import { DragDropDirective } from 'src/app/shared/directives/dragdrop.directive';
 import { DialogService } from 'src/app/shared/services/dialog.service';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
@@ -19,14 +19,14 @@ import { StoryManagerGoogleDriveService } from 'src/app/story-manager/services/s
   templateUrl: './note-tag-manager.component.html',
   styleUrls: ['./note-tag-manager.component.scss']
 })
-export class NoteTagManagerComponent extends DialogContent<string[]> implements OnInit {
+export class NoteTagManagerComponent extends DialogContentBase<string[]> implements OnInit {
 
-  @Input() note: Note;
+  public override inputs: { note: Note };
 
   protected currentTags: string[];
   protected availableTags: string[];
 
-  public configuration: DialogConfiguration = {
+  public configuration: DialogContainerConfiguration = {
     title: 'Tag Manager',
     buttons: [{
       text: () => 'Cancel',
@@ -45,13 +45,13 @@ export class NoteTagManagerComponent extends DialogContent<string[]> implements 
   }
 
   ngOnInit(): void {
-    if (this.note.tags) {
-      this.currentTags = this.note.tags.slice();
+    if (this.inputs.note.tags) {
+      this.currentTags = this.inputs.note.tags.slice();
     } else {
       this.currentTags = [];
     }
 
-    this.availableTags = this.note.parent.noteTags.filter(tag => !this.currentTags.includes(tag));
+    this.availableTags = this.inputs.note.parent.noteTags.filter(tag => !this.currentTags.includes(tag));
   }
 
   protected add(tag: string): void {
@@ -69,7 +69,7 @@ export class NoteTagManagerComponent extends DialogContent<string[]> implements 
   protected editTag(tag?: string): void {
     this.dialogService.createInput('Tag', 'Tag Title', tag, 'OK').then(result => {
       if (!StringUtils.isEmpty(result)) {
-        if (this.note.parent.noteTags.includes(result)) return;
+        if (this.inputs.note.parent.noteTags.includes(result)) return;
         if (tag) {
           if (result != tag) {
             if (this.currentTags.includes(tag)) {
@@ -82,15 +82,15 @@ export class NoteTagManagerComponent extends DialogContent<string[]> implements 
               this.availableTags.sort((t1, t2) => t1.localeCompare(t2));
             }
 
-            ArrayUtils.remove(this.note.parent.noteTags, tag);
-            this.note.parent.noteTags.push(result);
-            this.note.parent.noteTags.sort((t1, t2) => t1.localeCompare(t2));
+            ArrayUtils.remove(this.inputs.note.parent.noteTags, tag);
+            this.inputs.note.parent.noteTags.push(result);
+            this.inputs.note.parent.noteTags.sort((t1, t2) => t1.localeCompare(t2));
           }
         } else {
           this.availableTags.push(result);
           this.availableTags.sort((t1, t2) => t1.localeCompare(t2));
-          this.note.parent.noteTags.push(result);
-          this.note.parent.noteTags.sort((t1, t2) => t1.localeCompare(t2));
+          this.inputs.note.parent.noteTags.push(result);
+          this.inputs.note.parent.noteTags.sort((t1, t2) => t1.localeCompare(t2));
         }
 
         this.googleService.update(true);
@@ -107,8 +107,8 @@ export class NoteTagManagerComponent extends DialogContent<string[]> implements 
           ArrayUtils.remove(this.availableTags, tag);
         }
 
-        this.note.parent.notes.forEach(note => ArrayUtils.remove(note.tags, tag));
-        ArrayUtils.remove(this.note.parent.noteTags, tag);
+        this.inputs.note.parent.notes.forEach(note => ArrayUtils.remove(note.tags, tag));
+        ArrayUtils.remove(this.inputs.note.parent.noteTags, tag);
         this.googleService.update(true);
       }
     });

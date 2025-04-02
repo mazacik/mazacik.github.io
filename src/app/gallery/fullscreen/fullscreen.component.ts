@@ -40,8 +40,9 @@ export class FullscreenComponent {
     protected dialogService: DialogService
   ) {
     effect(() => {
-      if (this.stateService.fullscreenVisible()) {
-        this.update(this.stateService.target());
+      const target: GalleryImage = this.stateService.target();
+      if (target) {
+        this.update(target);
       } else {
         this.crossfadeHelper.length = 0;
       }
@@ -72,15 +73,15 @@ export class FullscreenComponent {
 
   @HostListener('document:keydown', ['$event'])
   protected initKeybinds(event: KeyboardEvent): void {
-    if (this.dialogService.stack.length == 0) {
+    if (this.dialogService.dialogs.length == 0) {
       switch (event.code) {
         case 'Escape':
-          this.stateService.fullscreenVisible.update(value => !value);
+          this.stateService.target.set(null);
           return;
       }
 
       if (['BODY', 'VIDEO'].includes((event.target as HTMLElement).nodeName)) {
-        if (this.stateService.fullscreenVisible()) {
+        if (this.stateService.target()) {
           switch (event.code) {
             case 'KeyR':
               this.setRandomTarget();
@@ -170,7 +171,7 @@ export class FullscreenComponent {
   }
 
   protected createTag(): void {
-    this.dialogService.create(GalleryTagEditorComponent);
+    this.dialogService.create(GalleryTagEditorComponent, {});
   }
 
   protected tagMatch: Tag;

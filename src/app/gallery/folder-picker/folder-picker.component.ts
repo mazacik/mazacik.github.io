@@ -32,7 +32,7 @@ export class FolderPickerComponent implements OnInit {
     private googleService: GalleryGoogleDriveService,
     protected applicationService: ApplicationService
   ) {
-    this.applicationService.loading.next(true);
+    this.applicationService.loading.set(true);
   }
 
   async ngOnInit(): Promise<void> {
@@ -43,17 +43,17 @@ export class FolderPickerComponent implements OnInit {
     this.dataFiles = dataFolderFiles.filter(file => file.name.endsWith(this.SUFFIX_DATA_FILE));
     const helper: string[] = this.dataFiles.map(meta => meta.name.substring(0, meta.name.indexOf(this.SUFFIX_DATA_FILE)));
     this.folders = rootFolderFiles.filter(file => GoogleFileUtils.isFolder(file) && !helper.includes(file.name) && file.name != this.FOLDER_GALLERY_DATA);
-    this.applicationService.loading.next(false);
+    this.applicationService.loading.set(false);
   }
 
   protected onDataFileClick(dataFile: GoogleMetadata): void {
-    this.applicationService.loading.next(true);
+    this.applicationService.loading.set(true);
     this.googleService.dataFileId = dataFile.id;
     this.router.navigate(['/gallery']);
   }
 
   protected async onFolderClick(folder: GoogleMetadata): Promise<void> {
-    this.applicationService.loading.next(true);
+    this.applicationService.loading.set(true);
     const dataFile: GoogleMetadata = await this.googleService.createFile(folder.name + this.SUFFIX_DATA_FILE, [this.dataFolder.id], 'application/json');
     const archiveFolder: GoogleMetadata = await this.googleService.createFolder(folder.name + this.SUFFIX_ARCHIVE_FOLDER, this.dataFolder.id);
     this.googleService.dataFileId = dataFile.id;

@@ -8,7 +8,9 @@ import { ApplicationService } from "src/app/shared/services/application.service"
 import { DialogService } from "src/app/shared/services/dialog.service";
 import { ArrayUtils } from "src/app/shared/utils/array.utils";
 import { GoogleFileUtils } from "src/app/shared/utils/google-file.utils";
+import { GallerySettingsComponent } from "../dialogs/settings/gallery-settings.component";
 import { Data } from "../model/data.interface";
+import { Filter } from "../model/filter.interface";
 import { GallerySettings } from "../model/gallery-settings.interface";
 import { ImageProperties } from "../model/image-properties.interface";
 import { Tag } from "../model/tag.interface";
@@ -25,8 +27,6 @@ export class GalleryStateService {
   public archiveFolderId: string;
   public settings: GallerySettings;
 
-  public fullscreenVisible: WritableSignal<boolean> = signal(false);
-
   public readonly images: GalleryImage[] = [];
   public groups: GalleryGroup[];
   public filter: WritableSignal<GalleryImage[]> = signal([]);
@@ -34,13 +34,12 @@ export class GalleryStateService {
 
   public tags: Tag[];
 
-  public heartsFilter: number;
-  public bookmarksFilter: number;
-  public groupSizeFilterMin: number;
-  public groupSizeFilterMax: number;
+  public filterFavorite: Filter = {};
+  public filterBookmark: Filter = {};
+  public filterGroupSizeMin: Filter = {};
+  public filterGroupSizeMax: Filter = {};
 
-  public editingGroup: GalleryGroup;
-  public editingGroupImages: GalleryImage[];
+  public groupEditorGroup: GalleryGroup;
 
   public comparison: { [key: string]: string[] };
 
@@ -55,10 +54,10 @@ export class GalleryStateService {
     const data: Data = await this.googleService.getData();
     this.dataFolderId = data.dataFolderId;
     this.archiveFolderId = data.archiveFolderId;
-    this.heartsFilter = data.heartsFilter;
-    this.bookmarksFilter = data.bookmarksFilter;
-    this.groupSizeFilterMin = data.groupSizeFilterMin;
-    this.groupSizeFilterMax = data.groupSizeFilterMax;
+    this.filterFavorite.state = data.heartsFilter;
+    this.filterBookmark.state = data.bookmarksFilter;
+    this.filterGroupSizeMin.state = data.groupSizeFilterMin;
+    this.filterGroupSizeMax.state = data.groupSizeFilterMax;
     this.comparison = data.comparison;
     this.tags = data.tags;
     this.tags.forEach(tag => tag.lowerCaseName = tag.name.toLowerCase());
@@ -66,7 +65,7 @@ export class GalleryStateService {
     if (data.settings) {
       this.settings = data.settings;
     } else {
-      await this.dialogService.openSettings();
+      await this.dialogService.create(GallerySettingsComponent);
     }
 
     const recursionTracker: Set<Promise<void>> = new Set<Promise<void>>();
@@ -88,15 +87,15 @@ export class GalleryStateService {
     });
 
     // if (this.comparison && Object.keys(this.comparison).length > 0) {
-    //   // TODO clean comparison (remove missing entries)
+    //   // clean comparison (remove missing entries)
     //   const contenders: Contender<GalleryImage>[] = this.images.map(image => new Contender<GalleryImage>(image.id, image));
     //   contenders.forEach(contender => contender.directlyBetterThan = this.comparison[contender.id].map(directlyBetterThanId => contenders.find(c => c.id == directlyBetterThanId)));
     //   this.images = TournamentUtils.getLeaderboard(TournamentUtils.getFirst(contenders), contenders).map(contender => contender.object);
     // }
 
-    this.refreshFilter();
-    this.applicationService.loading.next(false);
-    this.updateData();
+    this.updateFilters();
+    this.applicationService.loading.set(false);
+    this.save();
   }
 
   private async processImages(data: Data, folderId: string, imageCollector: GalleryImage[], recursionTracker: Set<Promise<void>>): Promise<void> {
@@ -147,8 +146,8 @@ export class GalleryStateService {
     return image;
   }
 
-  public updateData(instant: boolean = false): void {
-    this.applicationService.changes.next(true);
+  public save(instant: boolean = false): void {
+    this.applicationService.changes.set(true);
     this.updateDelay.restart(() => {
       this.googleService.updateContent(this.googleService.dataFileId, {
         dataFolderId: this.dataFolderId,
@@ -174,38 +173,26 @@ export class GalleryStateService {
             state: tag.state
           }
         }).sort((t1, t2) => t1.name.localeCompare(t2.name)),
-        heartsFilter: this.heartsFilter,
-        bookmarksFilter: this.bookmarksFilter,
-        groupSizeFilterMin: this.groupSizeFilterMin,
-        groupSizeFilterMax: this.groupSizeFilterMax,
+        heartsFilter: this.filterFavorite,
+        bookmarksFilter: this.filterBookmark,
+        groupSizeFilterMin: this.filterGroupSizeMin,
+        groupSizeFilterMax: this.filterGroupSizeMax,
         comparison: this.comparison
       } as Data).then(metadata => {
         if (!metadata) {
-          this.applicationService.errors.next(true);
+          this.applicationService.errors.set(true);
         }
       }).finally(() => {
-        this.applicationService.changes.next(false);
+        this.applicationService.changes.set(false);
       });
     });
 
     if (instant) this.updateDelay.complete();
   }
 
-  public refreshFilter(forImage?: GalleryImage): void {
-    forImage ? this.actuallyRefreshFilter(forImage) : this.images.forEach(image => this.actuallyRefreshFilter(image));
+  public updateFilters(image?: GalleryImage): void {
+    image ? image.passesFilter = this.doesPassFilter(image) : this.images.forEach(image => image.passesFilter = this.doesPassFilter(image));
     this.filter.set(this.images.filter(image => image.passesFilter));
-  }
-
-  private actuallyRefreshFilter(image: GalleryImage): void {
-    if (image.group) {
-      if (image.group.open) {
-        image.passesFilter = this.doesPassFilter(image);
-      } else {
-        image.group.images.forEach(groupImage => groupImage.passesFilter = this.doesPassFilter(groupImage));
-      }
-    } else {
-      image.passesFilter = this.doesPassFilter(image);
-    }
   }
 
   private doesPassFilter(image: GalleryImage): boolean {
@@ -213,19 +200,19 @@ export class GalleryStateService {
       return false;
     }
 
-    if (this.heartsFilter == -1 && image.heart) {
+    if (this.filterFavorite.state == -1 && image.heart) {
       return false;
     }
 
-    if (this.heartsFilter == 1 && !image.heart) {
+    if (this.filterFavorite.state == 1 && !image.heart) {
       return false;
     }
 
-    if (this.bookmarksFilter == -1 && image.bookmark) {
+    if (this.filterBookmark.state == -1 && image.bookmark) {
       return false;
     }
 
-    if (this.bookmarksFilter == 1 && !image.bookmark) {
+    if (this.filterBookmark.state == 1 && !image.bookmark) {
       return false;
     }
 
@@ -233,16 +220,16 @@ export class GalleryStateService {
       return false;
     }
 
-    if (this.editingGroup && image.group && this.editingGroup != image.group) {
+    if (this.groupEditorGroup && image.group && !this.groupEditorGroup.images.includes(image)) {
       return false;
     }
 
     const groupSize: number = image.group ? image.group.images.length : 0;
-    if (groupSize < this.groupSizeFilterMin) {
+    if (groupSize < this.filterGroupSizeMin.state) {
       return false;
     }
 
-    if (groupSize > this.groupSizeFilterMax) {
+    if (groupSize > this.filterGroupSizeMax.state) {
       return false;
     }
 
@@ -261,16 +248,16 @@ export class GalleryStateService {
     return true;
   }
 
-  public toggleHeart(image: GalleryImage): void {
+  public toggleFavorite(image: GalleryImage): void {
     image.heart = !image.heart;
-    this.refreshFilter(image);
-    this.updateData();
+    this.updateFilters(image);
+    this.save();
   }
 
   public toggleBookmark(image: GalleryImage): void {
     image.bookmark = !image.bookmark;
-    this.refreshFilter(image);
-    this.updateData();
+    this.updateFilters(image);
+    this.save();
   }
 
   public addTag(image: GalleryImage, tag: string): void {
@@ -278,8 +265,8 @@ export class GalleryStateService {
       image.tagIds.push(tag);
     }
 
-    this.refreshFilter(image);
-    this.updateData();
+    this.updateFilters(image);
+    this.save();
   }
 
   public toggleTag(image: GalleryImage, tag: string): void {
@@ -289,8 +276,8 @@ export class GalleryStateService {
       image.tagIds.push(tag)
     }
 
-    this.refreshFilter(image);
-    this.updateData();
+    this.updateFilters(image);
+    this.save();
   }
 
   public async delete(image: GalleryImage, archive: boolean, askForConfirmation: boolean = true): Promise<void> {
@@ -298,7 +285,7 @@ export class GalleryStateService {
       return;
     }
 
-    this.applicationService.loading.next(true);
+    this.applicationService.loading.set(true);
 
     if (archive) {
       await this.googleService.move(image.id, image.parentFolderId, this.archiveFolderId);
@@ -326,10 +313,10 @@ export class GalleryStateService {
     }
 
     this.filter.set(this.images.filter(image => image.passesFilter));
-    this.fullscreenVisible.set(false);
+    this.target.set(null);
 
-    this.updateData(true);
-    this.applicationService.loading.next(false);
+    this.save(true);
+    this.applicationService.loading.set(false);
   }
 
   public getTag(tagId: string): Tag {

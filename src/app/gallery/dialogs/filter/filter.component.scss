@@ -5,17 +5,22 @@
   flex-direction: column;
   gap: 1rem;
   padding: 1rem;
+  user-select: none;
 
   .filter-list-container {
-    width: max-content;
     max-height: 50vh;
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
     column-gap: 1rem;
     row-gap: $gap;
+    overflow: auto;
+
+    @media screen and (min-width:768px) {
+      width: max-content;
+    }
   }
-  
+
   .filter-list-row {
     cursor: pointer;
     white-space: nowrap;

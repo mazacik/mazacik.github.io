@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, Input, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DialogConfiguration } from 'src/app/shared/components/dialog/dialog-configuration.class';
-import { DialogContent } from 'src/app/shared/components/dialog/dialog-content.class';
+import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
+import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
 import { StringUtils } from '../../utils/string.utils';
 
 @Component({
@@ -15,26 +15,23 @@ import { StringUtils } from '../../utils/string.utils';
   templateUrl: 'input-dialog.component.html',
   styleUrls: ['./input-dialog.component.scss'],
 })
-export class InputDialogComponent extends DialogContent<string> implements OnInit {
+export class InputDialogComponent extends DialogContentBase<string> implements OnInit {
 
-  @Input() title: string;
-  @Input() placeholder: string;
-  @Input() defaultValue: string;
-  @Input() positiveButtonText: string;
+  public override inputs: { title: string, placeholder: string, defaultValue: string, positiveButtonText: string };
 
-  public configuration: DialogConfiguration;
+  public configuration: DialogContainerConfiguration;
 
   protected value: string;
 
   ngOnInit(): void {
-    this.value = this.defaultValue;
+    this.value = this.inputs.defaultValue;
     this.configuration = {
-      title: this.title,
+      title: this.inputs.title,
       buttons: [{
         text: () => 'Cancel',
         click: () => this.resolve(null)
       }, {
-        text: () => this.positiveButtonText,
+        text: () => this.inputs.positiveButtonText,
         disabled: () => !this.canSubmit(),
         click: () => {
           if (this.canSubmit()) {

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, Input, OnInit } from '@angular/core';
-import { DialogConfiguration } from 'src/app/shared/components/dialog/dialog-configuration.class';
-import { DialogContent } from 'src/app/shared/components/dialog/dialog-content.class';
+import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
+import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
 
 @Component({
   selector: 'app-confirmation-dialog',
@@ -12,23 +12,20 @@ import { DialogContent } from 'src/app/shared/components/dialog/dialog-content.c
   templateUrl: 'confirmation-dialog.component.html',
   styleUrls: ['./confirmation-dialog.component.scss'],
 })
-export class ConfirmationDialogComponent extends DialogContent<boolean> implements OnInit {
+export class ConfirmationDialogComponent extends DialogContentBase<boolean> implements OnInit {
 
-  @Input() title: string;
-  @Input() messages: string[];
-  @Input() positiveButtonText: string;
-  @Input() negativeButtonText: string;
+  public override inputs: { title: string, messages: string[], positiveButtonText: string, negativeButtonText: string };
 
-  public configuration: DialogConfiguration;
+  public configuration: DialogContainerConfiguration;
 
   ngOnInit(): void {
     this.configuration = {
-      title: this.title,
+      title: this.inputs.title,
       buttons: [{
-        text: () => this.positiveButtonText,
+        text: () => this.inputs.positiveButtonText,
         click: () => this.resolve(true)
       }, {
-        text: () => this.negativeButtonText,
+        text: () => this.inputs.negativeButtonText,
         click: () => this.resolve(false)
       }, {
         text: () => 'Cancel',

@@ -3,29 +3,20 @@
 <div class="masonry-scroll-container">
   <div class="masonry-container" (create)="onMasonryContainerCreate($event)">
     <!-- TODO split styles -->
-    <div *ngFor="let image of masonryImages" @fade class="masonry-brick" [style]="'width: ' + image.width + 'px; height: ' + image.height + 'px; top: ' + image.top + 'px; left: ' + image.left + 'px; '" (click)="onImageClick(image)" [class.modifying-group]="stateService.editingGroupImages?.includes(image)">
+    <div *ngFor="let image of masonryImages" @fade class="masonry-brick" [style]="'width: ' + image.width + 'px; height: ' + image.height + 'px; top: ' + image.top + 'px; left: ' + image.left + 'px; '" (click)="onImageClick(image)" [class.modifying-group]="stateService.groupEditorGroup?.images.includes(image)">
       <div class="brick-container">
         <img [src]="image.thumbnailLink" (create)="onBrickCreate($event, image)" #imageElement (load)="imageElement.style.opacity = '1'">
       </div>
       <ng-container *ngIf="areBrickButtonsVisible()">
         <div class="brick-header">
-          <i class="icon-button fa-heart" [ngClass]="image.heart ? 'fa-solid active' : 'fa-regular'" tp="Favorite" (click)="$event.stopPropagation(); stateService.toggleHeart(image);"></i>
+          <i class="icon-button fa-heart" [ngClass]="image.heart ? 'fa-solid active' : 'fa-regular'" tp="Favorite" (click)="$event.stopPropagation(); stateService.toggleFavorite(image);"></i>
           <i class="icon-button fa-bookmark" [ngClass]="image.bookmark ? 'fa-solid active' : 'fa-regular'" tp="Bookmark" (click)="$event.stopPropagation(); stateService.toggleBookmark(image);"></i>
-          <i *ngIf="image.group" class="icon-button active fa-solid fa-object-group" [tp]="groupButtonHoverMenu" [tpData]="image" tpVariation="hovermenu" (click)="$event.stopPropagation()"></i>
         </div>
         <div class="brick-footer">
           <i class="icon-button fa-brands fa-google-drive" tp="Open in Google Drive" (click)="$event.stopPropagation(); googleService.openSearch(image.name);"></i>
-          <i class="icon-button fa-brands fa-yandex-international" tp="Open Yandex RIS" (click)="galleryService.openYandexReverseImageSearch($event, image)"></i>
+          <i class="icon-button fa-brands fa-yandex-international" tp="Open Yandex RIS" (click)="$event.stopPropagation(); galleryService.openYandexReverseImageSearch($event, image)"></i>
         </div>
       </ng-container>
     </div>
   </div>
 </div>
-
-<ng-template #groupButtonHoverMenu let-image="data">
-  <div class="tippy-hover-menu-container row">
-    <i class="icon-button fa-solid" [ngClass]="image.group.open ? 'fa-down-left-and-up-right-to-center' : 'fa-up-right-and-down-left-from-center'" [class.disabled]="shouldDisableGroupToggleButton(image)" [tp]="image.group.open ? 'Collapse Group' : 'Expand Group'" (click)="onGroupToggleClick($event, image)"></i>
-    <i class="icon-button fa-solid fa-plus-minus" tp="Edit Group" (click)="galleryService.editGroup(image)"></i>
-    <i class="icon-button fa-solid fa-right-left" tp="Reorder Group" (click)="galleryService.reorderGroup(image)"></i>
-  </div>
-</ng-template>

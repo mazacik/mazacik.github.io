@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { GalleryImage } from 'src/app/gallery/model/gallery-image.class';
 import { Contender } from 'src/app/shared/classes/contender.class';
 import { Tournament } from 'src/app/shared/classes/tournament.class';
-import { DialogConfiguration } from 'src/app/shared/components/dialog/dialog-configuration.class';
-import { DialogContent } from 'src/app/shared/components/dialog/dialog-content.class';
+import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
+import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
 import { GalleryStateService } from '../../services/gallery-state.service';
 
 @Component({
@@ -16,13 +16,13 @@ import { GalleryStateService } from '../../services/gallery-state.service';
   templateUrl: './image-comparison.component.html',
   styleUrls: ['./image-comparison.component.scss']
 })
-export class ImageComparisonComponent extends DialogContent<boolean> implements OnInit {
+export class ImageComparisonComponent extends DialogContentBase<boolean> implements OnInit {
 
-  @Input() images: GalleryImage[];
+  public override inputs: { images: GalleryImage[] };
 
   tournament: Tournament<GalleryImage>;
 
-  configuration: DialogConfiguration = {
+  configuration: DialogContainerConfiguration = {
     title: 'Image Comparison',
     buttons: [{
       text: () => 'Reset',
@@ -40,7 +40,7 @@ export class ImageComparisonComponent extends DialogContent<boolean> implements 
   }
 
   ngOnInit(): void {
-    this.tournament = new Tournament(this.images, image => image.id, this.stateService.comparison);
+    this.tournament = new Tournament(this.inputs.images, image => image.id, this.stateService.comparison);
   }
 
   protected onImageClick(winner: Contender<GalleryImage>, loser: Contender<GalleryImage>): void {
@@ -58,7 +58,7 @@ export class ImageComparisonComponent extends DialogContent<boolean> implements 
     }
 
     this.stateService.comparison = comparison;
-    this.stateService.updateData(true);
+    this.stateService.save(true);
     this.resolve(false);
   }
 

@@ -6,7 +6,7 @@ import { DocumentData, Firestore, collection, deleteDoc, doc, getDocs, setDoc } 
 })
 export class FirestoreService {
 
-  // TODO https://firebase.google.com/docs/firestore/query-data/listen
+  // https://firebase.google.com/docs/firestore/query-data/listen
 
   private cache: { [key: string]: DocumentData[] } = {};
 

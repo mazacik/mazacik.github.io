@@ -1,0 +1,19 @@
+<ng-container *ngIf="contentComponentInstance">
+  <div class="glass-effect"></div>
+  <div *ngIf="!contentComponentInstance.configuration.hideClickOverlay" class="overlay-effect" #overlay (click)="overlayClick()"></div>
+  <div *ngIf="contentComponentInstance.configuration.title" #header class="header" (mousedown)="onHeaderMouseDown($event, header)">
+    <span class="header-title">{{ contentComponentInstance.configuration.title }}</span>
+    <i *ngIf="!contentComponentInstance.configuration.hideHeaderCloseButton" class="icon-button fa-solid fa-times" (click)="close()"></i>
+  </div>
+</ng-container>
+<div *ngIf="contentComponentType" class="content">
+  <ng-container #content></ng-container>
+</div>
+<div *ngIf="contentComponentInstance" class="buttons">
+  <ng-container *ngFor="let button of contentComponentInstance.configuration.buttons">
+    <ng-container *ngIf="!isHidden(button)">
+      <i *ngIf="button.iconClass" [class]="'icon-button ' + getIconClass(button)" [class.disabled]="isDisabled(button)" (click)="button.click && button.click()"></i>
+      <div *ngIf="button.text" class="button" [class.disabled]="isDisabled(button)" (click)="button.click && button.click()">{{ getText(button) }}</div>
+    </ng-container>
+  </ng-container>
+</div>

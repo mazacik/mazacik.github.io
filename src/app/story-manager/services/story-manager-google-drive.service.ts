@@ -28,7 +28,7 @@ export class StoryManagerGoogleDriveService extends BaseGoogleDriveService {
   public request(): Promise<Data> {
     const contentPromise: Promise<Data> = this.getContent<Data>(this.FILE_ID);
     contentPromise.catch(error => {
-      this.applicationService.errors.next(true);
+      this.applicationService.errors.set(true);
       this.dialogService.createMessage('Error', ['Google Drive Error, check console.']);
       console.log(error);
     });
@@ -36,17 +36,17 @@ export class StoryManagerGoogleDriveService extends BaseGoogleDriveService {
   }
 
   public update(instant: boolean = false): void {
-    this.applicationService.changes.next(true);
+    this.applicationService.changes.set(true);
 
     const updateContent = () => {
       this.updateContent(this.FILE_ID, JSON.stringify(this.stateService.serialize())).then(() => {
-        this.applicationService.errors.next(false);
+        this.applicationService.errors.set(false);
       }).catch(error => {
-        this.applicationService.errors.next(true);
+        this.applicationService.errors.set(true);
         this.dialogService.createMessage('Error', ['Google Drive Error, check console.']);
         console.log(error);
       }).finally(() => {
-        this.applicationService.changes.next(false);
+        this.applicationService.changes.set(false);
       });
     }
 
