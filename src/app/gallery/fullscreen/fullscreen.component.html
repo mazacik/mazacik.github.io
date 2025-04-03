@@ -6,8 +6,8 @@
       <i class="icon-button fa-solid fa-shuffle" tp="Random Image" tpPlacement="right" (click)="setRandomTarget()"></i>
     </div>
     <div>
-      <i class="icon-button fa-heart" [ngClass]="target?.heart ? 'fa-solid' : 'fa-regular'" tp="Favorite" tpPlacement="left" (click)="stateService.toggleFavorite(target)"></i>
-      <i class="icon-button fa-bookmark" [ngClass]="target?.bookmark ? 'fa-solid' : 'fa-regular'" tp="Bookmark" tpPlacement="left" (click)="stateService.toggleBookmark(target)"></i>
+      <i class="icon-button fa-heart" [ngClass]="target?.heart ? 'fa-solid' : 'fa-regular'" tp="Favorite" tpPlacement="left" (click)="stateService.toggleFavorite(target, true)"></i>
+      <i class="icon-button fa-bookmark" [ngClass]="target?.bookmark ? 'fa-solid' : 'fa-regular'" tp="Bookmark" tpPlacement="left" (click)="stateService.toggleBookmark(target, true)"></i>
       <!-- <i *ngIf="video" class="icon-button fa-regular fa-image" tp="Snapshot" (click)="snapshot()"></i> -->
     </div>
   </div>
@@ -18,21 +18,12 @@
         <i class="icon-button fa-solid fa-trash" tp="Delete" tpPlacement="right" (click)="stateService.delete(target, false)"></i>
       </div>
       <div class="flex column center">
-        <div class="tags">
-          <div *ngFor="let tagId of target?.tagIds" class="tag-bubble" [tp]="tagHoverMenu" [tpData]="tagId" tpVariation="hovermenu">
-            <span>{{ stateService.getTag(tagId).name }}</span>
-          </div>
-          <div class="tag-search-container" style="display: flex; position: relative;">
-            <div style="position: relative; padding-left: 1rem;">
-              <input style="position: absolute; border: 0; padding: 0; user-select: none; pointer-events: none;" [placeholder]="tagMatch?.name || (tagInput.value.length > 0 ? '' : 'Tag Search')">
-              <input #tagInput id="tag-input" style="position: relative; border: 0; padding: 0;" (input)="onTagInput($event)" (keypress)="onTagInputSubmit($event)" autocomplete="off">
-            </div>
-            <i class="icon-button fa-solid fa-plus" tp="Create Tag" (click)="onTagInputSubmit()"></i>
-          </div>
-        </div>
         <div *ngIf="target?.group" class="flex">
           <i [class.disabled]="isFirstGroupImage(target)" class="icon-button fa-solid fa-arrow-left" (click)="moveTargetGroupLeft(target)"></i>
           <i [class.disabled]="isLastGroupImage(target)" class="icon-button fa-solid fa-arrow-right" (click)="moveTargetGroupRight(target)"></i>
+        </div>
+        <div class="flex column center">
+          <i class="icon-button fa-solid fa-tags" tp="Tags" (click)="galleryService.openTagManager(target)"></i>
         </div>
       </div>
       <div style="justify-content: end;">
@@ -51,10 +42,3 @@
 
 <img style="display: none;" [src]="crossfadeHelper[0]?.thumbnailLink" (load)="loadingT = false">
 <img style="display: none;" [src]="crossfadeHelper[0]?.contentLink" (load)="loadingC = false">
-
-<ng-template #tagHoverMenu let-item="data">
-  <div class="tippy-hover-menu-container">
-    <span class="tippy-hover-menu-button" (click)="editTag(item)">Edit</span>
-    <span class="tippy-hover-menu-button" (click)="removeTag(item)">Remove</span>
-  </div>
-</ng-template>

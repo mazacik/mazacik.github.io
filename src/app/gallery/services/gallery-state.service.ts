@@ -21,6 +21,8 @@ import { GalleryGoogleDriveService } from "./gallery-google-drive.service";
 })
 export class GalleryStateService {
 
+  // TODO this service is way too large
+
   private updateDelay: Delay = new Delay(5000);
 
   public dataFolderId: string;
@@ -248,36 +250,28 @@ export class GalleryStateService {
     return true;
   }
 
-  public toggleFavorite(image: GalleryImage): void {
+  public toggleFavorite(image: GalleryImage, save: boolean = false): void {
     image.heart = !image.heart;
-    this.updateFilters(image);
-    this.save();
+    if (save) {
+      this.updateFilters(image);
+      this.save();
+    }
   }
 
-  public toggleBookmark(image: GalleryImage): void {
+  public toggleBookmark(image: GalleryImage, save: boolean = false): void {
     image.bookmark = !image.bookmark;
-    this.updateFilters(image);
-    this.save();
+    if (save) {
+      this.updateFilters(image);
+      this.save();
+    }
   }
 
-  public addTag(image: GalleryImage, tag: string): void {
-    if (!image.tagIds.includes(tag)) {
-      image.tagIds.push(tag);
+  public toggleTag(image: GalleryImage, tag: Tag, save: boolean = false): void {
+    ArrayUtils.toggle(image.tagIds, tag.id);
+    if (save) {
+      this.updateFilters(image);
+      this.save();
     }
-
-    this.updateFilters(image);
-    this.save();
-  }
-
-  public toggleTag(image: GalleryImage, tag: string): void {
-    if (image.tagIds.includes(tag)) {
-      ArrayUtils.remove(image.tagIds, tag)
-    } else {
-      image.tagIds.push(tag)
-    }
-
-    this.updateFilters(image);
-    this.save();
   }
 
   public async delete(image: GalleryImage, archive: boolean, askForConfirmation: boolean = true): Promise<void> {

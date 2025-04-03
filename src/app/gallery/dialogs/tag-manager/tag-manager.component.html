@@ -1,0 +1,21 @@
+<!-- TODO wtf are these styles -->
+<div style="display: flex; gap: 1rem; justify-content: center;">
+  <div class="filter-list-row flex gap center" (click)="stateService.toggleFavorite(inputs.image)" (contextmenu)="$event.preventDefault(); stateService.toggleFavorite(inputs.image);">
+    <i class="fa-heart" [ngClass]="getFavoriteClass(true)"></i>
+    <span [ngClass]="getFavoriteClass(false)">Favorite</span>
+  </div>
+  <div class="filter-list-row flex gap center" (click)="stateService.toggleBookmark(inputs.image)" (contextmenu)="$event.preventDefault(); stateService.toggleBookmark(inputs.image);">
+    <i class="fa-bookmark" [ngClass]="getBookmarkClass(true)"></i>
+    <span [ngClass]="getBookmarkClass(false)">Bookmark</span>
+  </div>
+</div>
+<div class="h-separator"></div>
+<div class="filter-list-container">
+  <span *ngFor="let tag of this.stateService.tags" class="filter-list-row" [ngClass]="getTagClass(tag)" (click)="stateService.toggleTag(inputs.image, tag)" (contextmenu)="$event.preventDefault(); galleryService.openTagEditor(tag);">{{ tag.name }}</span>
+</div>
+<div class="buttons-container">
+  <div class="button" style="flex: 1; gap: 0.33333333rem;" (click)="galleryService.openTagEditor()">
+    <i class="fa-solid fa-plus"></i>
+    <span>Create</span>
+  </div>
+</div>
