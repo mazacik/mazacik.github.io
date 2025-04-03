@@ -6,6 +6,8 @@ import { Directive, Input, ViewContainerRef } from "@angular/core";
 })
 export class DragDropDirective<T> {
 
+  // TODO this is broken. reproduce using group manager.
+
   private static currentArray: unknown[];
   private static currentIndex: number;
 
@@ -37,6 +39,7 @@ export class DragDropDirective<T> {
 
   private static onDragEnd(array: unknown[]): void {
     if (this.currentArray == array) {
+      console.log('onDragEnd');
       this.currentArray = null;
       this.currentIndex = null;
     }

@@ -2,8 +2,8 @@
   <span *ngIf="stateService.groupEditorGroup.images.length == 0">No Images</span>
   <div *ngIf="stateService.groupEditorGroup.images.length > 0" class="order-container">
     <div *ngFor="let image of stateService.groupEditorGroup.images" class="image-container" (click)="stateService.target.set(image)" [dragdrop]="image" [dragdropParent]="stateService.groupEditorGroup.images">
-      <i class="icon-button-small fa-solid fa-times" (click)="$event.stopPropagation(); remove(image);"></i>
-      <img class="image" [src]="image.thumbnailLink">
+      <i class="icon-button-small fa-solid fa-times" tp="Remove" (click)="$event.stopPropagation(); removeImage(image);"></i>
+      <img [src]="image.thumbnailLink" [style.width.px]="120 * image.aspectRatio" #imageElement (load)="imageElement.style.opacity = '1'">
     </div>
   </div>
 </ng-container>

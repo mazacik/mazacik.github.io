@@ -23,12 +23,12 @@ export class GroupSizeFilterEditor extends DialogContentBase<boolean> implements
   public configuration: DialogContainerConfiguration = {
     title: 'Group Size Filter Editor',
     buttons: [{
+      text: () => 'Close',
+      click: () => this.close()
+    }, {
       text: () => 'Submit',
       disabled: () => !this.canSubmit(),
       click: () => this.submit()
-    }, {
-      text: () => 'Close',
-      click: () => this.close()
     }]
   };
 
@@ -47,7 +47,7 @@ export class GroupSizeFilterEditor extends DialogContentBase<boolean> implements
     return this.min != null && this.max != null && this.min <= this.max;
   }
 
-  @HostListener('window:keydown.enter', ['$event'])
+  @HostListener('document:keydown.enter', ['$event'])
   submit(): void {
     if (this.canSubmit()) {
       this.stateService.filterGroupSizeMin = this.min;

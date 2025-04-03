@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener } from '@angular/core';
+import { Component } from '@angular/core';
 import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
 import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
 import { GalleryService } from '../../gallery.service';
@@ -24,7 +24,7 @@ export class TagManagerComponent extends DialogContentBase<boolean> {
     title: 'Tag Manager',
     buttons: [{
       text: () => 'Save',
-      click: () => this.close()
+      click: () => this.submit()
     }],
     hideHeaderCloseButton: true
   };
@@ -60,7 +60,6 @@ export class TagManagerComponent extends DialogContentBase<boolean> {
     }
   }
 
-  @HostListener('window:keydown.escape', ['$event'])
   public close(): void {
     this.stateService.save();
     this.stateService.updateFilters();

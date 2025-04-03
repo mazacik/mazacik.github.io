@@ -107,6 +107,7 @@ export class MasonryComponent {
         return;
       }
 
+      // TODO check if editor out of bounds
       ArrayUtils.toggle(groupEditorGroup.images, image);
       return;
     }

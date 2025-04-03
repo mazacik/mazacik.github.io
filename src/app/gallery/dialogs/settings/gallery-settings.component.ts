@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
 import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
 import { SwitchComponent } from 'src/app/shared/components/switch/switch.component';
@@ -23,7 +23,7 @@ export class GallerySettingsComponent extends DialogContentBase<boolean> impleme
     title: 'Settings',
     buttons: [{
       text: () => 'OK',
-      click: () => this.close()
+      click: () => this.submit()
     }],
     hideHeaderCloseButton: true
   };
@@ -54,8 +54,6 @@ export class GallerySettingsComponent extends DialogContentBase<boolean> impleme
     this.stateService.settings.autoBookmark = event.state;
   }
 
-  @HostListener('window:keydown.enter', ['$event'])
-  @HostListener('window:keydown.escape', ['$event'])
   public close(): void {
     if (this.stateService.images) {
       if (this.needsFilterRefresh) {

@@ -7,11 +7,11 @@ export class ApplicationService {
 
   private darkTheme: boolean = true;
 
-  public loading: WritableSignal<boolean> = signal(false);
-  public changes: WritableSignal<boolean> = signal(false);
-  public errors: WritableSignal<boolean> = signal(false);
+  public loading: WritableSignal<boolean> = signal(undefined);
+  public changes: WritableSignal<boolean> = signal(undefined);
+  public errors: WritableSignal<boolean> = signal(undefined);
 
-  public initTheme(): void {
+  constructor() {
     if (this.darkTheme) {
       document.body.classList.add('dark-theme');
       document.body.style.colorScheme = 'dark';

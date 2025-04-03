@@ -222,10 +222,6 @@ export class GalleryStateService {
       return false;
     }
 
-    if (this.groupEditorGroup && image.group && !this.groupEditorGroup.images.includes(image)) {
-      return false;
-    }
-
     const groupSize: number = image.group ? image.group.images.length : 0;
     if (groupSize < this.filterGroupSizeMin.state) {
       return false;

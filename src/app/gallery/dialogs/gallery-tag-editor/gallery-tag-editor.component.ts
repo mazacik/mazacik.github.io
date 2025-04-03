@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { nanoid } from 'nanoid';
 import { Tag } from 'src/app/gallery/model/tag.interface';
@@ -80,8 +80,7 @@ export class GalleryTagEditorComponent extends DialogContentBase<Tag> implements
     return this.stateService.tags.find(tag => this.inputs.tagName == tag.name) == null;
   }
 
-  @HostListener('window:keydown.enter', ['$event'])
-  protected submit(): void {
+  public override submit(): void {
     if (this.canSubmit()) {
       if (!this.inputs.tag) {
         this.inputs.tag = {

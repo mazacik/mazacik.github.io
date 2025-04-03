@@ -7,40 +7,50 @@ import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 import { GalleryGroup } from '../../model/gallery-group.class';
 import { GalleryImage } from '../../model/gallery-image.class';
 import { GalleryStateService } from '../../services/gallery-state.service';
+import { TippyDirective } from '@ngneat/helipopper';
+import { DialogService } from 'src/app/shared/services/dialog.service';
 
 @Component({
   selector: 'app-group-editor',
   standalone: true,
   imports: [
     CommonModule,
-    DragDropDirective
+    DragDropDirective,
+    TippyDirective
   ],
-  templateUrl: './group-editor.component.html',
-  styleUrls: ['./group-editor.component.scss']
+  templateUrl: './group-manager.component.html',
+  styleUrls: ['./group-manager.component.scss']
 })
-export class GroupEditorComponent extends DialogContentBase<void> implements OnInit {
+export class GroupManagerComponent extends DialogContentBase<void, {}> implements OnInit {
 
   public override inputs: { sourceGroup: GalleryGroup };
 
   public override configuration: DialogContainerConfiguration = {
-    title: 'Group Editor',
+    title: 'Group Manager',
     buttons: [{
       text: () => 'Disband',
       hidden: () => this.inputs.sourceGroup == null,
-      click: () => this.disband()
-    }, {
-      text: () => 'Save',
-      disabled: () => this.stateService.groupEditorGroup.images.length == 0,
-      click: () => this.save()
+      click: () => {
+        this.dialogService.createConfirmation('Confirmation', ['Are you sure you want to disband this group of images?'], 'Yes', 'No').then(success => {
+          if (success) {
+            this.disband();
+          }
+        });
+      }
     }, {
       text: () => 'Cancel',
       click: () => this.close()
+    }, {
+      text: () => 'Save',
+      disabled: () => this.stateService.groupEditorGroup.images.length == 0,
+      click: () => this.submit()
     }],
     hideClickOverlay: true
   }
 
   constructor(
-    protected stateService: GalleryStateService
+    protected stateService: GalleryStateService,
+    protected dialogService: DialogService
   ) {
     super();
   }
@@ -50,7 +60,7 @@ export class GroupEditorComponent extends DialogContentBase<void> implements OnI
     this.stateService.updateFilters();
   }
 
-  protected remove(image: GalleryImage): void {
+  protected removeImage(image: GalleryImage): void {
     ArrayUtils.remove(this.stateService.groupEditorGroup.images, image);
   }
 
@@ -61,10 +71,11 @@ export class GroupEditorComponent extends DialogContentBase<void> implements OnI
       for (const image of group.images) {
         image.group = null;
       }
+      this.close();
     }
   }
 
-  public save(): void {
+  public override submit(): void {
     const sourceGroup: GalleryGroup = this.inputs.sourceGroup;
     const editorGroup: GalleryGroup = this.stateService.groupEditorGroup;
     if (editorGroup.images.length > 0) {

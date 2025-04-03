@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
 import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
 
@@ -27,19 +27,14 @@ export class ConfirmationDialogComponent extends DialogContentBase<boolean> impl
       }, {
         text: () => this.inputs.negativeButtonText,
         click: () => this.resolve(false)
-      }, {
-        text: () => 'Cancel',
-        click: () => this.resolve(false)
       }]
     };
   }
 
-  @HostListener('window:keydown.enter', ['$event'])
-  protected submit(): void {
+  public override submit(): void {
     this.resolve(true);
   }
 
-  @HostListener('window:keydown.escape', ['$event'])
   public close(): void {
     this.resolve(false);
   }

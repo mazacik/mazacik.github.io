@@ -16,7 +16,19 @@ export class DialogService {
   constructor(
     private applicationRef: ApplicationRef,
     private injector: EnvironmentInjector
-  ) { }
+  ) {
+    document.addEventListener('keydown', event => {
+      if (this.dialogs.length > 0) {
+        if (event.key == 'Enter') {
+          event.stopImmediatePropagation();
+          ArrayUtils.getLast(this.dialogs)?.contentComponentInstance.submit();
+        } else if (event.key == 'Escape') {
+          event.stopImmediatePropagation();
+          ArrayUtils.getLast(this.dialogs)?.contentComponentInstance.close();
+        }
+      }
+    });
+  }
 
   public createMessage(title: string, messages: string[]): Promise<void> {
     return this.create(MessageDialogComponent, { title, messages });
@@ -33,7 +45,10 @@ export class DialogService {
   public create<ResultType, ContentComponent extends DialogContentBase<ResultType, NoInputsType>>(component: Type<ContentComponent>): Promise<ResultType>;
   public create<ResultType, InputsType, ContentComponent extends DialogContentBase<ResultType, InputsType>>(contentComponentType: Type<ContentComponent>, inputs: RequireInputsType<ContentComponent>): Promise<ResultType>;
   public create<ResultType, InputsType, ContentComponent extends DialogContentBase<ResultType, InputsType>>(contentComponentType: Type<ContentComponent>, inputs?: any): Promise<ResultType> {
-    if (this.dialogs.some(dialog => dialog.contentComponentType == contentComponentType)) return; // prevents multiple dialogs of contentComponentType // TODO make optional
+    const existingContainerComponentInstance = ArrayUtils.getLast(this.dialogs.filter(dialog => dialog.contentComponentType == contentComponentType));
+    if (existingContainerComponentInstance && !existingContainerComponentInstance.contentComponentInstance.configuration.allowMultiple) {
+      return;
+    }
 
     const containerComponentRef: ComponentRef<DialogContainerComponent<ResultType, InputsType>> = createComponent(DialogContainerComponent<ResultType, InputsType>, { environmentInjector: this.injector });
     const containerComponentInstance: DialogContainerComponent<ResultType, InputsType> = containerComponentRef.instance;
@@ -45,6 +60,11 @@ export class DialogService {
       this.applicationRef.detachView(containerComponentRef.hostView);
       containerComponentRef.destroy();
     });
+
+    if (existingContainerComponentInstance) {
+      containerComponentInstance.top = existingContainerComponentInstance.top + 10;
+      containerComponentInstance.left = existingContainerComponentInstance.left + 10;
+    }
 
     this.dialogs.push(containerComponentInstance);
     this.applicationRef.attachView(containerComponentRef.hostView);

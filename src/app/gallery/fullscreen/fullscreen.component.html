@@ -1,6 +1,7 @@
 <ng-container *ngVar="stateService.target() as target">
   <div class="fullscreen-header">
     <div>
+      <!-- replace this back arrow button with close button top right -->
       <i class="icon-button fa-solid fa-arrow-left" tp="Back" tpPlacement="right" (click)="stateService.target.set(null)"></i>
       <i *ngIf="target?.group" class="icon-button fa-solid fa-arrows-spin" tp="Random Image from Group" tpPlacement="right" (click)="setRandomGroupTarget()"></i>
       <i class="icon-button fa-solid fa-shuffle" tp="Random Image" tpPlacement="right" (click)="setRandomTarget()"></i>
