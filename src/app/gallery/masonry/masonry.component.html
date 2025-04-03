@@ -9,8 +9,8 @@
       </div>
       <ng-container *ngIf="areBrickButtonsVisible()">
         <div class="brick-header">
-          <i class="icon-button fa-heart" [ngClass]="image.heart ? 'fa-solid active' : 'fa-regular'" tp="Favorite" (click)="$event.stopPropagation(); stateService.toggleFavorite(image);"></i>
-          <i class="icon-button fa-bookmark" [ngClass]="image.bookmark ? 'fa-solid active' : 'fa-regular'" tp="Bookmark" (click)="$event.stopPropagation(); stateService.toggleBookmark(image);"></i>
+          <i class="icon-button fa-heart" [ngClass]="image.heart ? 'fa-solid active' : 'fa-regular'" tp="Favorite" (click)="$event.stopPropagation(); stateService.toggleFavorite(image, true);"></i>
+          <i class="icon-button fa-bookmark" [ngClass]="image.bookmark ? 'fa-solid active' : 'fa-regular'" tp="Bookmark" (click)="$event.stopPropagation(); stateService.toggleBookmark(image, true);"></i>
         </div>
         <div class="brick-footer">
           <i class="icon-button fa-brands fa-google-drive" tp="Open in Google Drive" (click)="$event.stopPropagation(); googleService.openSearch(image.name);"></i>

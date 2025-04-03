@@ -11,6 +11,7 @@ import { GalleryGroup } from "./model/gallery-group.class";
 import { GalleryImage } from "./model/gallery-image.class";
 import { Tag } from "./model/tag.interface";
 import { GalleryStateService } from "./services/gallery-state.service";
+import { TagManagerComponent } from "./dialogs/tag-manager/tag-manager.component";
 
 @Injectable({
   providedIn: 'root',
@@ -41,6 +42,10 @@ export class GalleryService {
 
   public openTagEditor(tag?: Tag): void {
     this.dialogService.create(GalleryTagEditorComponent, { tag: tag });
+  }
+
+  public openTagManager(image: GalleryImage): void {
+    this.dialogService.create(TagManagerComponent, { image: image });
   }
 
   public openYandexReverseImageSearch(event: MouseEvent, target: GalleryImage): void {

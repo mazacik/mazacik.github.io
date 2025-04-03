@@ -54,40 +54,6 @@
         text-shadow: -1px 0 var(--color-text-shadow), 0 1px var(--color-text-shadow), 1px 0 var(--color-text-shadow), 0 -1px var(--color-text-shadow);
       }
     }
-
-    .tags {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: $gap;
-
-      @media screen and (min-width:768px) {
-        margin-bottom: $gap;
-      }
-
-      .tag-bubble {
-        min-width: $button-height;
-        min-height: $button-height;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: $gap;
-        padding: 0 1rem;
-        background-color: var(--color-overlay);
-        cursor: default;
-      }
-
-      .tag-search-container {
-        min-width: $button-height;
-        min-height: $button-height;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: $gap;
-        background-color: var(--color-overlay);
-        cursor: default;
-      }
-    }
   }
 
   .fullscreen-crossfade {
