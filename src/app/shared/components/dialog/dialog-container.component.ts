@@ -36,7 +36,8 @@ export class DialogContainerComponent<ResultType, InputsType> implements AfterVi
   }
 
   ngAfterViewInit(): void {
-    console.log(this.contentComponentType.name); // TODO remember position using contentComponentType as identifier
+    this.top = Number.parseInt(window.localStorage.getItem(this.contentComponentType.name + '.top'));
+    this.left = Number.parseInt(window.localStorage.getItem(this.contentComponentType.name + '.left'));
 
     const contentRef: ComponentRef<DialogContentBase<ResultType, InputsType>> = this.containerRef.createComponent(this.contentComponentType);
     this.contentComponentInstance = contentRef.instance;
@@ -106,12 +107,16 @@ export class DialogContainerComponent<ResultType, InputsType> implements AfterVi
       const hostRect: DOMRect = this.elementRef.nativeElement.getBoundingClientRect();
       this.top = hostRect.top;
       this.left = hostRect.left;
+      localStorage.setItem(this.contentComponentType.name + '.top', this.top.toString());
+      localStorage.setItem(this.contentComponentType.name + '.left', this.left.toString());
     }
   }
 
   @HostListener('document:mouseup', ['$event'])
   protected onHeaderMouseUp(): void {
     this.isMouseDown = false;
+    localStorage.setItem(this.contentComponentType.name + '.top', this.top.toString());
+    localStorage.setItem(this.contentComponentType.name + '.left', this.left.toString());
   }
 
   @HostListener('document:mousemove', ['$event'])
