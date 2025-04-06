@@ -27,6 +27,7 @@
         transition-duration: $transition-duration;
         padding-bottom: $gap;
         transition: opacity $transition-duration;
+        cursor: pointer;
 
         .brick-container {
           border-radius: $gap;
