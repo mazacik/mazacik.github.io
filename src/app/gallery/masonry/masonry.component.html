@@ -3,7 +3,7 @@
 <div class="masonry-scroll-container">
   <div class="masonry-container" (create)="onMasonryContainerCreate($event)">
     <!-- TODO split styles -->
-    <div *ngFor="let image of masonryImages" @fade class="masonry-brick" [style]="'width: ' + image.width + 'px; height: ' + image.height + 'px; top: ' + image.top + 'px; left: ' + image.left + 'px; '" (click)="onImageClick(image)" [class.modifying-group]="stateService.groupEditorGroup?.images.includes(image)">
+    <div *ngFor="let image of masonryImages" @fade class="masonry-brick" [style]="'width: ' + image.width + 'px; height: ' + image.height + 'px; top: ' + image.top + 'px; left: ' + image.left + 'px; '" (click)="onImageClick(image)" [style.opacity]="image.group && stateService.groupEditorGroup && !stateService.groupEditorGroup.images.includes(image) ? '0.15' : '1'">
       <div class="brick-container">
         <img [src]="image.thumbnailLink" (create)="onBrickCreate($event, image)" #imageElement (load)="imageElement.style.opacity = '1'">
       </div>
@@ -15,6 +15,7 @@
         <div class="brick-footer">
           <i class="icon-button fa-brands fa-google-drive" tp="Open in Google Drive" (click)="$event.stopPropagation(); googleService.openSearch(image.name);"></i>
           <i class="icon-button fa-brands fa-yandex-international" tp="Open Yandex RIS" (click)="$event.stopPropagation(); galleryService.openYandexReverseImageSearch($event, image)"></i>
+          <i *ngIf="image.group" class="icon-button active fa-solid fa-object-group" tp="Open Group Manager" (click)="galleryService.openGroupEditor(image.group)"></i>
         </div>
       </ng-container>
     </div>

@@ -6,5 +6,6 @@ export interface DialogContainerConfiguration {
   buttons: DialogButton[];
   hideHeaderCloseButton?: boolean;
   hideClickOverlay?: boolean;
+  allowMultiple?: boolean;
 
 }

@@ -16,6 +16,12 @@ import { DialogContentBase } from './dialog-content-base.class';
 })
 export class DialogContainerComponent<ResultType, InputsType> implements AfterViewInit {
 
+  @HostBinding('style.top.px')
+  public top: number;
+
+  @HostBinding('style.left.px')
+  public left: number;
+
   @HostBinding('class.border-warning')
   protected borderWarning: boolean = false;
 
@@ -36,7 +42,15 @@ export class DialogContainerComponent<ResultType, InputsType> implements AfterVi
   }
 
   ngAfterViewInit(): void {
-    console.log(this.contentComponentType.name); // TODO remember position using contentComponentType as identifier
+    if (!this.top) {
+      this.top = Number.parseInt(window.localStorage.getItem(this.contentComponentType.name + '.top'));
+    }
+
+    if (!this.left) {
+      this.left = Number.parseInt(window.localStorage.getItem(this.contentComponentType.name + '.left'));
+    }
+
+    // TODO check if out of bounds
 
     const contentRef: ComponentRef<DialogContentBase<ResultType, InputsType>> = this.containerRef.createComponent(this.contentComponentType);
     this.contentComponentInstance = contentRef.instance;
@@ -48,16 +62,9 @@ export class DialogContainerComponent<ResultType, InputsType> implements AfterVi
     contentRef.changeDetectorRef.detectChanges();
   }
 
-  // TODO two dialogs visible at the same time, last click was on non-last, last closes. non-last should close instead.
-  @HostListener('window:keydown.escape', ['$event'])
-  protected closeLast(): void {
-    if (ArrayUtils.isLast(this.dialogService.dialogs, this)) {
-      this.close();
-    }
-  }
-
-  public close(): void {
-    this.contentComponentInstance?.close();
+  @HostListener('click', ['$event'])
+  protected onContainerClick(): void {
+    ArrayUtils.makeLast(this.dialogService.dialogs, this);
   }
 
   protected isHidden(button: DialogButton): boolean {
@@ -88,12 +95,6 @@ export class DialogContainerComponent<ResultType, InputsType> implements AfterVi
     }
   }
 
-  @HostBinding('style.top.px')
-  private top: number;
-
-  @HostBinding('style.left.px')
-  private left: number;
-
   private isMouseDown: boolean = false;
   private mouseDownOffsetX: number;
   private mouseDownOffsetY: number;
@@ -106,12 +107,16 @@ export class DialogContainerComponent<ResultType, InputsType> implements AfterVi
       const hostRect: DOMRect = this.elementRef.nativeElement.getBoundingClientRect();
       this.top = hostRect.top;
       this.left = hostRect.left;
+      localStorage.setItem(this.contentComponentType.name + '.top', this.top.toString());
+      localStorage.setItem(this.contentComponentType.name + '.left', this.left.toString());
     }
   }
 
   @HostListener('document:mouseup', ['$event'])
   protected onHeaderMouseUp(): void {
     this.isMouseDown = false;
+    localStorage.setItem(this.contentComponentType.name + '.top', this.top.toString());
+    localStorage.setItem(this.contentComponentType.name + '.left', this.left.toString());
   }
 
   @HostListener('document:mousemove', ['$event'])

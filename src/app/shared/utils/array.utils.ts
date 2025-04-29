@@ -111,6 +111,13 @@ export abstract class ArrayUtils {
     }
   }
 
+  public static makeFirst<T>(array: T[], object: T): void {
+    if (!this.isEmpty(array) && object) {
+      this._remove(array, object);
+      array.unshift(object);
+    }
+  }
+
   public static getLast<T>(array: T[]): T {
     if (!this.isEmpty(array)) {
       return array[array.length - 1];
@@ -120,6 +127,13 @@ export abstract class ArrayUtils {
   public static isLast<T>(array: T[], object: T): boolean {
     if (!this.isEmpty(array) && object) {
       return object == array[array.length - 1];
+    }
+  }
+
+  public static makeLast<T>(array: T[], object: T): void {
+    if (!this.isEmpty(array) && object) {
+      this._remove(array, object);
+      array.push(object);
     }
   }
 

@@ -4,7 +4,7 @@ import { DialogService } from "../shared/services/dialog.service";
 import { ArrayUtils } from "../shared/utils/array.utils";
 import { FilterComponent } from "./dialogs/filter/filter.component";
 import { GalleryTagEditorComponent } from "./dialogs/gallery-tag-editor/gallery-tag-editor.component";
-import { GroupEditorComponent } from "./dialogs/group-editor/group-editor.component";
+import { GroupManagerComponent } from "./dialogs/group-manager/group-manager.component";
 import { ImageComparisonComponent } from "./dialogs/image-comparison/image-comparison.component";
 import { GallerySettingsComponent } from "./dialogs/settings/gallery-settings.component";
 import { GalleryGroup } from "./model/gallery-group.class";
@@ -29,7 +29,7 @@ export class GalleryService {
   }
 
   public openGroupEditor(group?: GalleryGroup): void {
-    this.dialogService.create(GroupEditorComponent, { sourceGroup: group });
+    this.dialogService.create(GroupManagerComponent, { sourceGroup: group });
   }
 
   public openFilter(): void {

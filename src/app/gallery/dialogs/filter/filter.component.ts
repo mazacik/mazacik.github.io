@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener } from '@angular/core';
+import { Component } from '@angular/core';
 import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
 import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
 import { GalleryService } from '../../gallery.service';
@@ -21,7 +21,7 @@ export class FilterComponent extends DialogContentBase<boolean> {
     title: 'Filter Configuration',
     buttons: [{
       text: () => 'OK',
-      click: () => this.close()
+      click: () => this.submit()
     }],
     hideHeaderCloseButton: true
   };
@@ -58,7 +58,6 @@ export class FilterComponent extends DialogContentBase<boolean> {
     return this.stateService.tags.some(tag => tag.state != 0);
   }
 
-  @HostListener('window:keydown.escape', ['$event'])
   public close(): void {
     this.stateService.save();
     this.resolve(true);

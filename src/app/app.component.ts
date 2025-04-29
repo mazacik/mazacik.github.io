@@ -25,9 +25,8 @@ export class AppComponent {
     protected applicationService: ApplicationService,
     protected dialogService: DialogService
   ) {
-    this.applicationService.initTheme();
     effect(() => {
-      if (this.applicationService.changes()) {
+      if (this.applicationService.changes() !== undefined) {
         this.hideLoadingBarDelay.restart();
       }
     });

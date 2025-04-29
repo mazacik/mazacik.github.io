@@ -26,16 +26,8 @@
         transition-property: top, left;
         transition-duration: $transition-duration;
         padding-bottom: $gap;
-
-        &.modifying-group {
-          .brick-container {
-            outline-color: var(--color-border);
-
-            img {
-              margin: $gap;
-            }
-          }
-        }
+        transition: opacity $transition-duration;
+        cursor: pointer;
 
         .brick-container {
           border-radius: $gap;

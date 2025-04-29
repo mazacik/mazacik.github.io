@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
 import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
 import { DragDropDirective } from 'src/app/shared/directives/dragdrop.directive';
@@ -114,12 +114,10 @@ export class NoteTagManagerComponent extends DialogContentBase<string[]> impleme
     });
   }
 
-  @HostListener('window:keydown.enter', ['$event'])
-  submit(): void {
+  public override submit(): void {
     this.resolve(this.currentTags);
   }
 
-  @HostListener('window:keydown.escape', ['$event'])
   public close(): void {
     this.resolve(null);
   }

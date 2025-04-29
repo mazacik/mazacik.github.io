@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
 import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
 
@@ -28,12 +28,6 @@ export class MessageDialogComponent extends DialogContentBase<void> implements O
     };
   }
 
-  @HostListener('window:keydown.enter', ['$event'])
-  protected submit(): void {
-    this.resolve();
-  }
-
-  @HostListener('window:keydown.escape', ['$event'])
   public close(): void {
     this.resolve();
   }

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
 import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
@@ -46,14 +46,12 @@ export class InputDialogComponent extends DialogContentBase<string> implements O
     return !StringUtils.isEmpty(this.value);
   }
 
-  @HostListener('window:keydown.enter', ['$event'])
-  protected submit(): void {
+  public override submit(): void {
     if (this.canSubmit()) {
       this.resolve(this.value);
     }
   }
 
-  @HostListener('window:keydown.escape', ['$event'])
   public close(): void {
     this.resolve(null);
   }
