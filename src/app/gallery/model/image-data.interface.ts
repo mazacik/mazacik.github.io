@@ -1,4 +1,4 @@
-export interface ImageProperties {
+export interface ImageData {
 
   id: string;
   heart: boolean;

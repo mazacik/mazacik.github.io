@@ -26,7 +26,6 @@ import { GalleryStateService } from '../services/gallery-state.service';
 })
 export class FullscreenComponent {
 
-  protected crossfadeHelper: GalleryImage[] = [];
   protected loadingT: boolean = true;
   protected loadingC: boolean = true;
   protected video: boolean = false;
@@ -42,33 +41,23 @@ export class FullscreenComponent {
     effect(() => {
       const target: GalleryImage = this.stateService.target();
       if (target) {
-        this.update(target);
-      } else {
-        this.crossfadeHelper.length = 0;
+        if (GoogleFileUtils.isVideo(target)) {
+          this.video = true;
+        } else {
+          this.video = false;
+          this.loadingT = true;
+          this.loadingC = true;
+        }
+
+        // used in <video> display method
+        // if (GoogleFileUtils.isVideo(image) && !this.applicationService.reduceBandwidth && !image.contentLink) {
+        //   image.contentLink = '';
+        //   this.googleService.getBase64(image.id).then(base64 => {
+        //     image.contentLink = this.sanitizer.bypassSecurityTrustResourceUrl(base64) as string;
+        //   });
+        // }
       }
     });
-  }
-
-  private update(image: GalleryImage): void {
-    if (image && this.crossfadeHelper[0] != image) {
-      this.crossfadeHelper[0] = image;
-
-      if (GoogleFileUtils.isVideo(image)) {
-        this.video = true;
-      } else {
-        this.video = false;
-        this.loadingT = true;
-        this.loadingC = true;
-      }
-    }
-
-    // used in <video> display method
-    // if (GoogleFileUtils.isVideo(image) && !this.applicationService.reduceBandwidth && !image.contentLink) {
-    //   image.contentLink = '';
-    //   this.googleService.getBase64(image.id).then(base64 => {
-    //     image.contentLink = this.sanitizer.bypassSecurityTrustResourceUrl(base64) as string;
-    //   });
-    // }
   }
 
   @HostListener('document:keydown', ['$event'])

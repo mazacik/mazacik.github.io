@@ -53,7 +53,7 @@ export class TagManagerComponent extends DialogContentBase<boolean> {
   }
 
   protected getTagClass(tag: Tag, isIcon: boolean = false): string {
-    if (this.inputs.image.tagIds.includes(tag.id)) {
+    if (this.inputs.image.tags.includes(tag.name)) {
       return isIcon ? 'positive fa-solid' : 'positive';
     } else {
       return isIcon ? 'fa-regular' : '';

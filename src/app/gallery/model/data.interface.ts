@@ -1,6 +1,6 @@
 import { GallerySettings } from "./gallery-settings.interface";
-import { GroupProperties } from "./group-properties.interface";
-import { ImageProperties } from "./image-properties.interface";
+import { GroupData } from "./group-data.interface";
+import { ImageData } from "./image-data.interface";
 import { Tag } from "./tag.interface";
 
 export interface Data {
@@ -9,10 +9,10 @@ export interface Data {
   archiveFolderId: string;
   settings: GallerySettings;
 
-  imageProperties: ImageProperties[];
-  groupProperties: GroupProperties[];
-
+  imageProperties: ImageData[];
+  groupProperties: GroupData[];
   tags: Tag[];
+
   heartsFilter: number;
   bookmarksFilter: number;
   groupSizeFilterMin: number;

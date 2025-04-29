@@ -12,7 +12,8 @@ import { GallerySettingsComponent } from "../dialogs/settings/gallery-settings.c
 import { Data } from "../model/data.interface";
 import { Filter } from "../model/filter.interface";
 import { GallerySettings } from "../model/gallery-settings.interface";
-import { ImageProperties } from "../model/image-properties.interface";
+import { GroupData } from "../model/group-data.interface";
+import { ImageData } from "../model/image-data.interface";
 import { Tag } from "../model/tag.interface";
 import { GalleryGoogleDriveService } from "./gallery-google-drive.service";
 
@@ -62,7 +63,6 @@ export class GalleryStateService {
     this.filterGroupSizeMax.state = data.groupSizeFilterMax;
     this.comparison = data.comparison;
     this.tags = data.tags;
-    this.tags.forEach(tag => tag.lowerCaseName = tag.name.toLowerCase());
 
     if (data.settings) {
       this.settings = data.settings;
@@ -109,7 +109,7 @@ export class GalleryStateService {
     ArrayUtils.push(imageCollector, metadata.filter(meta => GoogleFileUtils.isImage(meta) || GoogleFileUtils.isVideo(meta)).map(imageMetadata => this.metaToImage(imageMetadata, data.imageProperties.find(imageProperty => imageProperty.id == imageMetadata.id), folderId, this.applicationService.reduceBandwidth)));
   }
 
-  private metaToImage(metadata: GoogleMetadata, imageProperties: ImageProperties, folderId: string, bReduceBandwidth: boolean): GalleryImage {
+  private metaToImage(metadata: GoogleMetadata, imageProperties: ImageData, folderId: string, bReduceBandwidth: boolean): GalleryImage {
     const image: GalleryImage = new GalleryImage();
     image.id = metadata.id;
     image.name = metadata.name;
@@ -139,10 +139,10 @@ export class GalleryStateService {
     if (imageProperties) {
       image.heart = imageProperties.heart;
       image.bookmark = imageProperties.bookmark;
-      image.tagIds = imageProperties.tagIds || [];
+      image.tags = imageProperties.tagIds || [];
     } else {
       if (this.settings.autoBookmark) image.bookmark = true;
-      image.tagIds = [];
+      image.tags = [];
     }
 
     return image;
@@ -151,36 +151,20 @@ export class GalleryStateService {
   public save(instant: boolean = false): void {
     this.applicationService.changes.set(true);
     this.updateDelay.restart(() => {
-      this.googleService.updateContent(this.googleService.dataFileId, {
-        dataFolderId: this.dataFolderId,
-        archiveFolderId: this.archiveFolderId,
-        settings: this.settings,
-        imageProperties: this.images.map(image => {
-          return {
-            id: image.id,
-            heart: image.heart,
-            bookmark: image.bookmark,
-            tagIds: image.tagIds
-          }
-        }),
-        groupProperties: this.groups.filter(group => group.images?.length > 1).map(group => {
-          return {
-            imageIds: group.images.map(image => image.id)
-          }
-        }),
-        tags: this.tags.map(tag => {
-          return {
-            id: tag.id,
-            name: tag.name,
-            state: tag.state
-          }
-        }).sort((t1, t2) => t1.name.localeCompare(t2.name)),
-        heartsFilter: this.filterFavorite.state,
-        bookmarksFilter: this.filterBookmark.state,
-        groupSizeFilterMin: this.filterGroupSizeMin.state,
-        groupSizeFilterMax: this.filterGroupSizeMax.state,
-        comparison: this.comparison
-      } as Data).then(metadata => {
+      const data: Data = {} as Data;
+      data.dataFolderId = this.dataFolderId;
+      data.archiveFolderId = this.archiveFolderId;
+      data.heartsFilter = this.filterFavorite.state;
+      data.bookmarksFilter = this.filterBookmark.state;
+      data.groupSizeFilterMin = 0;
+      data.groupSizeFilterMax = 999;
+      data.tags = this.tags;
+      data.settings = this.settings;
+      data.comparison = this.comparison;
+      data.imageProperties = this.images.map(image => this.serializeImage(image));
+      data.groupProperties = this.groups.filter(group => !ArrayUtils.isEmpty(group.images)).map(group => this.serializeGroup(group));
+
+      this.googleService.updateContent(this.googleService.dataFileId, data).then(metadata => {
         if (!metadata) {
           this.applicationService.errors.set(true);
         }
@@ -190,6 +174,21 @@ export class GalleryStateService {
     });
 
     if (instant) this.updateDelay.complete();
+  }
+
+  private serializeImage(galleryImage: GalleryImage): ImageData {
+    const image: ImageData = {} as ImageData;
+    image.id = galleryImage.id;
+    image.heart = galleryImage.heart;
+    image.bookmark = galleryImage.bookmark;
+    image.tagIds = galleryImage.tags;
+    return image;
+  }
+
+  private serializeGroup(galleryGroup: GalleryGroup): GroupData {
+    const group: GroupData = {} as GroupData;
+    group.imageIds = galleryGroup.images.map(image => image.id)
+    return group;
   }
 
   public updateFilters(image?: GalleryImage): void {
@@ -233,7 +232,7 @@ export class GalleryStateService {
 
     let hasTag: boolean;
     for (const tag of this.tags) {
-      hasTag = image.tagIds.includes(tag.id);
+      hasTag = image.tags.includes(tag.name);
       if (tag.state == -1 && hasTag) {
         return false;
       }
@@ -263,7 +262,7 @@ export class GalleryStateService {
   }
 
   public toggleTag(image: GalleryImage, tag: Tag, save: boolean = false): void {
-    ArrayUtils.toggle(image.tagIds, tag.id);
+    ArrayUtils.toggle(image.tags, tag.name);
     if (save) {
       this.updateFilters(image);
       this.save();
@@ -307,10 +306,6 @@ export class GalleryStateService {
 
     this.save(true);
     this.applicationService.loading.set(false);
-  }
-
-  public getTag(tagId: string): Tag {
-    return this.tags.find(tag => tag.id == tagId);
   }
 
 }
