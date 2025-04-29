@@ -23,10 +23,9 @@
 
       .masonry-brick {
         position: absolute;
-        transition-property: top, left;
+        transition-property: top, left, opacity;
         transition-duration: $transition-duration;
         padding-bottom: $gap;
-        transition: opacity $transition-duration;
         cursor: pointer;
 
         .brick-container {

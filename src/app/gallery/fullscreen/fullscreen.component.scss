@@ -34,10 +34,14 @@
     .group-image-container {
       display: flex;
       flex-direction: row;
-      justify-content: center;
+      
       overflow-y: hidden;
       padding: 0;
       gap: $gap;
+
+      @media screen and (min-width:768px) {
+        justify-content: center;
+      }
 
       img {
         opacity: 0;
@@ -87,6 +91,22 @@
 
   .sidebar-right {
     align-items: flex-end;
+
+    .sidebar-start,
+    .sidebar-center,
+    .sidebar-end {
+      align-items: flex-end;
+    }
+  }
+
+  .resolution-info {
+    align-content: center;
+    padding-top: $gap;
+    text-shadow: -1px 0 var(--color-text-shadow), 0 1px var(--color-text-shadow), 1px 0 var(--color-text-shadow), 0 -1px var(--color-text-shadow);
+
+    >span {
+      white-space: nowrap;
+    }
   }
 
 }

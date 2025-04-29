@@ -13,7 +13,8 @@
     min-height: 120px;
     display: flex;
     gap: $gap;
-    overflow: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
 
     .image-container {
       display: flex;

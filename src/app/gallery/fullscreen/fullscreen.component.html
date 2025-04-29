@@ -42,13 +42,15 @@
       <div class="sidebar-start">
         <i class="icon-button fa-heart" [ngClass]="target?.heart ? 'fa-solid' : 'fa-regular'" tp="Favorite" tpPlacement="left" (click)="stateService.toggleFavorite(target, true)"></i>
         <i class="icon-button fa-bookmark" [ngClass]="target?.bookmark ? 'fa-solid' : 'fa-regular'" tp="Bookmark" tpPlacement="left" (click)="stateService.toggleBookmark(target, true)"></i>
+        <i class="icon-button fa-solid fa-tags" tp="Tags" tpPlacement="left" (click)="galleryService.openTagManager(target)"></i>
       </div>
       <div class="sidebar-center">
 
       </div>
       <div class="sidebar-end">
+        <i *ngIf="target?.group" class="icon-button active fa-solid fa-object-group" tp="Open Group Manager" tpPlacement="left" (click)="galleryService.openGroupEditor(target.group)"></i>
         <div *ngIf="target" class="resolution-info">
-          <span style="white-space: nowrap; padding: 1rem;">{{ target.imageMediaMetadata.width }} x {{ target.imageMediaMetadata.height }}</span>
+          <span>{{ target.imageMediaMetadata.width }} x {{ target.imageMediaMetadata.height }}</span>
         </div>
       </div>
     </div>

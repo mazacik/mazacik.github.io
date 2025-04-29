@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { nanoid } from 'nanoid';
 import { Tag } from 'src/app/gallery/model/tag.interface';
 import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
 import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
@@ -56,7 +55,7 @@ export class GalleryTagEditorComponent extends DialogContentBase<Tag> implements
       this.dialogService.createConfirmation('Delete Tag', ['Are you sure you want to delete tag "' + this.inputs.tag.name + '"?'], 'Yes', 'No').then(result => {
         if (result) {
           for (const image of this.stateService.images) {
-            ArrayUtils.remove(image.tagIds, this.inputs.tag.id);
+            ArrayUtils.remove(image.tags, this.inputs.tag.name);
           }
 
           ArrayUtils.remove(this.stateService.tags, this.inputs.tag);
@@ -84,16 +83,13 @@ export class GalleryTagEditorComponent extends DialogContentBase<Tag> implements
     if (this.canSubmit()) {
       if (!this.inputs.tag) {
         this.inputs.tag = {
-          id: nanoid(),
           name: this.inputs.tagName,
-          state: 0,
-          lowerCaseName: this.inputs.tagName.toLowerCase()
+          state: 0
         };
 
         this.stateService.tags.push(this.inputs.tag);
       } else {
         this.inputs.tag.name = this.inputs.tagName;
-        this.inputs.tag.lowerCaseName = this.inputs.tagName.toLowerCase();
       }
 
       this.stateService.tags.sort((tag1, tag2) => tag1.name.localeCompare(tag2.name));
