@@ -175,10 +175,10 @@ export class GalleryStateService {
             state: tag.state
           }
         }).sort((t1, t2) => t1.name.localeCompare(t2.name)),
-        heartsFilter: this.filterFavorite,
-        bookmarksFilter: this.filterBookmark,
-        groupSizeFilterMin: this.filterGroupSizeMin,
-        groupSizeFilterMax: this.filterGroupSizeMax,
+        heartsFilter: this.filterFavorite.state,
+        bookmarksFilter: this.filterBookmark.state,
+        groupSizeFilterMin: this.filterGroupSizeMin.state,
+        groupSizeFilterMax: this.filterGroupSizeMax.state,
         comparison: this.comparison
       } as Data).then(metadata => {
         if (!metadata) {
