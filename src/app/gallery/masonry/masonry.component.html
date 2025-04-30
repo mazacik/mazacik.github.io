@@ -13,8 +13,6 @@
           <i class="icon-button fa-bookmark" [ngClass]="image.bookmark ? 'fa-solid active' : 'fa-regular'" tp="Bookmark" (click)="$event.stopPropagation(); stateService.toggleBookmark(image, true);"></i>
         </div>
         <div class="brick-footer">
-          <i class="icon-button fa-brands fa-google-drive" tp="Open in Google Drive" (click)="$event.stopPropagation(); googleService.openSearch(image.name);"></i>
-          <i class="icon-button fa-brands fa-yandex-international" tp="Open Yandex RIS" (click)="$event.stopPropagation(); galleryService.openYandexReverseImageSearch($event, image)"></i>
           <i *ngIf="image.group" class="icon-button active fa-solid fa-object-group" tp="Open Group Manager" (click)="galleryService.openGroupEditor(image.group)"></i>
         </div>
       </ng-container>

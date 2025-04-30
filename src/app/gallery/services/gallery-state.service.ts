@@ -97,7 +97,7 @@ export class GalleryStateService {
 
     this.updateFilters();
     this.applicationService.loading.set(false);
-    this.save();
+    if (!data.settings) this.save();
   }
 
   private async processImages(data: Data, folderId: string, imageCollector: GalleryImage[], recursionTracker: Set<Promise<void>>): Promise<void> {
@@ -163,6 +163,8 @@ export class GalleryStateService {
       data.comparison = this.comparison;
       data.imageProperties = this.images.map(image => this.serializeImage(image));
       data.groupProperties = this.groups.filter(group => !ArrayUtils.isEmpty(group.images)).map(group => this.serializeGroup(group));
+
+      this.tags.forEach(tag => delete (tag as any).id);
 
       this.googleService.updateContent(this.googleService.dataFileId, data).then(metadata => {
         if (!metadata) {

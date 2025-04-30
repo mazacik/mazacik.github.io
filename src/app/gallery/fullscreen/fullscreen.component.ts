@@ -10,7 +10,9 @@ import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 import { GoogleFileUtils } from 'src/app/shared/utils/google-file.utils';
 import { GalleryService } from '../gallery.service';
 import { GalleryImage } from '../model/gallery-image.class';
+import { GalleryGoogleDriveService } from '../services/gallery-google-drive.service';
 import { GalleryStateService } from '../services/gallery-state.service';
+import { ScreenUtils } from 'src/app/shared/utils/screen.utils';
 
 @Component({
   selector: 'app-fullscreen',
@@ -26,6 +28,8 @@ import { GalleryStateService } from '../services/gallery-state.service';
 })
 export class FullscreenComponent {
 
+  protected ScreenUtils = ScreenUtils;
+
   protected loadingT: boolean = true;
   protected loadingC: boolean = true;
   protected video: boolean = false;
@@ -33,7 +37,7 @@ export class FullscreenComponent {
   constructor(
     // private sanitizer: DomSanitizer,
     private applicationService: ApplicationService,
-    // private googleService: GalleryGoogleDriveService,
+    protected googleService: GalleryGoogleDriveService,
     protected stateService: GalleryStateService,
     protected dialogService: DialogService,
     protected galleryService: GalleryService

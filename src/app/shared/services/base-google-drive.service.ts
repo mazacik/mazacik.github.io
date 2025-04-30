@@ -65,6 +65,21 @@ export abstract class BaseGoogleDriveService {
     return this.updateMetadata(id, { appProperties });
   }
 
+  public async download(metadata: GoogleMetadata): Promise<void> {
+    const url: string = 'https://www.googleapis.com/drive/v3/files/' + metadata.id;
+    const blob: Blob = await lastValueFrom(this.http.get(url, { params: { 'alt': 'media' }, responseType: 'blob' }));
+    const objectUrl: string = URL.createObjectURL(blob);
+    const a: HTMLAnchorElement = document.createElement('a') as HTMLAnchorElement;
+
+    a.href = objectUrl;
+    a.download = metadata.name;
+    document.body.appendChild(a);
+    a.click();
+
+    document.body.removeChild(a);
+    URL.revokeObjectURL(objectUrl);
+  }
+
   public openFolderById(folderId: string): void {
     const url: string = 'https://drive.google.com/drive/folders/' + folderId;
     window.open(url, '_blank');
