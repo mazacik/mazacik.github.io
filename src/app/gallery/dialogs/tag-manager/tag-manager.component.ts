@@ -29,6 +29,8 @@ export class TagManagerComponent extends DialogContentBase<boolean> {
     hideHeaderCloseButton: true
   };
 
+  protected changes: boolean = false;
+
   constructor(
     protected galleryService: GalleryService,
     protected stateService: GalleryStateService
@@ -61,8 +63,10 @@ export class TagManagerComponent extends DialogContentBase<boolean> {
   }
 
   public close(): void {
-    this.stateService.save();
-    this.stateService.updateFilters();
+    if (this.changes) {
+      this.stateService.save();
+      this.stateService.updateFilters();
+    }
     this.resolve(true);
   }
 
