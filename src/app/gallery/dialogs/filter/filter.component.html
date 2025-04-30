@@ -1,10 +1,10 @@
 <!-- TODO wtf are these styles -->
 <div style="display: flex; gap: 1rem; justify-content: center;">
-  <div class="filter-list-row flex gap center" (click)="toggleFilter(stateService.filterFavorite)" (contextmenu)="$event.preventDefault(); toggleFilter(stateService.filterFavorite);">
+  <div class="filter-list-row flex gap center" (click)="toggleFilter(stateService.filterFavorite)">
     <i class="fa-heart" [ngClass]="getFilterClass(stateService.filterFavorite, true)"></i>
     <span [ngClass]="getFilterClass(stateService.filterFavorite)">Favorites</span>
   </div>
-  <div class="filter-list-row flex gap center" (click)="toggleFilter(stateService.filterBookmark)" (contextmenu)="$event.preventDefault(); toggleFilter(stateService.filterBookmark);">
+  <div class="filter-list-row flex gap center" (click)="toggleFilter(stateService.filterBookmark)">
     <i class="fa-bookmark" [ngClass]="getFilterClass(stateService.filterBookmark, true)"></i>
     <span [ngClass]="getFilterClass(stateService.filterBookmark)">Bookmarks</span>
   </div>
