@@ -12,6 +12,13 @@
 
       </div>
       <div class="sidebar-end">
+        <ng-container *ngIf="ScreenUtils.isLargeScreen()">
+          <i class="icon-button fa-solid fa-download" tp="Download" tpPlacement="right" (click)="googleService.download(target)"></i>
+          <div class="h-separator gap"></div>
+          <i class="icon-button fa-brands fa-google-drive" tp="Google Drive" tpPlacement="right" (click)="$event.stopPropagation(); googleService.openSearch(target.name);"></i>
+          <i class="icon-button fa-brands fa-yandex-international" tp="Yandex RIS" tpPlacement="right" (click)="$event.stopPropagation(); galleryService.openYandexReverseImageSearch($event, target)"></i>
+          <div class="h-separator gap"></div>
+        </ng-container>
         <i class="icon-button fa-solid fa-box" tp="Archive" tpPlacement="right" (click)="stateService.delete(target, true)"></i>
         <i class="icon-button fa-solid fa-trash" tp="Delete" tpPlacement="right" (click)="stateService.delete(target, false)"></i>
       </div>
@@ -24,13 +31,13 @@
         </div>
       </div>
 
-      <div *ngIf="target.group" @fade class="group-container">
-        <div class="stack-container" style="overflow: auto;">
+      <div *ngIf="target.group" @fade class="has-group-container">
+        <div class="another-container stack-container">
           <div *ngFor="let image of [target]" @fade class="image-container">
             <img [src]="getSrc(image)" (click)="onImageClick(image)" #imageElement (load)="imageElement.style.opacity = '1'">
           </div>
         </div>
-        <div class="stack-container group-images-container">
+        <div class="group-images-container stack-container">
           <div *ngFor="let group of [target.group]" @fade class="group-image-container">
             <img *ngFor="let groupImage of group.images" [style.height.px]="120" [style.width.px]="120 * groupImage.aspectRatio" [src]="groupImage.thumbnailLink" (click)="stateService.target.set(groupImage)" #groupImageElement (load)="groupImageElement.style.opacity = '1'">
           </div>
@@ -48,10 +55,8 @@
 
       </div>
       <div class="sidebar-end">
-        <i *ngIf="target?.group" class="icon-button active fa-solid fa-object-group" tp="Open Group Manager" tpPlacement="left" (click)="galleryService.openGroupEditor(target.group)"></i>
-        <div *ngIf="target" class="resolution-info">
-          <span>{{ target.imageMediaMetadata.width }} x {{ target.imageMediaMetadata.height }}</span>
-        </div>
+        <i *ngIf="target?.group" class="icon-button active fa-solid fa-object-group" tp="Group Manager" tpPlacement="left" (click)="galleryService.openGroupEditor(target.group)"></i>
+        <i class="icon-button fa-solid fa-circle-info" tp="File Information" tpPlacement="left" (click)="galleryService.openFileInformation(target)"></i>
       </div>
     </div>
   </div>

@@ -10,7 +10,7 @@ import { Data } from "../model/data.interface";
 export class GalleryGoogleDriveService extends BaseGoogleDriveService {
 
   private _fileId: string;
-  protected readonly FIELDS: string = 'id,name,thumbnailLink,mimeType,imageMediaMetadata,videoMediaMetadata';
+  protected readonly FIELDS: string = 'id,name,mimeType,thumbnailLink,imageMediaMetadata,videoMediaMetadata';
 
   constructor(
     override http: HttpClient

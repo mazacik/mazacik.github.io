@@ -7,11 +7,11 @@ import { GalleryTagEditorComponent } from "./dialogs/gallery-tag-editor/gallery-
 import { GroupManagerComponent } from "./dialogs/group-manager/group-manager.component";
 import { ImageComparisonComponent } from "./dialogs/image-comparison/image-comparison.component";
 import { GallerySettingsComponent } from "./dialogs/settings/gallery-settings.component";
+import { TagManagerComponent } from "./dialogs/tag-manager/tag-manager.component";
 import { GalleryGroup } from "./model/gallery-group.class";
 import { GalleryImage } from "./model/gallery-image.class";
 import { Tag } from "./model/tag.interface";
 import { GalleryStateService } from "./services/gallery-state.service";
-import { TagManagerComponent } from "./dialogs/tag-manager/tag-manager.component";
 
 @Injectable({
   providedIn: 'root',
@@ -23,6 +23,14 @@ export class GalleryService {
     private stateService: GalleryStateService,
     private tippyService: TippyService
   ) { }
+
+  public openFileInformation(image: GalleryImage): void {
+    this.dialogService.createMessage('File Information', [
+      'File Name: ' + image.name,
+      'File Type: ' + image.mimeType,
+      'Resolution: ' + image.imageMediaMetadata.width + '×' + image.imageMediaMetadata.height
+    ]);
+  }
 
   public openImageComparison(): void {
     this.dialogService.create(ImageComparisonComponent, { images: ArrayUtils.shuffle(this.stateService.images.slice()) });

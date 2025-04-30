@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, ComponentRef, ElementRef, HostBinding, HostListener, Type, ViewChild, ViewContainerRef } from '@angular/core';
 import { DialogService } from '../../services/dialog.service';
 import { ArrayUtils } from '../../utils/array.utils';
+import { ScreenUtils } from '../../utils/screen.utils';
 import { DialogButton } from './dialog-button.class';
 import { DialogContentBase } from './dialog-content-base.class';
 
@@ -42,15 +43,14 @@ export class DialogContainerComponent<ResultType, InputsType> implements AfterVi
   }
 
   ngAfterViewInit(): void {
-    if (!this.top) {
-      this.top = Number.parseInt(window.localStorage.getItem(this.contentComponentType.name + '.top'));
+    if (ScreenUtils.isLargeScreen()) {
+      if (!this.top) {
+        this.top = Number.parseInt(window.localStorage.getItem(this.contentComponentType.name + '.top'));
+      }
+      if (!this.left) {
+        this.left = Number.parseInt(window.localStorage.getItem(this.contentComponentType.name + '.left'));
+      }
     }
-
-    if (!this.left) {
-      this.left = Number.parseInt(window.localStorage.getItem(this.contentComponentType.name + '.left'));
-    }
-
-    // TODO check if out of bounds
 
     const contentRef: ComponentRef<DialogContentBase<ResultType, InputsType>> = this.containerRef.createComponent(this.contentComponentType);
     this.contentComponentInstance = contentRef.instance;
@@ -115,8 +115,8 @@ export class DialogContainerComponent<ResultType, InputsType> implements AfterVi
   @HostListener('document:mouseup', ['$event'])
   protected onHeaderMouseUp(): void {
     this.isMouseDown = false;
-    localStorage.setItem(this.contentComponentType.name + '.top', this.top.toString());
-    localStorage.setItem(this.contentComponentType.name + '.left', this.left.toString());
+    if (this.top !== undefined) localStorage.setItem(this.contentComponentType.name + '.top', this.top.toString());
+    if (this.left !== undefined) localStorage.setItem(this.contentComponentType.name + '.left', this.left.toString());
   }
 
   @HostListener('document:mousemove', ['$event'])
@@ -151,6 +151,14 @@ export class DialogContainerComponent<ResultType, InputsType> implements AfterVi
       const dialog = this.dialogService.dialogs[i];
       dialog.borderWarning = true;
       setTimeout(() => dialog.borderWarning = false, 500);
+    }
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onScreenResize(event: Event) {
+    if (!ScreenUtils.isLargeScreen()) {
+      this.top = null;
+      this.left = null;
     }
   }
 
