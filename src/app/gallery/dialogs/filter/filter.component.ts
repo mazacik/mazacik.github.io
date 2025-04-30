@@ -26,6 +26,8 @@ export class FilterComponent extends DialogContentBase<boolean> {
     hideHeaderCloseButton: true
   };
 
+  private changes: boolean = false;
+
   constructor(
     protected galleryService: GalleryService,
     protected stateService: GalleryStateService
@@ -45,11 +47,13 @@ export class FilterComponent extends DialogContentBase<boolean> {
   }
 
   protected toggleFilter(filter: Filter): void {
+    this.changes = true;
     filter.state = filter.state == 0 ? 1 : filter.state == 1 ? -1 : 0;
     this.stateService.updateFilters();
   }
 
   protected clearFilters(): void {
+    this.changes = true;
     this.stateService.tags.forEach(tag => tag.state = 0);
     this.stateService.updateFilters();
   }
@@ -59,7 +63,7 @@ export class FilterComponent extends DialogContentBase<boolean> {
   }
 
   public close(): void {
-    this.stateService.save();
+    if (this.changes) this.stateService.save();
     this.resolve(true);
   }
 
