@@ -97,7 +97,7 @@ export class GalleryStateService {
 
     this.updateFilters();
     this.applicationService.loading.set(false);
-    // this.save();
+    if (!data.settings) this.save();
   }
 
   private async processImages(data: Data, folderId: string, imageCollector: GalleryImage[], recursionTracker: Set<Promise<void>>): Promise<void> {
