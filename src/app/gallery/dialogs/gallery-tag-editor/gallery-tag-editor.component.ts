@@ -21,7 +21,9 @@ import { GalleryStateService } from '../../services/gallery-state.service';
 })
 export class GalleryTagEditorComponent extends DialogContentBase<Tag> implements OnInit {
 
-  public override inputs: { tag?: Tag, tagName?: string };
+  public override inputs: { tag?: Tag };
+
+  protected name: string;
 
   public configuration: DialogContainerConfiguration = {
     title: 'Tag Editor',
@@ -47,7 +49,7 @@ export class GalleryTagEditorComponent extends DialogContentBase<Tag> implements
   }
 
   ngOnInit(): void {
-    if (this.inputs.tag) this.inputs.tagName = this.inputs.tag.name;
+    if (this.inputs.tag) this.name = this.inputs.tag.name;
   }
 
   protected deleteTag(): void {
@@ -68,28 +70,35 @@ export class GalleryTagEditorComponent extends DialogContentBase<Tag> implements
   }
 
   protected canSubmit(): boolean {
-    if (StringUtils.isEmpty(this.inputs.tagName)) {
+    if (StringUtils.isEmpty(this.name)) {
       return false;
     }
 
-    if (this.inputs.tag && this.inputs.tagName == this.inputs.tag.name) {
+    if (this.inputs.tag && this.name == this.inputs.tag.name) {
       return true;
     }
 
-    return this.stateService.tags.find(tag => this.inputs.tagName == tag.name) == null;
+    return this.stateService.tags.find(tag => this.name == tag.name) == null;
   }
 
   public override submit(): void {
     if (this.canSubmit()) {
       if (!this.inputs.tag) {
         this.inputs.tag = {
-          name: this.inputs.tagName,
+          name: this.name,
           state: 0
         };
 
         this.stateService.tags.push(this.inputs.tag);
       } else {
-        this.inputs.tag.name = this.inputs.tagName;
+        this.stateService.images.forEach(image => {
+          const index: number = image.tags.findIndex(tag => tag == this.inputs.tag.name);
+          if (index != -1) {
+            image.tags[index] = this.name;
+          }
+        });
+
+        this.inputs.tag.name = this.name;
       }
 
       this.stateService.tags.sort((tag1, tag2) => tag1.name.localeCompare(tag2.name));
