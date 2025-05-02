@@ -11,13 +11,13 @@
     max-height: 50vh;
     display: flex;
     flex-direction: column;
-    flex-wrap: wrap;
     column-gap: 1rem;
     row-gap: $gap;
     overflow: auto;
 
     @media screen and (min-width:768px) {
       width: max-content;
+      flex-wrap: wrap;
     }
   }
 
