@@ -83,14 +83,7 @@ export class GalleryTagEditorComponent extends DialogContentBase<Tag> implements
 
   public override submit(): void {
     if (this.canSubmit()) {
-      if (!this.inputs.tag) {
-        this.inputs.tag = {
-          name: this.name,
-          state: 0
-        };
-
-        this.stateService.tags.push(this.inputs.tag);
-      } else {
+      if (this.inputs.tag) {
         this.stateService.images.forEach(image => {
           const index: number = image.tags.findIndex(tag => tag == this.inputs.tag.name);
           if (index != -1) {
@@ -99,6 +92,13 @@ export class GalleryTagEditorComponent extends DialogContentBase<Tag> implements
         });
 
         this.inputs.tag.name = this.name;
+      } else {
+        this.inputs.tag = {
+          name: this.name,
+          state: 0
+        };
+
+        this.stateService.tags.push(this.inputs.tag);
       }
 
       this.stateService.tags.sort((tag1, tag2) => tag1.name.localeCompare(tag2.name));
