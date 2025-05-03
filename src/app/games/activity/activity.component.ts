@@ -58,7 +58,7 @@ export class ActivityComponent implements OnInit {
     if (value >= 2) {
       this.teamCount = value;
       this.teamCountValid = true;
-      element.style.borderColor = window.getComputedStyle(document.body).getPropertyValue('--border-color');
+      element.style.borderColor = window.getComputedStyle(document.body).getPropertyValue('--color-border');
     } else {
       this.teamCountValid = false;
       element.style.borderColor = 'red';
@@ -70,7 +70,7 @@ export class ActivityComponent implements OnInit {
     if (value > 0) {
       this.roundDuration = value;
       this.roundDurationValid = true;
-      element.style.borderColor = window.getComputedStyle(document.body).getPropertyValue('--border-color');
+      element.style.borderColor = window.getComputedStyle(document.body).getPropertyValue('--color-border');
     } else {
       this.roundDurationValid = false;
       element.style.borderColor = 'red';
@@ -152,7 +152,7 @@ export class ActivityComponent implements OnInit {
     if (value > 0 && value <= this.teams.length) {
       this.forEveryoneWinnerTeamIndex = value - 1;
       this.forEveryoneWinnerTeamIndexValid = true;
-      element.style.borderColor = window.getComputedStyle(document.body).getPropertyValue('--border-color');
+      element.style.borderColor = window.getComputedStyle(document.body).getPropertyValue('--color-border');
     } else {
       this.forEveryoneWinnerTeamIndexValid = false;
       element.style.borderColor = 'red';

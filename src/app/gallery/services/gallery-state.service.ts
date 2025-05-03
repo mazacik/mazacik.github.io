@@ -14,6 +14,7 @@ import { Filter } from "../model/filter.interface";
 import { GallerySettings } from "../model/gallery-settings.interface";
 import { GroupData } from "../model/group-data.interface";
 import { ImageData } from "../model/image-data.interface";
+import { TagGroup } from "../model/tag-group.interface";
 import { Tag } from "../model/tag.interface";
 import { GalleryGoogleDriveService } from "./gallery-google-drive.service";
 
@@ -36,6 +37,7 @@ export class GalleryStateService {
   public target: WritableSignal<GalleryImage> = signal(null);
 
   public tags: Tag[];
+  public openTagGroup: TagGroup;
 
   public filterFavorite: Filter = {};
   public filterBookmark: Filter = {};

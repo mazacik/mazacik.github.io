@@ -4,6 +4,7 @@ import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/d
 import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
 import { GalleryService } from '../../gallery.service';
 import { GalleryImage } from '../../model/gallery-image.class';
+import { TagGroup } from '../../model/tag-group.interface';
 import { Tag } from '../../model/tag.interface';
 import { GalleryStateService } from '../../services/gallery-state.service';
 
@@ -29,6 +30,8 @@ export class TagManagerComponent extends DialogContentBase<boolean> {
     hideHeaderCloseButton: true
   };
 
+  protected groups: TagGroup[] = [];
+
   protected changes: boolean = false;
 
   constructor(
@@ -36,6 +39,27 @@ export class TagManagerComponent extends DialogContentBase<boolean> {
     protected stateService: GalleryStateService
   ) {
     super();
+
+    for (const tag of this.stateService.tags) {
+      const [groupName, tagName] = tag.name.split(' - ');
+      const group = this.groups.find(group => group.name == groupName);
+      if (group) {
+        group.tags.push({ actualTag: tag, name: tagName });
+      } else {
+        this.groups.push({ name: groupName, tags: [{ actualTag: tag, name: tagName }] });
+      }
+    }
+
+    if (this.stateService.openTagGroup == null) {
+      this.stateService.openTagGroup = this.groups[0];
+    } else {
+      this.stateService.openTagGroup = this.groups.find(group => group.name == this.stateService.openTagGroup.name);
+    }
+  }
+
+  protected isSomeTagInGroupActive(group: TagGroup): boolean {
+    const actualTagNames = group.tags.map(tag => tag.actualTag.name);
+    return this.inputs.image.tags.some(tag => actualTagNames.includes(tag));
   }
 
   protected getFavoriteClass(isIcon: boolean): string {
