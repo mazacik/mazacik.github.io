@@ -10,6 +10,7 @@ import { GallerySettingsComponent } from "./dialogs/settings/gallery-settings.co
 import { TagManagerComponent } from "./dialogs/tag-manager/tag-manager.component";
 import { GalleryGroup } from "./model/gallery-group.class";
 import { GalleryImage } from "./model/gallery-image.class";
+import { TagGroup } from "./model/tag-group.interface";
 import { Tag } from "./model/tag.interface";
 import { GalleryStateService } from "./services/gallery-state.service";
 
@@ -36,7 +37,7 @@ export class GalleryService {
     this.dialogService.create(ImageComparisonComponent, { images: ArrayUtils.shuffle(this.stateService.images.slice()) });
   }
 
-  public openGroupEditor(group?: GalleryGroup): void {
+  public openImageGroupEditor(group?: GalleryGroup): void {
     this.dialogService.create(GroupManagerComponent, { sourceGroup: group });
   }
 
@@ -48,8 +49,8 @@ export class GalleryService {
     this.dialogService.create(GallerySettingsComponent);
   }
 
-  public openTagEditor(tag?: Tag): void {
-    this.dialogService.create(GalleryTagEditorComponent, { tag: tag });
+  public openTagEditor(mode: 'create' | 'edit', group: TagGroup, tag?: Tag): void {
+    this.dialogService.create(GalleryTagEditorComponent, { mode, group, tag });
   }
 
   public openTagManager(image: GalleryImage): void {

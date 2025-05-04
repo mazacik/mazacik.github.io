@@ -36,7 +36,7 @@ export class GalleryStateService {
   public filter: WritableSignal<GalleryImage[]> = signal([]);
   public target: WritableSignal<GalleryImage> = signal(null);
 
-  public tags: Tag[];
+  public tagGroups: TagGroup[];
   public openTagGroup: TagGroup;
 
   public filterFavorite: Filter = {};
@@ -64,7 +64,8 @@ export class GalleryStateService {
     this.filterGroupSizeMin.state = data.groupSizeFilterMin;
     this.filterGroupSizeMax.state = data.groupSizeFilterMax;
     this.comparison = data.comparison;
-    this.tags = data.tags;
+    this.tagGroups = data.tagGroups;
+    this.openTagGroup = data.tagGroups[0];
 
     if (data.settings) {
       this.settings = data.settings;
@@ -160,13 +161,11 @@ export class GalleryStateService {
       data.bookmarksFilter = this.filterBookmark.state;
       data.groupSizeFilterMin = 0;
       data.groupSizeFilterMax = 999;
-      data.tags = this.tags;
       data.settings = this.settings;
       data.comparison = this.comparison;
       data.imageProperties = this.images.map(image => this.serializeImage(image));
       data.groupProperties = this.groups.filter(group => !ArrayUtils.isEmpty(group.images)).map(group => this.serializeGroup(group));
-
-      this.tags.forEach(tag => delete (tag as any).id);
+      data.tagGroups = this.tagGroups;
 
       this.googleService.updateContent(this.googleService.dataFileId, data).then(metadata => {
         if (!metadata) {
@@ -235,14 +234,16 @@ export class GalleryStateService {
     }
 
     let hasTag: boolean;
-    for (const tag of this.tags) {
-      hasTag = image.tags.includes(tag.name);
-      if (tag.state == -1 && hasTag) {
-        return false;
-      }
+    for (const group of this.tagGroups) {
+      for (const tag of group.tags) {
+        hasTag = image.tags.includes(tag.id);
+        if (tag.state == -1 && hasTag) {
+          return false;
+        }
 
-      if (tag.state == 1 && !hasTag) {
-        return false;
+        if (tag.state == 1 && !hasTag) {
+          return false;
+        }
       }
     }
 
@@ -266,7 +267,7 @@ export class GalleryStateService {
   }
 
   public toggleTag(image: GalleryImage, tag: Tag, save: boolean = false): void {
-    ArrayUtils.toggle(image.tags, tag.name);
+    ArrayUtils.toggle(image.tags, tag.id);
     if (save) {
       this.updateFilters(image);
       this.save();

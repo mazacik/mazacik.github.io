@@ -377,6 +377,10 @@ hr {
   height: auto;
 }
 
+.white-space-nowrap {
+  white-space: nowrap;
+}
+
 .button {
   width: fit-content;
   min-width: $button-height;

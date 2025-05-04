@@ -15,7 +15,7 @@
       display: flex;
       flex-direction: column;
       row-gap: $gap;
-      overflow-y: auto;
+      overflow: visible;
 
       .group-container {
         cursor: pointer;
@@ -36,7 +36,7 @@
       display: flex;
       flex-direction: column;
       row-gap: $gap;
-      overflow-y: auto;
+      overflow: visible;
       margin-left: 1rem;
     }
   }

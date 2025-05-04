@@ -55,7 +55,7 @@
 
       </div>
       <div class="sidebar-end">
-        <i *ngIf="target?.group" class="icon-button active fa-solid fa-object-group" tp="Group Manager" tpPlacement="left" (click)="galleryService.openGroupEditor(target.group)"></i>
+        <i *ngIf="target?.group" class="icon-button active fa-solid fa-object-group" tp="Group Manager" tpPlacement="left" (click)="galleryService.openImageGroupEditor(target.group)"></i>
         <i class="icon-button fa-solid fa-circle-info" tp="File Information" tpPlacement="left" (click)="galleryService.openFileInformation(target)"></i>
       </div>
     </div>

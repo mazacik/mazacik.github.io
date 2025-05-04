@@ -1,4 +1,10 @@
-<span class="element-label">Name</span>
+<span class="element-label">Group Name</span>
 <div class="element-container">
-  <input class="element" [(ngModel)]="name">
+  <input class="element" [(ngModel)]="groupName">
 </div>
+<ng-container *ngIf="inputs.mode == 'create' || inputs.tag">
+  <span class="element-label">Tag Name</span>
+  <div class="element-container">
+    <input class="element" [(ngModel)]="tagName">
+  </div>
+</ng-container>

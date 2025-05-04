@@ -30,8 +30,6 @@ export class TagManagerComponent extends DialogContentBase<boolean> {
     hideHeaderCloseButton: true
   };
 
-  protected groups: TagGroup[] = [];
-
   protected changes: boolean = false;
 
   constructor(
@@ -39,27 +37,10 @@ export class TagManagerComponent extends DialogContentBase<boolean> {
     protected stateService: GalleryStateService
   ) {
     super();
-
-    for (const tag of this.stateService.tags) {
-      const [groupName, tagName] = tag.name.split(' - ');
-      const group = this.groups.find(group => group.name == groupName);
-      if (group) {
-        group.tags.push({ actualTag: tag, name: tagName });
-      } else {
-        this.groups.push({ name: groupName, tags: [{ actualTag: tag, name: tagName }] });
-      }
-    }
-
-    if (this.stateService.openTagGroup == null) {
-      this.stateService.openTagGroup = this.groups[0];
-    } else {
-      this.stateService.openTagGroup = this.groups.find(group => group.name == this.stateService.openTagGroup.name);
-    }
   }
 
   protected isSomeTagInGroupActive(group: TagGroup): boolean {
-    const actualTagNames = group.tags.map(tag => tag.actualTag.name);
-    return this.inputs.image.tags.some(tag => actualTagNames.includes(tag));
+    return this.inputs.image.tags.some(imageTag => group.tags.some(groupTag => groupTag.id == imageTag));
   }
 
   protected getFavoriteClass(isIcon: boolean): string {
@@ -79,7 +60,7 @@ export class TagManagerComponent extends DialogContentBase<boolean> {
   }
 
   protected getTagClass(tag: Tag, isIcon: boolean = false): string {
-    if (this.inputs.image.tags.includes(tag.name)) {
+    if (this.inputs.image.tags.includes(tag.id)) {
       return isIcon ? 'positive fa-solid' : 'positive';
     } else {
       return isIcon ? 'fa-regular' : '';

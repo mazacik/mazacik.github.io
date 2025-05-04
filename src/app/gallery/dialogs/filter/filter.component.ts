@@ -27,8 +27,6 @@ export class FilterComponent extends DialogContentBase<boolean> {
     hideHeaderCloseButton: true
   };
 
-  protected groups: TagGroup[] = [];
-
   private changes: boolean = false;
 
   constructor(
@@ -36,26 +34,10 @@ export class FilterComponent extends DialogContentBase<boolean> {
     protected stateService: GalleryStateService
   ) {
     super();
-
-    for (const tag of this.stateService.tags) {
-      const [groupName, tagName] = tag.name.split(' - ');
-      const group = this.groups.find(group => group.name == groupName);
-      if (group) {
-        group.tags.push({ actualTag: tag, name: tagName });
-      } else {
-        this.groups.push({ name: groupName, tags: [{ actualTag: tag, name: tagName }] });
-      }
-    }
-
-    if (this.stateService.openTagGroup == null) {
-      this.stateService.openTagGroup = this.groups[0];
-    } else {
-      this.stateService.openTagGroup = this.groups.find(group => group.name == this.stateService.openTagGroup.name);
-    }
   }
 
   protected isSomeTagInGroupActive(group: TagGroup): boolean {
-    return group.tags.some(tag => tag.actualTag.state != 0);
+    return group.tags.some(tag => tag.state != 0);
   }
 
   protected getFilterClass(filter: Filter, isIcon: boolean = false): string {
@@ -77,12 +59,12 @@ export class FilterComponent extends DialogContentBase<boolean> {
 
   protected clearFilters(): void {
     this.changes = true;
-    this.stateService.tags.forEach(tag => tag.state = 0);
+    this.stateService.tagGroups.forEach(group => group.tags.forEach(tag => tag.state = 0));
     this.stateService.updateFilters();
   }
 
   protected canClear(): boolean {
-    return this.stateService.tags.some(tag => tag.state != 0);
+    return this.stateService.tagGroups.some(group => group.tags.some(tag => tag.state != 0));
   }
 
   public close(): void {
