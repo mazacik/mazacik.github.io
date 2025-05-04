@@ -4,6 +4,7 @@ import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/d
 import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
 import { GalleryService } from '../../gallery.service';
 import { GalleryImage } from '../../model/gallery-image.class';
+import { TagGroup } from '../../model/tag-group.interface';
 import { Tag } from '../../model/tag.interface';
 import { GalleryStateService } from '../../services/gallery-state.service';
 
@@ -38,6 +39,10 @@ export class TagManagerComponent extends DialogContentBase<boolean> {
     super();
   }
 
+  protected isSomeTagInGroupActive(group: TagGroup): boolean {
+    return this.inputs.image.tags.some(imageTag => group.tags.some(groupTag => groupTag.id == imageTag));
+  }
+
   protected getFavoriteClass(isIcon: boolean): string {
     if (this.inputs.image.heart) {
       return isIcon ? 'positive fa-solid' : 'positive';
@@ -55,7 +60,7 @@ export class TagManagerComponent extends DialogContentBase<boolean> {
   }
 
   protected getTagClass(tag: Tag, isIcon: boolean = false): string {
-    if (this.inputs.image.tags.includes(tag.name)) {
+    if (this.inputs.image.tags.includes(tag.id)) {
       return isIcon ? 'positive fa-solid' : 'positive';
     } else {
       return isIcon ? 'fa-regular' : '';

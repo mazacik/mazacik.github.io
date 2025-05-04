@@ -49,6 +49,7 @@ body.light-theme {
   --color-positive: forestgreen;
   --color-negative: orangered;
   --color-overlay: rgba(255, 255, 255, 0.65);
+  --color-dialog-background: rgba(0, 0, 0, 0.15);
 }
 
 body.dark-theme {
@@ -65,6 +66,7 @@ body.dark-theme {
   --color-positive: yellowgreen;
   --color-negative: orangered;
   --color-overlay: rgba(0, 0, 0, 0.65);
+  --color-dialog-background: rgba(0, 0, 0, 0.5);
 }
 
 // tippy
@@ -350,6 +352,12 @@ hr {
   filter: grayscale(1);
 }
 
+.hover-brighten {
+  &:hover {
+    filter: brightness(1.5);
+  }
+}
+
 .stack-container {
   width: 100%;
   height: 100%;
@@ -359,6 +367,18 @@ hr {
   >* {
     grid-area: content;
   }
+}
+
+.width-auto {
+  width: auto;
+}
+
+.height-auto {
+  height: auto;
+}
+
+.white-space-nowrap {
+  white-space: nowrap;
 }
 
 .button {
@@ -376,7 +396,7 @@ hr {
   border: 1px solid var(--color-border);
 
   background-color: var(--color-hover);
-  text-shadow: -0.5px 0 var(--color-text-shadow), 0 0.5px var(--color-text-shadow), 0.5px 0 var(--color-text-shadow), 0 -0.5px var(--color-text-shadow);
+  // text-shadow: -0.5px 0 var(--color-text-shadow), 0 0.5px var(--color-text-shadow), 0.5px 0 var(--color-text-shadow), 0 -0.5px var(--color-text-shadow);
 
   transition-property: background-color, opacity;
   transition-duration: $transition-duration;
@@ -464,6 +484,10 @@ span.icon-button {
 
 .gap {
   gap: $gap;
+}
+
+.gap-3 {
+  gap: $gap * 3;
 }
 
 .center {

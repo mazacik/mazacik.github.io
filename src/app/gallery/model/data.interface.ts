@@ -1,7 +1,7 @@
 import { GallerySettings } from "./gallery-settings.interface";
 import { GroupData } from "./group-data.interface";
 import { ImageData } from "./image-data.interface";
-import { Tag } from "./tag.interface";
+import { TagGroup } from "./tag-group.interface";
 
 export interface Data {
 
@@ -11,7 +11,7 @@ export interface Data {
 
   imageProperties: ImageData[];
   groupProperties: GroupData[];
-  tags: Tag[];
+  tagGroups: TagGroup[];
 
   heartsFilter: number;
   bookmarksFilter: number;

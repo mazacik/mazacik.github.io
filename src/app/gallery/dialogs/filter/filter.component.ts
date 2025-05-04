@@ -4,6 +4,7 @@ import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/d
 import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
 import { GalleryService } from '../../gallery.service';
 import { Filter } from '../../model/filter.interface';
+import { TagGroup } from '../../model/tag-group.interface';
 import { GalleryStateService } from '../../services/gallery-state.service';
 
 @Component({
@@ -35,6 +36,10 @@ export class FilterComponent extends DialogContentBase<boolean> {
     super();
   }
 
+  protected isSomeTagInGroupActive(group: TagGroup): boolean {
+    return group.tags.some(tag => tag.state != 0);
+  }
+
   protected getFilterClass(filter: Filter, isIcon: boolean = false): string {
     switch (filter.state) {
       case 1:
@@ -54,12 +59,12 @@ export class FilterComponent extends DialogContentBase<boolean> {
 
   protected clearFilters(): void {
     this.changes = true;
-    this.stateService.tags.forEach(tag => tag.state = 0);
+    this.stateService.tagGroups.forEach(group => group.tags.forEach(tag => tag.state = 0));
     this.stateService.updateFilters();
   }
 
-  protected isActiveFilter(): boolean {
-    return this.stateService.tags.some(tag => tag.state != 0);
+  protected canClear(): boolean {
+    return this.stateService.tagGroups.some(group => group.tags.some(tag => tag.state != 0));
   }
 
   public close(): void {
