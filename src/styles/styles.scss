@@ -373,6 +373,10 @@ hr {
   width: auto;
 }
 
+.width-fit {
+  width: fit-content;
+}
+
 .height-auto {
   height: auto;
 }
@@ -480,6 +484,22 @@ span.icon-button {
   &.grow {
     flex: 1;
   }
+
+  &.flex-start-h {
+    justify-content: flex-start;
+  }
+
+  &.flex-start-v {
+    align-items: flex-start;
+  }
+
+  &.flex-end-h {
+    justify-content: flex-end;
+  }
+
+  &.flex-end-v {
+    align-items: flex-end;
+  }
 }
 
 .gap {
@@ -492,6 +512,7 @@ span.icon-button {
 
 .center {
   align-items: center;
+  justify-items: center;
   justify-content: center;
 }
 

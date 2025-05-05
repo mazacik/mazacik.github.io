@@ -3,7 +3,25 @@
   <i class="icon-button fa-solid fa-folder-plus" tp="Create Image Group" (click)="galleryService.openImageGroupEditor()"></i>
 </div>
 <div class="header-center">
+  <div class="negative flex flex-end-h">
+    <ng-container *ngFor="let tag of getNegativeTags(); let i = index;">
+      <div *ngIf="i != 0" class="v-separator gap"></div>
+      <div class="stack-container hover-container cursor-pointer center width-fit" (click)="resetTag(tag)">
+        <i class="fa-solid fa-times hover-visible"></i>
+        <span class="hover-hidden">{{ tag.name }}</span>
+      </div>
+    </ng-container>
+  </div>
   <i *ngIf="stateService.images.length > 0" class="icon-button fa-solid fa-filter" tp="Filter" (click)="galleryService.openFilter()"></i>
+  <div class="positive flex">
+    <ng-container *ngFor="let tag of getPositiveTags(); let i = index;">
+      <div *ngIf="i != 0" class="v-separator gap"></div>
+      <div class="stack-container hover-container cursor-pointer center width-fit" (click)="resetTag(tag)">
+        <i class="fa-solid fa-times hover-visible"></i>
+        <span class="hover-hidden">{{ tag.name }}</span>
+      </div>
+    </ng-container>
+  </div>
 </div>
 <div class="header-end">
   <i class="icon-button fa-solid" [ngClass]="applicationService.isDarkTheme() ? 'fa-moon' : 'fa-sun'" tp="Brightness Mode" (click)="applicationService.toggleTheme()"></i>
