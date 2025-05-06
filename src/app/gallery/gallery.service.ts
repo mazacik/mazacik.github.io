@@ -54,7 +54,7 @@ export class GalleryService {
   }
 
   public openTagManager(image: GalleryImage): void {
-    this.dialogService.create(TagManagerComponent, { image: image });
+    this.dialogService.create(TagManagerComponent);
   }
 
   public openYandexReverseImageSearch(event: MouseEvent, target: GalleryImage): void {

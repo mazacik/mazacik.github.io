@@ -13,7 +13,7 @@
           <i class="icon-button fa-bookmark" [ngClass]="image.bookmark ? 'fa-solid active' : 'fa-regular'" tp="Bookmark" (click)="$event.stopPropagation(); stateService.toggleBookmark(image, true);"></i>
         </div>
         <div class="brick-footer">
-          <i class="icon-button fa-solid fa-tags" tp="Tag Manager" (click)="galleryService.openTagManager(image); $event.stopPropagation();"></i>
+          <!-- <i class="icon-button fa-solid fa-tags" tp="Tag Manager" (click)="galleryService.openTagManager(image); $event.stopPropagation();"></i> -->
           <i *ngIf="image.group" class="icon-button active fa-solid fa-object-group" tp="Group Manager" (click)="galleryService.openImageGroupEditor(image.group); $event.stopPropagation();"></i>
         </div>
       </ng-container>

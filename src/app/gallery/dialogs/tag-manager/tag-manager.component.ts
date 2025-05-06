@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, effect } from '@angular/core';
 import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
 import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
@@ -20,29 +20,28 @@ import { GalleryStateService } from '../../services/gallery-state.service';
 })
 export class TagManagerComponent extends DialogContentBase<boolean> {
 
-  public override inputs: { image: GalleryImage };
-
   public configuration: DialogContainerConfiguration = {
     title: 'Tag Manager',
     buttons: [{
-      text: () => 'Save',
-      click: () => this.submit()
+      text: () => 'Close',
+      click: () => this.close()
     }],
-    hideHeaderCloseButton: true
+    hideHeaderCloseButton: true,
+    hideClickOverlay: true
   };
 
+  protected target: GalleryImage;
   protected groupMode: boolean = false;
-  protected changes: boolean = false;
 
   constructor(
     protected galleryService: GalleryService,
     protected stateService: GalleryStateService
   ) {
     super();
+    effect(() => this.target = this.stateService.target());
   }
 
   public toggleTag(image: GalleryImage, tag: Tag): void {
-    this.changes = true;
     if (image.group) {
       if (this.groupMode) {
         if (image.group.tags.includes(tag)) {
@@ -59,64 +58,57 @@ export class TagManagerComponent extends DialogContentBase<boolean> {
     } else {
       ArrayUtils.toggle(image.tags, tag);
     }
+
+    this.stateService.save();
+    this.stateService.updateFilters();
   }
 
   protected isSomeTagActiveInGroup(group: TagGroup): boolean {
-    if (this.inputs.image.group && group.tags.some(tag1 => this.inputs.image.group.tags.some(tag2 => tag1 == tag2))) {
-      return true;
-    }
+    if (this.target) {
+      if (this.target.group && group.tags.some(tag1 => this.target.group.tags.some(tag2 => tag1 == tag2))) {
+        return true;
+      }
 
-    if (!this.groupMode) {
-      return group.tags.some(tag1 => this.inputs.image.tags.some(tag2 => tag1 == tag2));
-    }
-  }
-
-  protected getFavoriteClass(isIcon: boolean): string {
-    if (!this.groupMode && this.inputs.image.heart) {
-      return isIcon ? 'positive fa-solid' : 'positive';
-    } else {
-      return isIcon ? 'fa-regular' : '';
-    }
-  }
-
-  protected getBookmarkClass(isIcon: boolean): string {
-    if (!this.groupMode && this.inputs.image.bookmark) {
-      return isIcon ? 'positive fa-solid' : 'positive';
-    } else {
-      return isIcon ? 'fa-regular' : '';
+      if (!this.groupMode) {
+        return group.tags.some(tag1 => this.target.tags.some(tag2 => tag1 == tag2));
+      }
     }
   }
 
   protected getTagClass(tag: Tag): string {
     const classes: string[] = [];
-    if (this.inputs.image.group) {
-      if (this.groupMode) {
+
+    if (this.target) {
+      if (this.target.group) {
+        if (this.groupMode) {
+          classes.push('cursor-pointer');
+          classes.push('hover-brighten');
+
+          if (this.target.group.tags.includes(tag)) {
+            classes.push('positive');
+          }
+        } else {
+          if (this.target.group.tags.includes(tag)) {
+            classes.push('positive');
+            classes.push('underline');
+            classes.push('opacity-075');
+            classes.push('pointer-events-none');
+          } else {
+            classes.push('cursor-pointer');
+            classes.push('hover-brighten');
+          }
+
+          if (this.target.tags.includes(tag)) {
+            classes.push('positive');
+          }
+        }
+      } else {
         classes.push('cursor-pointer');
         classes.push('hover-brighten');
 
-        if (this.inputs.image.group.tags.includes(tag)) {
+        if (this.target.tags.includes(tag)) {
           classes.push('positive');
         }
-      } else {
-        if (this.inputs.image.group.tags.includes(tag)) {
-          classes.push('positive');
-          classes.push('underline');
-          classes.push('opacity-075');
-        } else {
-          classes.push('cursor-pointer');
-          classes.push('hover-brighten');
-        }
-
-        if (this.inputs.image.tags.includes(tag)) {
-          classes.push('positive');
-        }
-      }
-    } else {
-      classes.push('cursor-pointer');
-      classes.push('hover-brighten');
-
-      if (this.inputs.image.tags.includes(tag)) {
-        classes.push('positive');
       }
     }
 
@@ -124,10 +116,6 @@ export class TagManagerComponent extends DialogContentBase<boolean> {
   }
 
   public close(): void {
-    if (this.changes) {
-      this.stateService.save();
-      this.stateService.updateFilters();
-    }
     this.resolve(true);
   }
 
