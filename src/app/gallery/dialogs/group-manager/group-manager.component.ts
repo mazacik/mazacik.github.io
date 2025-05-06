@@ -56,7 +56,7 @@ export class GroupManagerComponent extends DialogContentBase<void, {}> implement
   }
 
   ngOnInit(): void {
-    this.stateService.groupEditorGroup = { images: this.inputs.sourceGroup ? [...this.inputs.sourceGroup.images] : [] }
+    this.stateService.groupEditorGroup = { images: this.inputs.sourceGroup ? [...this.inputs.sourceGroup.images] : [], tags: [] };
     this.stateService.updateFilters();
   }
 

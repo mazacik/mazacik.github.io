@@ -59,12 +59,12 @@ export class FilterComponent extends DialogContentBase<boolean> {
 
   protected clearFilters(): void {
     this.changes = true;
-    this.stateService.tagGroups.forEach(group => group.tags.forEach(tag => tag.state = 0));
+    this.stateService.tags.forEach(tag => tag.state = 0);
     this.stateService.updateFilters();
   }
 
   protected canClear(): boolean {
-    return this.stateService.tagGroups.some(group => group.tags.some(tag => tag.state != 0));
+    return this.stateService.tags.some(tag => tag.state != 0);
   }
 
   public close(): void {

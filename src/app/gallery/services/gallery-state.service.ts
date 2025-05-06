@@ -36,6 +36,7 @@ export class GalleryStateService {
   public filter: WritableSignal<GalleryImage[]> = signal([]);
   public target: WritableSignal<GalleryImage> = signal(null);
 
+  public tags: Tag[];
   public tagGroups: TagGroup[];
   public openTagGroup: TagGroup;
 
@@ -59,13 +60,17 @@ export class GalleryStateService {
     const data: Data = await this.googleService.getData();
     this.dataFolderId = data.dataFolderId;
     this.archiveFolderId = data.archiveFolderId;
-    this.filterFavorite.state = data.heartsFilter;
-    this.filterBookmark.state = data.bookmarksFilter;
-    this.filterGroupSizeMin.state = data.groupSizeFilterMin;
-    this.filterGroupSizeMax.state = data.groupSizeFilterMax;
+    this.filterFavorite.state = data.heartsFilter || 0;
+    this.filterBookmark.state = data.bookmarksFilter || 0;
+    this.filterGroupSizeMin.state = data.groupSizeFilterMin || 0;
+    this.filterGroupSizeMax.state = data.groupSizeFilterMax || 999;
     this.comparison = data.comparison;
-    this.tagGroups = data.tagGroups;
+    this.tagGroups = data.tagGroups || [];
     this.openTagGroup = data.tagGroups[0];
+    this.tags = data.tagGroups.flatMap(group => group.tags);
+
+    if (!data.imageProperties) data.imageProperties = [];
+    if (!data.groupProperties) data.groupProperties = [];
 
     if (data.settings) {
       this.settings = data.settings;
@@ -88,6 +93,7 @@ export class GalleryStateService {
       group.images = this.images.filter(image => groupProperties.imageIds.includes(image.id));
       group.images.sort((a, b) => groupProperties.imageIds.indexOf(a.id) - groupProperties.imageIds.indexOf(b.id));
       group.images.forEach(image => image.group = group);
+      group.tags = groupProperties.tagIds?.map(tagId => this.tags.find(tag => tag.id == tagId)) || [];
       return group;
     });
 
@@ -139,13 +145,18 @@ export class GalleryStateService {
       image.contentLink = this.sanitizer.bypassSecurityTrustResourceUrl('https://drive.google.com/file/d/' + image.id + '/preview') as string; // used in <iframe> display method
     }
 
+    image.tags = [];
     if (imageProperties) {
       image.heart = imageProperties.heart;
       image.bookmark = imageProperties.bookmark;
-      image.tags = imageProperties.tagIds || [];
+
+      let tag: Tag;
+      for (const tagId of imageProperties.tagIds) {
+        tag = this.tags.find(tag => tag.id == tagId);
+        if (tag) image.tags.push(tag);
+      }
     } else {
       if (this.settings.autoBookmark) image.bookmark = true;
-      image.tags = [];
     }
 
     return image;
@@ -184,13 +195,14 @@ export class GalleryStateService {
     image.id = galleryImage.id;
     image.heart = galleryImage.heart;
     image.bookmark = galleryImage.bookmark;
-    image.tagIds = galleryImage.tags;
+    image.tagIds = galleryImage.tags.map(tag => tag.id);
     return image;
   }
 
   private serializeGroup(galleryGroup: GalleryGroup): GroupData {
     const group: GroupData = {} as GroupData;
-    group.imageIds = galleryGroup.images.map(image => image.id)
+    group.imageIds = galleryGroup.images.map(image => image.id);
+    group.tagIds = galleryGroup.tags.map(tag => tag.id);
     return group;
   }
 
@@ -224,7 +236,7 @@ export class GalleryStateService {
       return false;
     }
 
-    const groupSize: number = image.group ? image.group.images.length : 0;
+    const groupSize: number = image.group?.images.length || 0;
     if (groupSize < this.filterGroupSizeMin.state) {
       return false;
     }
@@ -234,16 +246,14 @@ export class GalleryStateService {
     }
 
     let hasTag: boolean;
-    for (const group of this.tagGroups) {
-      for (const tag of group.tags) {
-        hasTag = image.tags.includes(tag.id);
-        if (tag.state == -1 && hasTag) {
-          return false;
-        }
+    for (const tag of this.tags) {
+      hasTag = image.tags.includes(tag) || image.group?.tags.includes(tag);
+      if (tag.state == -1 && hasTag) {
+        return false;
+      }
 
-        if (tag.state == 1 && !hasTag) {
-          return false;
-        }
+      if (tag.state == 1 && !hasTag) {
+        return false;
       }
     }
 
@@ -260,14 +270,6 @@ export class GalleryStateService {
 
   public toggleBookmark(image: GalleryImage, save: boolean = false): void {
     image.bookmark = !image.bookmark;
-    if (save) {
-      this.updateFilters(image);
-      this.save();
-    }
-  }
-
-  public toggleTag(image: GalleryImage, tag: Tag, save: boolean = false): void {
-    ArrayUtils.toggle(image.tags, tag.id);
     if (save) {
       this.updateFilters(image);
       this.save();

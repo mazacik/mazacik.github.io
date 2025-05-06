@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Grouped HTML Color Gradient</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 2rem;
+      background: #f5f5f5;
+      color: #333;
+    }
+
+    h2 {
+      margin-top: 2rem;
+    }
+
+    .color-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 1.5rem;
+    }
+
+    .color-box {
+      width: 40px;
+      height: 40px;
+      position: relative;
+      border: 1px solid #ccc;
+      cursor: pointer;
+    }
+
+    .color-box:hover::after {
+      content: attr(title);
+      position: absolute;
+      top: 100%;
+      left: 0;
+      font-size: 10px;
+      background: #fff;
+      padding: 2px 4px;
+      border: 1px solid #ccc;
+      white-space: nowrap;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+  <h1>HTML Colors Grouped by Hue and Lightness</h1>
+  <div id="container"></div>
+
+  <script>
+    const colorNames = [
+      "AliceBlue", "AntiqueWhite", "Aqua", "Aquamarine", "Azure", "Beige", "Bisque", "Black", "BlanchedAlmond",
+      "Blue", "BlueViolet", "Brown", "BurlyWood", "CadetBlue", "Chartreuse", "Chocolate", "Coral", "CornflowerBlue",
+      "Cornsilk", "Crimson", "Cyan", "DarkBlue", "DarkCyan", "DarkGoldenRod", "DarkGray", "DarkGreen", "DarkKhaki",
+      "DarkMagenta", "DarkOliveGreen", "DarkOrange", "DarkOrchid", "DarkRed", "DarkSalmon", "DarkSeaGreen",
+      "DarkSlateBlue", "DarkSlateGray", "DarkTurquoise", "DarkViolet", "DeepPink", "DeepSkyBlue", "DimGray",
+      "DodgerBlue", "FireBrick", "FloralWhite", "ForestGreen", "Fuchsia", "Gainsboro", "GhostWhite", "Gold", "GoldenRod",
+      "Gray", "Green", "GreenYellow", "HoneyDew", "HotPink", "IndianRed", "Indigo", "Ivory", "Khaki", "Lavender",
+      "LavenderBlush", "LawnGreen", "LemonChiffon", "LightBlue", "LightCoral", "LightCyan", "LightGoldenRodYellow",
+      "LightGray", "LightGreen", "LightPink", "LightSalmon", "LightSeaGreen", "LightSkyBlue", "LightSlateGray",
+      "LightSteelBlue", "LightYellow", "Lime", "LimeGreen", "Linen", "Magenta", "Maroon", "MediumAquaMarine",
+      "MediumBlue", "MediumOrchid", "MediumPurple", "MediumSeaGreen", "MediumSlateBlue", "MediumSpringGreen",
+      "MediumTurquoise", "MediumVioletRed", "MidnightBlue", "MintCream", "MistyRose", "Moccasin", "NavajoWhite",
+      "Navy", "OldLace", "Olive", "OliveDrab", "Orange", "OrangeRed", "Orchid", "PaleGoldenRod", "PaleGreen",
+      "PaleTurquoise", "PaleVioletRed", "PapayaWhip", "PeachPuff", "Peru", "Pink", "Plum", "PowderBlue", "Purple",
+      "RebeccaPurple", "Red", "RosyBrown", "RoyalBlue", "SaddleBrown", "Salmon", "SandyBrown", "SeaGreen", "SeaShell",
+      "Sienna", "Silver", "SkyBlue", "SlateBlue", "SlateGray", "Snow", "SpringGreen", "SteelBlue", "Tan", "Teal",
+      "Thistle", "Tomato", "Turquoise", "Violet", "Wheat", "White", "WhiteSmoke", "Yellow", "YellowGreen"
+    ];
+
+    function getHSL(color) {
+      const temp = document.createElement("div");
+      temp.style.color = color;
+      document.body.appendChild(temp);
+      const rgb = getComputedStyle(temp).color;
+      document.body.removeChild(temp);
+
+      const match = rgb.match(/\d+/g);
+      if (!match) return [0, 0, 0];
+
+      const r = parseInt(match[0]) / 255;
+      const g = parseInt(match[1]) / 255;
+      const b = parseInt(match[2]) / 255;
+
+      const max = Math.max(r, g, b), min = Math.min(r, g, b);
+      let h = 0, s = 0, l = (max + min) / 2;
+
+      if (max !== min) {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+          case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+          case g: h = (b - r) / d + 2; break;
+          case b: h = (r - g) / d + 4; break;
+        }
+        h /= 6;
+      }
+
+      return [h * 360, s, l]; // Return hue in degrees for binning
+    }
+
+    // Define hue bins and their labels
+    const hueBins = [
+      { name: "Blues", range: [200, 250] },
+      { name: "Blue-Greens", range: [160, 199] },
+      { name: "Greens", range: [90, 159] },
+      { name: "Yellows", range: [45, 89] },
+      { name: "Oranges", range: [25, 44] },
+      { name: "Reds", range: [0, 24] },
+      { name: "Pinks/Purples", range: [251, 360] }
+    ];
+
+    const groups = {};
+
+    // Initialize empty arrays
+    hueBins.forEach(bin => groups[bin.name] = []);
+
+    // Add neutral colors to a separate group
+    groups["Neutrals"] = [];
+
+    // Sort colors into bins
+    colorNames.forEach(name => {
+      const [h, s, l] = getHSL(name);
+      let found = false;
+
+      if (s < 0.1) {
+        groups["Neutrals"].push({ name, h, s, l });
+        return;
+      }
+
+      for (let bin of hueBins) {
+        if (h >= bin.range[0] && h <= bin.range[1]) {
+          groups[bin.name].push({ name, h, s, l });
+          found = true;
+          break;
+        }
+      }
+
+      if (!found) {
+        groups["Pinks/Purples"].push({ name, h, s, l }); // fallback
+      }
+    });
+
+    const container = document.getElementById("container");
+
+    for (let groupName in groups) {
+      const group = groups[groupName];
+      group.sort((a, b) => a.l - b.l); // sort by lightness
+
+      const heading = document.createElement("h2");
+      heading.textContent = groupName;
+      container.appendChild(heading);
+
+      const row = document.createElement("div");
+      row.className = "color-row";
+
+      group.forEach(({ name }) => {
+        const box = document.createElement("div");
+        box.className = "color-box";
+        box.style.backgroundColor = name;
+        box.title = name;
+        row.appendChild(box);
+      });
+
+      container.appendChild(row);
+    }
+  </script>
+</body>
+</html>

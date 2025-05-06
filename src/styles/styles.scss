@@ -154,6 +154,10 @@ body.dark-theme {
   left: 0;
 }
 
+.underline {
+  text-decoration: underline;
+}
+
 .hover-container {
   .hover-visible {
     opacity: 0;
@@ -310,11 +314,25 @@ input[type=number] {
   pointer-events: none !important;
 }
 
-.opacity-0 {
+.opacity-0,
+.opacity-000 {
   opacity: 0 !important;
 }
 
-.opacity-1 {
+.opacity-025 {
+  opacity: 0.25 !important;
+}
+
+.opacity-050 {
+  opacity: 0.5 !important;
+}
+
+.opacity-075 {
+  opacity: 0.75 !important;
+}
+
+.opacity-1,
+.opacity-100 {
   opacity: 1 !important;
 }
 

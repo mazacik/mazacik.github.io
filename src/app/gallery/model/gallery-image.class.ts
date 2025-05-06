@@ -1,11 +1,12 @@
 import { GoogleMetadata } from "src/app/shared/classes/google-api/google-metadata.class";
 import { GalleryGroup } from "./gallery-group.class";
+import { Tag } from "./tag.interface";
 
 export class GalleryImage extends GoogleMetadata {
 
   public heart: boolean;
   public bookmark: boolean;
-  public tags: string[];
+  public tags: Tag[];
 
   // transient
   public top: number;

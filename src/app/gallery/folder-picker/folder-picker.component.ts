@@ -59,14 +59,7 @@ export class FolderPickerComponent implements OnInit {
     this.googleService.dataFileId = dataFile.id;
     this.googleService.updateContent(dataFile.id, {
       dataFolderId: folder.id,
-      archiveFolderId: archiveFolder.id,
-      imageProperties: [],
-      groupProperties: [],
-      tagGroups: [],
-      heartsFilter: 0,
-      bookmarksFilter: 0,
-      groupSizeFilterMin: 0,
-      groupSizeFilterMax: 999
+      archiveFolderId: archiveFolder.id
     } as Data).then(() => {
       this.router.navigate(['/gallery']);
     });

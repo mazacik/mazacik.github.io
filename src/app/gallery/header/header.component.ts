@@ -32,15 +32,15 @@ export class HeaderComponent {
   }
 
   protected getPositiveTags(): Tag[] {
-    return this.stateService.tagGroups?.flatMap(group => group.tags).filter(tag => tag.state == 1);
+    return this.stateService.tags?.filter(tag => tag.state == 1);
   }
 
   protected getNegativeTags(): Tag[] {
-    return this.stateService.tagGroups?.flatMap(group => group.tags).filter(tag => tag.state == -1);
+    return this.stateService.tags?.filter(tag => tag.state == -1);
   }
 
   protected getTagGroup(tag: Tag): TagGroup {
-    return this.stateService.tagGroups.find(group => group.tags.includes(tag));
+    return this.stateService.tagGroups?.find(group => group.tags.includes(tag));
   }
 
 }

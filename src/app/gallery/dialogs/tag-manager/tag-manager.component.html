@@ -1,9 +1,9 @@
 <div class="flex center gap-3">
-  <div class="flex center gap cursor-pointer hover-brighten" (click)="stateService.toggleFavorite(inputs.image); changes = true;">
+  <div class="flex center gap cursor-pointer hover-brighten" [class.disabled]="groupMode" (click)="stateService.toggleFavorite(inputs.image); changes = true;">
     <i class="fa-heart" [ngClass]="getFavoriteClass(true)"></i>
     <span [ngClass]="getFavoriteClass(false)">Favorite</span>
   </div>
-  <div class="flex center gap cursor-pointer hover-brighten" (click)="stateService.toggleBookmark(inputs.image); changes = true;">
+  <div class="flex center gap cursor-pointer hover-brighten" [class.disabled]="groupMode" (click)="stateService.toggleBookmark(inputs.image); changes = true;">
     <i class="fa-bookmark" [ngClass]="getBookmarkClass(true)"></i>
     <span [ngClass]="getBookmarkClass(false)">Bookmark</span>
   </div>
@@ -12,17 +12,18 @@
 <div class="filters-container">
   <div class="groups-container">
     <div *ngFor="let group of stateService.tagGroups" class="group-container hover-brighten white-space-nowrap" (click)="stateService.openTagGroup = group" (contextmenu)="$event.preventDefault(); galleryService.openTagEditor('edit', group);">
-      <span [class.highlight]="isSomeTagInGroupActive(group)">{{ group.name }}</span>
+      <span [class.highlight]="isSomeTagActiveInGroup(group)">{{ group.name }}</span>
       <div class="group-active-indicator" [class.transparent]="group != stateService.openTagGroup"></div>
     </div>
   </div>
   <div class="v-separator"></div>
   <div class="stack-container width-auto height-auto">
     <div *ngFor="let group of stateService.tagGroups" class="tags-container" [class.transparent]="group != stateService.openTagGroup">
-      <span *ngFor="let tag of group.tags" class="cursor-pointer hover-brighten white-space-nowrap" [ngClass]="getTagClass(tag)" (click)="stateService.toggleTag(inputs.image, tag); changes = true;" (contextmenu)="$event.preventDefault(); galleryService.openTagEditor('edit', group, tag);">{{ tag.name }}</span>
+      <span *ngFor="let tag of group.tags" class="white-space-nowrap" [ngClass]="getTagClass(tag)" (click)="toggleTag(inputs.image, tag)" (contextmenu)="$event.preventDefault(); galleryService.openTagEditor('edit', group, tag);">{{ tag.name }}</span>
     </div>
   </div>
 </div>
 <div class="buttons-container">
   <div class="button" (click)="galleryService.openTagEditor('create', stateService.openTagGroup)"><i class="fa-solid fa-plus"></i>Create</div>
+  <div class="button" [class.disabled]="inputs.image.group == null" (click)="groupMode = !groupMode"><i class="fa-solid" [ngClass]="groupMode ? 'fa-images' : 'fa-image'"></i>Mode: {{ groupMode ? 'Group' : 'Image' }}</div>
 </div>
