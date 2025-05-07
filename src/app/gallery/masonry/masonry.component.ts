@@ -40,7 +40,7 @@ export class MasonryComponent {
     protected galleryService: GalleryService
   ) {
     effect(() => this.updateLayout());
-    effect(() => this.scrollTo(this.stateService.target()));
+    // effect(() => this.scrollTo(this.stateService.target()));
   }
 
   private updateLayout(): void {

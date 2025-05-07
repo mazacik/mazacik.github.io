@@ -295,8 +295,11 @@ export class GalleryStateService {
       if (image.group.images.length > 2) {
         ArrayUtils.remove(image.group.images, image);
       } else {
-        image.group.images.forEach(groupImage => delete groupImage.group);
         ArrayUtils.remove(this.groups, image.group);
+        for (const groupImage of image.group.images) {
+          ArrayUtils.push(groupImage.tags, image.group.tags);
+          delete groupImage.group;
+        }
       }
     }
 

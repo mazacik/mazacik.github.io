@@ -8,11 +8,11 @@ import { ApplicationService } from 'src/app/shared/services/application.service'
 import { DialogService } from 'src/app/shared/services/dialog.service';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 import { GoogleFileUtils } from 'src/app/shared/utils/google-file.utils';
+import { ScreenUtils } from 'src/app/shared/utils/screen.utils';
 import { GalleryService } from '../gallery.service';
 import { GalleryImage } from '../model/gallery-image.class';
 import { GalleryGoogleDriveService } from '../services/gallery-google-drive.service';
 import { GalleryStateService } from '../services/gallery-state.service';
-import { ScreenUtils } from 'src/app/shared/utils/screen.utils';
 
 @Component({
   selector: 'app-fullscreen',
@@ -66,23 +66,18 @@ export class FullscreenComponent {
 
   @HostListener('document:keydown', ['$event'])
   protected initKeybinds(event: KeyboardEvent): void {
-    if (this.dialogService.dialogs.length == 0) {
-      switch (event.code) {
-        case 'Escape':
-          this.stateService.target.set(null);
-          return;
-      }
-
-      if (['BODY', 'VIDEO'].includes((event.target as HTMLElement).nodeName)) {
-        if (this.stateService.target()) {
-          switch (event.code) {
-            case 'KeyR':
-              this.setRandomTarget();
-              return;
-            case 'KeyG':
-              this.setRandomGroupTarget();
-              return;
-          }
+    if (['BODY', 'VIDEO'].includes((event.target as HTMLElement).nodeName)) {
+      if (this.stateService.target()) {
+        switch (event.code) {
+          case 'Escape':
+            this.stateService.target.set(null);
+            return;
+          case 'KeyR':
+            this.setRandomTarget();
+            return;
+          case 'KeyG':
+            this.setRandomGroupTarget();
+            return;
         }
       }
     }

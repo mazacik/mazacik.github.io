@@ -16,6 +16,11 @@
       // swap between these for (no) separator
       // margin-right: (-$gap);
       border-right: 1px solid var(--color-border);
+
+      &.margins {
+        width: calc(100% - 600px);
+        align-self: center;
+      }
     }
 
     .masonry-container {

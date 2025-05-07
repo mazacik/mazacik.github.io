@@ -23,7 +23,7 @@ export class TagManagerComponent extends DialogContentBase<boolean> {
   public configuration: DialogContainerConfiguration = {
     title: 'Tag Manager',
     buttons: [{
-      text: () => 'Close',
+      text: () => 'OK',
       click: () => this.close()
     }],
     hideHeaderCloseButton: true,
@@ -38,7 +38,12 @@ export class TagManagerComponent extends DialogContentBase<boolean> {
     protected stateService: GalleryStateService
   ) {
     super();
-    effect(() => this.target = this.stateService.target());
+    effect(() => {
+      this.target = this.stateService.target();
+      if (this.target == null) {
+        this.groupMode = false;
+      }
+    });
   }
 
   public toggleTag(image: GalleryImage, tag: Tag): void {

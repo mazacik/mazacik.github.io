@@ -185,7 +185,7 @@ export class GalleryTagEditorComponent extends DialogContentBase<Tag> implements
 
             group = this.stateService.tagGroups.find(group => group.name == this.groupName);
             if (group == null) {
-              group = { name: this.groupName, tags: [this.inputs.tag] };
+              group = { name: this.groupName, tags: [] };
               this.stateService.tagGroups.push(group);
               this.stateService.tagGroups.sort((g1, g2) => g1.name.localeCompare(g2.name));
             }

@@ -24,7 +24,8 @@ export class FilterComponent extends DialogContentBase<boolean> {
       text: () => 'OK',
       click: () => this.submit()
     }],
-    hideHeaderCloseButton: true
+    hideHeaderCloseButton: true,
+    hideClickOverlay: true
   };
 
   private changes: boolean = false;
