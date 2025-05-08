@@ -9,14 +9,15 @@ export class GalleryImage extends GoogleMetadata {
   public tags: Tag[];
 
   // transient
-  public top: number;
-  public left: number;
-  public width: number;
-  public height: number;
   public aspectRatio: number;
   public contentLink: string;
   public group: GalleryGroup;
   public passesFilter: boolean;
   public parentFolderId: string;
+
+  public masonryTop: number;
+  public masonryLeft: number;
+  public masonryWidth: number;
+  public masonryHeight: number;
 
 }

@@ -86,15 +86,15 @@ export class MasonryComponent {
       }
 
       for (const image of this.masonryImages) {
-        if (image.width != columnWidth) {
-          image.width = columnWidth;
-          image.height = columnWidth / image.aspectRatio;
+        if (image.masonryWidth != columnWidth) {
+          image.masonryWidth = columnWidth;
+          image.masonryHeight = columnWidth / image.aspectRatio;
         }
 
         const shortestColumnIndex: number = this.getShortestColumnIndex(columnsTop);
-        image.top = columnsTop[shortestColumnIndex];
-        image.left = columnsLeft[shortestColumnIndex];
-        columnsTop[shortestColumnIndex] = columnsTop[shortestColumnIndex] + image.height + masonryGap;
+        image.masonryTop = columnsTop[shortestColumnIndex];
+        image.masonryLeft = columnsLeft[shortestColumnIndex];
+        columnsTop[shortestColumnIndex] = columnsTop[shortestColumnIndex] + image.masonryHeight + masonryGap;
       }
     }
   }
