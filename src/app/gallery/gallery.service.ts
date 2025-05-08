@@ -2,12 +2,10 @@ import { Injectable } from "@angular/core";
 import { TippyService } from "@ngneat/helipopper";
 import { DialogService } from "../shared/services/dialog.service";
 import { ArrayUtils } from "../shared/utils/array.utils";
-import { FilterComponent } from "./dialogs/filter/filter.component";
 import { GalleryTagEditorComponent } from "./dialogs/gallery-tag-editor/gallery-tag-editor.component";
 import { GroupManagerComponent } from "./dialogs/group-manager/group-manager.component";
 import { ImageComparisonComponent } from "./dialogs/image-comparison/image-comparison.component";
 import { GallerySettingsComponent } from "./dialogs/settings/gallery-settings.component";
-import { TagManagerComponent } from "./dialogs/tag-manager/tag-manager.component";
 import { GalleryGroup } from "./model/gallery-group.class";
 import { GalleryImage } from "./model/gallery-image.class";
 import { TagGroup } from "./model/tag-group.interface";
@@ -41,20 +39,12 @@ export class GalleryService {
     this.dialogService.create(GroupManagerComponent, { sourceGroup: group });
   }
 
-  public openFilter(): void {
-    this.dialogService.create(FilterComponent);
-  }
-
   public openSettings(): void {
     this.dialogService.create(GallerySettingsComponent);
   }
 
   public openTagEditor(mode: 'create' | 'edit', group: TagGroup, tag?: Tag): void {
     this.dialogService.create(GalleryTagEditorComponent, { mode, group, tag });
-  }
-
-  public openTagManager(image: GalleryImage): void {
-    this.dialogService.create(TagManagerComponent);
   }
 
   public openYandexReverseImageSearch(event: MouseEvent, target: GalleryImage): void {

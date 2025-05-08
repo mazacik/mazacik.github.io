@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, HostListener, effect } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, effect } from '@angular/core';
 import { TippyDirective } from '@ngneat/helipopper';
 import { GalleryImage } from 'src/app/gallery/model/gallery-image.class';
+import { Delay } from 'src/app/shared/classes/delay.class';
 import { fade } from 'src/app/shared/constants/animations.constants';
 import { CreateDirective } from 'src/app/shared/directives/create.directive';
 import { ApplicationService } from 'src/app/shared/services/application.service';
@@ -28,12 +29,15 @@ import { GalleryStateService } from '../services/gallery-state.service';
 })
 export class MasonryComponent {
 
-  private bricks: { [key: string]: HTMLImageElement } = {};
-  private masonryContainer: HTMLElement;
+  protected bricks: { [key: string]: HTMLImageElement } = {};
+  protected masonryContainer: HTMLElement;
+  protected masonryScrollContainer: HTMLElement;
 
   protected masonryImages: GalleryImage[];
 
   constructor(
+    elementRef: ElementRef,
+    private cdr: ChangeDetectorRef,
     protected applicationService: ApplicationService,
     protected stateService: GalleryStateService,
     protected googleService: GalleryGoogleDriveService,
@@ -41,9 +45,21 @@ export class MasonryComponent {
   ) {
     effect(() => this.updateLayout());
     // effect(() => this.scrollTo(this.stateService.target()));
+    new ResizeObserver(() => this.requestLayoutUpdate()).observe(elementRef.nativeElement);
   }
 
-  private updateLayout(): void {
+  private layoutUpdateDelay: Delay = new Delay(100);
+  private requestLayoutUpdate(): void {
+    this.layoutUpdateDelay.restart(() => {
+      const position: number = this.masonryScrollContainer.scrollTop / (this.masonryScrollContainer.scrollHeight - this.masonryScrollContainer.clientHeight);
+      this.updateLayout();
+      const top: number = (this.masonryScrollContainer.scrollHeight - this.masonryScrollContainer.clientHeight) * position;
+      setTimeout(() => this.masonryScrollContainer.scrollTo({ top: top, behavior: 'smooth' }), 500);
+      this.cdr.detectChanges();
+    });
+  }
+
+  protected updateLayout(): void {
     if (this.masonryContainer) {
       this.masonryImages = this.stateService.filter().filter(image => {
         if (image.group) {
@@ -83,21 +99,22 @@ export class MasonryComponent {
     }
   }
 
+  private getShortestColumnIndex(columns: number[]): number {
+    return columns.indexOf(Math.min(...columns));
+  }
+
   private scrollTo(image: GalleryImage): void {
     if (image) {
       const targetRepresent: GalleryImage = image.group ? image.group.images.find(groupImage => groupImage.passesFilter) : image;
       const brickElement: HTMLImageElement = this.bricks[targetRepresent?.id];
-      if (brickElement && !ScreenUtils.isElementVisible(brickElement)) {
-        const containerElement: HTMLElement = document.getElementsByClassName('masonry-scroll-container')[0] as HTMLElement;
-        const position: number = targetRepresent.top - (containerElement.clientHeight - brickElement.height) / 2;
-        // scrollIntoView is bugged on Chrome when scrolling multiple elements at once (masonry+sidebar)
-        containerElement.scrollTo({ top: position, behavior: 'smooth' });
-      }
+      brickElement.scrollIntoView();
+      // if (brickElement && !ScreenUtils.isElementVisible(brickElement)) {
+      //   const containerElement: HTMLElement = document.getElementsByClassName('masonry-scroll-container')[0] as HTMLElement;
+      //   const position: number = targetRepresent.top - (containerElement.clientHeight - brickElement.height) / 2;
+      //   // scrollIntoView is bugged on Chrome when scrolling multiple elements at once (masonry+sidebar)
+      //   containerElement.scrollTo({ top: position, behavior: 'smooth' });
+      // }
     }
-  }
-
-  private getShortestColumnIndex(columns: number[]): number {
-    return columns.indexOf(Math.min(...columns));
   }
 
   protected onImageClick(image: GalleryImage): void {
@@ -113,20 +130,6 @@ export class MasonryComponent {
     }
 
     this.stateService.target.set(image);
-  }
-
-  protected onBrickCreate(elementRef: ElementRef, image: GalleryImage): void {
-    this.bricks[image.id] = elementRef.nativeElement;
-  }
-
-  protected onMasonryContainerCreate(elementRef: ElementRef): void {
-    this.masonryContainer = elementRef.nativeElement;
-    this.updateLayout();
-  }
-
-  @HostListener('window:resize')
-  protected onResize() {
-    this.updateLayout();
   }
 
   protected areBrickButtonsVisible(): boolean {

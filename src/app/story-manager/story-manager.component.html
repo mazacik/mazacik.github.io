@@ -15,7 +15,7 @@
 </div>
 <div class="content">
   <!-- Editor/Browser -->
-  <app-sidebar [class.hidden]="!stateService.sidebarVisible"></app-sidebar>
+  <app-sidebar [class.display-none]="!stateService.sidebarVisible"></app-sidebar>
   <div class="v-separator desktop-only" [class.mobile-only]="!stateService.sidebarVisible"></div>
   <div class="modules" [class.desktop-only]="stateService.sidebarVisible">
     <!-- Note Editor -->

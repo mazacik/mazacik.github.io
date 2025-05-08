@@ -12,23 +12,12 @@
     height: 100%;
     padding: 1px $gap $gap $gap;
 
-    @media screen and (min-width:768px) {
-      // swap between these for (no) separator
-      // margin-right: (-$gap);
-      border-right: 1px solid var(--color-border);
-
-      &.margins {
-        width: calc(100% - 600px);
-        align-self: center;
-      }
-    }
-
     .masonry-container {
       position: relative;
 
       .masonry-brick {
         position: absolute;
-        transition-property: top, left, opacity;
+        transition-property: top, left, width, height, opacity;
         transition-duration: $transition-duration;
         padding-bottom: $gap;
         cursor: pointer;

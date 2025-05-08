@@ -1,4 +1,10 @@
-<div class="stack-container">
-  <app-masonry @enter></app-masonry>
-  <app-fullscreen [class.transparent]="!stateService.target()"></app-fullscreen>
+<div *ngIf="!loading" @enter class="fade-container">
+  <app-filter></app-filter>
+  <div class="v-separator gaps"></div>
+  <div class="stack-container">
+    <app-masonry></app-masonry>
+    <app-fullscreen [class.transparent]="!stateService.target()"></app-fullscreen>
+  </div>
+  <div class="v-separator gaps"></div>
+  <app-tag-manager></app-tag-manager>
 </div>

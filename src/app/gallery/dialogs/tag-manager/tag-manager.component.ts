@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect } from '@angular/core';
-import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
-import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
+import { Component, effect, HostBinding } from '@angular/core';
+import { TippyDirective } from '@ngneat/helipopper';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 import { GalleryService } from '../../gallery.service';
 import { GalleryImage } from '../../model/gallery-image.class';
@@ -13,22 +12,16 @@ import { GalleryStateService } from '../../services/gallery-state.service';
   selector: 'app-tag-manager',
   standalone: true,
   imports: [
-    CommonModule
+    CommonModule,
+    TippyDirective
   ],
   templateUrl: './tag-manager.component.html',
   styleUrls: ['./tag-manager.component.scss']
 })
-export class TagManagerComponent extends DialogContentBase<boolean> {
+export class TagManagerComponent {
 
-  public configuration: DialogContainerConfiguration = {
-    title: 'Tag Manager',
-    buttons: [{
-      text: () => 'OK',
-      click: () => this.close()
-    }],
-    hideHeaderCloseButton: true,
-    hideClickOverlay: true
-  };
+  @HostBinding('class.collapsed')
+  protected collapsed: boolean = false;
 
   protected target: GalleryImage;
   protected groupMode: boolean = false;
@@ -37,7 +30,6 @@ export class TagManagerComponent extends DialogContentBase<boolean> {
     protected galleryService: GalleryService,
     protected stateService: GalleryStateService
   ) {
-    super();
     effect(() => {
       this.target = this.stateService.target();
       if (this.target == null) {
@@ -118,10 +110,6 @@ export class TagManagerComponent extends DialogContentBase<boolean> {
     }
 
     return classes.join(' ');
-  }
-
-  public close(): void {
-    this.resolve(true);
   }
 
 }

@@ -1,11 +1,10 @@
 <app-header></app-header>
-
-<div class="masonry-scroll-container margins">
-  <div class="masonry-container" (create)="onMasonryContainerCreate($event)">
+<div class="masonry-scroll-container" (create)="masonryScrollContainer = $event.nativeElement">
+  <div class="masonry-container" (create)="masonryContainer = $event.nativeElement; updateLayout();">
     <!-- TODO split styles -->
     <div *ngFor="let image of masonryImages" @fade class="masonry-brick" [style]="'width: ' + image.width + 'px; height: ' + image.height + 'px; top: ' + image.top + 'px; left: ' + image.left + 'px; '" (click)="onImageClick(image)" [style.opacity]="image.group && stateService.groupEditorGroup && !stateService.groupEditorGroup.images.includes(image) ? '0.15' : '1'">
       <div class="brick-container">
-        <img [src]="image.thumbnailLink" (create)="onBrickCreate($event, image)" #imageElement (load)="imageElement.style.opacity = '1'">
+        <img [src]="image.thumbnailLink" (create)="bricks[image.id] = $event.nativeElement" #imageElement (load)="imageElement.style.opacity = '1'">
       </div>
       <ng-container *ngIf="areBrickButtonsVisible()">
         <div class="brick-header">

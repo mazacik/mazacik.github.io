@@ -34,7 +34,7 @@ export class Delay {
     }
   }
 
-  public stop(): void {
+  public abort(): void {
     clearTimeout(this.timeout);
     this.timeout = null;
     clearTimeout(this.maxLengthTimeout);
@@ -42,7 +42,7 @@ export class Delay {
   }
 
   public complete(): void {
-    this.stop();
+    this.abort();
     if (this.runnable) this.runnable();
   }
 

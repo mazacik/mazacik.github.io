@@ -292,7 +292,7 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
-.hidden {
+.display-none {
   display: none !important;
 }
 
@@ -347,6 +347,10 @@ input[type=number] {
 
 .flex-0 {
   flex: 0 !important;
+}
+
+.z-index-1 {
+  z-index: 1;
 }
 
 hr {
@@ -540,18 +544,4 @@ span.icon-button {
 
 .blur {
   backdrop-filter: blur(3px);
-}
-
-.flowchart {
-  text-align: center;
-  overflow: hidden;
-
-  &.hidden {
-    width: 0;
-    height: 0;
-  }
-
-  svg {
-    height: 100%;
-  }
 }

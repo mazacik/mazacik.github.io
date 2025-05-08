@@ -49,7 +49,6 @@
       <div class="sidebar-start">
         <i class="icon-button fa-heart" [ngClass]="target?.heart ? 'fa-solid' : 'fa-regular'" tp="Favorite" tpPlacement="left" (click)="stateService.toggleFavorite(target, true)"></i>
         <i class="icon-button fa-bookmark" [ngClass]="target?.bookmark ? 'fa-solid' : 'fa-regular'" tp="Bookmark" tpPlacement="left" (click)="stateService.toggleBookmark(target, true)"></i>
-        <i class="icon-button fa-solid fa-tags" tp="Tag Manager" tpPlacement="left" (click)="galleryService.openTagManager(target)"></i>
       </div>
       <div class="sidebar-center">
 
