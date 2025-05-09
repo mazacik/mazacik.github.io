@@ -14,7 +14,6 @@
     width: 300px;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
     transition: $transition-duration;
 
     &.collapsed {
@@ -27,12 +26,12 @@
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
+    padding-bottom: $gap;
   }
 
   .filters-container {
     height: 100%;
     display: flex;
-    margin: 0 $gap * 2;
 
     .groups-container {
       display: flex;
@@ -74,6 +73,3 @@
     }
   }
 }
-
-// 
-

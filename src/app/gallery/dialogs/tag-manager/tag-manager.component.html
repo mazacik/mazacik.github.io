@@ -5,7 +5,8 @@
       <i class="icon-button transparent"></i>
       <span>Tag Manager</span>
     </div>
-    <div class="flex center gap-3" [class.disabled]="!target">
+    <div class="h-separator"></div>
+    <div class="flex center gap-3 margins-3-v" [class.disabled]="!target">
       <div class="flex center gap cursor-pointer hover-brighten" [class.disabled]="groupMode" [class.positive]="target?.heart" (click)="stateService.toggleFavorite(target, true)">
         <i class="fa-regular fa-heart" [class.fa-solid]="target?.heart"></i>
         <span>Favorite</span>
@@ -16,7 +17,7 @@
       </div>
     </div>
     <div class="h-separator"></div>
-    <div class="filters-container" [class.disabled]="!target">
+    <div class="filters-container margins-2-h margins-3-v" [class.disabled]="!target">
       <div class="groups-container">
         <div *ngFor="let group of stateService.tagGroups" class="group-container hover-brighten white-space-nowrap" (click)="stateService.openTagGroup = group" (contextmenu)="$event.preventDefault(); galleryService.openTagEditor('edit', group);">
           <span [class.highlight]="isSomeTagActiveInGroup(group)">{{ group.name }}</span>

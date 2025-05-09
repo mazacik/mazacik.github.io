@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostBinding } from '@angular/core';
 import { TippyDirective } from '@ngneat/helipopper';
+import { RangeComponent } from 'src/app/shared/components/range/range.component';
 import { GalleryService } from '../../gallery.service';
 import { Filter } from '../../model/filter.interface';
 import { TagGroup } from '../../model/tag-group.interface';
@@ -11,6 +12,7 @@ import { GalleryStateService } from '../../services/gallery-state.service';
   standalone: true,
   imports: [
     CommonModule,
+    RangeComponent,
     TippyDirective
   ],
   templateUrl: './filter.component.html',
