@@ -5,6 +5,7 @@
     <div class="sidebar-left">
       <div class="sidebar-start">
         <i class="icon-button fa-solid fa-arrow-left" tp="Back" tpPlacement="right" (click)="stateService.target.set(null)"></i>
+        <div class="h-separator gap"></div>
         <i class="icon-button fa-solid fa-shuffle" tp="Random Image" tpPlacement="right" (click)="setRandomTarget()"></i>
         <i *ngIf="target?.group" class="icon-button fa-solid fa-arrows-spin" tp="Random Image from Group" tpPlacement="right" (click)="setRandomGroupTarget()"></i>
       </div>
@@ -47,6 +48,8 @@
 
     <div class="sidebar-right">
       <div class="sidebar-start">
+        <i class="icon-button fa-solid fa-times" tp="Close" tpPlacement="left" (click)="stateService.target.set(null)"></i>
+        <div class="h-separator gap"></div>
         <i class="icon-button fa-heart" [ngClass]="target?.heart ? 'fa-solid' : 'fa-regular'" tp="Favorite" tpPlacement="left" (click)="stateService.toggleFavorite(target, true)"></i>
         <i class="icon-button fa-bookmark" [ngClass]="target?.bookmark ? 'fa-solid' : 'fa-regular'" tp="Bookmark" tpPlacement="left" (click)="stateService.toggleBookmark(target, true)"></i>
       </div>

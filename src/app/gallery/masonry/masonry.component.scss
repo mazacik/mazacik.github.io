@@ -1,6 +1,7 @@
 @import 'src/styles/variables.scss';
 
 :host {
+  width: 100%;
   display: flex;
   flex-direction: column;
 

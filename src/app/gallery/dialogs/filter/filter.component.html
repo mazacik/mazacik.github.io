@@ -1,5 +1,5 @@
 <div class="stack-container">
-  <i class="icon-button fa-solid z-index-1" [ngClass]="collapsed ? 'fa-filter' : 'fa-caret-left'" [tp]="collapsed ? 'Filter Configuration' : 'Collapse'" (click)="collapsed = !collapsed"></i>
+  <i class="icon-button fa-solid" style="z-index: 1;" [ngClass]="collapsed ? 'fa-filter' : 'fa-caret-left'" [tp]="collapsed ? 'Filter Configuration' : 'Collapse'" tpPlacement="right" (click)="collapsed = !collapsed"></i>
   <div class="animation-container" [class.collapsed]="collapsed">
     <div class="header">
       <i class="icon-button transparent"></i>
