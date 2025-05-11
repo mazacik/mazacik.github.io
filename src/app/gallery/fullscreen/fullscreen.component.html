@@ -25,22 +25,24 @@
       </div>
     </div>
 
-    <div *ngIf="target" @fade class="stack-container">
-      <div *ngIf="!target.group" @fade class="non-group-container stack-container">
-        <div *ngFor="let image of [target]" @fade class="image-container">
-          <img [src]="getSrc(image)" (click)="onImageClick(image)" #imageElement (load)="imageElement.style.opacity = '1'">
-        </div>
-      </div>
-
-      <div *ngIf="target.group" @fade class="has-group-container">
-        <div class="another-container stack-container">
+    <div class="width-100 height-100">
+      <div *ngIf="target" @fade class="stack-container">
+        <div *ngIf="!target.group" @fade class="non-group-container stack-container">
           <div *ngFor="let image of [target]" @fade class="image-container">
             <img [src]="getSrc(image)" (click)="onImageClick(image)" #imageElement (load)="imageElement.style.opacity = '1'">
           </div>
         </div>
-        <div class="group-images-container stack-container">
-          <div *ngFor="let group of [target.group]" @fade class="group-image-container">
-            <img *ngFor="let groupImage of group.images" [style.height.px]="120" [style.width.px]="120 * groupImage.aspectRatio" [src]="groupImage.thumbnailLink" (click)="stateService.target.set(groupImage)" #groupImageElement (load)="groupImageElement.style.opacity = '1'">
+  
+        <div *ngIf="target.group" @fade class="has-group-container">
+          <div class="another-container stack-container">
+            <div *ngFor="let image of [target]" @fade class="image-container">
+              <img [src]="getSrc(image)" (click)="onImageClick(image)" #imageElement (load)="imageElement.style.opacity = '1'">
+            </div>
+          </div>
+          <div class="group-images-container stack-container">
+            <div *ngFor="let group of [target.group]" @fade class="group-image-container">
+              <img *ngFor="let groupImage of group.images" [style.height.px]="120" [style.width.px]="120 * groupImage.aspectRatio" [src]="groupImage.thumbnailLink" (click)="stateService.target.set(groupImage)" #groupImageElement (load)="groupImageElement.style.opacity = '1'">
+            </div>
           </div>
         </div>
       </div>
