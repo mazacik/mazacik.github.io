@@ -15,8 +15,7 @@ export interface Data {
 
   heartsFilter: number;
   bookmarksFilter: number;
-  groupSizeFilterMin: number;
-  groupSizeFilterMax: number;
+  filterGroups: number;
 
   comparison: { [key: string]: string[] };
 

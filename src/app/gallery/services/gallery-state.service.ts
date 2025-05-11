@@ -42,8 +42,7 @@ export class GalleryStateService {
 
   public filterFavorite: Filter = {};
   public filterBookmark: Filter = {};
-  public filterGroupSizeMin: Filter = {};
-  public filterGroupSizeMax: Filter = {};
+  public filterGroups: Filter = {};
 
   public groupEditorGroup: GalleryGroup;
 
@@ -62,8 +61,7 @@ export class GalleryStateService {
     this.archiveFolderId = data.archiveFolderId;
     this.filterFavorite.state = data.heartsFilter || 0;
     this.filterBookmark.state = data.bookmarksFilter || 0;
-    this.filterGroupSizeMin.state = data.groupSizeFilterMin || 0;
-    this.filterGroupSizeMax.state = data.groupSizeFilterMax || 999;
+    this.filterGroups.state = data.filterGroups || 0;
     this.comparison = data.comparison;
     this.tagGroups = data.tagGroups || [];
     this.openTagGroup = data.tagGroups[0];
@@ -170,8 +168,7 @@ export class GalleryStateService {
       data.archiveFolderId = this.archiveFolderId;
       data.heartsFilter = this.filterFavorite.state;
       data.bookmarksFilter = this.filterBookmark.state;
-      data.groupSizeFilterMin = 0;
-      data.groupSizeFilterMax = 999;
+      data.filterGroups = this.filterGroups.state;
       data.settings = this.settings;
       data.comparison = this.comparison;
       data.imageProperties = this.images.map(image => this.serializeImage(image));
@@ -232,16 +229,15 @@ export class GalleryStateService {
       return false;
     }
 
+    if (this.filterGroups.state == -1 && image.group) {
+      return false;
+    }
+
+    if (this.filterGroups.state == 1 && !image.group) {
+      return false;
+    }
+
     if (this.settings.showVideos == -1 && GoogleFileUtils.isVideo(image)) {
-      return false;
-    }
-
-    const groupSize: number = image.group?.images.length || 0;
-    if (groupSize < this.filterGroupSizeMin.state) {
-      return false;
-    }
-
-    if (groupSize > this.filterGroupSizeMax.state) {
       return false;
     }
 

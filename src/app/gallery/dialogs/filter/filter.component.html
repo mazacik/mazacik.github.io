@@ -6,8 +6,6 @@
       <span>Filter Configuration</span>
     </div>
     <div class="h-separator"></div>
-    <!-- <app-range></app-range> -->
-    <!-- <div class="h-separator"></div> -->
     <div class="flex center gap-3 margins-3-v">
       <div class="flex center gap cursor-pointer hover-brighten" (click)="toggleFilter(stateService.filterFavorite)">
         <i class="fa-heart" [ngClass]="getFilterClass(stateService.filterFavorite, true)"></i>
@@ -16,6 +14,10 @@
       <div class="flex center gap cursor-pointer hover-brighten" (click)="toggleFilter(stateService.filterBookmark)">
         <i class="fa-bookmark" [ngClass]="getFilterClass(stateService.filterBookmark, true)"></i>
         <span [ngClass]="getFilterClass(stateService.filterBookmark)">Bookmarks</span>
+      </div>
+      <div class="flex center gap cursor-pointer hover-brighten" (click)="toggleFilter(stateService.filterGroups)">
+        <i class="fa-solid fa-object-group" [ngClass]="getFilterClass(stateService.filterGroups)"></i>
+        <span [ngClass]="getFilterClass(stateService.filterGroups)">Groups</span>
       </div>
     </div>
     <div class="h-separator"></div>

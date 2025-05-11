@@ -1,0 +1,12 @@
+<div class="slider" (mousedown)="onMouseDown($event)">
+  <div class="track"></div>
+  <div class="range" [style.left.%]="minValue" [style.width.%]="maxValue - minValue"></div>
+  <div class="value" [style.left.%]="minValue">
+    <span class="label min">{{ percentToValue(minValue) }}</span>
+    <div class="thumb min"></div>
+  </div>
+  <div class="value" [style.left.%]="maxValue">
+    <span class="label max">{{ percentToValue(maxValue) }}</span>
+    <div class="thumb max"></div>
+  </div>
+</div>
