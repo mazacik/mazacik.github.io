@@ -1,22 +1,14 @@
 @import 'src/styles/variables.scss';
 
 :host {
-  display: grid;
-  align-content: center;
-  grid-template-columns: auto 1fr;
-  grid-auto-rows: min-content;
-  row-gap: $gap;
-  column-gap: $gap;
+  display: flex;
+  flex-direction: column;
   padding: $gap * 3;
-
-  .element-label {
-    align-self: center;
-  }
+  gap: $gap * 3;
 
   .element-container {
-    width: 300px;
-    height: $button-height;
     display: flex;
+    flex-direction: column;
     gap: $gap;
 
     .element {

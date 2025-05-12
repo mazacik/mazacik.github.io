@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
-import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
+import { Component, HostBinding } from '@angular/core';
+import { TippyDirective } from '@ngneat/helipopper';
 import { GalleryService } from '../../gallery.service';
 import { Filter } from '../../model/filter.interface';
 import { TagGroup } from '../../model/tag-group.interface';
@@ -11,29 +10,36 @@ import { GalleryStateService } from '../../services/gallery-state.service';
   selector: 'app-filter',
   standalone: true,
   imports: [
-    CommonModule
+    CommonModule,
+    TippyDirective
   ],
   templateUrl: './filter.component.html',
   styleUrls: ['./filter.component.scss']
 })
-export class FilterComponent extends DialogContentBase<boolean> {
+export class FilterComponent {
 
-  public configuration: DialogContainerConfiguration = {
-    title: 'Filter Configuration',
-    buttons: [{
-      text: () => 'OK',
-      click: () => this.submit()
-    }],
-    hideHeaderCloseButton: true
-  };
-
-  private changes: boolean = false;
+  @HostBinding('class.collapsed')
+  protected collapsed: boolean = false;
 
   constructor(
     protected galleryService: GalleryService,
     protected stateService: GalleryStateService
-  ) {
-    super();
+  ) { }
+
+  protected toggleFilter(filter: Filter): void {
+    filter.state = filter.state == 0 ? 1 : filter.state == 1 ? -1 : 0;
+    this.stateService.updateFilters();
+    this.stateService.save();
+  }
+
+  protected clearFilters(): void {
+    this.stateService.tags.forEach(tag => tag.state = 0);
+    this.stateService.updateFilters();
+    this.stateService.save();
+  }
+
+  protected canClear(): boolean {
+    return this.stateService.tags?.some(tag => tag.state != 0);
   }
 
   protected isSomeTagInGroupActive(group: TagGroup): boolean {
@@ -49,27 +55,6 @@ export class FilterComponent extends DialogContentBase<boolean> {
       default:
         return isIcon ? 'fa-regular' : '';
     }
-  }
-
-  protected toggleFilter(filter: Filter): void {
-    this.changes = true;
-    filter.state = filter.state == 0 ? 1 : filter.state == 1 ? -1 : 0;
-    this.stateService.updateFilters();
-  }
-
-  protected clearFilters(): void {
-    this.changes = true;
-    this.stateService.tagGroups.forEach(group => group.tags.forEach(tag => tag.state = 0));
-    this.stateService.updateFilters();
-  }
-
-  protected canClear(): boolean {
-    return this.stateService.tagGroups.some(group => group.tags.some(tag => tag.state != 0));
-  }
-
-  public close(): void {
-    if (this.changes) this.stateService.save();
-    this.resolve(true);
   }
 
 }

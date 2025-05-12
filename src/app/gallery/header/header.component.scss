@@ -9,8 +9,8 @@
   .header-start,
   .header-center,
   .header-end {
-    flex: 1;
     display: flex;
+    align-items: center;
     gap: $gap;
   }
 
@@ -20,63 +20,8 @@
 
   .header-center {
     justify-content: center;
-
-    .tags {
-      display: flex;
-      justify-content: center;
-      gap: $gap;
-
-      >i {
-        background-color: var(--color-hover);
-      }
-
-      .filter-bubble {
-        min-height: $button-height;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: $gap;
-        background-color: var(--color-hover);
-        cursor: pointer;
-
-        .filter-bubble-text {
-          height: 100%;
-          align-content: center;
-          padding-left: 1rem;
-        }
-      }
-
-      .filter-input-container {
-        min-width: $button-height;
-        min-height: $button-height;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: $gap;
-        background-color: var(--color-hover);
-
-        .filter-input-text {
-          width: 100%;
-          padding-left: $button-height * 0.33;
-
-          >input:not(#filter-input) {
-            position: absolute;
-            width: 100%;
-            border: 0;
-            padding: 0;
-            user-select: none;
-            pointer-events: none;
-          }
-
-          >input#filter-input {
-            position: relative;
-            width: 100%;
-            border: 0;
-            padding: 0;
-          }
-        }
-      }
-    }
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
   }
 
   .header-end {

@@ -5,6 +5,7 @@
     <div class="sidebar-left">
       <div class="sidebar-start">
         <i class="icon-button fa-solid fa-arrow-left" tp="Back" tpPlacement="right" (click)="stateService.target.set(null)"></i>
+        <div class="h-separator gap"></div>
         <i class="icon-button fa-solid fa-shuffle" tp="Random Image" tpPlacement="right" (click)="setRandomTarget()"></i>
         <i *ngIf="target?.group" class="icon-button fa-solid fa-arrows-spin" tp="Random Image from Group" tpPlacement="right" (click)="setRandomGroupTarget()"></i>
       </div>
@@ -24,22 +25,24 @@
       </div>
     </div>
 
-    <div *ngIf="target" @fade class="stack-container">
-      <div *ngIf="!target.group" @fade class="non-group-container stack-container">
-        <div *ngFor="let image of [target]" @fade class="image-container">
-          <img [src]="getSrc(image)" (click)="onImageClick(image)" #imageElement (load)="imageElement.style.opacity = '1'">
-        </div>
-      </div>
-
-      <div *ngIf="target.group" @fade class="has-group-container">
-        <div class="another-container stack-container">
+    <div class="width-100 height-100">
+      <div *ngIf="target" @fade class="stack-container">
+        <div *ngIf="!target.group" @fade class="non-group-container stack-container">
           <div *ngFor="let image of [target]" @fade class="image-container">
             <img [src]="getSrc(image)" (click)="onImageClick(image)" #imageElement (load)="imageElement.style.opacity = '1'">
           </div>
         </div>
-        <div class="group-images-container stack-container">
-          <div *ngFor="let group of [target.group]" @fade class="group-image-container">
-            <img *ngFor="let groupImage of group.images" [style.height.px]="120" [style.width.px]="120 * groupImage.aspectRatio" [src]="groupImage.thumbnailLink" (click)="stateService.target.set(groupImage)" #groupImageElement (load)="groupImageElement.style.opacity = '1'">
+  
+        <div *ngIf="target.group" @fade class="has-group-container">
+          <div class="another-container stack-container">
+            <div *ngFor="let image of [target]" @fade class="image-container">
+              <img [src]="getSrc(image)" (click)="onImageClick(image)" #imageElement (load)="imageElement.style.opacity = '1'">
+            </div>
+          </div>
+          <div class="group-images-container stack-container">
+            <div *ngFor="let group of [target.group]" @fade class="group-image-container">
+              <img *ngFor="let groupImage of group.images" [style.height.px]="120" [style.width.px]="120 * groupImage.aspectRatio" [src]="groupImage.thumbnailLink" (click)="stateService.target.set(groupImage)" #groupImageElement (load)="groupImageElement.style.opacity = '1'">
+            </div>
           </div>
         </div>
       </div>
@@ -47,9 +50,10 @@
 
     <div class="sidebar-right">
       <div class="sidebar-start">
+        <i class="icon-button fa-solid fa-times" tp="Close" tpPlacement="left" (click)="stateService.target.set(null)"></i>
+        <div class="h-separator gap"></div>
         <i class="icon-button fa-heart" [ngClass]="target?.heart ? 'fa-solid' : 'fa-regular'" tp="Favorite" tpPlacement="left" (click)="stateService.toggleFavorite(target, true)"></i>
         <i class="icon-button fa-bookmark" [ngClass]="target?.bookmark ? 'fa-solid' : 'fa-regular'" tp="Bookmark" tpPlacement="left" (click)="stateService.toggleBookmark(target, true)"></i>
-        <i class="icon-button fa-solid fa-tags" tp="Tag Manager" tpPlacement="left" (click)="galleryService.openTagManager(target)"></i>
       </div>
       <div class="sidebar-center">
 

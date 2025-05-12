@@ -1,4 +1,4 @@
-<div class="container" [class.opacity-1]="!applicationService.loading()">
+<div class="container" [class.opacity-100]="!applicationService.loading()">
   <div *ngIf="true" class="folders-container">
     <span *ngFor="let dataFile of dataFiles" (click)="onDataFileClick(dataFile)">{{ dataFile.name.substring(0, dataFile.name.length - 10) }}</span>
     <span *ngFor="let folder of folders" (click)="onFolderClick(folder)">{{ folder.name }}</span>

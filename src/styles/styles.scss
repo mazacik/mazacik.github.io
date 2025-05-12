@@ -66,7 +66,7 @@ body.dark-theme {
   --color-positive: yellowgreen;
   --color-negative: orangered;
   --color-overlay: rgba(0, 0, 0, 0.65);
-  --color-dialog-background: rgba(0, 0, 0, 0.5);
+  --color-dialog-background: rgba(0, 0, 0, 0.65);
 }
 
 // tippy
@@ -152,6 +152,10 @@ body.dark-theme {
 
 .left {
   left: 0;
+}
+
+.underline {
+  text-decoration: underline;
 }
 
 .hover-container {
@@ -288,7 +292,7 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
-.hidden {
+.display-none {
   display: none !important;
 }
 
@@ -310,16 +314,34 @@ input[type=number] {
   pointer-events: none !important;
 }
 
-.opacity-0 {
+.opacity-0,
+.opacity-000 {
   opacity: 0 !important;
 }
 
-.opacity-1 {
+.opacity-025 {
+  opacity: 0.25 !important;
+}
+
+.opacity-050 {
+  opacity: 0.5 !important;
+}
+
+.opacity-075 {
+  opacity: 0.75 !important;
+}
+
+.opacity-1,
+.opacity-100 {
   opacity: 1 !important;
 }
 
 .disabled {
   opacity: 0.25 !important;
+  pointer-events: none !important;
+}
+
+.pointer-events-none {
   pointer-events: none !important;
 }
 
@@ -373,8 +395,20 @@ hr {
   width: auto;
 }
 
+.width-fit {
+  width: fit-content;
+}
+
+.width-100 {
+  width: 100%;
+}
+
 .height-auto {
   height: auto;
+}
+
+.height-100 {
+  height: 100%;
 }
 
 .white-space-nowrap {
@@ -480,35 +514,81 @@ span.icon-button {
   &.grow {
     flex: 1;
   }
+
+  &.flex-start-h {
+    justify-content: flex-start;
+  }
+
+  &.flex-start-v {
+    align-items: flex-start;
+  }
+
+  &.flex-end-h {
+    justify-content: flex-end;
+  }
+
+  &.flex-end-v {
+    align-items: flex-end;
+  }
 }
 
-.gap {
+.gap,
+.gap-1 {
   gap: $gap;
 }
 
+.gap-2 {
+  gap: $gap * 2;
+}
+
 .gap-3 {
-  gap: $gap * 3;
+  gap: 1rem;
+}
+
+.margins-1 {
+  margin: $gap;
+}
+
+.margins-1-v {
+  margin-top: $gap;
+  margin-bottom: $gap;
+}
+
+.margins-1-h {
+  margin-left: $gap;
+  margin-right: $gap;
+}
+
+.margins-2 {
+  margin: $gap * 2;
+}
+
+.margins-2-v {
+  margin-top: $gap * 2;
+  margin-bottom: $gap * 2;
+}
+
+.margins-2-h {
+  margin-left: $gap * 2;
+  margin-right: $gap * 2;
+}
+
+.margins-3 {
+  margin: 1rem;
+}
+
+.margins-3-v {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.margins-3-h {
+  margin-left: 1rem;
+  margin-right: 1rem;
 }
 
 .center {
   align-items: center;
+  justify-items: center;
   justify-content: center;
-}
-
-.blur {
-  backdrop-filter: blur(3px);
-}
-
-.flowchart {
-  text-align: center;
-  overflow: hidden;
-
-  &.hidden {
-    width: 0;
-    height: 0;
-  }
-
-  svg {
-    height: 100%;
-  }
 }

@@ -3,7 +3,6 @@ import { Component } from '@angular/core';
 import { TippyDirective } from '@ngneat/helipopper';
 import { ApplicationService } from 'src/app/shared/services/application.service';
 import { GalleryService } from '../gallery.service';
-import { GalleryStateService } from '../services/gallery-state.service';
 
 @Component({
   selector: 'app-header',
@@ -19,7 +18,6 @@ export class HeaderComponent {
 
   constructor(
     protected applicationService: ApplicationService,
-    protected stateService: GalleryStateService,
     protected galleryService: GalleryService
   ) { }
 

@@ -16,19 +16,7 @@ export class DialogService {
   constructor(
     private applicationRef: ApplicationRef,
     private injector: EnvironmentInjector
-  ) {
-    document.addEventListener('keydown', event => {
-      if (this.dialogs.length > 0) {
-        if (event.key == 'Enter') {
-          event.stopImmediatePropagation();
-          ArrayUtils.getLast(this.dialogs)?.contentComponentInstance.submit();
-        } else if (event.key == 'Escape') {
-          event.stopImmediatePropagation();
-          ArrayUtils.getLast(this.dialogs)?.contentComponentInstance.close();
-        }
-      }
-    });
-  }
+  ) { }
 
   public createMessage(title: string, messages: string[]): Promise<void> {
     return this.create(MessageDialogComponent, { title, messages });

@@ -1,14 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { TippyDirective } from '@ngneat/helipopper';
 import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
 import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
 import { DragDropDirective } from 'src/app/shared/directives/dragdrop.directive';
+import { DialogService } from 'src/app/shared/services/dialog.service';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 import { GalleryGroup } from '../../model/gallery-group.class';
 import { GalleryImage } from '../../model/gallery-image.class';
 import { GalleryStateService } from '../../services/gallery-state.service';
-import { TippyDirective } from '@ngneat/helipopper';
-import { DialogService } from 'src/app/shared/services/dialog.service';
 
 @Component({
   selector: 'app-group-editor',
@@ -42,7 +42,7 @@ export class GroupManagerComponent extends DialogContentBase<void, {}> implement
       click: () => this.close()
     }, {
       text: () => 'Save',
-      disabled: () => this.stateService.groupEditorGroup.images.length == 0,
+      disabled: () => this.stateService.groupEditorGroup.images.length < 2,
       click: () => this.submit()
     }],
     hideClickOverlay: true
@@ -56,7 +56,7 @@ export class GroupManagerComponent extends DialogContentBase<void, {}> implement
   }
 
   ngOnInit(): void {
-    this.stateService.groupEditorGroup = { images: this.inputs.sourceGroup ? [...this.inputs.sourceGroup.images] : [] }
+    this.stateService.groupEditorGroup = { images: this.inputs.sourceGroup ? [...this.inputs.sourceGroup.images] : [], tags: [] };
     this.stateService.updateFilters();
   }
 
@@ -69,8 +69,10 @@ export class GroupManagerComponent extends DialogContentBase<void, {}> implement
     if (group) {
       ArrayUtils.remove(this.stateService.groups, group);
       for (const image of group.images) {
-        image.group = null;
+        delete image.group;
       }
+
+      this.stateService.save(true);
       this.close();
     }
   }
@@ -88,7 +90,7 @@ export class GroupManagerComponent extends DialogContentBase<void, {}> implement
         editorGroup.images.forEach(image => image.group = editorGroup);
       }
 
-      this.stateService.save();
+      this.stateService.save(true);
       this.close();
     }
   }

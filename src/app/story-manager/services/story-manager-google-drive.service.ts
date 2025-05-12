@@ -51,7 +51,7 @@ export class StoryManagerGoogleDriveService extends BaseGoogleDriveService {
     }
 
     if (instant) {
-      this.delay.stop();
+      this.delay.abort();
       updateContent();
     } else {
       this.delay.restart(() => updateContent());

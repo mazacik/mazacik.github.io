@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, ComponentRef, ElementRef, HostBinding, HostListener, Type, ViewChild, ViewContainerRef } from '@angular/core';
 import { DialogService } from '../../services/dialog.service';
-import { ArrayUtils } from '../../utils/array.utils';
 import { ScreenUtils } from '../../utils/screen.utils';
 import { DialogButton } from './dialog-button.class';
 import { DialogContentBase } from './dialog-content-base.class';
@@ -60,11 +59,6 @@ export class DialogContainerComponent<ResultType, InputsType> implements AfterVi
     this.result.finally(() => contentRef.destroy());
 
     contentRef.changeDetectorRef.detectChanges();
-  }
-
-  @HostListener('click', ['$event'])
-  protected onContainerClick(): void {
-    ArrayUtils.makeLast(this.dialogService.dialogs, this);
   }
 
   protected isHidden(button: DialogButton): boolean {

@@ -65,11 +65,11 @@ export class GalleryTagEditorComponent extends DialogContentBase<Tag> implements
       if (this.inputs.tag == null) {
         this.dialogService.createConfirmation('Delete Tag Group', ['Delete tag group "' + this.inputs.group.name + '"?'], 'Yes', 'No').then(result => {
           if (result) {
+            ArrayUtils.remove(this.stateService.tags, this.inputs.group.tags);
             ArrayUtils.remove(this.stateService.tagGroups, this.inputs.group);
 
-            const tagIds: string[] = this.inputs.group.tags.map(tag => tag.id);
             for (const image of this.stateService.images) {
-              ArrayUtils.remove(image.tags, tagIds);
+              ArrayUtils.remove(image.tags, this.inputs.group.tags);
             }
 
             this.stateService.save();
@@ -79,6 +79,7 @@ export class GalleryTagEditorComponent extends DialogContentBase<Tag> implements
       } else {
         this.dialogService.createConfirmation('Delete Tag', ['Delete tag "' + this.inputs.group.name + ' - ' + this.inputs.tag.name + '"?'], 'Yes', 'No').then(result => {
           if (result) {
+            ArrayUtils.remove(this.stateService.tags, this.inputs.tag);
             ArrayUtils.remove(this.inputs.group.tags, this.inputs.tag);
 
             if (ArrayUtils.isEmpty(this.inputs.group.tags)) {
@@ -86,7 +87,7 @@ export class GalleryTagEditorComponent extends DialogContentBase<Tag> implements
             }
 
             for (const image of this.stateService.images) {
-              ArrayUtils.remove(image.tags, this.inputs.tag.id);
+              ArrayUtils.remove(image.tags, this.inputs.tag);
             }
 
             this.stateService.save();
@@ -165,8 +166,11 @@ export class GalleryTagEditorComponent extends DialogContentBase<Tag> implements
           this.stateService.tagGroups.sort((g1, g2) => g1.name.localeCompare(g2.name));
         }
 
-        group.tags.push({ id: nanoid(), name: this.tagName, state: 0 });
+        const tag: Tag = { id: nanoid(), name: this.tagName, state: 0 };
+        group.tags.push(tag);
         group.tags.sort((t1, t2) => t1.name.localeCompare(t2.name));
+        this.stateService.tags.push(tag);
+        this.stateService.tags.sort((t1, t2) => t1.name.localeCompare(t2.name));
       } else {
         if (this.inputs.tag == null) {
           this.inputs.group.name = this.groupName;
@@ -181,7 +185,7 @@ export class GalleryTagEditorComponent extends DialogContentBase<Tag> implements
 
             group = this.stateService.tagGroups.find(group => group.name == this.groupName);
             if (group == null) {
-              group = { name: this.groupName, tags: [this.inputs.tag] };
+              group = { name: this.groupName, tags: [] };
               this.stateService.tagGroups.push(group);
               this.stateService.tagGroups.sort((g1, g2) => g1.name.localeCompare(g2.name));
             }
@@ -193,6 +197,7 @@ export class GalleryTagEditorComponent extends DialogContentBase<Tag> implements
           if (this.tagName != this.inputs.tag.name) {
             this.inputs.tag.name = this.tagName;
             group.tags.sort((t1, t2) => t1.name.localeCompare(t2.name));
+            this.stateService.tags.sort((t1, t2) => t1.name.localeCompare(t2.name));
           }
         }
       }

@@ -1,9 +1,7 @@
 @import 'src/styles/variables.scss';
 
 :host {
-  backdrop-filter: blur(5px);
-  background-color: rgba(0, 0, 0, 0.5);
-  transition: $transition-duration;
+  width: 100%;
   overflow: hidden;
 
   .fullscreen-container {

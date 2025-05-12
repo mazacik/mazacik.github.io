@@ -1,14 +1,36 @@
 @import 'src/styles/variables.scss';
 
 :host {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 1rem;
+  width: 300px;
+  padding: $gap;
   user-select: none;
+  transition: $transition-duration;
+
+  &.collapsed {
+    width: 42px;
+  }
+
+  .animation-container {
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    transition: $transition-duration;
+
+    &.collapsed {
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
+
+  .header {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    padding-bottom: $gap;
+  }
 
   .filters-container {
-    max-height: 80vh;
+    height: 100%;
     display: flex;
 
     .groups-container {
@@ -44,8 +66,6 @@
   .buttons-container {
     display: flex;
     gap: $gap;
-    margin: $gap * -2;
-    margin-top: 0;
 
     .button {
       flex: 1;

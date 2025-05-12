@@ -33,7 +33,7 @@ bootstrapApplication(AppComponent, {
           arrow: true,
           animation: 'fade',
           trigger: 'mouseenter',
-          hideOnClick: false,
+          hideOnClick: true,
           offset: [0, 8]
         },
         contextmenu: {

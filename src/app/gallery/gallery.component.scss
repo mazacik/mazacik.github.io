@@ -4,6 +4,13 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
-  position: relative;
-  display: flex;
+
+  .fullscreen-container {
+    display: flex;
+    overflow: hidden;
+    backdrop-filter: blur(5px);
+    background-color: var(--color-dialog-background);
+    z-index: 1;
+    transition: $transition-duration;
+  }
 }

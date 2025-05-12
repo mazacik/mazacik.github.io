@@ -3,7 +3,7 @@
   <i class="icon-button fa-solid fa-folder-plus" tp="Create Image Group" (click)="galleryService.openImageGroupEditor()"></i>
 </div>
 <div class="header-center">
-  <i *ngIf="stateService.images.length > 0" class="icon-button fa-solid fa-filter" tp="Filter" (click)="galleryService.openFilter()"></i>
+  
 </div>
 <div class="header-end">
   <i class="icon-button fa-solid" [ngClass]="applicationService.isDarkTheme() ? 'fa-moon' : 'fa-sun'" tp="Brightness Mode" (click)="applicationService.toggleTheme()"></i>

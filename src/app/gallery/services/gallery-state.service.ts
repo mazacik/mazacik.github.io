@@ -36,13 +36,13 @@ export class GalleryStateService {
   public filter: WritableSignal<GalleryImage[]> = signal([]);
   public target: WritableSignal<GalleryImage> = signal(null);
 
+  public tags: Tag[];
   public tagGroups: TagGroup[];
   public openTagGroup: TagGroup;
 
   public filterFavorite: Filter = {};
   public filterBookmark: Filter = {};
-  public filterGroupSizeMin: Filter = {};
-  public filterGroupSizeMax: Filter = {};
+  public filterGroups: Filter = {};
 
   public groupEditorGroup: GalleryGroup;
 
@@ -59,13 +59,16 @@ export class GalleryStateService {
     const data: Data = await this.googleService.getData();
     this.dataFolderId = data.dataFolderId;
     this.archiveFolderId = data.archiveFolderId;
-    this.filterFavorite.state = data.heartsFilter;
-    this.filterBookmark.state = data.bookmarksFilter;
-    this.filterGroupSizeMin.state = data.groupSizeFilterMin;
-    this.filterGroupSizeMax.state = data.groupSizeFilterMax;
+    this.filterFavorite.state = data.heartsFilter || 0;
+    this.filterBookmark.state = data.bookmarksFilter || 0;
+    this.filterGroups.state = data.filterGroups || 0;
     this.comparison = data.comparison;
-    this.tagGroups = data.tagGroups;
+    this.tagGroups = data.tagGroups || [];
     this.openTagGroup = data.tagGroups[0];
+    this.tags = data.tagGroups.flatMap(group => group.tags);
+
+    if (!data.imageProperties) data.imageProperties = [];
+    if (!data.groupProperties) data.groupProperties = [];
 
     if (data.settings) {
       this.settings = data.settings;
@@ -88,6 +91,7 @@ export class GalleryStateService {
       group.images = this.images.filter(image => groupProperties.imageIds.includes(image.id));
       group.images.sort((a, b) => groupProperties.imageIds.indexOf(a.id) - groupProperties.imageIds.indexOf(b.id));
       group.images.forEach(image => image.group = group);
+      group.tags = groupProperties.tagIds?.map(tagId => this.tags.find(tag => tag.id == tagId)) || [];
       return group;
     });
 
@@ -139,13 +143,18 @@ export class GalleryStateService {
       image.contentLink = this.sanitizer.bypassSecurityTrustResourceUrl('https://drive.google.com/file/d/' + image.id + '/preview') as string; // used in <iframe> display method
     }
 
+    image.tags = [];
     if (imageProperties) {
       image.heart = imageProperties.heart;
       image.bookmark = imageProperties.bookmark;
-      image.tags = imageProperties.tagIds || [];
+
+      let tag: Tag;
+      for (const tagId of imageProperties.tagIds) {
+        tag = this.tags.find(tag => tag.id == tagId);
+        if (tag) image.tags.push(tag);
+      }
     } else {
       if (this.settings.autoBookmark) image.bookmark = true;
-      image.tags = [];
     }
 
     return image;
@@ -159,8 +168,7 @@ export class GalleryStateService {
       data.archiveFolderId = this.archiveFolderId;
       data.heartsFilter = this.filterFavorite.state;
       data.bookmarksFilter = this.filterBookmark.state;
-      data.groupSizeFilterMin = 0;
-      data.groupSizeFilterMax = 999;
+      data.filterGroups = this.filterGroups.state;
       data.settings = this.settings;
       data.comparison = this.comparison;
       data.imageProperties = this.images.map(image => this.serializeImage(image));
@@ -184,13 +192,14 @@ export class GalleryStateService {
     image.id = galleryImage.id;
     image.heart = galleryImage.heart;
     image.bookmark = galleryImage.bookmark;
-    image.tagIds = galleryImage.tags;
+    image.tagIds = galleryImage.tags.map(tag => tag.id);
     return image;
   }
 
   private serializeGroup(galleryGroup: GalleryGroup): GroupData {
     const group: GroupData = {} as GroupData;
-    group.imageIds = galleryGroup.images.map(image => image.id)
+    group.imageIds = galleryGroup.images.map(image => image.id);
+    group.tagIds = galleryGroup.tags.map(tag => tag.id);
     return group;
   }
 
@@ -220,30 +229,27 @@ export class GalleryStateService {
       return false;
     }
 
+    if (this.filterGroups.state == -1 && image.group) {
+      return false;
+    }
+
+    if (this.filterGroups.state == 1 && !image.group) {
+      return false;
+    }
+
     if (this.settings.showVideos == -1 && GoogleFileUtils.isVideo(image)) {
       return false;
     }
 
-    const groupSize: number = image.group ? image.group.images.length : 0;
-    if (groupSize < this.filterGroupSizeMin.state) {
-      return false;
-    }
-
-    if (groupSize > this.filterGroupSizeMax.state) {
-      return false;
-    }
-
     let hasTag: boolean;
-    for (const group of this.tagGroups) {
-      for (const tag of group.tags) {
-        hasTag = image.tags.includes(tag.id);
-        if (tag.state == -1 && hasTag) {
-          return false;
-        }
+    for (const tag of this.tags) {
+      hasTag = image.tags.includes(tag) || image.group?.tags.includes(tag);
+      if (tag.state == -1 && hasTag) {
+        return false;
+      }
 
-        if (tag.state == 1 && !hasTag) {
-          return false;
-        }
+      if (tag.state == 1 && !hasTag) {
+        return false;
       }
     }
 
@@ -260,14 +266,6 @@ export class GalleryStateService {
 
   public toggleBookmark(image: GalleryImage, save: boolean = false): void {
     image.bookmark = !image.bookmark;
-    if (save) {
-      this.updateFilters(image);
-      this.save();
-    }
-  }
-
-  public toggleTag(image: GalleryImage, tag: Tag, save: boolean = false): void {
-    ArrayUtils.toggle(image.tags, tag.id);
     if (save) {
       this.updateFilters(image);
       this.save();
@@ -293,8 +291,11 @@ export class GalleryStateService {
       if (image.group.images.length > 2) {
         ArrayUtils.remove(image.group.images, image);
       } else {
-        image.group.images.forEach(groupImage => delete groupImage.group);
         ArrayUtils.remove(this.groups, image.group);
+        for (const groupImage of image.group.images) {
+          ArrayUtils.push(groupImage.tags, image.group.tags);
+          delete groupImage.group;
+        }
       }
     }
 
