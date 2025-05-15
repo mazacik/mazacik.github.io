@@ -23,7 +23,7 @@
     <div class="h-separator"></div>
     <div class="filters-container margins-2-h margins-3-v">
       <div class="groups-container">
-        <div *ngFor="let group of stateService.tagGroups" class="group-container hover-brighten white-space-nowrap" (click)="stateService.openTagGroup = group" (contextmenu)="$event.preventDefault(); galleryService.openTagEditor('edit', group);">
+        <div *ngFor="let group of stateService.tagGroups" class="group-container hover-brighten white-space-nowrap" (click)="onTagGroupClick(group)" (contextmenu)="$event.preventDefault(); galleryService.openTagEditor('edit', group);">
           <span [class.highlight]="isSomeTagInGroupActive(group)">{{ group.name }}</span>
           <div class="group-active-indicator" [class.transparent]="group != stateService.openTagGroup"></div>
         </div>

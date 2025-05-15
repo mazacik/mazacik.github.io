@@ -26,6 +26,22 @@ export class FilterComponent {
     protected stateService: GalleryStateService
   ) { }
 
+  protected onTagGroupClick(group: TagGroup): void {
+    if (this.stateService.openTagGroup == group) {
+      if (group.tags.every(tag => tag.state == 1)) {
+        group.tags.forEach(tag => tag.state = -1);
+      } else if (group.tags.every(tag => tag.state == -1)) {
+        group.tags.forEach(tag => tag.state = 0);
+      } else {
+        group.tags.forEach(tag => tag.state = 1);
+      }
+      this.stateService.updateFilters();
+      this.stateService.save();
+    } else {
+      this.stateService.openTagGroup = group;
+    }
+  }
+
   protected toggleFilter(filter: Filter): void {
     filter.state = filter.state == 0 ? 1 : filter.state == 1 ? -1 : 0;
     this.stateService.updateFilters();

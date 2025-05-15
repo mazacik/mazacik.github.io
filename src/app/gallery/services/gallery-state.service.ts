@@ -64,8 +64,8 @@ export class GalleryStateService {
     this.filterGroups.state = data.filterGroups || 0;
     this.comparison = data.comparison;
     this.tagGroups = data.tagGroups || [];
-    this.openTagGroup = data.tagGroups[0];
-    this.tags = data.tagGroups.flatMap(group => group.tags);
+    this.openTagGroup = ArrayUtils.getFirst(this.tagGroups);
+    this.tags = this.tagGroups.flatMap(group => group.tags);
 
     if (!data.imageProperties) data.imageProperties = [];
     if (!data.groupProperties) data.groupProperties = [];
@@ -199,7 +199,7 @@ export class GalleryStateService {
   private serializeGroup(galleryGroup: GalleryGroup): GroupData {
     const group: GroupData = {} as GroupData;
     group.imageIds = galleryGroup.images.map(image => image.id);
-    group.tagIds = galleryGroup.tags.map(tag => tag.id);
+    group.tagIds = galleryGroup.tags.filter(tag => tag).map(tag => tag.id);
     return group;
   }
 
@@ -293,7 +293,9 @@ export class GalleryStateService {
       } else {
         ArrayUtils.remove(this.groups, image.group);
         for (const groupImage of image.group.images) {
-          ArrayUtils.push(groupImage.tags, image.group.tags);
+          if (!ArrayUtils.isEmpty(image.group?.tags)) {
+            ArrayUtils.push(groupImage.tags, image.group.tags);
+          }
           delete groupImage.group;
         }
       }

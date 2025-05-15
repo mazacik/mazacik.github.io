@@ -7,4 +7,6 @@
     <app-switch [state]="stateService.settings.autoBookmark" tp="Bookmark new images automatically" (stateChange)="onAutoBookmarkStateChange($event)"></app-switch>
     <span class="nowrap">Auto Bookmark</span>
   </div>
+  <div class="v-separator"></div>
+  <div class="button" (click)="bookmarkAll()">Bookmark All</div>
 </ng-container>
