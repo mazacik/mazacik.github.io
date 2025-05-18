@@ -95,13 +95,6 @@ export class GalleryStateService {
       return group;
     });
 
-    // if (this.comparison && Object.keys(this.comparison).length > 0) {
-    //   // clean comparison (remove missing entries)
-    //   const contenders: Contender<GalleryImage>[] = this.images.map(image => new Contender<GalleryImage>(image.id, image));
-    //   contenders.forEach(contender => contender.directlyBetterThan = this.comparison[contender.id].map(directlyBetterThanId => contenders.find(c => c.id == directlyBetterThanId)));
-    //   this.images = TournamentUtils.getLeaderboard(TournamentUtils.getFirst(contenders), contenders).map(contender => contender.object);
-    // }
-
     this.updateFilters();
     this.applicationService.loading.set(false);
     if (!data.settings) this.save();
