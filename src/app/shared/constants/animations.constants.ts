@@ -10,11 +10,11 @@ export const skip = trigger('skip', [
 export const fade = trigger('fade', [
   transition(':enter', [
     style({ opacity: 0 }),
-    animate('333ms ease', style({ opacity: 1 }))
+    animate(ANIMATION_TIMINGS, style({ opacity: 1 }))
   ]),
   transition(':leave', [
-    style({ opacity: 1, 'pointer-events': 'none', 'z-index': -1 }),
-    animate('333ms 333ms ease', style({ opacity: 0 }))
+    style({ opacity: 1, 'pointer-events': 'none' }),
+    animate(ANIMATION_TIMINGS, style({ opacity: 0 }))
   ])
 ]);
 

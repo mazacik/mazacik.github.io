@@ -88,6 +88,7 @@ export class GalleryTagEditorComponent extends DialogContentBase<Tag> implements
 
             for (const image of this.stateService.images) {
               ArrayUtils.remove(image.tags, this.inputs.tag);
+              this.stateService.updateFilters(image);
             }
 
             this.stateService.save();

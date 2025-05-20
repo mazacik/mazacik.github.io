@@ -20,7 +20,7 @@ export class Contender<T> {
 
   public getBetterThan(): Contender<T>[] {
     if (!this.betterThan) {
-      this.betterThan = this.directlyBetterThan.slice();
+      this.betterThan = this.directlyBetterThan.filter(o => o);
       for (const otherItem of this.directlyBetterThan) {
         ArrayUtils.push(this.betterThan, otherItem.getBetterThan());
       }

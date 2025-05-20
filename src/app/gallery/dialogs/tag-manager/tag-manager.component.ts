@@ -38,6 +38,7 @@ export class TagManagerComponent {
     });
   }
 
+  protected groupModeWarningFlash: boolean = false;
   public toggleTag(image: GalleryImage, tag: Tag): void {
     if (image.group) {
       if (this.groupMode) {
@@ -48,7 +49,11 @@ export class TagManagerComponent {
           image.group.images.forEach(groupImage => ArrayUtils.remove(groupImage.tags, tag));
         }
       } else {
-        if (!image.group.tags.includes(tag)) {
+        if (image.group.tags.includes(tag)) {
+          this.groupModeWarningFlash = true;
+          setTimeout(() => this.groupModeWarningFlash = false, 500);
+          return;
+        } else {
           ArrayUtils.toggle(image.tags, tag);
         }
       }
@@ -89,7 +94,6 @@ export class TagManagerComponent {
             classes.push('positive');
             classes.push('underline');
             classes.push('opacity-075');
-            classes.push('pointer-events-none');
           } else {
             classes.push('cursor-pointer');
             classes.push('hover-brighten');

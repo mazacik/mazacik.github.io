@@ -32,10 +32,10 @@
             <img [src]="getSrc(image)" (click)="onImageClick(image)" #imageElement (load)="imageElement.style.opacity = '1'">
           </div>
         </div>
-  
+
         <div *ngIf="target.group" @fade class="has-group-container">
           <div class="another-container stack-container">
-            <div *ngFor="let image of [target]" @fade class="image-container">
+            <div *ngFor="let image of [target]" @fadeBetweenGroupImages class="image-container">
               <img [src]="getSrc(image)" (click)="onImageClick(image)" #imageElement (load)="imageElement.style.opacity = '1'">
             </div>
           </div>

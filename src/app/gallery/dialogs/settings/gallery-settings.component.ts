@@ -54,6 +54,14 @@ export class GallerySettingsComponent extends DialogContentBase<boolean> impleme
     this.stateService.settings.autoBookmark = event.state;
   }
 
+  protected bookmarkAll(): void {
+    for (const image of this.stateService.images) {
+      image.bookmark = true;
+    }
+    this.stateService.updateFilters();
+    this.stateService.save();
+  }
+
   public close(): void {
     if (this.stateService.images) {
       if (this.needsFilterRefresh) {

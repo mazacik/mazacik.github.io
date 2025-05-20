@@ -20,6 +20,16 @@
       opacity: 0;
       pointer-events: none;
     }
+
+    .group-mode-container {
+      &.flash {
+        color: var(--color-negative);
+      }
+
+      &:not(.flash) {
+        transition: color 500ms;
+      }
+    }
   }
 
   .header {

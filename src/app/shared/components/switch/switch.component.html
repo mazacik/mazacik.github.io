@@ -1,5 +1,12 @@
-<div class="container" [class.tri]="tri">
-  <i *ngIf="state == -1" class="negative fa-regular" [ngClass]="tri ? 'fa-circle-xmark' : 'fa-circle'" (mousedown)="onMouseDown($event)" (click)="nextState($event)" (contextmenu)="previousState($event)"></i>
+<div class="container flex">
+  <div class="left"></div>
+  <div class="middle"></div>
+  <div class="right"></div>
+  <div class="aaa"></div>
+  <!-- <i class="fa-solid fa-check"></i>
+  <i class="fa-solid fa-question"></i>
+  <i class="fa-solid fa-xmark"></i> -->
+  <!-- <i *ngIf="state == -1" class="negative fa-regular" [ngClass]="tri ? 'fa-circle-xmark' : 'fa-circle'" (mousedown)="onMouseDown($event)" (click)="nextState($event)" (contextmenu)="previousState($event)"></i>
   <i *ngIf="state == 0" class="neutral fa-regular fa-circle" (mousedown)="onMouseDown($event)" (click)="nextState($event)" (contextmenu)="previousState($event)"></i>
-  <i *ngIf="state == 1" class="positive fa-regular fa-circle-check" (mousedown)="onMouseDown($event)" (click)="nextState($event)" (contextmenu)="previousState($event)"></i>
+  <i *ngIf="state == 1" class="positive fa-regular fa-circle-check" (mousedown)="onMouseDown($event)" (click)="nextState($event)" (contextmenu)="previousState($event)"></i> -->
 </div>

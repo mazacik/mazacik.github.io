@@ -1,10 +1,8 @@
 import { Injectable } from "@angular/core";
 import { TippyService } from "@ngneat/helipopper";
 import { DialogService } from "../shared/services/dialog.service";
-import { ArrayUtils } from "../shared/utils/array.utils";
 import { GalleryTagEditorComponent } from "./dialogs/gallery-tag-editor/gallery-tag-editor.component";
 import { GroupManagerComponent } from "./dialogs/group-manager/group-manager.component";
-import { ImageComparisonComponent } from "./dialogs/image-comparison/image-comparison.component";
 import { GallerySettingsComponent } from "./dialogs/settings/gallery-settings.component";
 import { GalleryGroup } from "./model/gallery-group.class";
 import { GalleryImage } from "./model/gallery-image.class";
@@ -29,10 +27,6 @@ export class GalleryService {
       'File Type: ' + image.mimeType,
       'Resolution: ' + image.imageMediaMetadata.width + '×' + image.imageMediaMetadata.height
     ]);
-  }
-
-  public openImageComparison(): void {
-    this.dialogService.create(ImageComparisonComponent, { images: ArrayUtils.shuffle(this.stateService.images.slice()) });
   }
 
   public openImageGroupEditor(group?: GalleryGroup): void {

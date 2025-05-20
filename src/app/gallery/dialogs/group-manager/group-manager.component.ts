@@ -68,8 +68,9 @@ export class GroupManagerComponent extends DialogContentBase<void, {}> implement
     const group: GalleryGroup = this.inputs.sourceGroup;
     if (group) {
       ArrayUtils.remove(this.stateService.groups, group);
-      for (const image of group.images) {
-        delete image.group;
+      for (const groupImage of group.images) {
+        ArrayUtils.push(groupImage.tags, groupImage.group.tags);
+        delete groupImage.group;
       }
 
       this.stateService.save(true);

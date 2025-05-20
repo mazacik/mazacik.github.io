@@ -64,8 +64,8 @@ export class GalleryStateService {
     this.filterGroups.state = data.filterGroups || 0;
     this.comparison = data.comparison;
     this.tagGroups = data.tagGroups || [];
-    this.openTagGroup = data.tagGroups[0];
-    this.tags = data.tagGroups.flatMap(group => group.tags);
+    this.openTagGroup = ArrayUtils.getFirst(this.tagGroups);
+    this.tags = this.tagGroups.flatMap(group => group.tags);
 
     if (!data.imageProperties) data.imageProperties = [];
     if (!data.groupProperties) data.groupProperties = [];
@@ -94,13 +94,6 @@ export class GalleryStateService {
       group.tags = groupProperties.tagIds?.map(tagId => this.tags.find(tag => tag.id == tagId)) || [];
       return group;
     });
-
-    // if (this.comparison && Object.keys(this.comparison).length > 0) {
-    //   // clean comparison (remove missing entries)
-    //   const contenders: Contender<GalleryImage>[] = this.images.map(image => new Contender<GalleryImage>(image.id, image));
-    //   contenders.forEach(contender => contender.directlyBetterThan = this.comparison[contender.id].map(directlyBetterThanId => contenders.find(c => c.id == directlyBetterThanId)));
-    //   this.images = TournamentUtils.getLeaderboard(TournamentUtils.getFirst(contenders), contenders).map(contender => contender.object);
-    // }
 
     this.updateFilters();
     this.applicationService.loading.set(false);
@@ -199,7 +192,7 @@ export class GalleryStateService {
   private serializeGroup(galleryGroup: GalleryGroup): GroupData {
     const group: GroupData = {} as GroupData;
     group.imageIds = galleryGroup.images.map(image => image.id);
-    group.tagIds = galleryGroup.tags.map(tag => tag.id);
+    group.tagIds = galleryGroup.tags.filter(tag => tag).map(tag => tag.id);
     return group;
   }
 
