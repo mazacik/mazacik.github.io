@@ -7,13 +7,17 @@
     </div>
     <div class="h-separator"></div>
     <div class="flex center gap-3 margins-3-v" [class.disabled]="!target">
-      <div class="flex center gap cursor-pointer hover-brighten" [class.disabled]="groupMode" [class.positive]="target?.heart" (click)="stateService.toggleFavorite(target, true)">
+      <!-- <div class="flex center gap cursor-pointer hover-brighten" [class.disabled]="groupMode" [class.positive]="target?.heart" (click)="stateService.toggleFavorite(target, true)">
         <i class="fa-regular fa-heart" [class.fa-solid]="target?.heart"></i>
         <span>Favorite</span>
       </div>
       <div class="flex center gap cursor-pointer hover-brighten" [class.disabled]="groupMode" [class.positive]="target?.bookmark" (click)="stateService.toggleBookmark(target, true)">
         <i class="fa-regular fa-bookmark" [class.fa-solid]="target?.bookmark"></i>
         <span>Bookmark</span>
+      </div> -->
+      <div class="flex center gap cursor-pointer hover-brighten group-mode-container" [class.disabled]="target?.group == null" [class.positive]="groupMode" [class.flash]="groupModeWarningFlash" (click)="groupMode = !groupMode">
+        <i class="fa-solid" [ngClass]="groupMode ? 'fa-images' : 'fa-image'" style="margin-top: 1px;"></i>
+        <span>Group Mode</span>
       </div>
     </div>
     <div class="h-separator"></div>
@@ -33,7 +37,7 @@
     </div>
     <div class="buttons-container">
       <div class="button" (click)="galleryService.openTagEditor('create', stateService.openTagGroup)"><i class="fa-solid fa-plus"></i>Create</div>
-      <div class="button" [class.disabled]="target?.group == null" (click)="groupMode = !groupMode"><i class="fa-solid" [ngClass]="groupMode ? 'fa-images' : 'fa-image'"></i>Mode: {{ groupMode ? 'Group' : 'Image' }}</div>
+      <!-- <div class="button" [class.disabled]="target?.group == null" (click)="groupMode = !groupMode"><i class="fa-solid" [ngClass]="groupMode ? 'fa-images' : 'fa-image'"></i>Mode: {{ groupMode ? 'Group' : 'Image' }}</div> -->
     </div>
   </div>
 </div>
