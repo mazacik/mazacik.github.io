@@ -286,7 +286,7 @@ export class GalleryStateService {
       } else {
         ArrayUtils.remove(this.groups, image.group);
         for (const groupImage of image.group.images) {
-          ArrayUtils.push(groupImage.tags, image.group.tags);
+          ArrayUtils.push(groupImage.tags, groupImage.group.tags);
           delete groupImage.group;
         }
       }
