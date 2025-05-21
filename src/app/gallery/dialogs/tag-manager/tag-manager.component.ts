@@ -20,8 +20,10 @@ import { GalleryStateService } from '../../services/gallery-state.service';
 })
 export class TagManagerComponent {
 
-  @HostBinding('class.collapsed')
-  protected collapsed: boolean = false;
+  @HostBinding('class.visible')
+  public get classVisible(): boolean {
+    return this.stateService.tagManagerVisible;
+  }
 
   protected target: GalleryImage;
   protected groupMode: boolean = false;

@@ -17,13 +17,14 @@ import { ImageData } from "../model/image-data.interface";
 import { TagGroup } from "../model/tag-group.interface";
 import { Tag } from "../model/tag.interface";
 import { GalleryGoogleDriveService } from "./gallery-google-drive.service";
+import { ScreenUtils } from "src/app/shared/utils/screen.utils";
 
 @Injectable({
   providedIn: 'root',
 })
 export class GalleryStateService {
 
-  // TODO this service is way too large
+  // TODO this service is too large
 
   private updateDelay: Delay = new Delay(5000);
 
@@ -39,10 +40,12 @@ export class GalleryStateService {
   public tags: Tag[];
   public tagGroups: TagGroup[];
   public openTagGroup: TagGroup;
+  public tagManagerVisible: boolean = ScreenUtils.isLargeScreen();
 
   public filterFavorite: Filter = {};
   public filterBookmark: Filter = {};
   public filterGroups: Filter = {};
+  public filterVisible: boolean = ScreenUtils.isLargeScreen();
 
   public groupEditorGroup: GalleryGroup;
 

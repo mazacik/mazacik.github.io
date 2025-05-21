@@ -18,8 +18,10 @@ import { GalleryStateService } from '../../services/gallery-state.service';
 })
 export class FilterComponent {
 
-  @HostBinding('class.collapsed')
-  protected collapsed: boolean = false;
+  @HostBinding('class.visible')
+  public get classVisible(): boolean {
+    return this.stateService.filterVisible;
+  }
 
   constructor(
     protected galleryService: GalleryService,

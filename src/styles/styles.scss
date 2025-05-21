@@ -532,6 +532,10 @@ span.icon-button {
   }
 }
 
+.justify-self-end {
+  justify-self: end;
+}
+
 .gap,
 .gap-1 {
   gap: $gap;
@@ -585,6 +589,48 @@ span.icon-button {
 .margins-3-h {
   margin-left: 1rem;
   margin-right: 1rem;
+}
+
+.padding-1 {
+  padding: $gap;
+}
+
+.padding-1-v {
+  padding-top: $gap;
+  padding-bottom: $gap;
+}
+
+.padding-1-h {
+  padding-left: $gap;
+  padding-right: $gap;
+}
+
+.padding-2 {
+  padding: $gap * 2;
+}
+
+.padding-2-v {
+  padding-top: $gap * 2;
+  padding-bottom: $gap * 2;
+}
+
+.padding-2-h {
+  padding-left: $gap * 2;
+  padding-right: $gap * 2;
+}
+
+.padding-3 {
+  padding: 1rem;
+}
+
+.padding-3-v {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.padding-3-h {
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 .center {
