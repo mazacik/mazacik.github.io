@@ -1,4 +1,7 @@
 <div class="header-start">
+  <div class="drawer-container" [class.drawer-hidden]="!stateService.filterVisible">
+    <i class="icon-button fa-solid fa-filter"  tp="Open Filter Configuration" (click)="stateService.filterVisible = !stateService.filterVisible"></i>
+  </div>
   <i class="icon-button fa-solid fa-folder-plus" tp="Create Image Group" (click)="galleryService.openImageGroupEditor()"></i>
 </div>
 <div class="header-center">

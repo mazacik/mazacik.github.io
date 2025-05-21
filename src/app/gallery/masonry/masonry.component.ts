@@ -45,7 +45,11 @@ export class MasonryComponent {
   ) {
     effect(() => this.updateLayout());
     // effect(() => this.scrollTo(this.stateService.target()));
-    new ResizeObserver(() => this.requestLayoutUpdate()).observe(elementRef.nativeElement);
+    new ResizeObserver(() => {
+      if (ScreenUtils.isLargeScreen()) {
+        this.requestLayoutUpdate();
+      }
+    }).observe(elementRef.nativeElement);
   }
 
   private layoutUpdateDelay: Delay = new Delay(100);

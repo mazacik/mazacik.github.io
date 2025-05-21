@@ -10,7 +10,7 @@
     overflow: hidden;
     backdrop-filter: blur(5px);
     background-color: var(--color-dialog-background);
-    z-index: 1;
     transition: $transition-duration;
+    z-index: 1;
   }
 }
