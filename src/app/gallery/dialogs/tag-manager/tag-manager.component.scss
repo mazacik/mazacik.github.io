@@ -28,6 +28,7 @@
 
     &:not(.visible) {
       width: 0;
+      min-width: 0;
     }
   }
 
