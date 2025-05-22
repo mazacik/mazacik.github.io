@@ -308,6 +308,18 @@ input[type=number] {
   }
 }
 
+.overflow-auto {
+  overflow: auto;
+}
+
+.overflow-visible {
+  overflow: visible;
+}
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
 .transparent {
   opacity: 0 !important;
   visibility: hidden !important;

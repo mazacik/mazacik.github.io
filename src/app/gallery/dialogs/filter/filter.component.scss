@@ -4,6 +4,7 @@
   display: flex;
   user-select: none;
   transition: $transition-duration;
+  overflow: hidden;
 
   &:not(.visible) {
     opacity: 0;
