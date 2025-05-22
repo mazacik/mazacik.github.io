@@ -29,6 +29,7 @@
 
     &:not(.visible) {
       width: 0;
+      min-width: 0;
       transform: translateX(-300.8px);
     }
   }
