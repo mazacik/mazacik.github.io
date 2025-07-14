@@ -1,27 +1,35 @@
 <div class="v-separator desktop-only"></div>
 <div class="tag-manager-container">
   <div class="header">
-    <i class="icon-button transparent"></i>
-    <span>Tag Manager</span>
-    <i class="icon-button fa-solid fa-caret-right justify-self-end" tp="Collapse" tpPlacement="left" (click)="stateService.tagManagerVisible = false"></i>
-  </div>
-  <div class="h-separator"></div>
-  <div class="flex center gap-3 margins-3-v" [class.disabled]="!target">
-    <div class="flex center gap cursor-pointer hover-brighten group-mode-container" [class.disabled]="target?.group == null" [class.positive]="groupMode" [class.flash]="groupModeWarningFlash" (click)="groupMode = !groupMode">
-      <i class="fa-solid" [ngClass]="groupMode ? 'fa-images' : 'fa-image'" style="margin-top: 1px;"></i>
-      <span>Group Mode</span>
+    <div class="flex gap">
+      <ng-container *ngIf="!ScreenUtils.isLargeScreen()">
+        <i class="icon-button fa-solid hover-brighten" [ngClass]="groupMode ? 'fa-images' : 'fa-image'" [class.disabled]="target?.group == null" [class.positive]="groupMode" [class.flash]="groupModeWarningFlash" (click)="groupMode = !groupMode"></i>
+      </ng-container>
+    </div>
+    <span class="margins-3-h">Tag Manager</span>
+    <div class="flex gap flex-end-h">
+      <i class="icon-button fa-solid" [ngClass]="ScreenUtils.isLargeScreen() ? 'fa-caret-right' : 'fa-times'" tp="Collapse" tpPlacement="left" (click)="stateService.tagManagerVisible = false"></i>
     </div>
   </div>
+  <ng-container *ngIf="ScreenUtils.isLargeScreen()">
+    <div class="h-separator"></div>
+    <div class="flex center gap-3 margins-3-v" [class.disabled]="!target">
+      <div class="flex center gap cursor-pointer hover-brighten group-mode-container" [class.disabled]="target?.group == null" [class.positive]="groupMode" [class.flash]="groupModeWarningFlash" (click)="groupMode = !groupMode">
+        <i class="fa-solid" [ngClass]="groupMode ? 'fa-images' : 'fa-image'" style="margin-top: 1px;"></i>
+        <span>Group Mode</span>
+      </div>
+    </div>
+  </ng-container>
   <div class="h-separator"></div>
-  <div class="filters-container margins-2-h margins-3-v" [class.disabled]="!target">
+  <div class="filters-container" [class.disabled]="!target">
     <div class="groups-container">
       <div *ngFor="let group of stateService.tagGroups" class="group-container hover-brighten white-space-nowrap" (click)="stateService.openTagGroup = group" (contextmenu)="$event.preventDefault(); galleryService.openTagEditor('edit', group);">
         <span [class.highlight]="isSomeTagActiveInGroup(group)">{{ group.name }}</span>
         <div class="group-active-indicator" [class.transparent]="group != stateService.openTagGroup"></div>
       </div>
     </div>
-    <div class="v-separator"></div>
-    <div class="stack-container width-auto height-auto">
+    <div class="v-separator margins"></div>
+    <div class="stack-container width-auto height-auto" style="flex: 1;">
       <div *ngFor="let group of stateService.tagGroups" class="tags-container" [class.transparent]="group != stateService.openTagGroup">
         <span *ngFor="let tag of group.tags" class="white-space-nowrap" [ngClass]="getTagClass(tag)" (click)="toggleTag(target, tag)" (contextmenu)="$event.preventDefault(); galleryService.openTagEditor('edit', group, tag);">{{ tag.name }}</span>
       </div>

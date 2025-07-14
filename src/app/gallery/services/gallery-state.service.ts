@@ -8,6 +8,7 @@ import { ApplicationService } from "src/app/shared/services/application.service"
 import { DialogService } from "src/app/shared/services/dialog.service";
 import { ArrayUtils } from "src/app/shared/utils/array.utils";
 import { GoogleFileUtils } from "src/app/shared/utils/google-file.utils";
+import { ScreenUtils } from "src/app/shared/utils/screen.utils";
 import { GallerySettingsComponent } from "../dialogs/settings/gallery-settings.component";
 import { Data } from "../model/data.interface";
 import { Filter } from "../model/filter.interface";
@@ -17,7 +18,6 @@ import { ImageData } from "../model/image-data.interface";
 import { TagGroup } from "../model/tag-group.interface";
 import { Tag } from "../model/tag.interface";
 import { GalleryGoogleDriveService } from "./gallery-google-drive.service";
-import { ScreenUtils } from "src/app/shared/utils/screen.utils";
 
 @Injectable({
   providedIn: 'root',
@@ -30,6 +30,7 @@ export class GalleryStateService {
 
   public dataFolderId: string;
   public archiveFolderId: string;
+
   public settings: GallerySettings;
 
   public readonly images: GalleryImage[] = [];
@@ -233,7 +234,7 @@ export class GalleryStateService {
       return false;
     }
 
-    if (this.settings.showVideos == -1 && GoogleFileUtils.isVideo(image)) {
+    if (!this.settings.showVideos && GoogleFileUtils.isVideo(image)) {
       return false;
     }
 

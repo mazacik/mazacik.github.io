@@ -1,6 +1,6 @@
 <div class="header-start">
   <div class="drawer-container" [class.drawer-hidden]="!stateService.filterVisible">
-    <i class="icon-button fa-solid fa-filter"  tp="Open Filter Configuration" (click)="stateService.filterVisible = !stateService.filterVisible"></i>
+    <i class="icon-button fa-solid fa-filter" tp="Open Filter Configuration" (click)="stateService.filterVisible = !stateService.filterVisible"></i>
   </div>
   <i class="icon-button fa-solid fa-folder-plus" tp="Create Image Group" (click)="galleryService.openImageGroupEditor()"></i>
 </div>
@@ -8,6 +8,6 @@
 
 </div>
 <div class="header-end">
-  <i class="icon-button fa-solid" [ngClass]="applicationService.isDarkTheme() ? 'fa-moon' : 'fa-sun'" tp="Brightness Mode" (click)="applicationService.toggleTheme()"></i>
+  <i class="icon-button fa-brands fa-google-drive" tp="Google Drive" (click)="openGoogleDriveDataFolder()"></i>
   <i class="icon-button fa-solid fa-gear" tp="Settings" (click)="galleryService.openSettings()"></i>
 </div>

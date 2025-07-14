@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { TippyDirective } from '@ngneat/helipopper';
-import { ApplicationService } from 'src/app/shared/services/application.service';
 import { GalleryService } from '../gallery.service';
+import { GalleryGoogleDriveService } from '../services/gallery-google-drive.service';
 import { GalleryStateService } from '../services/gallery-state.service';
 
 @Component({
@@ -18,9 +18,13 @@ import { GalleryStateService } from '../services/gallery-state.service';
 export class HeaderComponent {
 
   constructor(
-    protected applicationService: ApplicationService,
     protected galleryService: GalleryService,
-    protected stateService: GalleryStateService
+    protected stateService: GalleryStateService,
+    protected googleService: GalleryGoogleDriveService
   ) { }
+
+  protected openGoogleDriveDataFolder(): void {
+    this.googleService.openFolderById(this.stateService.dataFolderId);
+  }
 
 }

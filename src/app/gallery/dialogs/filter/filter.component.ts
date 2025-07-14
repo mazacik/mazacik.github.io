@@ -5,6 +5,7 @@ import { GalleryService } from '../../gallery.service';
 import { Filter } from '../../model/filter.interface';
 import { TagGroup } from '../../model/tag-group.interface';
 import { GalleryStateService } from '../../services/gallery-state.service';
+import { ScreenUtils } from 'src/app/shared/utils/screen.utils';
 
 @Component({
   selector: 'app-filter',
@@ -17,6 +18,8 @@ import { GalleryStateService } from '../../services/gallery-state.service';
   styleUrls: ['./filter.component.scss']
 })
 export class FilterComponent {
+
+  protected ScreenUtils = ScreenUtils;
 
   @HostBinding('class.visible')
   public get classVisible(): boolean {

@@ -7,6 +7,7 @@ import { GalleryImage } from '../../model/gallery-image.class';
 import { TagGroup } from '../../model/tag-group.interface';
 import { Tag } from '../../model/tag.interface';
 import { GalleryStateService } from '../../services/gallery-state.service';
+import { ScreenUtils } from 'src/app/shared/utils/screen.utils';
 
 @Component({
   selector: 'app-tag-manager',
@@ -19,6 +20,8 @@ import { GalleryStateService } from '../../services/gallery-state.service';
   styleUrls: ['./tag-manager.component.scss']
 })
 export class TagManagerComponent {
+
+  protected ScreenUtils = ScreenUtils;
 
   @HostBinding('class.visible')
   public get classVisible(): boolean {
