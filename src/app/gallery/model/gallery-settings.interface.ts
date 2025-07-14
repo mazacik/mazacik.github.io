@@ -1,8 +1,7 @@
-import { BaseSettings } from "src/app/shared/classes/base-settings.interface";
+export interface GallerySettings {
 
-export interface GallerySettings extends BaseSettings {
-
-  showVideos: number;
-  autoBookmark: number;
+  darkMode: boolean;
+  showVideos: boolean;
+  autoBookmark: boolean;
 
 }

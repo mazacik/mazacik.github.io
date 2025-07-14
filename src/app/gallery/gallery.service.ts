@@ -8,7 +8,6 @@ import { GalleryGroup } from "./model/gallery-group.class";
 import { GalleryImage } from "./model/gallery-image.class";
 import { TagGroup } from "./model/tag-group.interface";
 import { Tag } from "./model/tag.interface";
-import { GalleryStateService } from "./services/gallery-state.service";
 
 @Injectable({
   providedIn: 'root',
@@ -17,7 +16,6 @@ export class GalleryService {
 
   public constructor(
     private dialogService: DialogService,
-    private stateService: GalleryStateService,
     private tippyService: TippyService
   ) { }
 

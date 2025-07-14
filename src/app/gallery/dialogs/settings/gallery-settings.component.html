@@ -1,12 +1,18 @@
 <ng-container *ngIf="stateService.settings">
-  <div class="switch-container">
-    <app-switch [state]="stateService.settings.showVideos" tp="Show videos" (stateChange)="onShowVideosStateChange($event)"></app-switch>
-    <span class="nowrap">Show Videos</span>
+  <div class="option-container">
+    <span class="nowrap user-select-none">Dark Mode</span>
+    <app-checkbox [value]="applicationService.isDarkTheme()" (valueChange)="applicationService.toggleTheme()"></app-checkbox>
   </div>
-  <div class="switch-container">
-    <app-switch [state]="stateService.settings.autoBookmark" tp="Bookmark new images automatically" (stateChange)="onAutoBookmarkStateChange($event)"></app-switch>
-    <span class="nowrap">Auto Bookmark</span>
+  <div class="h-separator"></div>
+  <div class="option-container">
+    <span class="nowrap user-select-none">Show Videos</span>
+    <app-checkbox [value]="stateService.settings.showVideos" (valueChange)="onShowVideosValueChange($event)"></app-checkbox>
   </div>
-  <div class="v-separator"></div>
-  <div class="button" (click)="bookmarkAll()">Bookmark All</div>
+  <div class="h-separator"></div>
+  <div class="option-container">
+    <span class="nowrap user-select-none">Auto Bookmark</span>
+    <app-checkbox [value]="stateService.settings.autoBookmark" (valueChange)="onAutoBookmarkValueChange($event)"></app-checkbox>
+  </div>
+  <div class="h-separator"></div>
+  <div class="button" style="min-height: 2rem;" (click)="bookmarkAll()">Bookmark Everything</div>
 </ng-container>
