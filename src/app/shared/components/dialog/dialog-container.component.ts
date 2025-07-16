@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, ComponentRef, ElementRef, HostBinding, HostListener, Type, ViewChild, ViewContainerRef } from '@angular/core';
 import { DialogService } from '../../services/dialog.service';
+import { KeyboardShortcutService } from '../../services/keyboard-shortcut.service';
 import { ScreenUtils } from '../../utils/screen.utils';
 import { DialogButton } from './dialog-button.class';
 import { DialogContentBase } from './dialog-content-base.class';
@@ -36,7 +37,8 @@ export class DialogContainerComponent<ResultType, InputsType> implements AfterVi
 
   constructor(
     private elementRef: ElementRef<HTMLElement>,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private keyboardShortcutService: KeyboardShortcutService
   ) {
     this.result = new Promise(resolve => this.resolve = resolve);
   }
@@ -56,7 +58,12 @@ export class DialogContainerComponent<ResultType, InputsType> implements AfterVi
     this.contentComponentInstance.inputs = this.inputs;
     this.contentComponentInstance.resolve = this.resolve;
 
-    this.result.finally(() => contentRef.destroy());
+    this.keyboardShortcutService.register(this.contentComponentInstance);
+
+    this.result.finally(() => {
+      this.keyboardShortcutService.unregister(this.contentComponentInstance);
+      contentRef.destroy();
+    });
 
     contentRef.changeDetectorRef.detectChanges();
   }
@@ -140,20 +147,25 @@ export class DialogContainerComponent<ResultType, InputsType> implements AfterVi
   }
 
   protected overlayClick(): void {
-    const index: number = this.dialogService.dialogs.findIndex(dialog => dialog == this);
-    for (let i = index; i < this.dialogService.dialogs.length; i++) {
-      const dialog = this.dialogService.dialogs[i];
+    const index: number = this.dialogService.containerComponentInstances.indexOf(this);
+    for (let i = index; i < this.dialogService.containerComponentInstances.length; i++) {
+      const dialog = this.dialogService.containerComponentInstances[i];
       dialog.borderWarning = true;
       setTimeout(() => dialog.borderWarning = false, 500);
     }
   }
 
   @HostListener('window:resize', ['$event'])
-  onScreenResize(event: Event) {
+  protected onScreenResize(event: Event) {
     if (!ScreenUtils.isLargeScreen()) {
       this.top = null;
       this.left = null;
     }
+  }
+
+  @HostListener('click', ['$event'])
+  protected onClick(event: KeyboardEvent) {
+    this.keyboardShortcutService.requestFocus(this.contentComponentInstance);
   }
 
 }

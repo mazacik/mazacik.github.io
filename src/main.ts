@@ -39,7 +39,7 @@ bootstrapApplication(AppComponent, {
         contextmenu: {
           arrow: true,
           animation: 'fade',
-          trigger: 'click',
+          trigger: 'contextmenu',
           hideOnClick: true,
           offset: [0, 8],
           interactive: true

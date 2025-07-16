@@ -11,7 +11,7 @@ import { ArrayUtils } from '../utils/array.utils';
 })
 export class DialogService {
 
-  public dialogs: DialogContainerComponent<any, any>[] = [];
+  public containerComponentInstances: DialogContainerComponent<any, any>[] = [];
 
   constructor(
     private applicationRef: ApplicationRef,
@@ -33,7 +33,7 @@ export class DialogService {
   public create<ResultType, ContentComponent extends DialogContentBase<ResultType, NoInputsType>>(component: Type<ContentComponent>): Promise<ResultType>;
   public create<ResultType, InputsType, ContentComponent extends DialogContentBase<ResultType, InputsType>>(contentComponentType: Type<ContentComponent>, inputs: RequireInputsType<ContentComponent>): Promise<ResultType>;
   public create<ResultType, InputsType, ContentComponent extends DialogContentBase<ResultType, InputsType>>(contentComponentType: Type<ContentComponent>, inputs?: any): Promise<ResultType> {
-    const existingContainerComponentInstance = ArrayUtils.getLast(this.dialogs.filter(dialog => dialog.contentComponentType == contentComponentType));
+    const existingContainerComponentInstance = ArrayUtils.getLast(this.containerComponentInstances.filter(dialog => dialog.contentComponentType == contentComponentType));
     if (existingContainerComponentInstance && !existingContainerComponentInstance.contentComponentInstance.configuration.allowMultiple) {
       return;
     }
@@ -44,7 +44,7 @@ export class DialogService {
     containerComponentInstance.contentComponentType = contentComponentType;
     containerComponentInstance.inputs = inputs;
     containerComponentInstance.result.finally(() => {
-      ArrayUtils.remove(this.dialogs, this.dialogs.find(dialog => dialog == containerComponentInstance));
+      ArrayUtils.remove(this.containerComponentInstances, containerComponentInstance);
       this.applicationRef.detachView(containerComponentRef.hostView);
       containerComponentRef.destroy();
     });
@@ -54,7 +54,7 @@ export class DialogService {
       containerComponentInstance.left = existingContainerComponentInstance.left + 10;
     }
 
-    this.dialogs.push(containerComponentInstance);
+    this.containerComponentInstances.push(containerComponentInstance);
     this.applicationRef.attachView(containerComponentRef.hostView);
     document.body.firstElementChild.appendChild(containerComponentRef.location.nativeElement);
 

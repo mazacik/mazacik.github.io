@@ -47,8 +47,7 @@ export class GroupSizeFilterEditor extends DialogContentBase<boolean> implements
     return this.min != null && this.max != null && this.min <= this.max;
   }
 
-  @HostListener('document:keydown.enter', ['$event'])
-  submit(): void {
+  public override submit(): void {
     if (this.canSubmit()) {
       this.stateService.filterGroupSizeMin = this.min;
       this.stateService.filterGroupSizeMax = this.max;
