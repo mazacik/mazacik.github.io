@@ -112,7 +112,7 @@ export abstract class ArrayUtils {
   }
 
   public static makeFirst<T>(array: T[], object: T): void {
-    if (!this.isEmpty(array) && object) {
+    if (array && object) {
       this._remove(array, object);
       array.unshift(object);
     }
@@ -131,7 +131,7 @@ export abstract class ArrayUtils {
   }
 
   public static makeLast<T>(array: T[], object: T): void {
-    if (!this.isEmpty(array) && object) {
+    if (array && object) {
       this._remove(array, object);
       array.push(object);
     }

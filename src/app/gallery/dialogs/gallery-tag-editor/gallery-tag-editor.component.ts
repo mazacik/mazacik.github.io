@@ -38,7 +38,21 @@ export class GalleryTagEditorComponent extends DialogContentBase<Tag> implements
       text: () => 'Cancel',
       click: () => this.close()
     }, {
-      text: () => this.inputs.mode == 'create' ? 'Create' : 'Save',
+      text: () => {
+        if (this.inputs.mode == 'create') {
+          return 'Create';
+        }
+
+        if (this.inputs.group && this.inputs.tag && this.groupName == this.inputs.group.name && this.tagName == this.inputs.tag.name) {
+          return 'Save'; // no changes, diabled
+        }
+
+        if (this.doesTagExistInGroup(this.tagName, this.groupName)) {
+          return 'Merge';
+        }
+
+        return 'Save';
+      },
       disabled: () => !this.canSubmit(),
       click: () => this.submit()
     }]
@@ -101,6 +115,7 @@ export class GalleryTagEditorComponent extends DialogContentBase<Tag> implements
 
   protected canSubmit(): boolean {
     if (this.inputs.mode == 'create') {
+      // create new
       if (StringUtils.isEmpty(this.groupName)) {
         return false;
       }
@@ -117,7 +132,9 @@ export class GalleryTagEditorComponent extends DialogContentBase<Tag> implements
         }
       }
     } else {
+      // edit existing
       if (this.inputs.tag == null) {
+        // group
         if (StringUtils.isEmpty(this.groupName)) {
           return false;
         }
@@ -132,6 +149,7 @@ export class GalleryTagEditorComponent extends DialogContentBase<Tag> implements
           }
         }
       } else {
+        // tag
         if (StringUtils.isEmpty(this.groupName)) {
           return false;
         }
@@ -141,25 +159,27 @@ export class GalleryTagEditorComponent extends DialogContentBase<Tag> implements
         }
 
         if (this.inputs.group && this.inputs.tag && this.groupName == this.inputs.group.name && this.tagName == this.inputs.tag.name) {
+          // no changes
           return false;
         }
 
-        for (const group of this.stateService.tagGroups) {
-          for (const tag of group.tags) {
-            if (group.name == this.groupName && tag.name == this.tagName) {
-              return false;
-            }
-          }
-        }
+        // for (const group of this.stateService.tagGroups) {
+        //   for (const tag of group.tags) {
+        //     if (group.name == this.groupName && tag.name == this.tagName) {
+        //       return false;
+        //     }
+        //   }
+        // }
       }
     }
 
     return true;
   }
 
-  public override submit(): void {
+  public override async submit(): Promise<void> {
     if (this.canSubmit()) {
       if (this.inputs.mode == 'create') {
+        // create new
         let group: TagGroup = this.stateService.tagGroups.find(group => group.name == this.groupName);
         if (!group) {
           group = { name: this.groupName, tags: [] };
@@ -173,17 +193,22 @@ export class GalleryTagEditorComponent extends DialogContentBase<Tag> implements
         this.stateService.tags.push(tag);
         this.stateService.tags.sort((t1, t2) => t1.name.localeCompare(t2.name));
       } else {
+        // edit existing
         if (this.inputs.tag == null) {
+          // group rename (groups can't merge)
           this.inputs.group.name = this.groupName;
           this.stateService.tagGroups.sort((g1, g2) => g1.name.localeCompare(g2.name));
         } else {
+          // check both
           let group: TagGroup = this.inputs.group;
           if (this.groupName != group.name) {
+            // remove tag from old group
             ArrayUtils.remove(group.tags, this.inputs.tag);
             if (ArrayUtils.isEmpty(group.tags)) {
               ArrayUtils.remove(this.stateService.tagGroups, group);
             }
 
+            // find new group, create it if not exists
             group = this.stateService.tagGroups.find(group => group.name == this.groupName);
             if (group == null) {
               group = { name: this.groupName, tags: [] };
@@ -191,14 +216,48 @@ export class GalleryTagEditorComponent extends DialogContentBase<Tag> implements
               this.stateService.tagGroups.sort((g1, g2) => g1.name.localeCompare(g2.name));
             }
 
+            // add tag to new group
             group.tags.push(this.inputs.tag);
             group.tags.sort((t1, t2) => t1.name.localeCompare(t2.name));
           }
 
+          // rename/merge tag
           if (this.tagName != this.inputs.tag.name) {
-            this.inputs.tag.name = this.tagName;
-            group.tags.sort((t1, t2) => t1.name.localeCompare(t2.name));
-            this.stateService.tags.sort((t1, t2) => t1.name.localeCompare(t2.name));
+            const destinationTag: Tag = this.stateService.tagGroups.find(tagGroup => tagGroup.name == this.groupName)?.tags.find(tag => tag.name == this.tagName);
+            if (destinationTag) {
+              // replace old tag with new tag on all images that have it
+
+              for (const group of this.stateService.groups) {
+                if (group.tags.find(imageTag => imageTag.id == this.inputs.tag.id)) {
+                  ArrayUtils.remove(group.tags, this.inputs.tag);
+
+                  if (!group.tags.includes(destinationTag)) {
+                    group.tags.push(destinationTag);
+                  }
+                }
+              }
+
+              for (const image of this.stateService.images) {
+                if (image.tags.find(imageTag => imageTag.id == this.inputs.tag.id)) {
+                  ArrayUtils.remove(image.tags, this.inputs.tag);
+
+                  if (!image.tags.includes(destinationTag)) {
+                    image.tags.push(destinationTag);
+                  }
+                }
+              }
+
+              // remove old tag from group
+              ArrayUtils.remove(group.tags, this.inputs.tag);
+
+              // remove old tag from tag list
+              ArrayUtils.remove(this.stateService.tags, this.inputs.tag);
+            } else {
+              // rename tag
+              this.inputs.tag.name = this.tagName;
+              group.tags.sort((t1, t2) => t1.name.localeCompare(t2.name));
+              this.stateService.tags.sort((t1, t2) => t1.name.localeCompare(t2.name));
+            }
           }
         }
       }
@@ -206,6 +265,10 @@ export class GalleryTagEditorComponent extends DialogContentBase<Tag> implements
       this.stateService.save();
       this.resolve(this.inputs.tag);
     }
+  }
+
+  private doesTagExistInGroup(tagName: string, groupName: string): boolean {
+    return tagName && groupName && this.stateService.tagGroups.find(group => group.name == groupName)?.tags.some(tag => tag.name == tagName);
   }
 
   public close(): void {

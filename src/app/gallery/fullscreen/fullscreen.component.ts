@@ -1,12 +1,14 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { CommonModule } from '@angular/common';
-import { Component, effect, HostListener } from '@angular/core';
+import { Component, effect, OnDestroy, OnInit } from '@angular/core';
 import { SafeUrl } from '@angular/platform-browser';
 import { TippyDirective } from '@ngneat/helipopper';
+import { KeyboardShortcutTarget } from 'src/app/shared/classes/keyboard-shortcut-target.interface';
 import { fade } from 'src/app/shared/constants/animations.constants';
 import { VariableDirective } from 'src/app/shared/directives/variable.directive';
 import { ApplicationService } from 'src/app/shared/services/application.service';
 import { DialogService } from 'src/app/shared/services/dialog.service';
+import { KeyboardShortcutService } from 'src/app/shared/services/keyboard-shortcut.service';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 import { GoogleFileUtils } from 'src/app/shared/utils/google-file.utils';
 import { ScreenUtils } from 'src/app/shared/utils/screen.utils';
@@ -36,7 +38,7 @@ import { GalleryStateService } from '../services/gallery-state.service';
     ])
   ])]
 })
-export class FullscreenComponent {
+export class FullscreenComponent implements KeyboardShortcutTarget, OnInit, OnDestroy {
 
   protected ScreenUtils = ScreenUtils;
 
@@ -47,6 +49,7 @@ export class FullscreenComponent {
   constructor(
     // private sanitizer: DomSanitizer,
     private applicationService: ApplicationService,
+    private keyboardShortcutService: KeyboardShortcutService,
     protected googleService: GalleryGoogleDriveService,
     protected stateService: GalleryStateService,
     protected dialogService: DialogService,
@@ -63,6 +66,8 @@ export class FullscreenComponent {
           this.loadingC = true;
         }
 
+        this.keyboardShortcutService.requestFocus(this);
+
         // used in <video> display method
         // if (GoogleFileUtils.isVideo(image) && !this.applicationService.reduceBandwidth && !image.contentLink) {
         //   image.contentLink = '';
@@ -74,21 +79,26 @@ export class FullscreenComponent {
     });
   }
 
-  @HostListener('document:keydown', ['$event'])
-  protected initKeybinds(event: KeyboardEvent): void {
-    if (['BODY', 'VIDEO'].includes((event.target as HTMLElement).nodeName)) {
-      if (this.stateService.target()) {
-        switch (event.code) {
-          case 'Escape':
-            this.stateService.target.set(null);
-            return;
-          case 'KeyR':
-            this.setRandomTarget();
-            return;
-          case 'KeyG':
-            this.setRandomGroupTarget();
-            return;
-        }
+  ngOnInit(): void {
+    this.keyboardShortcutService.register(this);
+  }
+
+  ngOnDestroy(): void {
+    this.keyboardShortcutService.unregister(this);
+  }
+
+  processKeyboardShortcut(event: KeyboardEvent): void {
+    if (this.stateService.target()) {
+      switch (event.code) {
+        case 'Escape':
+          this.stateService.target.set(null);
+          break;
+        case 'KeyR':
+          this.setRandomTarget();
+          break;
+        case 'KeyG':
+          this.setRandomGroupTarget();
+          break;
       }
     }
   }
