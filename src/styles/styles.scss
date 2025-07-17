@@ -158,6 +158,22 @@ body.dark-theme {
   text-decoration: underline;
 }
 
+.underline-dashed {
+  text-decoration: underline dashed;
+}
+
+.underline-dashed-highlight {
+  text-decoration: underline dashed var(--color-highlight);
+}
+
+.underline-dashed-positive {
+  text-decoration: underline dashed var(--color-positive);
+}
+
+.underline-dashed-negative {
+  text-decoration: underline dashed var(--color-negative);
+}
+
 .hover-container {
   .hover-visible {
     opacity: 0;

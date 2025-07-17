@@ -36,7 +36,7 @@
         <div class="flex hover-brighten cursor-pointer hover-container" style="line-height: 20px">
           <div class="flex flex-1 gap align-items-center" (click)="stateService.openTagGroup = group == stateService.openTagGroup ? null : group">
             <i class="fa-solid" [ngClass]="group == stateService.openTagGroup ? 'fa-angle-down' : 'fa-angle-right'"></i>
-            <span class="white-space-nowrap" [class.highlight]="isSomeTagInGroupActive(group)">{{ group.name }}</span>
+            <span class="white-space-nowrap" [class.underline-dashed-highlight]="isSomeTagInGroupActive(group)">{{ group.name }}</span>
           </div>
           <div class="flex gap align-items-center hover-visible">
             <i class="hover-positive fa-solid fa-list" (click)="onTagGroupClick(group)"></i>

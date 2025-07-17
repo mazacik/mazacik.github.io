@@ -90,12 +90,6 @@ export class FilterComponent {
       }
     }
 
-    for (const imageGroup of this.stateService.groups) {
-      if (imageGroup.tags.includes(tag)) {
-        count += imageGroup.images.length;
-      }
-    }
-
     return count;
   }
 

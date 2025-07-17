@@ -95,7 +95,6 @@ export class GalleryStateService {
       group.images = this.images.filter(image => groupProperties.imageIds.includes(image.id));
       group.images.sort((a, b) => groupProperties.imageIds.indexOf(a.id) - groupProperties.imageIds.indexOf(b.id));
       group.images.forEach(image => image.group = group);
-      group.tags = groupProperties.tagIds?.map(tagId => this.tags.find(tag => tag.id == tagId)) || [];
       return group;
     });
 
@@ -196,7 +195,6 @@ export class GalleryStateService {
   private serializeGroup(galleryGroup: GalleryGroup): GroupData {
     const group: GroupData = {} as GroupData;
     group.imageIds = galleryGroup.images.map(image => image.id);
-    group.tagIds = galleryGroup.tags.filter(tag => tag).map(tag => tag.id);
     return group;
   }
 
@@ -240,7 +238,7 @@ export class GalleryStateService {
 
     let hasTag: boolean;
     for (const tag of this.tags) {
-      hasTag = image.tags.includes(tag) || image.group?.tags.includes(tag);
+      hasTag = image.tags.includes(tag);
       if (tag.state == -1 && hasTag) {
         return false;
       }
@@ -290,7 +288,6 @@ export class GalleryStateService {
       } else {
         ArrayUtils.remove(this.groups, image.group);
         for (const groupImage of image.group.images) {
-          ArrayUtils.push(groupImage.tags, groupImage.group.tags);
           delete groupImage.group;
         }
       }

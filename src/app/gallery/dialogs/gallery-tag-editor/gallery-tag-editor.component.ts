@@ -226,17 +226,6 @@ export class GalleryTagEditorComponent extends DialogContentBase<Tag> implements
             const destinationTag: Tag = this.stateService.tagGroups.find(tagGroup => tagGroup.name == this.groupName)?.tags.find(tag => tag.name == this.tagName);
             if (destinationTag) {
               // replace old tag with new tag on all images that have it
-
-              for (const group of this.stateService.groups) {
-                if (group.tags.find(imageTag => imageTag.id == this.inputs.tag.id)) {
-                  ArrayUtils.remove(group.tags, this.inputs.tag);
-
-                  if (!group.tags.includes(destinationTag)) {
-                    group.tags.push(destinationTag);
-                  }
-                }
-              }
-
               for (const image of this.stateService.images) {
                 if (image.tags.find(imageTag => imageTag.id == this.inputs.tag.id)) {
                   ArrayUtils.remove(image.tags, this.inputs.tag);
