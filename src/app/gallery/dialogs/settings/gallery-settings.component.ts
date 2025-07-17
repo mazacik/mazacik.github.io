@@ -50,6 +50,11 @@ export class GallerySettingsComponent extends DialogContentBase<boolean> impleme
     this.stateService.save();
   }
 
+  protected onShowTagCountValueChange(value: boolean): void {
+    this.needsDataUpdate = true;
+    this.stateService.settings.showTagCount = value;
+  }
+
   protected onShowVideosValueChange(value: boolean): void {
     this.needsDataUpdate = true;
     this.needsFilterRefresh = true;

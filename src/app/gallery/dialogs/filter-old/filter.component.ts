@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostBinding } from '@angular/core';
 import { TippyDirective } from '@ngneat/helipopper';
-import { drawer2 } from 'src/app/shared/constants/animations.constants';
 import { ScreenUtils } from 'src/app/shared/utils/screen.utils';
 import { GalleryService } from '../../gallery.service';
 import { Filter } from '../../model/filter.interface';
@@ -16,7 +15,6 @@ import { GalleryStateService } from '../../services/gallery-state.service';
     CommonModule,
     TippyDirective
   ],
-  animations: [drawer2],
   templateUrl: './filter.component.html',
   styleUrls: ['./filter.component.scss']
 })

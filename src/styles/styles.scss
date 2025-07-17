@@ -162,7 +162,6 @@ body.dark-theme {
   .hover-visible {
     opacity: 0;
     pointer-events: none;
-    position: absolute;
   }
 
   .hover-hidden {
@@ -191,6 +190,14 @@ body.dark-theme {
     margin: $gap 0;
   }
 
+  &.gap-top {
+    margin-top: $gap;
+  }
+
+  &.gap-bottom {
+    margin-bottom: $gap;
+  }
+
   &.margins {
     width: calc(100% - 2 * $gap);
     align-self: center;
@@ -203,6 +210,14 @@ body.dark-theme {
 
   &.gap {
     margin: 0 $gap;
+  }
+
+  &.gap-left {
+    margin-left: $gap;
+  }
+
+  &.gap-right {
+    margin-right: $gap;
   }
 
   &.margins {
@@ -374,11 +389,23 @@ hr {
   color: var(--color-highlight);
 }
 
+.hover-highlight:hover {
+  color: var(--color-highlight);
+}
+
 .positive {
   color: var(--color-positive);
 }
 
+.hover-positive:hover {
+  color: var(--color-positive);
+}
+
 .negative {
+  color: var(--color-negative);
+}
+
+.hover-negative:hover {
   color: var(--color-negative);
 }
 
@@ -645,8 +672,24 @@ span.icon-button {
   padding-right: 1rem;
 }
 
+.align-items-center {
+  align-items: center;
+}
+
+.justify-items-center {
+  justify-items: center;
+}
+
+.justify-content-center {
+  justify-content: center;
+}
+
 .center {
   align-items: center;
   justify-items: center;
   justify-content: center;
+}
+
+.flex-1 {
+  flex: 1;
 }

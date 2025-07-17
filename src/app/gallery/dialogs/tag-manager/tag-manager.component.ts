@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, effect, HostBinding } from '@angular/core';
 import { TippyDirective } from '@ngneat/helipopper';
+import { drawer2 } from 'src/app/shared/constants/animations.constants';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
+import { ScreenUtils } from 'src/app/shared/utils/screen.utils';
 import { GalleryService } from '../../gallery.service';
 import { GalleryImage } from '../../model/gallery-image.class';
 import { TagGroup } from '../../model/tag-group.interface';
 import { Tag } from '../../model/tag.interface';
 import { GalleryStateService } from '../../services/gallery-state.service';
-import { ScreenUtils } from 'src/app/shared/utils/screen.utils';
 
 @Component({
   selector: 'app-tag-manager',
@@ -16,6 +17,7 @@ import { ScreenUtils } from 'src/app/shared/utils/screen.utils';
     CommonModule,
     TippyDirective
   ],
+  animations: [drawer2],
   templateUrl: './tag-manager.component.html',
   styleUrls: ['./tag-manager.component.scss']
 })
@@ -119,6 +121,24 @@ export class TagManagerComponent {
     }
 
     return classes.join(' ');
+  }
+
+  protected getTagCount(tag: Tag): number {
+    let count: number = 0;
+
+    for (const image of this.stateService.images) {
+      if (image.tags.includes(tag)) {
+        count++;
+      }
+    }
+
+    for (const imageGroup of this.stateService.groups) {
+      if (imageGroup.tags.includes(tag)) {
+        count += imageGroup.images.length;
+      }
+    }
+
+    return count;
   }
 
 }

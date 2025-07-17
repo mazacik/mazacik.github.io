@@ -18,8 +18,6 @@ export class KeyboardShortcutService {
   }
 
   public next(event: KeyboardEvent): void {
-    console.log(this.stack);
-
     const targetNodeName: string = (event.target as HTMLElement).nodeName;
     const focusIsUserInput: boolean = !['BODY', 'VIDEO'].includes(targetNodeName);
 
