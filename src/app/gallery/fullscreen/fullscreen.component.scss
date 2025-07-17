@@ -73,10 +73,6 @@
     }
 
     .group-images-container {
-      height: auto;
-    }
-
-    .group-image-container {
       display: flex;
       flex-direction: row;
 
@@ -84,13 +80,15 @@
       padding: 0;
       gap: $gap;
 
-      @media screen and (min-width:768px) {
-        justify-content: center;
-      }
-
       img {
         opacity: 0;
         cursor: pointer;
+        border-radius: 4px;
+
+        &.target {
+          outline: 3px solid var(--color-positive);
+          outline-offset: -2px;
+        }
       }
     }
   }

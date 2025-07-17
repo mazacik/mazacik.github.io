@@ -56,7 +56,7 @@ export class GroupManagerComponent extends DialogContentBase<void, {}> implement
   }
 
   ngOnInit(): void {
-    this.stateService.groupEditorGroup = { images: this.inputs.sourceGroup ? [...this.inputs.sourceGroup.images] : [], tags: [] };
+    this.stateService.groupEditorGroup = { images: this.inputs.sourceGroup ? [...this.inputs.sourceGroup.images] : [] };
     this.stateService.updateFilters();
   }
 
@@ -69,7 +69,6 @@ export class GroupManagerComponent extends DialogContentBase<void, {}> implement
     if (group) {
       ArrayUtils.remove(this.stateService.groups, group);
       for (const groupImage of group.images) {
-        ArrayUtils.push(groupImage.tags, groupImage.group.tags);
         delete groupImage.group;
       }
 

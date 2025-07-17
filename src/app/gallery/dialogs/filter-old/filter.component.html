@@ -13,7 +13,7 @@
     </div>
   </div>
   <ng-container *ngIf="ScreenUtils.isLargeScreen()">
-    <div class="h-separator margins"></div>
+    <div class="h-separator"></div>
     <div class="flex center gap-3 margins-3-v">
       <div class="flex center gap cursor-pointer hover-brighten" (click)="toggleFilter(stateService.filterFavorite)">
         <i class="fa-heart" [ngClass]="getFilterClass(stateService.filterFavorite, true)" style="margin-top: 1px;"></i>
@@ -29,35 +29,27 @@
       </div>
     </div>
   </ng-container>
-  <div class="h-separator margins"></div>
-  <div class="filters-container y-scrollbar-container">
-    <div class="flex column margins-1">
-      <div *ngFor="let group of stateService.tagGroups" class="flex column">
-        <div class="flex hover-brighten cursor-pointer hover-container" style="line-height: 20px">
-          <div class="flex flex-1 gap align-items-center" (click)="stateService.openTagGroup = group == stateService.openTagGroup ? null : group">
-            <i class="fa-solid" [ngClass]="group == stateService.openTagGroup ? 'fa-angle-down' : 'fa-angle-right'"></i>
-            <span class="white-space-nowrap" [class.underline-dashed-highlight]="isSomeTagInGroupActive(group)">{{ group.name }}</span>
-          </div>
-          <div class="flex gap align-items-center hover-visible">
-            <i class="hover-positive fa-solid fa-list" (click)="onTagGroupClick(group)"></i>
-            <i class="hover-positive fa-solid fa-pen" (click)="galleryService.openTagEditor('edit', group)"></i>
-          </div>
-        </div>
-        <div [@drawer2]="group == stateService.openTagGroup" class="flex column overflow-hidden" style="margin-left: 20.33333333px; line-height: 20px;">
-          <div *ngFor="let tag of group.tags" class="flex cursor-pointer hover-brighten hover-container">
-            <div class="flex-1" [ngClass]="getFilterClass(tag)" (click)="toggleFilter(tag)">
-              <span class="white-space-nowrap">{{ tag.name }}</span>
-              <span *ngIf="stateService.settings.showTagCount" style="white-space: pre;"> • {{ getTagCount(tag) }}</span>
-            </div>
-            <div class="flex gap align-items-center hover-visible">
-              <i class="hover-positive fa-solid fa-pen" (click)="galleryService.openTagEditor('edit', group, tag)"></i>
-            </div>
-          </div>
+  <div class="h-separator"></div>
+  <div class="filters-container">
+    <div class="groups-container">
+      <div *ngFor="let group of stateService.tagGroups" class="group-container hover-brighten white-space-nowrap" (click)="onTagGroupClick(group)" (contextmenu)="$event.preventDefault(); galleryService.openTagEditor('edit', group);">
+        <span [class.highlight]="isSomeTagInGroupActive(group)">{{ group.name }}</span>
+        <div class="group-active-indicator" [class.transparent]="group != stateService.openTagGroup"></div>
+      </div>
+    </div>
+    <div class="v-separator margins"></div>
+    <div class="stack-container width-auto height-auto" style="flex: 1;">
+      <div *ngFor="let group of stateService.tagGroups" class="tags-container" [class.transparent]="group != stateService.openTagGroup">
+        <div *ngFor="let tag of group.tags" class="cursor-pointer hover-brighten white-space-nowrap flex gap" [ngClass]="getFilterClass(tag)" (click)="toggleFilter(tag)" (contextmenu)="$event.preventDefault(); galleryService.openTagEditor('edit', group, tag);">
+          <ng-container *ngIf="stateService.settings.showTagCount">
+            <span style="width: 24px">{{ getTagCount(tag) }}</span>
+            <div class="v-separator"></div>
+          </ng-container>
+          <span>{{ tag.name }}</span>
         </div>
       </div>
     </div>
   </div>
-  <div class="h-separator gap-bottom margins"></div>
   <div class="buttons-container">
     <div class="button" (click)="galleryService.openTagEditor('create', stateService.openTagGroup)"><i class="fa-solid fa-plus"></i>Create</div>
     <div class="button" [class.disabled]="!canClear()" (click)="clearFilters()"><i class="fa-solid fa-filter-circle-xmark"></i>Clear</div>

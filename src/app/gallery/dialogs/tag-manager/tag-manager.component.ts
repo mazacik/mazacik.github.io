@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, effect, HostBinding } from '@angular/core';
 import { TippyDirective } from '@ngneat/helipopper';
+import { drawer2 } from 'src/app/shared/constants/animations.constants';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
+import { ScreenUtils } from 'src/app/shared/utils/screen.utils';
 import { GalleryService } from '../../gallery.service';
 import { GalleryImage } from '../../model/gallery-image.class';
 import { TagGroup } from '../../model/tag-group.interface';
 import { Tag } from '../../model/tag.interface';
 import { GalleryStateService } from '../../services/gallery-state.service';
-import { ScreenUtils } from 'src/app/shared/utils/screen.utils';
 
 @Component({
   selector: 'app-tag-manager',
@@ -16,6 +17,7 @@ import { ScreenUtils } from 'src/app/shared/utils/screen.utils';
     CommonModule,
     TippyDirective
   ],
+  animations: [drawer2],
   templateUrl: './tag-manager.component.html',
   styleUrls: ['./tag-manager.component.scss']
 })
@@ -43,24 +45,12 @@ export class TagManagerComponent {
     });
   }
 
-  protected groupModeWarningFlash: boolean = false;
   public toggleTag(image: GalleryImage, tag: Tag): void {
-    if (image.group) {
-      if (this.groupMode) {
-        if (image.group.tags.includes(tag)) {
-          ArrayUtils.remove(image.group.tags, tag);
-        } else {
-          image.group.tags.push(tag);
-          image.group.images.forEach(groupImage => ArrayUtils.remove(groupImage.tags, tag));
-        }
+    if (image.group && this.groupMode) {
+      if (image.group.images.every(groupImage => groupImage.tags.includes(tag))) {
+        image.group.images.forEach(groupImage => ArrayUtils.remove(groupImage.tags, tag));
       } else {
-        if (image.group.tags.includes(tag)) {
-          this.groupModeWarningFlash = true;
-          setTimeout(() => this.groupModeWarningFlash = false, 500);
-          return;
-        } else {
-          ArrayUtils.toggle(image.tags, tag);
-        }
+        image.group.images.forEach(groupImage => ArrayUtils.push(groupImage.tags, tag));
       }
     } else {
       ArrayUtils.toggle(image.tags, tag);
@@ -70,55 +60,66 @@ export class TagManagerComponent {
     this.stateService.updateFilters();
   }
 
-  protected isSomeTagActiveInGroup(group: TagGroup): boolean {
-    if (this.target) {
-      if (this.target.group && group.tags.some(tag1 => this.target.group.tags.some(tag2 => tag1 == tag2))) {
-        return true;
-      }
-
-      if (!this.groupMode) {
-        return group.tags.some(tag1 => this.target.tags.some(tag2 => tag1 == tag2));
-      }
-    }
-  }
-
-  protected getTagClass(tag: Tag): string {
+  protected getTagGroupClass(group: TagGroup): string {
     const classes: string[] = [];
 
     if (this.target) {
-      if (this.target.group) {
-        if (this.groupMode) {
-          classes.push('cursor-pointer');
-          classes.push('hover-brighten');
+      if (this.groupMode && this.target.group) {
+        // all groupImages have all of the tagGroup's tags
+        if (group.tags.every(groupTag => this.target.group.images.every(groupImage => groupImage.tags.includes(groupTag)))) {
+          classes.push('positive');
+          classes.push('underline');
+        }
 
-          if (this.target.group.tags.includes(tag)) {
-            classes.push('positive');
-          }
-        } else {
-          if (this.target.group.tags.includes(tag)) {
-            classes.push('positive');
-            classes.push('underline');
-            classes.push('opacity-075');
-          } else {
-            classes.push('cursor-pointer');
-            classes.push('hover-brighten');
-          }
+        // all groupImages have any of the tagGroup's tags
+        if (group.tags.some(groupTag => this.target.group.images.every(groupImage => groupImage.tags.includes(groupTag)))) {
+          classes.push('underline-dashed-positive');
+        }
 
-          if (this.target.tags.includes(tag)) {
-            classes.push('positive');
-          }
+        // any groupImage has any of the tagGroup's tags
+        if (group.tags.some(groupTag => this.target.group.images.some(groupImage => groupImage.tags.includes(groupTag)))) {
+          classes.push('underline-dashed');
         }
       } else {
-        classes.push('cursor-pointer');
-        classes.push('hover-brighten');
-
-        if (this.target.tags.includes(tag)) {
+        if (this.target.tags.some(targetTag => group.tags.some(groupTag => groupTag == targetTag))) {
           classes.push('positive');
         }
       }
     }
 
     return classes.join(' ');
+  }
+
+  protected getTagClass(tag: Tag): string {
+    const classes: string[] = [];
+
+    if (this.target) {
+      if (this.target.tags.includes(tag)) {
+        classes.push('positive');
+      }
+
+      if (this.target.group) {
+        if (this.target.group.images.every(groupImage => groupImage.tags.includes(tag))) {
+          classes.push('underline');
+        } else if (this.target.group.images.some(groupImage => groupImage != this.target && groupImage.tags.includes(tag))) {
+          classes.push('underline-dashed');
+        }
+      }
+    }
+
+    return classes.join(' ');
+  }
+
+  protected getTagCount(tag: Tag): number {
+    let count: number = 0;
+
+    for (const image of this.stateService.images) {
+      if (image.tags.includes(tag)) {
+        count++;
+      }
+    }
+
+    return count;
   }
 
 }

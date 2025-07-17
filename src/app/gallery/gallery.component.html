@@ -1,9 +1,9 @@
 <div *ngIf="!loading" @enter class="stack-container">
-  <div class="flex">
+  <div class="flex" style="height: 100vh;">
     <app-filter></app-filter>
     <app-masonry></app-masonry>
   </div>
-  <div class="fullscreen-container" [class.transparent]="!stateService.target()">
+  <div class="fullscreen-container" [class.transparent]="!stateService.target()" style="height: 100vh;">
     <app-fullscreen></app-fullscreen>
     <app-tag-manager></app-tag-manager>
   </div>

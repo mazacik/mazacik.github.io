@@ -3,7 +3,7 @@
   <div class="header">
     <div class="flex gap">
       <ng-container *ngIf="!ScreenUtils.isLargeScreen()">
-        <i class="icon-button fa-solid hover-brighten" [ngClass]="groupMode ? 'fa-images' : 'fa-image'" [class.disabled]="target?.group == null" [class.positive]="groupMode" [class.flash]="groupModeWarningFlash" (click)="groupMode = !groupMode"></i>
+        <i class="icon-button fa-solid hover-brighten" [ngClass]="groupMode ? 'fa-images' : 'fa-image'" [class.disabled]="target?.group == null" [class.positive]="groupMode" (click)="groupMode = !groupMode"></i>
       </ng-container>
     </div>
     <span class="margins-3-h">Tag Manager</span>
@@ -12,26 +12,38 @@
     </div>
   </div>
   <ng-container *ngIf="ScreenUtils.isLargeScreen()">
-    <div class="h-separator"></div>
+    <div class="h-separator margins"></div>
     <div class="flex center gap-3 margins-3-v" [class.disabled]="!target">
-      <div class="flex center gap cursor-pointer hover-brighten group-mode-container" [class.disabled]="target?.group == null" [class.positive]="groupMode" [class.flash]="groupModeWarningFlash" (click)="groupMode = !groupMode">
+      <div class="flex center gap cursor-pointer hover-brighten" [class.disabled]="target?.group == null" [class.positive]="groupMode" (click)="groupMode = !groupMode">
         <i class="fa-solid" [ngClass]="groupMode ? 'fa-images' : 'fa-image'" style="margin-top: 1px;"></i>
         <span>Group Mode</span>
       </div>
     </div>
   </ng-container>
-  <div class="h-separator"></div>
-  <div class="filters-container" [class.disabled]="!target">
-    <div class="groups-container">
-      <div *ngFor="let group of stateService.tagGroups" class="group-container hover-brighten white-space-nowrap" (click)="stateService.openTagGroup = group" (contextmenu)="$event.preventDefault(); galleryService.openTagEditor('edit', group);">
-        <span [class.highlight]="isSomeTagActiveInGroup(group)">{{ group.name }}</span>
-        <div class="group-active-indicator" [class.transparent]="group != stateService.openTagGroup"></div>
-      </div>
-    </div>
-    <div class="v-separator margins"></div>
-    <div class="stack-container width-auto height-auto" style="flex: 1;">
-      <div *ngFor="let group of stateService.tagGroups" class="tags-container" [class.transparent]="group != stateService.openTagGroup">
-        <span *ngFor="let tag of group.tags" class="white-space-nowrap" [ngClass]="getTagClass(tag)" (click)="toggleTag(target, tag)" (contextmenu)="$event.preventDefault(); galleryService.openTagEditor('edit', group, tag);">{{ tag.name }}</span>
+  <div class="h-separator margins"></div>
+  <div class="filters-container y-scrollbar-container" [class.disabled]="!target">
+    <div class="flex column margins-1">
+      <div *ngFor="let group of stateService.tagGroups" class="flex column">
+        <div class="flex hover-brighten cursor-pointer hover-container" style="line-height: 20px">
+          <div class="flex flex-1 gap align-items-center" (click)="stateService.openTagGroup = group == stateService.openTagGroup ? null : group">
+            <i class="fa-solid" [ngClass]="group == stateService.openTagGroup ? 'fa-angle-down' : 'fa-angle-right'"></i>
+            <span class="white-space-nowrap" [ngClass]="getTagGroupClass(group)" >{{ group.name }}</span>
+          </div>
+          <div class="flex gap align-items-center hover-visible">
+            <i class="hover-positive fa-solid fa-pen" (click)="galleryService.openTagEditor('edit', group)"></i>
+          </div>
+        </div>
+        <div [@drawer2]="group == stateService.openTagGroup" class="flex column overflow-hidden" style="margin-left: 20.33333333px; line-height: 20px;">
+          <div *ngFor="let tag of group.tags" class="flex hover-container">
+            <div class="flex-1 cursor-pointer hover-brighten" [ngClass]="getTagClass(tag)" (click)="toggleTag(target, tag)">
+              <span class="white-space-nowrap">{{ tag.name }}</span>
+              <span *ngIf="stateService.settings.showTagCount" style="white-space: pre;"> • {{ getTagCount(tag) }}</span>
+            </div>
+            <div class="flex gap align-items-center cursor-pointer hover-visible hover-brighten">
+              <i class="hover-positive fa-solid fa-pen" (click)="galleryService.openTagEditor('edit', group, tag)"></i>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

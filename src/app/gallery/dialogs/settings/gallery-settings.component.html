@@ -5,6 +5,11 @@
   </div>
   <div class="h-separator"></div>
   <div class="option-container">
+    <span class="nowrap user-select-none">Show Tag Count</span>
+    <app-checkbox [value]="stateService.settings.showTagCount" (valueChange)="onShowTagCountValueChange($event)"></app-checkbox>
+  </div>
+  <div class="h-separator"></div>
+  <div class="option-container">
     <span class="nowrap user-select-none">Show Videos</span>
     <app-checkbox [value]="stateService.settings.showVideos" (valueChange)="onShowVideosValueChange($event)"></app-checkbox>
   </div>
