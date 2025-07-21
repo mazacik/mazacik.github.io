@@ -6,6 +6,7 @@
   border-radius: $gap * 1.5;
   overflow: hidden;
   z-index: 200;
+  min-width: 300px;
 
   @media screen and (max-width:768px) {
     max-width: calc(100% - $gap * 3);
