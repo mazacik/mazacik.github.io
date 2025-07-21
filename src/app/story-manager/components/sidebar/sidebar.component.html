@@ -1,8 +1,8 @@
 <input class="desktop-only search-input" #searchInput (input)="onSearchInputChange(searchInput)" (focus)="searchInput.select()" placeholder="Search" />
 <div class="h-separator margins"></div>
 <div class="content-container y-scrollbar-container">
-  <div *ngFor="let story of stateService.stories; let storyIndex = index;" class="story-container">
-    <div class="story-label-container" (click)="setCurrentStory(story)" [dragdrop]="story" [dragdropParent]="stateService.stories" (dragend)="googleService.update()">
+  <div *ngFor="let story of stateService.stories" class="story-container">
+    <div class="story-label-container" (click)="setCurrentStory(story, true)" [dragdrop]="story" [dragdropParent]="stateService.stories" (dragend)="googleService.update()">
       <span class="story-label" [class.highlight]="story == stateService.currentNote?.parent" [class.negative]="searchStories.includes(story)">{{ story.title }}</span>
       <div class="story-info">
         <span class="story-notes-word-count">{{ getNotesWordCount(story) }}</span>

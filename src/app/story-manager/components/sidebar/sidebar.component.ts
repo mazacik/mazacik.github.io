@@ -51,8 +51,11 @@ export class SidebarComponent implements OnInit {
     }
   }
 
-  setCurrentStory(story: Story): void {
+  setCurrentStory(story: Story, alsoNote: boolean = false): void {
     this.stateService.currentStory = story;
+    if (alsoNote && !ArrayUtils.isEmpty(story.notes)) {
+      this.stateService.currentNote = story.notes[0];
+    }
   }
 
   createStory(): void {
