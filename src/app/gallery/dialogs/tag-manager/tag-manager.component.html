@@ -35,7 +35,7 @@
         </div>
         <div [@drawer2]="group == stateService.openTagGroup" class="flex column overflow-hidden" style="margin-left: 20.33333333px; line-height: 20px;">
           <div *ngFor="let tag of group.tags" class="flex hover-container">
-            <div class="flex-1 cursor-pointer hover-brighten" [ngClass]="getTagClass(tag)" (click)="toggleTag(target, tag)">
+            <div class="flex-1 overflow-hidden cursor-pointer hover-brighten" [ngClass]="getTagClass(tag)" style="text-overflow: ellipsis;" (click)="toggleTag(target, tag)">
               <span class="white-space-nowrap">{{ tag.name }}</span>
               <span *ngIf="stateService.settings.showTagCount" style="white-space: pre;"> • {{ getTagCount(tag) }}</span>
             </div>
