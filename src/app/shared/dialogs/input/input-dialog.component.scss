@@ -1,8 +1,9 @@
 @import 'src/styles/variables.scss';
 
 :host {
+  display: block;
   width: 650px;
-  padding: $gap * 1.5;
+  padding: $gap;
 
   input {
     width: 100%;
