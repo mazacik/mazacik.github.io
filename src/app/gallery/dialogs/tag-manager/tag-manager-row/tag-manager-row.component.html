@@ -9,7 +9,7 @@
       </div>
     </div>
     <div class="flex gap align-items-center hover-visible">
-      <i class="hover-positive fa-solid fa-ellipsis" (click)="galleryService.openTagEditor(tag)"></i>
+      <i class="hover-positive fa-solid fa-ellipsis-vertical" (click)="galleryService.openTagEditor(tag)"></i>
     </div>
   </div>
   <div *ngIf="isGroup()" [@drawer2]="tag.open" class="flex column overflow-hidden">
