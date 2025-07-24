@@ -8,6 +8,11 @@
 
   >.button {
     width: 100%;
+
+    &.action-button {
+      min-height: initial;
+      padding: $gap 0;
+    }
   }
 
   >.option-container {

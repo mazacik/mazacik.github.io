@@ -1,0 +1,4 @@
+<select [(ngModel)]="value">
+  <option *ngIf="inputs.nullOption" [ngValue]="null" [selected]="!value">== {{ inputs.nullOption }} ==</option>
+  <option *ngFor="let option of inputs.options" [ngValue]="option" [selected]="value === option">{{ inputs.getText(option) }}</option>
+</select>

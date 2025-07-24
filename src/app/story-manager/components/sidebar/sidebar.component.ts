@@ -59,7 +59,7 @@ export class SidebarComponent implements OnInit {
   }
 
   createStory(): void {
-    this.dialogService.createInput('Story Title', 'Title', null, 'OK').then(title => {
+    this.dialogService.createInput({ title: 'Create Story', placeholder: 'Story Title' }).then(title => {
       if (title) {
         this.stateService.stories.push({ title: title, notes: [], noteTags: [] });
         this.googleService.update(true);
@@ -68,7 +68,7 @@ export class SidebarComponent implements OnInit {
   }
 
   renameStory(story: Story): void {
-    this.dialogService.createInput('Rename', 'Story Title', story.title, 'OK').then(title => {
+    this.dialogService.createInput({ title: 'Rename Story', placeholder: 'Story Title', defaultValue: story.title }).then(title => {
       if (!StringUtils.isEmpty(title)) {
         story.title = title;
         this.googleService.update(true);
@@ -77,7 +77,7 @@ export class SidebarComponent implements OnInit {
   }
 
   deleteStory(story: Story): void {
-    this.dialogService.createConfirmation('Delete', ['Are you sure you want to delete "' + story.title + '"?'], 'Yes', 'No').then(result => {
+    this.dialogService.createConfirmation({ title: 'Delete Story', messages: ['Are you sure you want to delete "' + story.title + '"?'] }).then(result => {
       if (result) {
         if (story == this.stateService.currentStory) {
           this.setCurrentStory(ArrayUtils.nearestRightFirst(this.stateService.stories, this.stateService.stories.indexOf(story)));
@@ -104,7 +104,7 @@ export class SidebarComponent implements OnInit {
   }
 
   createNote(story: Story): void {
-    this.dialogService.createInput('Note Title', 'Title', null, 'OK').then(title => {
+    this.dialogService.createInput({ title: 'Create Note', placeholder: 'Note Title' }).then(title => {
       if (title) {
         const note: Note = { title: title, text: '', tags: [], wordCount: 0, parent: story };
         story.notes.push(note);
@@ -116,7 +116,7 @@ export class SidebarComponent implements OnInit {
   }
 
   renameNote(note: Note): void {
-    this.dialogService.createInput('Rename', 'Note Title', note.title, 'OK').then(title => {
+    this.dialogService.createInput({ title: 'Rename Note', placeholder: 'Note Title', defaultValue: note.title }).then(title => {
       if (!StringUtils.isEmpty(title)) {
         note.title = title;
         this.googleService.update(true);
@@ -126,7 +126,7 @@ export class SidebarComponent implements OnInit {
 
   deleteNote(story: Story, note: Note): void {
     const notes: Note[] = story.notes;
-    this.dialogService.createConfirmation('Delete', ['Are you sure you want to delete "' + note.title + '"?'], 'Yes', 'No').then(result => {
+    this.dialogService.createConfirmation({ title: 'Delete Note', messages: ['Are you sure you want to delete "' + note.title + '"?'] }).then(result => {
       if (result) {
         if (note == this.stateService.currentNote) this.stateService.currentNote = null;
         ArrayUtils.remove(notes, note);

@@ -6,9 +6,9 @@
     <span class="margins-3-h">Filter Configuration</span>
     <div class="flex gap flex-end-h">
       <ng-container *ngIf="!ScreenUtils.isLargeScreen()">
-        <i class="icon-button fa-heart" [ngClass]="getFilterClass(stateService.filterFavorite, true)" (click)="toggleFilter(stateService.filterFavorite)"></i>
-        <i class="icon-button fa-bookmark" [ngClass]="getFilterClass(stateService.filterBookmark, true)" (click)="toggleFilter(stateService.filterBookmark)"></i>
-        <i class="icon-button fa-object-group" [ngClass]="getFilterClass(stateService.filterGroups, true)" (click)="toggleFilter(stateService.filterGroups)"></i>
+        <i class="icon-button fa-heart" [ngClass]="getFilterIconClass(stateService.filterFavorite)" (click)="toggleFilter(stateService.filterFavorite)"></i>
+        <i class="icon-button fa-bookmark" [ngClass]="getFilterIconClass(stateService.filterBookmark)" (click)="toggleFilter(stateService.filterBookmark)"></i>
+        <i class="icon-button fa-object-group" [ngClass]="getFilterIconClass(stateService.filterGroups)" (click)="toggleFilter(stateService.filterGroups)"></i>
       </ng-container>
     </div>
   </div>
@@ -16,50 +16,31 @@
     <div class="h-separator margins"></div>
     <div class="flex center gap-3 margins-3-v">
       <div class="flex center gap cursor-pointer hover-brighten" (click)="toggleFilter(stateService.filterFavorite)">
-        <i class="fa-heart" [ngClass]="getFilterClass(stateService.filterFavorite, true)" style="margin-top: 1px;"></i>
+        <i class="fa-heart" [ngClass]="getFilterIconClass(stateService.filterFavorite)" style="margin-top: 1px;"></i>
         <span [ngClass]="getFilterClass(stateService.filterFavorite)">Favorites</span>
       </div>
       <div class="flex center gap cursor-pointer hover-brighten" (click)="toggleFilter(stateService.filterBookmark)">
-        <i class="fa-bookmark" [ngClass]="getFilterClass(stateService.filterBookmark, true)" style="margin-top: 1px;"></i>
+        <i class="fa-bookmark" [ngClass]="getFilterIconClass(stateService.filterBookmark)" style="margin-top: 1px;"></i>
         <span [ngClass]="getFilterClass(stateService.filterBookmark)">Bookmarks</span>
       </div>
       <div class="flex center gap cursor-pointer hover-brighten" (click)="toggleFilter(stateService.filterGroups)">
-        <i class="fa-object-group" [ngClass]="getFilterClass(stateService.filterGroups, true)" style="margin-top: 1px;"></i>
+        <i class="fa-object-group" [ngClass]="getFilterIconClass(stateService.filterGroups)" style="margin-top: 1px;"></i>
         <span [ngClass]="getFilterClass(stateService.filterGroups)">Groups</span>
       </div>
     </div>
   </ng-container>
   <div class="h-separator margins"></div>
   <div class="filters-container y-scrollbar-container">
-    <div class="flex column margins-1">
-      <div *ngFor="let group of stateService.tagGroups" class="flex column">
-        <div class="flex hover-brighten cursor-pointer hover-container" style="line-height: 20px">
-          <div class="flex flex-1 gap align-items-center" (click)="stateService.openTagGroup = group == stateService.openTagGroup ? null : group">
-            <i class="fa-solid" [ngClass]="group == stateService.openTagGroup ? 'fa-angle-down' : 'fa-angle-right'"></i>
-            <span class="white-space-nowrap" [class.underline-dashed-highlight]="isSomeTagInGroupActive(group)">{{ group.name }}</span>
-          </div>
-          <div class="flex gap align-items-center hover-visible">
-            <i class="hover-positive fa-solid fa-list" (click)="onTagGroupClick(group)"></i>
-            <i class="hover-positive fa-solid fa-pen" (click)="galleryService.openTagEditor('edit', group)"></i>
-          </div>
-        </div>
-        <div [@drawer2]="group == stateService.openTagGroup" class="flex column overflow-hidden" style="margin-left: 20.33333333px; line-height: 20px;">
-          <div *ngFor="let tag of group.tags" class="flex cursor-pointer hover-brighten hover-container">
-            <div class="flex-1 overflow-hidden" [ngClass]="getFilterClass(tag)" style="text-overflow: ellipsis;" (click)="toggleFilter(tag)">
-              <span class="white-space-nowrap">{{ tag.name }}</span>
-              <span *ngIf="stateService.settings.showTagCount" style="white-space: pre;"> • {{ getTagCount(tag) }}</span>
-            </div>
-            <div class="flex gap align-items-center hover-visible">
-              <i class="hover-positive fa-solid fa-pen" (click)="galleryService.openTagEditor('edit', group, tag)"></i>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="flex column margins-1-h">
+      <ng-container *ngFor="let tag of tagService.getRootTags(); let i = index;">
+        <div *ngIf="i != 0" class="h-separator subtle"></div>
+        <app-filter-row [tag]="tag"></app-filter-row>
+      </ng-container>
     </div>
   </div>
   <div class="h-separator gap-bottom margins"></div>
   <div class="buttons-container">
-    <div class="button" (click)="galleryService.openTagEditor('create', stateService.openTagGroup)"><i class="fa-solid fa-plus"></i>Create</div>
+    <div class="button" (click)="tagService.openTagCreate()"><i class="fa-solid fa-plus"></i>Create</div>
     <div class="button" [class.disabled]="!canClear()" (click)="clearFilters()"><i class="fa-solid fa-filter-circle-xmark"></i>Clear</div>
   </div>
 </div>

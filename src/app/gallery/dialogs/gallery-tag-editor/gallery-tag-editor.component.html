@@ -1,10 +1,4 @@
-<div class="element-container">
-  <span>Group Name</span>
-  <input class="element" [(ngModel)]="groupName">
-</div>
-<ng-container *ngIf="inputs.mode == 'create' || inputs.tag">
-  <div class="element-container">
-    <span>Tag Name</span>
-    <input class="element" [(ngModel)]="tagName">
-  </div>
-</ng-container>
+<div class="button action-button" (click)="renameTag()">Rename</div>
+<div class="button action-button" (click)="deleteTag()">Delete</div>
+<div class="button action-button" (click)="createTagChild()">Create Child</div>
+<div class="button action-button" (click)="changeTagParent()">Change Parent</div>

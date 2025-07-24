@@ -29,7 +29,10 @@ export class StoryManagerGoogleDriveService extends BaseGoogleDriveService {
     const contentPromise: Promise<Data> = this.getContent<Data>(this.FILE_ID);
     contentPromise.catch(error => {
       this.applicationService.errors.set(true);
-      this.dialogService.createMessage('Error', ['Google Drive Error, check console.']);
+      this.dialogService.createMessage({
+        title: 'Error',
+        messages: ['Google Drive Error, check console.']
+      });
       console.log(error);
     });
     return contentPromise;
@@ -43,7 +46,10 @@ export class StoryManagerGoogleDriveService extends BaseGoogleDriveService {
         this.applicationService.errors.set(false);
       }).catch(error => {
         this.applicationService.errors.set(true);
-        this.dialogService.createMessage('Error', ['Google Drive Error, check console.']);
+        this.dialogService.createMessage({
+          title: 'Error',
+          messages: ['Google Drive Error, check console.']
+        });
         console.log(error);
       }).finally(() => {
         this.applicationService.changes.set(false);

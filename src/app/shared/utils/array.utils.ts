@@ -4,10 +4,10 @@ export abstract class ArrayUtils {
     return !array || !Array.isArray(array) || array.length == 0;
   }
 
-  public static includes<T>(array: T[], object: T, matcher?: (t: T) => any): boolean {
+  public static includes<T>(array: T[], object: T, getKey?: (t: T) => any): boolean {
     if (!this.isEmpty(array) && object) {
-      if (matcher) {
-        return array.map(t => matcher(t)).includes(matcher(object));
+      if (getKey) {
+        return array.map(t => getKey(t)).includes(getKey(object));
       } else {
         return array.includes(object);
       }
@@ -30,13 +30,15 @@ export abstract class ArrayUtils {
     }
   }
 
-  public static remove<T>(where: T[], what: T | T[], matcher?: (t: T) => any): boolean {
+  public static remove<T>(where: T[], what: T | T[], getKey?: (t: T) => any): boolean {
     if (!this.isEmpty(where) && what) {
+      const length: number = where.length;
+
       if (Array.isArray(what)) {
         if (what.length > 0) {
-          if (matcher) {
-            const _where: any[] = where.map(t => matcher(t));
-            for (const _what of what.map(t => matcher(t))) {
+          if (getKey) {
+            const _where: any[] = where.map(t => getKey(t));
+            for (const _what of what.map(t => getKey(t))) {
               this._remove(where, _what, _where);
             }
           } else {
@@ -46,27 +48,22 @@ export abstract class ArrayUtils {
           }
         }
       } else {
-        if (matcher) {
-          return this._remove(where, matcher(what), where.map(t => matcher(t)));
+        if (getKey) {
+          this._remove(where, getKey(what), where.map(t => getKey(t)));
         } else {
-          return this._remove(where, what);
+          this._remove(where, what);
         }
       }
+
+      return where.length != length;
     }
   }
 
-  private static _remove<T>(where: T[], what: T, map?: T[]): boolean {
-    if (map) {
-      const index: number = map.indexOf(what);
-      if (index != -1) {
-        map.splice(index, 1);
-        return where.splice(index, 1).length > 0 ? true : false;
-      }
-    } else {
-      const index: number = where.indexOf(what);
-      if (index != -1) {
-        return where.splice(index, 1).length > 0 ? true : false;
-      }
+  private static _remove<T>(where: T[], what: T, map?: T[]): void {
+    const index: number = (map || where).indexOf(what);
+    if (index != -1) {
+      map?.splice(index, 1);
+      where.splice(index, 1);
     }
   }
 
@@ -97,6 +94,12 @@ export abstract class ArrayUtils {
       return result;
     }
     return [];
+  }
+
+  public static intersection<T>(array1: T[], array2: T[]): T[] {
+    if (ArrayUtils.isEmpty(array1)) return [];
+    if (ArrayUtils.isEmpty(array2)) return [];
+    return array1.filter(value => array2.includes(value));
   }
 
   public static getFirst<T>(array: T[]): T {
@@ -240,6 +243,11 @@ export abstract class ArrayUtils {
       [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
     }
     return array;
+  }
+
+  public static except<T>(array: T[], ...exceptions: T[]): T[] {
+    if (!array) array = [];
+    return array.filter(t => !exceptions.includes(t));
   }
 
 }

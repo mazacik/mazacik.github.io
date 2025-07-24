@@ -14,7 +14,7 @@ import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-conte
 })
 export class ConfirmationDialogComponent extends DialogContentBase<boolean> implements OnInit {
 
-  public override inputs: { title: string, messages: string[], positiveButtonText: string, negativeButtonText: string };
+  public override inputs: { title: string, messages: string[], positiveButtonText?: string, negativeButtonText?: string };
 
   public configuration: DialogContainerConfiguration;
 
@@ -22,10 +22,10 @@ export class ConfirmationDialogComponent extends DialogContentBase<boolean> impl
     this.configuration = {
       title: this.inputs.title,
       buttons: [{
-        text: () => this.inputs.positiveButtonText,
+        text: () => this.inputs.positiveButtonText || 'Yes',
         click: () => this.resolve(true)
       }, {
-        text: () => this.inputs.negativeButtonText,
+        text: () => this.inputs.negativeButtonText || 'No',
         click: () => this.resolve(false)
       }]
     };

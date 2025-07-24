@@ -2,7 +2,7 @@ import { DialogButton } from "./dialog-button.class";
 
 export interface DialogContainerConfiguration {
 
-  title: string;
+  title: string | (() => string);
   buttons: DialogButton[];
 
   hideHeaderCloseButton?: boolean;

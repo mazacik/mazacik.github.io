@@ -45,6 +45,7 @@ export class FullscreenComponent implements KeyboardShortcutTarget, OnInit, OnDe
   protected loadingT: boolean = true;
   protected loadingC: boolean = true;
   protected video: boolean = false;
+  protected flip: boolean = false;
 
   constructor(
     // private sanitizer: DomSanitizer,
@@ -75,6 +76,8 @@ export class FullscreenComponent implements KeyboardShortcutTarget, OnInit, OnDe
         //     image.contentLink = this.sanitizer.bypassSecurityTrustResourceUrl(base64) as string;
         //   });
         // }
+      } else {
+        this.flip = false;
       }
     });
   }
