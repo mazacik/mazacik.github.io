@@ -3,18 +3,15 @@
 :host {
   display: flex;
   flex-direction: column;
-  padding: $gap * 3;
-  gap: $gap * 3;
+  gap: $gap;
+  padding: $gap;
 
-  .element-container {
-    display: flex;
-    flex-direction: column;
-    gap: $gap;
+  >.button {
+    width: 100%;
 
-    .element {
-      flex: 1;
-      height: $button-height;
-      box-sizing: border-box;
+    &.action-button {
+      min-height: initial;
+      padding: $gap 0;
     }
   }
 }

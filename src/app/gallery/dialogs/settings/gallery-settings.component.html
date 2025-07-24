@@ -19,5 +19,6 @@
     <app-checkbox [value]="stateService.settings.autoBookmark" (valueChange)="onAutoBookmarkValueChange($event)"></app-checkbox>
   </div>
   <div class="h-separator"></div>
-  <div class="button" style="min-height: 2rem;" (click)="bookmarkAll()">Bookmark Everything</div>
+  <div class="button action-button" (click)="bookmarkImages()">Bookmark All Images</div>
+  <div class="button action-button" (click)="resetDialogPositions()">Reset Dialog Positions</div>
 </ng-container>

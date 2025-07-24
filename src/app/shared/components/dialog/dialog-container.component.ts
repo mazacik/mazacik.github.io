@@ -5,6 +5,7 @@ import { KeyboardShortcutService } from '../../services/keyboard-shortcut.servic
 import { ScreenUtils } from '../../utils/screen.utils';
 import { DialogButton } from './dialog-button.class';
 import { DialogContentBase } from './dialog-content-base.class';
+import { DialogContainerConfiguration } from './dialog-container-configuration.interface';
 
 @Component({
   selector: 'app-dialog-container',
@@ -76,24 +77,17 @@ export class DialogContainerComponent<ResultType, InputsType> implements AfterVi
     return button.disabled && button.disabled();
   }
 
-  protected getText(button: DialogButton): string {
-    if (button.text) {
-      if (typeof button.text == 'function') {
-        return button.text();
-      }
-
-      return button.text;
-    }
+  protected getTitle(): string {
+    const configuration: DialogContainerConfiguration = this.contentComponentInstance.configuration;
+    return typeof configuration.title == 'function' ? configuration.title() : configuration.title;
   }
 
-  protected getIconClass(button: DialogButton): string {
-    if (button.iconClass) {
-      if (typeof button.iconClass == 'function') {
-        return button.iconClass();
-      }
+  protected getButtonText(button: DialogButton): string {
+    return typeof button.text == 'function' ? button.text() : button.text;
+  }
 
-      return button.iconClass;
-    }
+  protected getButtonIconClass(button: DialogButton): string {
+    return typeof button.iconClass == 'function' ? button.iconClass() : button.iconClass;
   }
 
   private isMouseDown: boolean = false;

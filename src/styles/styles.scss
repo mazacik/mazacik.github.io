@@ -218,6 +218,10 @@ body.dark-theme {
     width: calc(100% - 2 * $gap);
     align-self: center;
   }
+
+  &.subtle {
+    opacity: 0.5;
+  }
 }
 
 .v-separator {
@@ -282,11 +286,10 @@ textarea {
 }
 
 select {
-  padding: 2.2px 2.2px;
+  padding: $gap;
   background-color: transparent;
 
   >option {
-    color: var(--color-text);
     background-color: var(--color-background-primary);
   }
 }
@@ -618,6 +621,22 @@ span.icon-button {
   margin-right: $gap;
 }
 
+.margins-1-t {
+  margin-top: $gap;
+}
+
+.margins-1-r {
+  margin-right: $gap;
+}
+
+.margins-1-b {
+  margin-bottom: $gap;
+}
+
+.margins-1-l {
+  margin-left: $gap;
+}
+
 .margins-2 {
   margin: $gap * 2;
 }
@@ -708,4 +727,12 @@ span.icon-button {
 
 .flex-1 {
   flex: 1;
+}
+
+.flip-h {
+  transform: scaleX(-1);
+}
+
+.flip-v {
+  transform: scaleY(-1);
 }

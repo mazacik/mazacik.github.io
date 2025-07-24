@@ -4,6 +4,7 @@ import { CheckboxComponent } from 'src/app/shared/components/checkbox/checkbox.c
 import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
 import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
 import { ApplicationService } from 'src/app/shared/services/application.service';
+import { DialogService } from 'src/app/shared/services/dialog.service';
 import { GallerySettings } from '../../model/gallery-settings.interface';
 import { GalleryStateService } from '../../services/gallery-state.service';
 
@@ -32,6 +33,7 @@ export class GallerySettingsComponent extends DialogContentBase<boolean> impleme
   private needsDataUpdate: boolean = false;
 
   constructor(
+    private dialogService: DialogService,
     protected applicationService: ApplicationService,
     protected stateService: GalleryStateService
   ) {
@@ -42,12 +44,6 @@ export class GallerySettingsComponent extends DialogContentBase<boolean> impleme
     if (!this.stateService.settings) {
       this.stateService.settings = {} as GallerySettings;
     }
-  }
-
-  protected bookmarkAll(): void {
-    this.stateService.images.forEach(image => image.bookmark = true);
-    this.stateService.updateFilters();
-    this.stateService.save();
   }
 
   protected onShowTagCountValueChange(value: boolean): void {
@@ -64,6 +60,30 @@ export class GallerySettingsComponent extends DialogContentBase<boolean> impleme
   protected onAutoBookmarkValueChange(value: boolean): void {
     this.needsDataUpdate = true;
     this.stateService.settings.autoBookmark = value;
+  }
+
+  protected bookmarkImages(): void {
+    this.dialogService.createConfirmation({ title: 'Confirmation: Bookmark All Images', messages: ['Are you sure you want to bookmark all images?'] }).then(success => {
+      if (success) {
+        this.stateService.images.forEach(image => image.bookmark = true);
+        this.stateService.updateFilters();
+        this.stateService.save();
+      }
+    });
+  }
+
+  protected resetDialogPositions(): void {
+    this.dialogService.containerComponentInstances.forEach(instance => {
+      instance.top = null;
+      instance.left = null;
+    });
+
+    for (let i = 0; i < localStorage.length; i++) {
+      const key: string = localStorage.key(i);
+      if (key.endsWith('.top') || key.endsWith('.left')) {
+        localStorage.removeItem(key);
+      }
+    }
   }
 
   public close(): void {

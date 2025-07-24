@@ -6,7 +6,6 @@ import { GroupManagerComponent } from "./dialogs/group-manager/group-manager.com
 import { GallerySettingsComponent } from "./dialogs/settings/gallery-settings.component";
 import { GalleryGroup } from "./model/gallery-group.class";
 import { GalleryImage } from "./model/gallery-image.class";
-import { TagGroup } from "./model/tag-group.interface";
 import { Tag } from "./model/tag.interface";
 
 @Injectable({
@@ -20,11 +19,14 @@ export class GalleryService {
   ) { }
 
   public openFileInformation(image: GalleryImage): void {
-    this.dialogService.createMessage('File Information', [
-      'File Name: ' + image.name,
-      'File Type: ' + image.mimeType,
-      'Resolution: ' + image.imageMediaMetadata.width + '×' + image.imageMediaMetadata.height
-    ]);
+    this.dialogService.createMessage({
+      title: 'File Information',
+      messages: [
+        'File Name: ' + image.name,
+        'File Type: ' + image.mimeType,
+        'Resolution: ' + image.imageMediaMetadata.width + '×' + image.imageMediaMetadata.height
+      ]
+    });
   }
 
   public openImageGroupEditor(group?: GalleryGroup): void {
@@ -35,8 +37,8 @@ export class GalleryService {
     this.dialogService.create(GallerySettingsComponent);
   }
 
-  public openTagEditor(mode: 'create' | 'edit', group: TagGroup, tag?: Tag): void {
-    this.dialogService.create(GalleryTagEditorComponent, { mode, group, tag });
+  public openTagEditor(tag: Tag): void {
+    this.dialogService.create(GalleryTagEditorComponent, { tag: tag });
   }
 
   public openYandexReverseImageSearch(event: MouseEvent, target: GalleryImage): void {

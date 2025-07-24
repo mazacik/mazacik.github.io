@@ -9,13 +9,14 @@ import { DialogService } from "src/app/shared/services/dialog.service";
 import { ArrayUtils } from "src/app/shared/utils/array.utils";
 import { GoogleFileUtils } from "src/app/shared/utils/google-file.utils";
 import { ScreenUtils } from "src/app/shared/utils/screen.utils";
+import { TagUtils } from "src/app/shared/utils/tag.utils";
 import { GallerySettingsComponent } from "../dialogs/settings/gallery-settings.component";
 import { Data } from "../model/data.interface";
 import { Filter } from "../model/filter.interface";
 import { GallerySettings } from "../model/gallery-settings.interface";
 import { GroupData } from "../model/group-data.interface";
 import { ImageData } from "../model/image-data.interface";
-import { TagGroup } from "../model/tag-group.interface";
+import { TagData } from "../model/tag-data.interface";
 import { Tag } from "../model/tag.interface";
 import { GalleryGoogleDriveService } from "./gallery-google-drive.service";
 
@@ -39,8 +40,6 @@ export class GalleryStateService {
   public target: WritableSignal<GalleryImage> = signal(null);
 
   public tags: Tag[];
-  public tagGroups: TagGroup[];
-  public openTagGroup: TagGroup;
   public tagManagerVisible: boolean = ScreenUtils.isLargeScreen();
 
   public filterFavorite: Filter = {};
@@ -67,12 +66,14 @@ export class GalleryStateService {
     this.filterBookmark.state = data.bookmarksFilter || 0;
     this.filterGroups.state = data.filterGroups || 0;
     this.comparison = data.comparison;
-    this.tagGroups = data.tagGroups || [];
-    this.openTagGroup = ArrayUtils.getFirst(this.tagGroups);
-    this.tags = this.tagGroups.flatMap(group => group.tags);
 
     if (!data.imageProperties) data.imageProperties = [];
     if (!data.groupProperties) data.groupProperties = [];
+    if (!data.tagProperties) data.tagProperties = [];
+
+    this.tags = data.tagProperties.map(tag => this.parseTag(tag));
+    this.tags.forEach(tag => tag.children = data.tagProperties.find(t => t.id == tag.id).childIds.map(childId => this.tags.find(t => t.id == childId)));
+    this.tags.forEach(tag => tag.parent = this.tags.find(t => t.children.includes(tag)));
 
     if (data.settings) {
       this.settings = data.settings;
@@ -169,7 +170,7 @@ export class GalleryStateService {
       data.comparison = this.comparison;
       data.imageProperties = this.images.map(image => this.serializeImage(image));
       data.groupProperties = this.groups.filter(group => !ArrayUtils.isEmpty(group.images)).map(group => this.serializeGroup(group));
-      data.tagGroups = this.tagGroups;
+      data.tagProperties = this.tags.map(tag => this.serializeTag(tag));
 
       this.googleService.updateContent(this.googleService.dataFileId, data).then(metadata => {
         if (!metadata) {
@@ -183,19 +184,37 @@ export class GalleryStateService {
     if (instant) this.updateDelay.complete();
   }
 
-  private serializeImage(galleryImage: GalleryImage): ImageData {
-    const image: ImageData = {} as ImageData;
-    image.id = galleryImage.id;
-    image.heart = galleryImage.heart;
-    image.bookmark = galleryImage.bookmark;
-    image.tagIds = galleryImage.tags.map(tag => tag.id);
-    return image;
+  private serializeImage(image: GalleryImage): ImageData {
+    const _image: ImageData = {} as ImageData;
+    _image.id = image.id;
+    _image.heart = image.heart;
+    _image.bookmark = image.bookmark;
+    _image.tagIds = image.tags.map(tag => tag.id);
+    return _image;
   }
 
-  private serializeGroup(galleryGroup: GalleryGroup): GroupData {
-    const group: GroupData = {} as GroupData;
-    group.imageIds = galleryGroup.images.map(image => image.id);
-    return group;
+  private serializeGroup(group: GalleryGroup): GroupData {
+    const _group: GroupData = {} as GroupData;
+    _group.imageIds = group.images.map(image => image.id);
+    return _group;
+  }
+
+  private serializeTag(tag: Tag): TagData {
+    const _tag: TagData = {} as TagData;
+    _tag.id = tag.id;
+    _tag.name = tag.name;
+    _tag.childIds = tag.children.map(child => child.id);
+    return _tag;
+  }
+
+  private parseTag(tag: TagData): Tag {
+    const _tag: Tag = {} as Tag;
+    _tag.id = tag.id;
+    _tag.name = tag.name;
+    _tag.children = [];
+    _tag.state = 0;
+    _tag.open = false;
+    return _tag;
   }
 
   public updateFilters(image?: GalleryImage): void {
@@ -236,15 +255,37 @@ export class GalleryStateService {
       return false;
     }
 
-    let hasTag: boolean;
-    for (const tag of this.tags) {
-      hasTag = image.tags.includes(tag);
-      if (tag.state == -1 && hasTag) {
-        return false;
-      }
+    return this.doesPassTagsCheck(image, this.tags.filter(t => !t.parent));
+  }
 
-      if (tag.state == 1 && !hasTag) {
-        return false;
+  private doesPassTagsCheck(image: GalleryImage, tags: Tag[]): boolean {
+    for (const tag of tags) {
+      if (tag.state == 0) {
+        if (tag.children.length != 0) {
+          if (!this.doesPassTagsCheck(image, tag.children)) {
+            return false;
+          }
+        }
+      } else {
+        if (tag.children.length == 0) {
+          const imageHasTag: boolean = image.tags.includes(tag);
+          if (tag.state == -1 && imageHasTag) {
+            return false;
+          }
+
+          if (tag.state == 1 && !imageHasTag) {
+            return false;
+          }
+        } else {
+          const intersection: Tag[] = ArrayUtils.intersection(image.tags, TagUtils.collectChildren(tag));
+          if (tag.state == -1 && intersection.length != 0) {
+            return false;
+          }
+
+          if (tag.state == 1 && intersection.length == 0) {
+            return false;
+          }
+        }
       }
     }
 
@@ -268,7 +309,7 @@ export class GalleryStateService {
   }
 
   public async delete(image: GalleryImage, archive: boolean, askForConfirmation: boolean = true): Promise<void> {
-    if (askForConfirmation && !await this.dialogService.createConfirmation('Confirmation', ['Are you sure you want to ' + (archive ? 'archive' : 'delete') + ' this image?'], 'Yes', 'No')) {
+    if (askForConfirmation && !await this.dialogService.createConfirmation({ title: 'Confirmation', messages: ['Are you sure you want to ' + (archive ? 'archive' : 'delete') + ' this image?'] })) {
       return;
     }
 

@@ -14,6 +14,8 @@
       </div>
       <div class="sidebar-end">
         <ng-container *ngIf="ScreenUtils.isLargeScreen()">
+          <i class="icon-button fa-solid fa-left-right" tp="Flip" tpPlacement="right" (click)="flip = !flip"></i>
+          <div class="h-separator gap"></div>
           <i class="icon-button fa-solid fa-download" tp="Download" tpPlacement="right" (click)="googleService.download(target)"></i>
           <div class="h-separator gap"></div>
           <i class="icon-button fa-brands fa-google-drive" tp="Google Drive" tpPlacement="right" (click)="$event.stopPropagation(); googleService.openSearch(target.name);"></i>
@@ -29,14 +31,14 @@
       <div *ngIf="target" @fade class="stack-container">
         <div *ngIf="!target.group" @fade class="non-group-container stack-container">
           <div *ngFor="let image of [target]" @fade class="image-container">
-            <img [src]="getSrc(image)" (click)="onImageClick(image)" #imageElement (load)="imageElement.style.opacity = '1'">
+            <img [src]="getSrc(image)" [class.flip-h]="flip" (click)="onImageClick(image)" #imageElement (load)="imageElement.style.opacity = '1'">
           </div>
         </div>
 
         <div *ngIf="target.group" @fade class="has-group-container">
           <div class="another-container stack-container">
             <div *ngFor="let image of [target]" @fadeBetweenGroupImages class="image-container">
-              <img [src]="getSrc(image)" (click)="onImageClick(image)" #imageElement (load)="imageElement.style.opacity = '1'">
+              <img [src]="getSrc(image)" [class.flip-h]="flip" (click)="onImageClick(image)" #imageElement (load)="imageElement.style.opacity = '1'">
             </div>
           </div>
           <div class="stack-container height-auto justify-content-center">

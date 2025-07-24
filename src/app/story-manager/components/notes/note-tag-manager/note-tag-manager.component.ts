@@ -67,7 +67,7 @@ export class NoteTagManagerComponent extends DialogContentBase<string[]> impleme
   }
 
   protected editTag(tag?: string): void {
-    this.dialogService.createInput('Tag', 'Tag Title', tag, 'OK').then(result => {
+    this.dialogService.createInput({ title: 'Rename Tag', placeholder: 'Tag Title', defaultValue: tag }).then(result => {
       if (!StringUtils.isEmpty(result)) {
         if (this.inputs.note.parent.noteTags.includes(result)) return;
         if (tag) {
@@ -99,7 +99,7 @@ export class NoteTagManagerComponent extends DialogContentBase<string[]> impleme
   }
 
   protected deleteTag(tag: string): void {
-    this.dialogService.createConfirmation('Delete', ['Are you sure you want to delete "' + tag + '"?'], 'Yes', 'No').then(result => {
+    this.dialogService.createConfirmation({ title: 'Delete Tag', messages: ['Are you sure you want to delete "' + tag + '"?'] }).then(result => {
       if (result) {
         if (this.currentTags.includes(tag)) {
           ArrayUtils.remove(this.currentTags, tag);

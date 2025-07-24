@@ -4,6 +4,7 @@ import { DialogContentBase } from '../components/dialog/dialog-content-base.clas
 import { ConfirmationDialogComponent } from '../dialogs/confirmation/confirmation-dialog.component';
 import { InputDialogComponent } from '../dialogs/input/input-dialog.component';
 import { MessageDialogComponent } from '../dialogs/message/message-dialog.component';
+import { SelectDialogComponent } from '../dialogs/select/select-dialog.component';
 import { ArrayUtils } from '../utils/array.utils';
 
 @Injectable({
@@ -18,16 +19,20 @@ export class DialogService {
     private injector: EnvironmentInjector
   ) { }
 
-  public createMessage(title: string, messages: string[]): Promise<void> {
-    return this.create(MessageDialogComponent, { title, messages });
+  public createMessage(inputs: typeof MessageDialogComponent.prototype.inputs): Promise<void> {
+    return this.create(MessageDialogComponent, inputs);
   }
 
-  public createConfirmation(title: string, messages: string[], positiveButtonText: string, negativeButtonText: string): Promise<boolean> {
-    return this.create(ConfirmationDialogComponent, { title, messages, positiveButtonText, negativeButtonText });
+  public createConfirmation(inputs: typeof ConfirmationDialogComponent.prototype.inputs): Promise<boolean> {
+    return this.create(ConfirmationDialogComponent, inputs);
   }
 
-  public createInput(title: string, placeholder: string, defaultValue: string, positiveButtonText: string): Promise<string> {
-    return this.create(InputDialogComponent, { title, placeholder, defaultValue, positiveButtonText });
+  public createInput(inputs: typeof InputDialogComponent.prototype.inputs): Promise<string> {
+    return this.create(InputDialogComponent, inputs);
+  }
+
+  public createSelect<T>(inputs: typeof SelectDialogComponent.prototype.inputs): Promise<T> {
+    return this.create(SelectDialogComponent, inputs);
   }
 
   public create<ResultType, ContentComponent extends DialogContentBase<ResultType, NoInputsType>>(component: Type<ContentComponent>): Promise<ResultType>;

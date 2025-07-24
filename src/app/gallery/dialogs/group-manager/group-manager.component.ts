@@ -31,7 +31,7 @@ export class GroupManagerComponent extends DialogContentBase<void, {}> implement
       text: () => 'Disband',
       hidden: () => this.inputs.sourceGroup == null,
       click: () => {
-        this.dialogService.createConfirmation('Confirmation', ['Are you sure you want to disband this group of images?'], 'Yes', 'No').then(success => {
+        this.dialogService.createConfirmation({ title: 'Confirmation: Disband Image Group', messages: ['Are you sure you want to disband this group of images?'] }).then(success => {
           if (success) {
             this.disband();
           }

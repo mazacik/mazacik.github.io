@@ -3,25 +3,24 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
 import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
-import { StringUtils } from '../../utils/string.utils';
 
 @Component({
-  selector: 'app-input-dialog',
+  selector: 'app-select-dialog',
   standalone: true,
   imports: [
     CommonModule,
     FormsModule
   ],
-  templateUrl: 'input-dialog.component.html',
-  styleUrls: ['./input-dialog.component.scss'],
+  templateUrl: 'select-dialog.component.html',
+  styleUrls: ['./select-dialog.component.scss'],
 })
-export class InputDialogComponent extends DialogContentBase<string> implements OnInit {
+export class SelectDialogComponent<T> extends DialogContentBase<T> implements OnInit {
 
-  public override inputs: { title: string, placeholder?: string, defaultValue?: string, positiveButtonText?: string, validationFn?: (value: string) => boolean };
+  public override inputs: { title: string, options: T[], nullOption?: string, defaultValue?: T, getText: (option: T) => string, positiveButtonText?: string };
 
   public configuration: DialogContainerConfiguration;
 
-  protected value: string;
+  protected value: T;
 
   ngOnInit(): void {
     this.value = this.inputs.defaultValue;
@@ -39,15 +38,7 @@ export class InputDialogComponent extends DialogContentBase<string> implements O
   }
 
   protected canSubmit(): boolean {
-    if (StringUtils.isEmpty(this.value)) {
-      return false;
-    }
-
-    if (this.inputs.validationFn && !this.inputs.validationFn(this.value)) {
-      return false;
-    }
-
-    return true;
+    return this.inputs.nullOption != null || this.value != null;
   }
 
   public override submit(): void {
