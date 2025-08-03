@@ -6,8 +6,8 @@ import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-conte
 import { DragDropDirective } from 'src/app/shared/directives/dragdrop.directive';
 import { DialogService } from 'src/app/shared/services/dialog.service';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
-import { GalleryGroup } from '../../model/gallery-group.class';
-import { GalleryImage } from '../../model/gallery-image.class';
+import { GalleryGroup } from '../../models/gallery-group.class';
+import { GalleryImage } from '../../models/gallery-image.class';
 import { GalleryStateService } from '../../services/gallery-state.service';
 
 @Component({

@@ -29,7 +29,7 @@ export class InputDialogComponent extends DialogContentBase<string> implements O
       title: this.inputs.title,
       buttons: [{
         text: () => 'Cancel',
-        click: () => this.resolve(null)
+        click: () => this.resolve(undefined)
       }, {
         text: () => this.inputs.positiveButtonText || 'Submit',
         disabled: () => !this.canSubmit(),
@@ -57,7 +57,7 @@ export class InputDialogComponent extends DialogContentBase<string> implements O
   }
 
   public close(): void {
-    this.resolve(null);
+    this.resolve(undefined);
   }
 
 }

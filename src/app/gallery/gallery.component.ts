@@ -2,10 +2,10 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { enter } from '../shared/constants/animations.constants';
 import { ApplicationService } from '../shared/services/application.service';
-import { FilterComponent } from './dialogs/filter/filter.component';
-import { TagManagerComponent } from "./dialogs/tag-manager/tag-manager.component";
-import { FullscreenComponent } from './fullscreen/fullscreen.component';
-import { MasonryComponent } from './masonry/masonry.component';
+import { FilterComponent } from './components/filter/filter.component';
+import { FullscreenComponent } from './components/fullscreen/fullscreen.component';
+import { MasonryComponent } from './components/masonry/masonry.component';
+import { TaggerComponent } from './components/tagger/tagger.component';
 import { GalleryStateService } from './services/gallery-state.service';
 
 @Component({
@@ -16,7 +16,7 @@ import { GalleryStateService } from './services/gallery-state.service';
     FilterComponent,
     MasonryComponent,
     FullscreenComponent,
-    TagManagerComponent
+    TaggerComponent
   ],
   templateUrl: './gallery.component.html',
   styleUrls: ['./gallery.component.scss'],

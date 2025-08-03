@@ -2,77 +2,16 @@
 
 :host {
   display: flex;
-  user-select: none;
-  transition: $transition-duration;
-  overflow: hidden;
-  height: 100%;
+  flex-direction: column;
+  gap: $gap;
+  padding: $gap;
 
-  &:not(.visible) {
-    opacity: 0;
-    pointer-events: none;
-  }
+  .button {
+    width: 100%;
 
-  @media screen and (max-width:768px) {
-    position: absolute;
-    z-index: 1;
-    backdrop-filter: blur(5px);
-    background-color: var(--color-dialog-background);
-  }
-
-  @media screen and (min-width:768px) {
-    width: 300.8px;
-    min-width: 300.8px;
-
-    &:not(.visible) {
-      width: 0;
-      min-width: 0;
+    &.action-button {
+      min-height: initial;
+      padding: $gap 0;
     }
   }
-
-
-
-  .tag-manager-container {
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-
-    @media screen and (max-width:768px) {
-      width: 100vw;
-      min-width: 100vw;
-    }
-
-    @media screen and (min-width:768px) {
-      width: 300px;
-      min-width: 300px;
-    }
-
-    .header {
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
-      align-items: center;
-      margin: $gap;
-    }
-
-    .filters-container {
-      flex: 1;
-      scrollbar-gutter: stable;
-
-      i {
-        font-size: 0.8rem;
-        margin-top: 1px;
-      }
-    }
-  }
-
-  .buttons-container {
-    display: flex;
-    gap: $gap;
-    margin: 0 $gap $gap $gap;
-
-    .button {
-      flex: 1;
-      gap: $gap;
-    }
-  }
-
 }

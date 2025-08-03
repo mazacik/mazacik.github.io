@@ -1,5 +1,5 @@
 import { GoogleMetadata } from "../classes/google-api/google-metadata.class";
-import { GalleryImage } from "../../gallery/model/gallery-image.class";
+import { GalleryImage } from "../../gallery/models/gallery-image.class";
 
 export abstract class GoogleFileUtils {
 

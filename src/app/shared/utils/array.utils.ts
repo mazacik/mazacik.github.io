@@ -55,7 +55,7 @@ export abstract class ArrayUtils {
         }
       }
 
-      return where.length != length;
+      return length != where.length;
     }
   }
 
@@ -67,13 +67,13 @@ export abstract class ArrayUtils {
     }
   }
 
-  public static toggle<T>(where: T[], what: T): void {
+  public static toggle<T>(where: T[], what: T, unshift: boolean = false): void {
     if (Array.isArray(where)) {
       if (what !== null && what !== undefined) {
         if (where.includes(what)) {
           this._remove(where, what);
         } else {
-          where.push(what);
+          unshift ? where.unshift(what) : where.push(what);
         }
       }
     }
@@ -218,16 +218,16 @@ export abstract class ArrayUtils {
     return array[Math.floor(Math.random() * array.length)];
   }
 
-  public static nearestRightFirst<T>(array: T[], startIndex: number, callback?: (t: T) => boolean): T {
+  public static nearestRightFirst<T>(array: T[], startIndex: number, validFn?: (t: T) => boolean): T {
     if (startIndex + 1 < array.length) {
       for (let i = startIndex + 1; i < array.length; i++) {
-        if (!callback || callback(array[i])) return array[i];
+        if (!validFn || validFn(array[i])) return array[i];
       }
     }
 
     if (startIndex > 0) {
       for (let i = startIndex - 1; i > -1; i--) {
-        if (!callback || callback(array[i])) return array[i];
+        if (!validFn || validFn(array[i])) return array[i];
       }
     }
 

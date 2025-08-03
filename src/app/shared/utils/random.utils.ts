@@ -1,4 +1,3 @@
-
 export abstract class RandomUtils {
 
   public static random(max: number): number;

@@ -28,7 +28,7 @@ export class SelectDialogComponent<T> extends DialogContentBase<T> implements On
       title: this.inputs.title,
       buttons: [{
         text: () => 'Cancel',
-        click: () => this.resolve(null)
+        click: () => this.resolve(undefined)
       }, {
         text: () => this.inputs.positiveButtonText || 'Submit',
         disabled: () => !this.canSubmit(),
@@ -48,7 +48,7 @@ export class SelectDialogComponent<T> extends DialogContentBase<T> implements On
   }
 
   public close(): void {
-    this.resolve(null);
+    this.resolve(undefined);
   }
 
 }

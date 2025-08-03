@@ -5,7 +5,7 @@ import { GalleryGoogleDriveService } from 'src/app/gallery/services/gallery-goog
 import { ApplicationService } from 'src/app/shared/services/application.service';
 import { GoogleMetadata } from '../../shared/classes/google-api/google-metadata.class';
 import { GoogleFileUtils } from '../../shared/utils/google-file.utils';
-import { Data } from '../model/data.interface';
+import { Data } from '../models/data.interface';
 
 @Component({
   selector: 'app-folder-picker',

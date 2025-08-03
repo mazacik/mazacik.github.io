@@ -30,22 +30,3 @@
   transition-property: background-color;
   transition-duration: $transition-duration;
 }
-
-.loading-spinner {
-  width: 75px;
-  height: 75px;
-  border-width: 3px;
-  border-color: var(--color-background-secondary);
-  border-top-color: #fff;
-  animation: spin 1s infinite linear;
-  border-radius: 50%;
-  border-style: solid;
-  position: absolute;
-  z-index: 100;
-
-  @keyframes spin {
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-}

@@ -1,31 +1,47 @@
-import { Tag } from 'src/app/gallery/model/tag.interface';
+import { GalleryImage } from "src/app/gallery/models/gallery-image.class";
+import { Tag } from "src/app/gallery/models/tag.class";
 
 export abstract class TagUtils {
 
-  public static collectParents(tag: Tag, collector: Tag[] = []): Tag[] {
-    if (tag.parent) {
-      collector.unshift(tag.parent);
-      TagUtils.collectParents(tag.parent, collector)
-    }
-    return collector;
-  }
+  public static hasTag(image: GalleryImage, tag: Tag, deep: boolean = false): boolean {
+    if (tag.group) {
+      // group
+      if (deep) {
+        for (const child of tag.children) {
+          if (!this.hasTag(image, child, deep)) {
+            return false;
+          }
+        }
+      }
+    } else {
+      if (tag.children.length == 0) {
+        // tag
+      } else {
+        // pseudo
+        if (deep) {
 
-  public static collectChildren(tag: Tag, collector: Tag[] = []): Tag[] {
-    if (tag.children.length > 0) {
-      for (const child of tag.children) {
-        collector.push(child);
-        TagUtils.collectChildren(child, collector);
+        } else {
+
+        }
       }
     }
-    return collector;
+    return true;
   }
 
-  public static getCompleteName(tag: Tag, separator: string = ' - '): string {
-    return this.collectParents(tag).concat(tag).map(t => t.name).join(separator);
-  }
+  public static sort(tags: Tag[], completeName: boolean = false): void {
+    if (tags) {
+      if (completeName) {
+        tags.sort((t1, t2) => t1.getCompleteName().localeCompare(t2.getCompleteName()));
+      } else {
+        tags.sort((t1, t2) => t1.name.localeCompare(t2.name));
+      }
+    }
 
-  public static getDepth(tag: Tag): number {
-    return this.collectParents(tag).length;
+    // children?.sort((t1, t2) => {
+    // if (t1.children.length && !t2.children.length) return -1;
+    // if (!t1.children.length && t2.children.length) return 1;
+    // return t1.name.localeCompare(t2.name);
+    // });
   }
 
 }

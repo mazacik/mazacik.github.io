@@ -1,0 +1,40 @@
+<ng-container *ngIf="tag">
+  <div class="flex gap cursor-pointer hover-brighten hover-container" style="line-height: 24px" (drop)="tagDragDropService.dragDrop($event, tag)" ondragover="event.preventDefault()">
+    <div class="flex gap flex-1 width-100 min-width-0 align-items-center" (click)="onTagClick()">
+      <i *ngFor="let _ of [].constructor(tag.getDepth())" class="fa-solid fa-angle-down opacity-0"></i>
+
+      @if (tag.group) {
+        <i class="fa-solid" [ngClass]="tag.open ? 'fa-angle-down' : 'fa-angle-right'" style="margin-top: 1px"></i>
+      } @else {
+        <i class="fa-solid fa-angle-down opacity-0"></i>
+      }
+
+      <div
+        class="flex-1 overflow-hidden"
+        [ngClass]="getTextClass()"
+        draggable="true"
+        (dragstart)="tagDragDropService.dragStart($event, tag)"
+        (dragenter)="tagDragDropService.dragEnter($event, tag)"
+        (dragleave)="tagDragDropService.dragLeave($event, tag)"
+        (dragend)="tagDragDropService.dragEnd($event, tag)"
+        ondragover="event.preventDefault()">
+        <div class="flex pointer-events-none">
+          <span class="ellipsis">{{ stateService.debugDisableMedia ? encryptSimple(tag.name) : tag.name }}</span>
+          <ng-container *ngIf="stateService.settings.showTagCount">
+            <ng-container *ngVar="tag.getCount(stateService.images) as count">
+              <span *ngIf="count !== null" class="pointer-events-none" style="white-space: pre"> {{ tag.isPseudo() ? '➝' : '•' }} {{ count }}</span>
+            </ng-container>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+    <div class="flex gap align-items-center hover-visible">
+      <i *ngIf="tag.group" class="hover-positive fa-solid fa-check-double" (click)="toggleTagState()"></i>
+      <i class="hover-positive fa-solid fa-ellipsis-vertical" (click)="galleryService.openTagOptions(tag)"></i>
+    </div>
+  </div>
+  <div *ngIf="tag.group" [@drawer2]="tag.open" class="flex column overflow-hidden">
+    <app-filter-row *ngFor="let child of getTagGroups()" [tag]="child"></app-filter-row>
+    <app-filter-row *ngFor="let child of getTags()" [tag]="child"></app-filter-row>
+  </div>
+</ng-container>

@@ -119,7 +119,7 @@ export class NoteTagManagerComponent extends DialogContentBase<string[]> impleme
   }
 
   public close(): void {
-    this.resolve(null);
+    this.resolve(undefined);
   }
 
 }
