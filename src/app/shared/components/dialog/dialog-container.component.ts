@@ -110,8 +110,8 @@ export class DialogContainerComponent<ResultType, InputsType> implements AfterVi
   @HostListener('document:mouseup', ['$event'])
   protected onHeaderMouseUp(): void {
     this.isMouseDown = false;
-    if (this.top !== undefined) localStorage.setItem(this.contentComponentType.name + '.top', this.top.toString());
-    if (this.left !== undefined) localStorage.setItem(this.contentComponentType.name + '.left', this.left.toString());
+    if (this.top !== undefined) localStorage.setItem(this.contentComponentType.name + '.top', this.top?.toString());
+    if (this.left !== undefined) localStorage.setItem(this.contentComponentType.name + '.left', this.left?.toString());
   }
 
   @HostListener('document:mousemove', ['$event'])

@@ -5,7 +5,7 @@ import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/d
 import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
 import { ApplicationService } from 'src/app/shared/services/application.service';
 import { DialogService } from 'src/app/shared/services/dialog.service';
-import { GallerySettings } from '../../model/gallery-settings.interface';
+import { GallerySettings } from '../../models/gallery-settings.interface';
 import { GalleryStateService } from '../../services/gallery-state.service';
 
 @Component({

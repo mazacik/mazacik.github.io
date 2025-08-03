@@ -4,6 +4,7 @@ import { DialogContentBase } from '../components/dialog/dialog-content-base.clas
 import { ConfirmationDialogComponent } from '../dialogs/confirmation/confirmation-dialog.component';
 import { InputDialogComponent } from '../dialogs/input/input-dialog.component';
 import { MessageDialogComponent } from '../dialogs/message/message-dialog.component';
+import { MultiSelectDialogComponent } from '../dialogs/multi-select/multi-select-dialog.component';
 import { SelectDialogComponent } from '../dialogs/select/select-dialog.component';
 import { ArrayUtils } from '../utils/array.utils';
 
@@ -33,6 +34,10 @@ export class DialogService {
 
   public createSelect<T>(inputs: typeof SelectDialogComponent.prototype.inputs): Promise<T> {
     return this.create(SelectDialogComponent, inputs);
+  }
+
+  public createMultiSelect<T>(inputs: typeof MultiSelectDialogComponent.prototype.inputs): Promise<T[]> {
+    return this.create(MultiSelectDialogComponent, inputs);
   }
 
   public create<ResultType, ContentComponent extends DialogContentBase<ResultType, NoInputsType>>(component: Type<ContentComponent>): Promise<ResultType>;

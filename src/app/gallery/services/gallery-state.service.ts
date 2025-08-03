@@ -1,7 +1,7 @@
 import { Injectable, WritableSignal, signal } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
-import { GalleryGroup } from "src/app/gallery/model/gallery-group.class";
-import { GalleryImage } from "src/app/gallery/model/gallery-image.class";
+import { GalleryGroup } from "src/app/gallery/models/gallery-group.class";
+import { GalleryImage } from "src/app/gallery/models/gallery-image.class";
 import { Delay } from "src/app/shared/classes/delay.class";
 import { GoogleMetadata } from "src/app/shared/classes/google-api/google-metadata.class";
 import { ApplicationService } from "src/app/shared/services/application.service";
@@ -9,21 +9,23 @@ import { DialogService } from "src/app/shared/services/dialog.service";
 import { ArrayUtils } from "src/app/shared/utils/array.utils";
 import { GoogleFileUtils } from "src/app/shared/utils/google-file.utils";
 import { ScreenUtils } from "src/app/shared/utils/screen.utils";
-import { TagUtils } from "src/app/shared/utils/tag.utils";
 import { GallerySettingsComponent } from "../dialogs/settings/gallery-settings.component";
-import { Data } from "../model/data.interface";
-import { Filter } from "../model/filter.interface";
-import { GallerySettings } from "../model/gallery-settings.interface";
-import { GroupData } from "../model/group-data.interface";
-import { ImageData } from "../model/image-data.interface";
-import { TagData } from "../model/tag-data.interface";
-import { Tag } from "../model/tag.interface";
+import { Data } from "../models/data.interface";
+import { Filter } from "../models/filter.interface";
+import { GallerySettings } from "../models/gallery-settings.interface";
+import { GroupData } from "../models/group-data.interface";
+import { ImageData } from "../models/image-data.interface";
+import { TagData } from "../models/tag-data.interface";
+import { Tag } from "../models/tag.class";
 import { GalleryGoogleDriveService } from "./gallery-google-drive.service";
 
 @Injectable({
   providedIn: 'root',
 })
 export class GalleryStateService {
+
+  public readonly debugDisableSave: boolean = false;
+  public readonly debugDisableMedia: boolean = false;
 
   // TODO this service is too large
 
@@ -39,12 +41,12 @@ export class GalleryStateService {
   public filter: WritableSignal<GalleryImage[]> = signal([]);
   public target: WritableSignal<GalleryImage> = signal(null);
 
-  public tags: Tag[];
+  public tags: Tag[]; // TODO move to tagService?
   public tagManagerVisible: boolean = ScreenUtils.isLargeScreen();
 
-  public filterFavorite: Filter = {};
-  public filterBookmark: Filter = {};
-  public filterGroups: Filter = {};
+  public filterFavorite: Filter = { state: 0 };
+  public filterBookmark: Filter = { state: 0 };
+  public filterGroups: Filter = { state: 0 };
   public filterVisible: boolean = ScreenUtils.isLargeScreen();
 
   public groupEditorGroup: GalleryGroup;
@@ -71,7 +73,7 @@ export class GalleryStateService {
     if (!data.groupProperties) data.groupProperties = [];
     if (!data.tagProperties) data.tagProperties = [];
 
-    this.tags = data.tagProperties.map(tag => this.parseTag(tag));
+    this.tags = data.tagProperties.map(tagData => this.parseTag(tagData));
     this.tags.forEach(tag => tag.children = data.tagProperties.find(t => t.id == tag.id).childIds.map(childId => this.tags.find(t => t.id == childId)));
     this.tags.forEach(tag => tag.parent = this.tags.find(t => t.children.includes(tag)));
 
@@ -120,16 +122,24 @@ export class GalleryStateService {
     image.mimeType = metadata.mimeType;
     image.parentFolderId = folderId;
 
-    if (bReduceBandwidth) {
-      image.thumbnailLink = metadata.thumbnailLink;
+    if (this.debugDisableMedia) {
+      image.thumbnailLink = '';
     } else {
-      image.thumbnailLink = metadata.thumbnailLink.replace('=s220', '=w440');
+      if (bReduceBandwidth) {
+        image.thumbnailLink = metadata.thumbnailLink;
+      } else {
+        image.thumbnailLink = metadata.thumbnailLink.replace('=s220', '=w440');
+      }
     }
 
     if (GoogleFileUtils.isImage(image)) {
       image.imageMediaMetadata = metadata.imageMediaMetadata;
       image.aspectRatio = image.imageMediaMetadata.width / image.imageMediaMetadata.height;
-      image.contentLink = metadata.thumbnailLink.replace('=s220', '=s' + Math.max(window.screen.width, window.screen.height));
+      if (this.debugDisableMedia) {
+        image.contentLink = '';
+      } else {
+        image.contentLink = metadata.thumbnailLink.replace('=s220', '=s' + Math.max(window.screen.width, window.screen.height));
+      }
     } else if (GoogleFileUtils.isVideo(image)) {
       image.videoMediaMetadata = metadata.videoMediaMetadata;
       if (!image.videoMediaMetadata) image.videoMediaMetadata = {};
@@ -158,6 +168,8 @@ export class GalleryStateService {
   }
 
   public save(instant: boolean = false): void {
+    if (this.debugDisableSave) return;
+
     this.applicationService.changes.set(true);
     this.updateDelay.restart(() => {
       const data: Data = {} as Data;
@@ -200,21 +212,23 @@ export class GalleryStateService {
   }
 
   private serializeTag(tag: Tag): TagData {
-    const _tag: TagData = {} as TagData;
-    _tag.id = tag.id;
-    _tag.name = tag.name;
-    _tag.childIds = tag.children.map(child => child.id);
-    return _tag;
+    const tagData: TagData = {} as TagData;
+    tagData.id = tag.id;
+    tagData.name = tag.name;
+    tagData.group = tag.group;
+    tagData.state = tag.state;
+    tagData.childIds = tag.children.map(c => c.id);
+    return tagData;
   }
 
-  private parseTag(tag: TagData): Tag {
-    const _tag: Tag = {} as Tag;
-    _tag.id = tag.id;
-    _tag.name = tag.name;
-    _tag.children = [];
-    _tag.state = 0;
-    _tag.open = false;
-    return _tag;
+  private parseTag(tagData: TagData): Tag {
+    const tag: Tag = new Tag();
+    tag.id = tagData.id;
+    tag.name = tagData.name;
+    tag.group = tagData.group;
+    tag.state = tagData.state;
+    tag.open = false;
+    return tag;
   }
 
   public updateFilters(image?: GalleryImage): void {
@@ -255,34 +269,44 @@ export class GalleryStateService {
       return false;
     }
 
-    return this.doesPassTagsCheck(image, this.tags.filter(t => !t.parent));
+    const rootTags: Tag[] = this.tags.filter(t => !t.parent);
+    return this.doesPassTagsCheck(image, rootTags);
   }
 
   private doesPassTagsCheck(image: GalleryImage, tags: Tag[]): boolean {
     for (const tag of tags) {
       if (tag.state == 0) {
-        if (tag.children.length != 0) {
+        if (tag.group) {
           if (!this.doesPassTagsCheck(image, tag.children)) {
             return false;
           }
         }
       } else {
-        if (tag.children.length == 0) {
+        if (tag.group) {
+          const intersection: Tag[] = ArrayUtils.intersection(image.tags, tag.collectChildren().concat(tag));
+          if (tag.state == -1 && intersection.length != 0) {
+            return false;
+          }
+
+          if (tag.state == 1 && intersection.length == 0) {
+            return false;
+          }
+        } else if (tag.isPseudo()) {
+          const intersection: Tag[] = ArrayUtils.intersection(image.tags, tag.children);
+          if (tag.state == -1 && intersection.length != 0) {
+            return false;
+          }
+
+          if (tag.state == 1 && intersection.length == 0) {
+            return false;
+          }
+        } else {
           const imageHasTag: boolean = image.tags.includes(tag);
           if (tag.state == -1 && imageHasTag) {
             return false;
           }
 
           if (tag.state == 1 && !imageHasTag) {
-            return false;
-          }
-        } else {
-          const intersection: Tag[] = ArrayUtils.intersection(image.tags, TagUtils.collectChildren(tag));
-          if (tag.state == -1 && intersection.length != 0) {
-            return false;
-          }
-
-          if (tag.state == 1 && intersection.length == 0) {
             return false;
           }
         }
@@ -323,7 +347,12 @@ export class GalleryStateService {
 
     ArrayUtils.remove(this.images, this.images.find(i => i.id == image.id));
 
+    let nextTarget: GalleryImage = null;
+
     if (image.group) {
+      const index: number = image.group.images.indexOf(image);
+      nextTarget = image.group.images[index + 1] || image.group.images[index - 1];
+
       if (image.group.images.length > 2) {
         ArrayUtils.remove(image.group.images, image);
       } else {
@@ -343,7 +372,7 @@ export class GalleryStateService {
     }
 
     this.filter.set(this.images.filter(image => image.passesFilter));
-    this.target.set(null);
+    this.target.set(nextTarget);
 
     this.save(true);
     this.applicationService.loading.set(false);

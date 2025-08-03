@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { GalleryImage } from 'src/app/gallery/model/gallery-image.class';
+import { GalleryImage } from 'src/app/gallery/models/gallery-image.class';
 import { Contender } from 'src/app/shared/classes/contender.class';
 import { Tournament } from 'src/app/shared/classes/tournament.class';
 import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';

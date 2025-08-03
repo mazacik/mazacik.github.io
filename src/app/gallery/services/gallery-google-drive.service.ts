@@ -2,7 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { lastValueFrom } from "rxjs";
 import { BaseGoogleDriveService } from "../../shared/services/base-google-drive.service";
-import { Data } from "../model/data.interface";
+import { Data } from "../models/data.interface";
 
 @Injectable({
   providedIn: 'root',

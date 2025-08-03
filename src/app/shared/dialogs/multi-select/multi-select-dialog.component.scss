@@ -1,0 +1,36 @@
+@import 'src/styles/variables.scss';
+
+:host {
+  display: block;
+  padding: $gap $gap 0 $gap;
+  line-height: 24px;
+  user-select: none;
+
+  input {
+    width: 100%;
+  }
+
+  .content-container {
+    display: flex;
+    flex-direction: column;
+
+    @media screen and (min-width:768px) {
+      height: 50vh;
+    }
+
+    .selection-container {
+      max-height: 50%;
+    }
+
+    .options-container {
+      flex: 1;
+
+      .unavailable {
+        height: 0;
+        opacity: 0;
+        pointer-events: none;
+      }
+    }
+  }
+
+}

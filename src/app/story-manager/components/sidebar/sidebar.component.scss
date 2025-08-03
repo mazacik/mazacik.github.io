@@ -48,7 +48,7 @@
       border-radius: $gap;
 
       &:hover {
-        background-color: var(--color-hover);
+        background-color: var(--color-background-hover);
 
         .story-notes-word-count {
           display: none;
@@ -94,7 +94,7 @@
       cursor: pointer;
       
       &:hover {
-        background-color: var(--color-hover);
+        background-color: var(--color-background-hover);
 
         .note-word-count {
           visibility: hidden;

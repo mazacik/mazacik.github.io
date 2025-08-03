@@ -1,0 +1,178 @@
+@import 'src/styles/variables.scss';
+
+:host {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  @media screen and (max-width:768px) {
+    min-width: 100%;
+  }
+
+  @media screen and (min-width:768px) {
+    .drawer-container {
+      width: 3rem;
+      min-width: 3rem;
+      transition-property: width, min-width, opacity, transform;
+      transition-duration: $transition-duration;
+
+      &:not(.drawer-visible) {
+        width: 0;
+        min-width: 0;
+        opacity: 0;
+        transform: translateX(3rem);
+        pointer-events: none;
+        border: 0;
+      }
+    }
+  }
+
+  .fullscreen-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .non-group-container {
+    overflow: auto;
+
+    @media screen and (max-width:768px) {
+      position: absolute;
+      top: 0;
+      left: $gap;
+      right: $gap;
+      width: calc(100% - $gap * 2);
+      z-index: -1;
+    }
+
+    .image-container {
+      padding: $gap 0;
+    }
+  }
+
+  .has-group-container {
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    gap: $gap;
+    padding: $gap 0;
+    justify-content: flex-end;
+
+    .another-container {
+      overflow: auto;
+
+      @media screen and (max-width:768px) {
+        position: absolute;
+        top: 0;
+        left: $gap;
+        right: $gap;
+        width: calc(100% - $gap * 2);
+        z-index: -1;
+      }
+    }
+
+    .group-images-container {
+      display: flex;
+      flex-direction: row;
+      overflow-y: hidden;
+      padding: 0;
+      gap: $gap;
+
+      .group-image-container {
+        height: 120px;
+        position: relative;
+        border-radius: 4px;
+        cursor: pointer;
+
+        transition-property: background-color;
+        transition-duration: $transition-duration;
+        background-color: transparent;
+
+        &.loading {
+          background-color: var(--color-background-secondary);
+
+          img {
+            opacity: 0;
+          }
+        }
+
+        img {
+          height: 120px;
+          border-radius: inherit;
+          transition-property: opacity;
+          transition-duration: $transition-duration;
+
+          &.grayscale {
+            opacity: 0.5 !important;
+            filter: grayscale(1);
+          }
+        }
+
+        .target-border {
+          position: absolute;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          left: 0;
+          border-radius: inherit;
+          pointer-events: none;
+
+          &.target {
+            box-sizing: border-box;
+            border: 2px solid var(--color-positive);
+          }
+        }
+      }
+    }
+  }
+
+  .image-container {
+    display: flex;
+    justify-content: center;
+    overflow: auto;
+    box-sizing: border-box;
+
+    img {
+      height: 100%;
+      overflow: auto;
+      object-fit: contain;
+
+      outline: none;
+      user-select: none;
+
+      transition-property: opacity;
+      transition-duration: $transition-duration;
+
+      opacity: 0;
+    }
+  }
+
+  .sidebar-left,
+  .sidebar-right {
+    width: 42px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: $gap;
+    z-index: 1;
+
+    .sidebar-start,
+    .sidebar-center,
+    .sidebar-end {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  .sidebar-right {
+    align-items: flex-end;
+
+    .sidebar-start,
+    .sidebar-center,
+    .sidebar-end {
+      align-items: flex-end;
+    }
+  }
+
+}
