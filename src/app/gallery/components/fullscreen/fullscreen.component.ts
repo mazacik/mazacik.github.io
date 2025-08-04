@@ -158,19 +158,19 @@ export class FullscreenComponent implements KeyboardShortcutTarget, OnInit, OnDe
   }
 
   protected isFirstGroupImage(image: GalleryImage): boolean {
-    return ArrayUtils.isFirst(image.group.images.filter(groupImage => groupImage.passesFilter), image);
+    return ArrayUtils.isFirst(image.group.images.filter(groupImage => groupImage.passesFilters), image);
   }
 
   protected isLastGroupImage(image: GalleryImage): boolean {
-    return ArrayUtils.isLast(image.group.images.filter(groupImage => groupImage.passesFilter), image);
+    return ArrayUtils.isLast(image.group.images.filter(groupImage => groupImage.passesFilters), image);
   }
 
   protected moveTargetGroupLeft(image: GalleryImage): void {
-    this.stateService.target.set(ArrayUtils.getPrevious(image.group.images.filter(groupImage => groupImage.passesFilter), image, true));
+    this.stateService.target.set(ArrayUtils.getPrevious(image.group.images.filter(groupImage => groupImage.passesFilters), image, true));
   }
 
   protected moveTargetGroupRight(image: GalleryImage): void {
-    this.stateService.target.set(ArrayUtils.getNext(image.group.images.filter(groupImage => groupImage.passesFilter), image, true));
+    this.stateService.target.set(ArrayUtils.getNext(image.group.images.filter(groupImage => groupImage.passesFilters), image, true));
   }
 
 }

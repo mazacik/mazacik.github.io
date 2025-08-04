@@ -22,7 +22,7 @@
           <span class="ellipsis">{{ stateService.debugDisableMedia ? encryptSimple(tag.name) : tag.name }}</span>
           <ng-container *ngIf="stateService.settings.showTagCount">
             <ng-container *ngVar="tag.getCount(stateService.images) as count">
-              <span *ngIf="count !== null" class="pointer-events-none" style="white-space: pre"> {{ tag.isPseudo() ? '➝' : '•' }} {{ count }}</span>
+              <span *ngIf="count !== null" class="pointer-events-none" style="white-space: pre"> {{ tag.pseudo ? '➝' : '•' }} {{ count }}</span>
             </ng-container>
           </ng-container>
         </div>

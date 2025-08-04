@@ -91,7 +91,7 @@ export class RangeComponent {
     return Math.max(0, Math.min(100, value));
   }
 
-  // TODO variable instead of method
+  // variable instead of method?
   protected percentToValue(percent: number): number {
     return Math.round(this.min + ((this.max - this.min) * percent) / 100);
   }

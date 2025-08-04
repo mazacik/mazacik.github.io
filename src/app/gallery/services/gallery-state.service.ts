@@ -231,12 +231,12 @@ export class GalleryStateService {
     return tag;
   }
 
-  public updateFilters(image?: GalleryImage): void {
-    image ? image.passesFilter = this.doesPassFilter(image) : this.images.forEach(image => image.passesFilter = this.doesPassFilter(image));
-    this.filter.set(this.images.filter(image => image.passesFilter));
+  public updateFilters(...images: GalleryImage[]): void {
+    (ArrayUtils.isEmpty(images) ? this.images : images).forEach(image => image.passesFilters = this.doesPassFilters(image));
+    this.filter.set(this.images.filter(image => image.passesFilters));
   }
 
-  private doesPassFilter(image: GalleryImage): boolean {
+  private doesPassFilters(image: GalleryImage): boolean {
     if (!image) {
       return false;
     }
@@ -291,7 +291,7 @@ export class GalleryStateService {
           if (tag.state == 1 && intersection.length == 0) {
             return false;
           }
-        } else if (tag.isPseudo()) {
+        } else if (tag.pseudo) {
           const intersection: Tag[] = ArrayUtils.intersection(image.tags, tag.children);
           if (tag.state == -1 && intersection.length != 0) {
             return false;
@@ -371,7 +371,7 @@ export class GalleryStateService {
       }
     }
 
-    this.filter.set(this.images.filter(image => image.passesFilter));
+    this.filter.set(this.images.filter(image => image.passesFilters));
     this.target.set(nextTarget);
 
     this.save(true);
