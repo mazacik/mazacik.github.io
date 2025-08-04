@@ -12,7 +12,7 @@ export class GalleryImage extends GoogleMetadata {
   public aspectRatio: number;
   public contentLink: string;
   public group: GalleryGroup;
-  public passesFilter: boolean;
+  public passesFilters: boolean;
   public parentFolderId: string;
 
   public masonryTop: number;

@@ -1,7 +1,7 @@
+import { ArrayUtils } from "src/app/shared/utils/array.utils";
 import { TagUtils } from "src/app/shared/utils/tag.utils";
 import { Filter } from "./filter.interface";
 import { GalleryImage } from "./gallery-image.class";
-import { ArrayUtils } from "src/app/shared/utils/array.utils";
 
 export class Tag implements Filter {
 
@@ -10,28 +10,26 @@ export class Tag implements Filter {
   group: boolean;
   state: number;
   parent: Tag;
-
-  // Tag Group
   children: Tag[];
   open: boolean;
+
+  public get pseudo(): boolean {
+    return !this.group && this.children.length != 0;
+  }
 
   public getDepth(): number {
     return this.collectParents().length;
   }
 
-  public getCompleteName(separator: string = ' - '): string {
+  public getCompleteName(separator: string = ' / '): string {
     return this.collectParents().concat(this).map(t => t.name).join(separator);
-  }
-
-  public isPseudo(): boolean {
-    return !this.group && this.children.length != 0;
   }
 
   public getCount(images: GalleryImage[]): number {
     if (this.group) {
       return null;
     }
-    if (this.isPseudo()) {
+    if (this.pseudo) {
       return images.filter(image => ArrayUtils.intersection(image.tags, this.children).length).length;
     }
     return images.filter(image => image.tags.includes(this)).length;

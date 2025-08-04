@@ -22,7 +22,7 @@ export class TagService {
   }
 
   public getParentPseudoTags(tag: Tag): Tag[] {
-    return this.stateService.tags.filter(t => t.isPseudo() && t.children.includes(tag));
+    return this.stateService.tags.filter(t => t.pseudo && t.children.includes(tag));
   }
 
   public async openTagCreate(parent: Tag): Promise<void> {
@@ -200,15 +200,19 @@ export class TagService {
       getText: option => option.getCompleteName()
     });
 
-    if (parent === null) {
-      // move to root
-      ArrayUtils.remove(tag.parent.children, tag);
+    this.moveTagToParent(tag, parent);
+  }
+
+  public moveTagToParent(tag: Tag, parent: Tag): void {
+    if (tag.group && parent === null) {
+      // move group to root
+      ArrayUtils.remove(tag.parent?.children, tag);
 
       tag.parent = null;
 
-      this.stateService.images.filter(image => image.tags.includes(tag)).forEach(image => this.stateService.updateFilters(image));
+      this.stateService.updateFilters(...this.stateService.images.filter(image => image.tags.includes(tag)));
       this.stateService.save();
-    } else {
+    } else if (parent) {
       ArrayUtils.remove(tag.parent?.children, tag);
 
       tag.parent = parent;
@@ -216,7 +220,7 @@ export class TagService {
       tag.parent.children.push(tag);
       tag.parent.sortChildren();
 
-      this.stateService.images.filter(image => image.tags.includes(tag)).forEach(image => this.stateService.updateFilters(image));
+      this.stateService.updateFilters(...this.stateService.images.filter(image => image.tags.includes(tag)));
       this.stateService.save();
     }
   }
@@ -226,7 +230,7 @@ export class TagService {
       const options: Tag[] = this.stateService.tags.filter(t => {
         if (t == tag) return false;
         if (t.group) return false;
-        if (t.isPseudo()) return false;
+        if (t.pseudo) return false;
         return true;
       });
 

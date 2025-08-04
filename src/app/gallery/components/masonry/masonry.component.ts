@@ -67,7 +67,7 @@ export class MasonryComponent {
     if (this.masonryContainer) {
       this.masonryImages = this.stateService.filter().filter(image => {
         if (image.group) {
-          return image == image.group.images.find(groupImage => groupImage.passesFilter);
+          return image == image.group.images.find(groupImage => groupImage.passesFilters);
         } else {
           return true;
         }
@@ -109,7 +109,7 @@ export class MasonryComponent {
 
   private scrollTo(image: GalleryImage): void {
     if (image) {
-      const targetRepresent: GalleryImage = image.group ? image.group.images.find(groupImage => groupImage.passesFilter) : image;
+      const targetRepresent: GalleryImage = image.group ? image.group.images.find(groupImage => groupImage.passesFilters) : image;
       const brickElement: HTMLImageElement = this.bricks[targetRepresent?.id];
       brickElement.scrollIntoView();
       // if (brickElement && !ScreenUtils.isElementVisible(brickElement)) {

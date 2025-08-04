@@ -47,7 +47,7 @@
             <div *ngFor="let group of [target.group]" @fade class="group-images-container">
               <div *ngFor="let groupImage of group.images" class="group-image-container loading" (click)="stateService.target.set(groupImage)" #groupImageContainer>
                 <img
-                  [class.grayscale]="!groupImage.passesFilter"
+                  [class.grayscale]="!groupImage.passesFilters"
                   [style.width.px]="120 * groupImage.aspectRatio"
                   [src]="groupImage.thumbnailLink"
                   #groupImageElement

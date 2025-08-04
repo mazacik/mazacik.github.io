@@ -37,7 +37,7 @@ export class TaggerRowComponent {
   protected onTagClick(): void {
     if (this.tag.group) {
       this.tag.open = !this.tag.open;
-    } else if (!this.tag.isPseudo()) {
+    } else if (!this.tag.pseudo) {
       if (this.groupMode && this.target.group) {
         if (this.target.group.images.every(groupImage => groupImage.tags.includes(this.tag))) {
           this.target.group.images.forEach(groupImage => ArrayUtils.remove(groupImage.tags, this.tag));
@@ -54,7 +54,7 @@ export class TaggerRowComponent {
   }
 
   protected getTextClass(): string {
-    if (this.tag.isPseudo()) return '';
+    if (this.tag.pseudo) return '';
 
     const classes: string[] = [];
 
