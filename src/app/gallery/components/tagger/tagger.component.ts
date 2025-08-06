@@ -26,7 +26,7 @@ export class TaggerComponent {
 
   @HostBinding('class.visible')
   public get classVisible(): boolean {
-    return this.stateService.tagManagerVisible;
+    return this.stateService.taggerVisible;
   }
 
   protected target: GalleryImage;
@@ -37,7 +37,7 @@ export class TaggerComponent {
     protected stateService: GalleryStateService
   ) {
     effect(() => {
-      this.target = this.stateService.target();
+      this.target = this.stateService.fullscreenImage();
       if (this.target == null) {
         this.groupMode = false;
       }

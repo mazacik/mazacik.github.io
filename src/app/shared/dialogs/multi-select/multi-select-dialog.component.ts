@@ -60,7 +60,7 @@ export class MultiSelectDialogComponent<T> extends DialogContentBase<T[]> implem
   }
 
   protected isAvailable(option: T): boolean {
-    if (this.selection.includes(option)) return false; // TODO maybe also leave option visible in bottom container?
+    // if (this.selection.includes(option)) return false; // TODO maybe also leave option visible in bottom container?
     return this.getText(option).toLocaleLowerCase().includes(this.query.toLocaleLowerCase());
   }
 

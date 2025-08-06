@@ -4,7 +4,9 @@ import { TippyDirective } from '@ngneat/helipopper';
 import { drawer2 } from 'src/app/shared/constants/animations.constants';
 import { ScreenUtils } from 'src/app/shared/utils/screen.utils';
 import { Filter } from '../../models/filter.interface';
+import { FilterService } from '../../services/filter.service';
 import { GalleryStateService } from '../../services/gallery-state.service';
+import { SerializationService } from '../../services/serialization.service';
 import { TagService } from '../../services/tag.service';
 import { FilterRowComponent } from './filter-row/filter-row.component';
 
@@ -25,8 +27,10 @@ export class FilterComponent {
   }
 
   constructor(
+    private serializationService: SerializationService,
     protected tagService: TagService,
-    protected stateService: GalleryStateService,
+    protected filterService: FilterService,
+    protected stateService: GalleryStateService
   ) { }
 
   protected getFilterClass(filter: Filter): string {
@@ -51,17 +55,17 @@ export class FilterComponent {
 
   protected toggleFilter(filter: Filter): void {
     filter.state = filter.state == 0 ? 1 : filter.state == 1 ? -1 : 0;
-    this.stateService.updateFilters();
-    this.stateService.save();
+    this.filterService.updateFilters();
+    this.serializationService.save();
   }
 
   protected clearFilters(): void {
-    this.stateService.tags.forEach(tag => tag.state = 0);
-    this.stateService.updateFilters();
-    this.stateService.save();
+    this.tagService.tags.forEach(tag => tag.state = 0);
+    this.filterService.updateFilters();
+    this.serializationService.save();
   }
 
   protected canClear(): boolean {
-    return this.stateService.tags?.some(tag => tag.state != 0);
+    return this.tagService.tags.some(tag => tag.state != 0);
   }
 }

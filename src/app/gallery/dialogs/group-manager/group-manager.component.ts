@@ -8,7 +8,9 @@ import { DialogService } from 'src/app/shared/services/dialog.service';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 import { GalleryGroup } from '../../models/gallery-group.class';
 import { GalleryImage } from '../../models/gallery-image.class';
+import { FilterService } from '../../services/filter.service';
 import { GalleryStateService } from '../../services/gallery-state.service';
+import { SerializationService } from '../../services/serialization.service';
 
 @Component({
   selector: 'app-group-editor',
@@ -49,6 +51,8 @@ export class GroupManagerComponent extends DialogContentBase<void, {}> implement
   }
 
   constructor(
+    private filterService: FilterService,
+    private serializationService: SerializationService,
     protected stateService: GalleryStateService,
     protected dialogService: DialogService
   ) {
@@ -57,7 +61,7 @@ export class GroupManagerComponent extends DialogContentBase<void, {}> implement
 
   ngOnInit(): void {
     this.stateService.groupEditorGroup = { images: this.inputs.sourceGroup ? [...this.inputs.sourceGroup.images] : [] };
-    this.stateService.updateFilters();
+    this.filterService.updateFilters();
   }
 
   protected removeImage(image: GalleryImage): void {
@@ -67,12 +71,12 @@ export class GroupManagerComponent extends DialogContentBase<void, {}> implement
   private disband(): void {
     const group: GalleryGroup = this.inputs.sourceGroup;
     if (group) {
-      ArrayUtils.remove(this.stateService.groups, group);
+      ArrayUtils.remove(this.stateService.imageGroups, group);
       for (const groupImage of group.images) {
         delete groupImage.group;
       }
 
-      this.stateService.save(true);
+      this.serializationService.save(true);
       this.close();
     }
   }
@@ -86,18 +90,18 @@ export class GroupManagerComponent extends DialogContentBase<void, {}> implement
         sourceGroup.images = [...editorGroup.images];
         sourceGroup.images.forEach(image => image.group = sourceGroup);
       } else {
-        this.stateService.groups.push(editorGroup);
+        this.stateService.imageGroups.push(editorGroup);
         editorGroup.images.forEach(image => image.group = editorGroup);
       }
 
-      this.stateService.save(true);
+      this.serializationService.save(true);
       this.close();
     }
   }
 
   public close(): void {
     this.stateService.groupEditorGroup = null;
-    this.stateService.updateFilters();
+    this.filterService.updateFilters();
     this.resolve();
   }
 

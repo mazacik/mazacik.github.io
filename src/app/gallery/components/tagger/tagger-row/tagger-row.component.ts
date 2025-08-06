@@ -2,14 +2,14 @@ import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { GalleryImage } from 'src/app/gallery/models/gallery-image.class';
 import { Tag } from 'src/app/gallery/models/tag.class';
+import { FilterService } from 'src/app/gallery/services/filter.service';
 import { GalleryStateService } from 'src/app/gallery/services/gallery-state.service';
 import { GalleryService } from 'src/app/gallery/services/gallery.service';
+import { SerializationService } from 'src/app/gallery/services/serialization.service';
 import { TagDragDropService } from 'src/app/gallery/services/tag-drag-drop.service';
-import { TagService } from 'src/app/gallery/services/tag.service';
 import { drawer2 } from 'src/app/shared/constants/animations.constants';
 import { VariableDirective } from 'src/app/shared/directives/variable.directive';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
-import { StringUtils } from 'src/app/shared/utils/string.utils';
 
 @Component({
   selector: 'app-tagger-row',
@@ -28,7 +28,8 @@ export class TaggerRowComponent {
   @Input() groupMode: boolean;
 
   constructor(
-    protected tagService: TagService,
+    private filterService: FilterService,
+    private serializationService: SerializationService,
     protected tagDragDropService: TagDragDropService,
     protected galleryService: GalleryService,
     protected stateService: GalleryStateService
@@ -48,8 +49,8 @@ export class TaggerRowComponent {
         ArrayUtils.toggle(this.target.tags, this.tag);
       }
 
-      this.stateService.save();
-      this.stateService.updateFilters();
+      this.serializationService.save();
+      this.filterService.updateFilters();
     }
   }
 
@@ -121,10 +122,6 @@ export class TaggerRowComponent {
 
   protected getTags(): Tag[] {
     return this.tag.children.filter(t => !t.group);
-  }
-
-  protected encryptSimple(value: string): string {
-    return StringUtils.encryptSimple(value);
   }
 
 }

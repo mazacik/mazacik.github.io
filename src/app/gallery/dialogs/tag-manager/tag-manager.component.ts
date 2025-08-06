@@ -22,7 +22,7 @@ export class TagManagerComponent extends DialogContentBase<void> {
   public override inputs: { tag: Tag };
 
   public configuration: DialogContainerConfiguration = {
-    title: () => 'Tag: ' + this.inputs.tag.getCompleteName(),
+    title: () => 'Tag: ' + this.inputs.tag.getNameWithParents(),
     buttons: [{
       text: () => 'Cancel',
       click: () => this.close()
@@ -68,7 +68,7 @@ export class TagManagerComponent extends DialogContentBase<void> {
 
     const parentPseudoTags: Tag[] = this.tagService.getParentPseudoTags(this.inputs.tag);
     if (parentPseudoTags.length == 0) return null;
-    return `Disabled: Tag is in a pseudo list of '${parentPseudoTags.map(t => t.getCompleteName()).join('; ')}'`;
+    return `Disabled: Tag is in a pseudo list of '${parentPseudoTags.map(t => t.getNameWithParents()).join('; ')}'`;
   }
 
   protected isEditPseudoListDisabled(): boolean {

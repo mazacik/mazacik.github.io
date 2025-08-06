@@ -6,7 +6,9 @@ import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-conte
 import { ApplicationService } from 'src/app/shared/services/application.service';
 import { DialogService } from 'src/app/shared/services/dialog.service';
 import { GallerySettings } from '../../models/gallery-settings.interface';
+import { FilterService } from '../../services/filter.service';
 import { GalleryStateService } from '../../services/gallery-state.service';
+import { SerializationService } from '../../services/serialization.service';
 
 @Component({
   selector: 'app-gallery-settings',
@@ -33,7 +35,9 @@ export class GallerySettingsComponent extends DialogContentBase<boolean> impleme
   private needsDataUpdate: boolean = false;
 
   constructor(
+    private serializationService: SerializationService,
     private dialogService: DialogService,
+    private filterService: FilterService,
     protected applicationService: ApplicationService,
     protected stateService: GalleryStateService
   ) {
@@ -66,8 +70,8 @@ export class GallerySettingsComponent extends DialogContentBase<boolean> impleme
     this.dialogService.createConfirmation({ title: 'Confirmation: Bookmark All Images', messages: ['Are you sure you want to bookmark all images?'] }).then(success => {
       if (success) {
         this.stateService.images.forEach(image => image.bookmark = true);
-        this.stateService.updateFilters();
-        this.stateService.save();
+        this.filterService.updateFilters();
+        this.serializationService.save();
       }
     });
   }
@@ -89,10 +93,10 @@ export class GallerySettingsComponent extends DialogContentBase<boolean> impleme
   public close(): void {
     if (this.stateService.images) {
       if (this.needsFilterRefresh) {
-        this.stateService.updateFilters();
+        this.filterService.updateFilters();
       }
       if (this.needsDataUpdate) {
-        this.stateService.save();
+        this.serializationService.save();
       }
     }
     this.resolve(true);

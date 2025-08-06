@@ -1,10 +1,10 @@
-<ng-container *ngVar="stateService.target() as target">
+<ng-container *ngVar="stateService.fullscreenImage() as target">
   <img style="display: none" [src]="target?.thumbnailLink" (load)="loadingT = false" />
   <img style="display: none" [src]="target?.contentLink" (load)="loadingC = false" />
   <div class="fullscreen-container">
     <div class="sidebar-left">
       <div class="sidebar-start">
-        <i class="icon-button fa-solid fa-arrow-left" tp="Back" tpPlacement="right" (click)="stateService.target.set(null)"></i>
+        <i class="icon-button fa-solid fa-arrow-left" tp="Back" tpPlacement="right" (click)="stateService.fullscreenImage.set(null)"></i>
         <div class="h-separator gap"></div>
         <i class="icon-button fa-solid fa-shuffle" tp="Random Image" tpPlacement="right" (click)="setRandomTarget()"></i>
         <i *ngIf="target?.group" class="icon-button fa-solid fa-arrows-spin" tp="Random Image from Group" tpPlacement="right" (click)="setRandomGroupTarget()"></i>
@@ -24,8 +24,8 @@
             (click)="$event.stopPropagation(); galleryService.openYandexReverseImageSearch($event, target)"></i>
           <div class="h-separator gap"></div>
         </ng-container>
-        <i class="icon-button fa-solid fa-box" tp="Archive" tpPlacement="right" (click)="stateService.delete(target, true)"></i>
-        <i class="icon-button fa-solid fa-trash" tp="Delete" tpPlacement="right" (click)="stateService.delete(target, false)"></i>
+        <i class="icon-button fa-solid fa-box" tp="Archive" tpPlacement="right" (click)="galleryService.delete(target, true)"></i>
+        <i class="icon-button fa-solid fa-trash" tp="Delete" tpPlacement="right" (click)="galleryService.delete(target, false)"></i>
       </div>
     </div>
 
@@ -45,7 +45,7 @@
           </div>
           <div class="stack-container height-auto justify-content-center">
             <div *ngFor="let group of [target.group]" @fade class="group-images-container">
-              <div *ngFor="let groupImage of group.images" class="group-image-container loading" (click)="stateService.target.set(groupImage)" #groupImageContainer>
+              <div *ngFor="let groupImage of group.images" class="group-image-container loading" (click)="stateService.fullscreenImage.set(groupImage)" #groupImageContainer>
                 <img
                   [class.grayscale]="!groupImage.passesFilters"
                   [style.width.px]="120 * groupImage.aspectRatio"
@@ -62,12 +62,12 @@
 
     <div class="sidebar-right">
       <div class="sidebar-start">
-        <i class="icon-button fa-solid fa-times" tp="Close" tpPlacement="left" (click)="stateService.target.set(null)"></i>
+        <i class="icon-button fa-solid fa-times" tp="Close" tpPlacement="left" (click)="stateService.fullscreenImage.set(null)"></i>
         <div class="h-separator gap"></div>
-        <i class="icon-button fa-heart" [ngClass]="target?.heart ? 'fa-solid' : 'fa-regular'" tp="Favorite" tpPlacement="left" (click)="stateService.toggleFavorite(target, true)"></i>
-        <i class="icon-button fa-bookmark" [ngClass]="target?.bookmark ? 'fa-solid' : 'fa-regular'" tp="Bookmark" tpPlacement="left" (click)="stateService.toggleBookmark(target, true)"></i>
-        <div class="drawer-container" [class.drawer-visible]="!stateService.tagManagerVisible">
-          <i class="icon-button fa-solid fa-tags" tp="Open Tag Manager" tpPlacement="left" (click)="stateService.tagManagerVisible = !stateService.tagManagerVisible"></i>
+        <i class="icon-button fa-heart" [ngClass]="target?.heart ? 'fa-solid' : 'fa-regular'" tp="Favorite" tpPlacement="left" (click)="galleryService.toggleFavorite(target)"></i>
+        <i class="icon-button fa-bookmark" [ngClass]="target?.bookmark ? 'fa-solid' : 'fa-regular'" tp="Bookmark" tpPlacement="left" (click)="galleryService.toggleBookmark(target)"></i>
+        <div class="drawer-container" [class.drawer-visible]="!stateService.taggerVisible">
+          <i class="icon-button fa-solid fa-tags" tp="Open Tag Manager" tpPlacement="left" (click)="stateService.taggerVisible = !stateService.taggerVisible"></i>
         </div>
       </div>
       <div class="sidebar-center"></div>
