@@ -12,10 +12,12 @@ import { KeyboardShortcutService } from 'src/app/shared/services/keyboard-shortc
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 import { GoogleFileUtils } from 'src/app/shared/utils/google-file.utils';
 import { ScreenUtils } from 'src/app/shared/utils/screen.utils';
-import { GalleryService } from '../../services/gallery.service';
 import { GalleryImage } from '../../models/gallery-image.class';
+import { FilterService } from '../../services/filter.service';
 import { GalleryGoogleDriveService } from '../../services/gallery-google-drive.service';
 import { GalleryStateService } from '../../services/gallery-state.service';
+import { GalleryService } from '../../services/gallery.service';
+import { TagService } from '../../services/tag.service';
 
 @Component({
   selector: 'app-fullscreen',
@@ -54,10 +56,12 @@ export class FullscreenComponent implements KeyboardShortcutTarget, OnInit, OnDe
     protected googleService: GalleryGoogleDriveService,
     protected stateService: GalleryStateService,
     protected dialogService: DialogService,
-    protected galleryService: GalleryService
+    protected galleryService: GalleryService,
+    protected tagService: TagService,
+    protected filterService: FilterService
   ) {
     effect(() => {
-      const target: GalleryImage = this.stateService.target();
+      const target: GalleryImage = this.stateService.fullscreenImage();
       if (target) {
         if (GoogleFileUtils.isVideo(target)) {
           this.video = true;
@@ -91,10 +95,10 @@ export class FullscreenComponent implements KeyboardShortcutTarget, OnInit, OnDe
   }
 
   processKeyboardShortcut(event: KeyboardEvent): void {
-    if (this.stateService.target()) {
+    if (this.stateService.fullscreenImage()) {
       switch (event.code) {
         case 'Escape':
-          this.stateService.target.set(null);
+          this.stateService.fullscreenImage.set(null);
           break;
         case 'KeyR':
           this.setRandomTarget();
@@ -107,30 +111,31 @@ export class FullscreenComponent implements KeyboardShortcutTarget, OnInit, OnDe
   }
 
   protected setRandomTarget(): void {
-    if (!ArrayUtils.isEmpty(this.stateService.filter())) {
+    const filter: GalleryImage[] = this.filterService.images();
+    if (!ArrayUtils.isEmpty(filter)) {
       let nextTarget: GalleryImage;
-      const currentTarget: GalleryImage = this.stateService.target();
+      const currentTarget: GalleryImage = this.stateService.fullscreenImage();
 
       if (currentTarget) {
         if (currentTarget.group) {
-          nextTarget = ArrayUtils.getRandom(this.stateService.filter(), currentTarget.group.images);
+          nextTarget = ArrayUtils.getRandom(filter, currentTarget.group.images);
         } else {
-          nextTarget = ArrayUtils.getRandom(this.stateService.filter(), [currentTarget]);
+          nextTarget = ArrayUtils.getRandom(filter, [currentTarget]);
         }
       } else {
-        nextTarget = ArrayUtils.getRandom(this.stateService.filter());
+        nextTarget = ArrayUtils.getRandom(filter);
       }
 
       if (nextTarget) {
-        this.stateService.target.set(nextTarget);
+        this.stateService.fullscreenImage.set(nextTarget);
       }
     }
   }
 
   protected setRandomGroupTarget(): void {
-    const target: GalleryImage = this.stateService.target();
+    const target: GalleryImage = this.stateService.fullscreenImage();
     if (target?.group) {
-      this.stateService.target.set(ArrayUtils.getRandom(target.group.images, [target]));
+      this.stateService.fullscreenImage.set(ArrayUtils.getRandom(target.group.images, [target]));
     }
   }
 
@@ -166,11 +171,11 @@ export class FullscreenComponent implements KeyboardShortcutTarget, OnInit, OnDe
   }
 
   protected moveTargetGroupLeft(image: GalleryImage): void {
-    this.stateService.target.set(ArrayUtils.getPrevious(image.group.images.filter(groupImage => groupImage.passesFilters), image, true));
+    this.stateService.fullscreenImage.set(ArrayUtils.getPrevious(image.group.images.filter(groupImage => groupImage.passesFilters), image, true));
   }
 
   protected moveTargetGroupRight(image: GalleryImage): void {
-    this.stateService.target.set(ArrayUtils.getNext(image.group.images.filter(groupImage => groupImage.passesFilters), image, true));
+    this.stateService.fullscreenImage.set(ArrayUtils.getNext(image.group.images.filter(groupImage => groupImage.passesFilters), image, true));
   }
 
 }

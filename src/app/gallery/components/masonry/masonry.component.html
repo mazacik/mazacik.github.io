@@ -2,7 +2,7 @@
 <div class="masonry-scroll-container" (create)="masonryScrollContainer = $event.nativeElement">
   <div class="masonry-container" (create)="masonryContainer = $event.nativeElement; updateLayout()">
     <div
-      *ngFor="let image of masonryImages"
+      *ngFor="let image of filterService.masonryImages()"
       @fade
       class="masonry-brick"
       [style.width.px]="image.masonryWidth"
@@ -12,16 +12,16 @@
       [style.opacity]="image.group && stateService.groupEditorGroup && !stateService.groupEditorGroup.images.includes(image) ? '0.15' : '1'"
       (click)="onImageClick(image)">
       <div class="brick-container">
-        <img #imageElement [src]="image.thumbnailLink" loading="lazy" (create)="bricks[image.id] = $event.nativeElement" (load)="imageElement.style.opacity = '1'" />
+        <img #imageElement [src]="image.thumbnailLink" loading="lazy" (create)="masonryBricks[image.id] = $event.nativeElement" (load)="imageElement.style.opacity = '1'" />
       </div>
       <ng-container *ngIf="areBrickButtonsVisible()">
         <div class="brick-header">
-          <i class="icon-button fa-heart" [ngClass]="image.heart ? 'fa-solid active' : 'fa-regular'" tp="Favorite" (click)="$event.stopPropagation(); stateService.toggleFavorite(image, true)"></i>
+          <i class="icon-button fa-heart" [ngClass]="image.heart ? 'fa-solid active' : 'fa-regular'" tp="Favorite" (click)="$event.stopPropagation(); galleryService.toggleFavorite(image)"></i>
           <i
             class="icon-button fa-bookmark"
             [ngClass]="image.bookmark ? 'fa-solid active' : 'fa-regular'"
             tp="Bookmark"
-            (click)="$event.stopPropagation(); stateService.toggleBookmark(image, true)"></i>
+            (click)="$event.stopPropagation(); galleryService.toggleBookmark(image)"></i>
         </div>
         <div class="brick-footer">
           <i *ngIf="image.group" class="icon-button active fa-solid fa-object-group" tp="Group Manager" (click)="galleryService.openImageGroupEditor(image.group); $event.stopPropagation()"></i>

@@ -1,7 +1,7 @@
 <ng-container *ngIf="tag">
   <div class="flex gap hover-brighten hover-container" style="line-height: 24px" (drop)="tagDragDropService.dragDrop($event, tag)" ondragover="event.preventDefault()">
     <div class="flex gap flex-1 width-100 min-width-0 align-items-center" [class.disabled]="tag.pseudo" [class.cursor-pointer]="!tag.pseudo" (click)="onTagClick()">
-      <i *ngFor="let _ of [].constructor(tag.getDepth())" class="fa-solid fa-angle-down opacity-0"></i>
+      <i *ngFor="let _ of [].constructor(tag.collectParents().length)" class="fa-solid fa-angle-down opacity-0"></i>
 
       @if (tag.group) {
         <i class="fa-solid" [ngClass]="tag.open ? 'fa-angle-down' : 'fa-angle-right'" style="margin-top: 1px"></i>
@@ -19,7 +19,7 @@
         (dragend)="tagDragDropService.dragEnd($event, tag)"
         ondragover="event.preventDefault()">
         <div class="flex pointer-events-none">
-          <span class="ellipsis">{{ stateService.debugDisableMedia ? encryptSimple(tag.name) : tag.name }}</span>
+          <span class="ellipsis">{{ tag.name }}</span>
           <ng-container *ngIf="stateService.settings.showTagCount">
             <ng-container *ngVar="tag.getCount(stateService.images) as count">
               <span *ngIf="count !== null" class="pointer-events-none" style="white-space: pre"> {{ tag.pseudo ? '➝' : '•' }} {{ count }}</span>

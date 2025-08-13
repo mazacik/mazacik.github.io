@@ -6,26 +6,26 @@
     <span class="margins-3-h">Filter Configuration</span>
     <div class="flex gap flex-end-h">
       <ng-container *ngIf="!ScreenUtils.isLargeScreen()">
-        <i class="icon-button fa-heart" [ngClass]="getFilterIconClass(stateService.filterFavorite)" (click)="toggleFilter(stateService.filterFavorite)"></i>
-        <i class="icon-button fa-bookmark" [ngClass]="getFilterIconClass(stateService.filterBookmark)" (click)="toggleFilter(stateService.filterBookmark)"></i>
-        <i class="icon-button fa-object-group" [ngClass]="getFilterIconClass(stateService.filterGroups)" (click)="toggleFilter(stateService.filterGroups)"></i>
+        <i class="icon-button fa-heart" [ngClass]="getFilterIconClass(filterService.filterFavorites)" (click)="toggleFilter(filterService.filterFavorites)"></i>
+        <i class="icon-button fa-bookmark" [ngClass]="getFilterIconClass(filterService.filterBookmarks)" (click)="toggleFilter(filterService.filterBookmarks)"></i>
+        <i class="icon-button fa-object-group" [ngClass]="getFilterIconClass(filterService.filterGroups)" (click)="toggleFilter(filterService.filterGroups)"></i>
       </ng-container>
     </div>
   </div>
   <ng-container *ngIf="ScreenUtils.isLargeScreen()">
     <div class="h-separator margins"></div>
     <div class="flex center gap-3 margins-3-v">
-      <div class="flex center gap cursor-pointer hover-brighten" (click)="toggleFilter(stateService.filterFavorite)">
-        <i class="fa-heart" [ngClass]="getFilterIconClass(stateService.filterFavorite)" style="margin-top: 1px"></i>
-        <span [ngClass]="getFilterClass(stateService.filterFavorite)">Favorites</span>
+      <div class="flex center gap cursor-pointer hover-brighten" (click)="toggleFilter(filterService.filterFavorites)">
+        <i class="fa-heart" [ngClass]="getFilterIconClass(filterService.filterFavorites)" style="margin-top: 1px"></i>
+        <span [ngClass]="getFilterClass(filterService.filterFavorites)">Favorites</span>
       </div>
-      <div class="flex center gap cursor-pointer hover-brighten" (click)="toggleFilter(stateService.filterBookmark)">
-        <i class="fa-bookmark" [ngClass]="getFilterIconClass(stateService.filterBookmark)" style="margin-top: 1px"></i>
-        <span [ngClass]="getFilterClass(stateService.filterBookmark)">Bookmarks</span>
+      <div class="flex center gap cursor-pointer hover-brighten" (click)="toggleFilter(filterService.filterBookmarks)">
+        <i class="fa-bookmark" [ngClass]="getFilterIconClass(filterService.filterBookmarks)" style="margin-top: 1px"></i>
+        <span [ngClass]="getFilterClass(filterService.filterBookmarks)">Bookmarks</span>
       </div>
-      <div class="flex center gap cursor-pointer hover-brighten" (click)="toggleFilter(stateService.filterGroups)">
-        <i class="fa-object-group" [ngClass]="getFilterIconClass(stateService.filterGroups)" style="margin-top: 1px"></i>
-        <span [ngClass]="getFilterClass(stateService.filterGroups)">Groups</span>
+      <div class="flex center gap cursor-pointer hover-brighten" (click)="toggleFilter(filterService.filterGroups)">
+        <i class="fa-object-group" [ngClass]="getFilterIconClass(filterService.filterGroups)" style="margin-top: 1px"></i>
+        <span [ngClass]="getFilterClass(filterService.filterGroups)">Groups</span>
       </div>
     </div>
   </ng-container>

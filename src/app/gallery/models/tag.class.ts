@@ -1,5 +1,4 @@
 import { ArrayUtils } from "src/app/shared/utils/array.utils";
-import { TagUtils } from "src/app/shared/utils/tag.utils";
 import { Filter } from "./filter.interface";
 import { GalleryImage } from "./gallery-image.class";
 
@@ -17,21 +16,13 @@ export class Tag implements Filter {
     return !this.group && this.children.length != 0;
   }
 
-  public getDepth(): number {
-    return this.collectParents().length;
-  }
-
-  public getCompleteName(separator: string = ' / '): string {
+  public getNameWithParents(separator: string = ' / '): string {
     return this.collectParents().concat(this).map(t => t.name).join(separator);
   }
 
   public getCount(images: GalleryImage[]): number {
-    if (this.group) {
-      return null;
-    }
-    if (this.pseudo) {
-      return images.filter(image => ArrayUtils.intersection(image.tags, this.children).length).length;
-    }
+    if (this.group) return null;
+    if (this.pseudo) return images.filter(image => ArrayUtils.intersection(image.tags, this.children).length).length;
     return images.filter(image => image.tags.includes(this)).length;
   }
 
@@ -59,10 +50,6 @@ export class Tag implements Filter {
       }
     }
     return collector;
-  }
-
-  public sortChildren(): void {
-    TagUtils.sort(this.children);
   }
 
 }

@@ -1,34 +1,49 @@
-import { Injectable } from "@angular/core";
+import { Injectable, Injector } from "@angular/core";
 import { nanoid } from "nanoid";
 import { DialogService } from "src/app/shared/services/dialog.service";
 import { ArrayUtils } from "src/app/shared/utils/array.utils";
 import { StringUtils } from "src/app/shared/utils/string.utils";
-import { TagUtils } from "src/app/shared/utils/tag.utils";
 import { Tag } from "../models/tag.class";
+import { FilterService } from "./filter.service";
 import { GalleryStateService } from "./gallery-state.service";
+import { SerializationService } from "./serialization.service";
 
 @Injectable({
   providedIn: 'root',
 })
 export class TagService {
 
+  public readonly tags: Tag[] = [];
+
   constructor(
+    private injector: Injector,
+    private dialogService: DialogService,
     private stateService: GalleryStateService,
-    private dialogService: DialogService
+    private serializationService: SerializationService
   ) { }
 
   public getRootTags(): Tag[] {
-    return this.stateService.tags.filter(tag => !tag.parent);
+    return this.tags.filter(tag => !tag.parent);
   }
 
   public getParentPseudoTags(tag: Tag): Tag[] {
-    return this.stateService.tags.filter(t => t.pseudo && t.children.includes(tag));
+    return this.tags.filter(t => t.pseudo && t.children.includes(tag));
+  }
+
+  public sort(tags: Tag[], useNameWithParents: boolean = false): void {
+    if (tags) {
+      if (useNameWithParents) {
+        tags.sort((t1, t2) => t1.getNameWithParents().localeCompare(t2.getNameWithParents()));
+      } else {
+        tags.sort((t1, t2) => t1.name.localeCompare(t2.name));
+      }
+    }
   }
 
   public async openTagCreate(parent: Tag): Promise<void> {
     if (parent) {
       const name: string = await this.dialogService.createInput({
-        title: 'Create Tag: ' + parent.getCompleteName(),
+        title: 'Create Tag: ' + parent.getNameWithParents(),
         placeholder: 'Name',
         validationFn: value => !parent.children.filter(t => !t.group).map(t => t.name).includes(value)
       });
@@ -43,12 +58,12 @@ export class TagService {
         tag.children = [];
 
         parent.children.push(tag);
-        parent.sortChildren();
+        this.sort(parent.children);
 
-        this.stateService.tags.push(tag);
-        TagUtils.sort(this.stateService.tags);
+        this.tags.push(tag);
+        this.sort(this.tags);
 
-        this.stateService.save();
+        this.serializationService.save();
       }
     }
   }
@@ -56,7 +71,7 @@ export class TagService {
   public async openTagGroupCreate(parent?: Tag): Promise<void> {
     if (parent) {
       const name: string = await this.dialogService.createInput({
-        title: 'Create Tag Group: ' + parent.getCompleteName(),
+        title: 'Create Tag Group: ' + parent.getNameWithParents(),
         placeholder: 'Name',
         validationFn: value => !parent.children.filter(t => t.group).map(t => t.name).includes(value)
       });
@@ -72,18 +87,18 @@ export class TagService {
         tagGroup.open = true;
 
         parent.children.push(tagGroup);
-        parent.sortChildren();
+        this.sort(parent.children);
 
-        this.stateService.tags.push(tagGroup);
-        TagUtils.sort(this.stateService.tags);
+        this.tags.push(tagGroup);
+        this.sort(this.tags);
 
-        this.stateService.save();
+        this.serializationService.save();
       }
     } else {
       const name: string = await this.dialogService.createInput({
         title: 'Create Tag Group: Root',
         placeholder: 'Name',
-        validationFn: value => !this.stateService.tags.filter(t => !t.parent).map(t => t.name).includes(value)
+        validationFn: value => !this.tags.filter(t => !t.parent).map(t => t.name).includes(value)
       });
 
       if (!StringUtils.isEmpty(name)) {
@@ -96,10 +111,10 @@ export class TagService {
         tagGroup.children = [];
         tagGroup.open = true;
 
-        this.stateService.tags.push(tagGroup);
-        TagUtils.sort(this.stateService.tags);
+        this.tags.push(tagGroup);
+        this.sort(this.tags);
 
-        this.stateService.save();
+        this.serializationService.save();
       }
     }
   }
@@ -108,7 +123,7 @@ export class TagService {
     if (tag) {
       if (await this.dialogService.createConfirmation({
         title: 'Confirmation',
-        messages: ['Insert Tag Group between \'' + tag.getCompleteName() + '\' and its parent?']
+        messages: ['Insert Tag Group between \'' + tag.getNameWithParents() + '\' and its parent?']
       })) {
         const tagGroup: Tag = new Tag();
         tagGroup.id = nanoid();
@@ -121,26 +136,26 @@ export class TagService {
 
         ArrayUtils.remove(tag.parent.children, tag);
         ArrayUtils.push(tag.parent.children, tagGroup);
-        tag.parent.sortChildren();
+        this.sort(tag.parent.children);
 
         tag.parent = tagGroup;
 
-        this.stateService.tags.push(tagGroup);
-        this.stateService.save();
+        this.tags.push(tagGroup);
+        this.serializationService.save();
       }
     }
   }
 
   public async openTagRename(tag: Tag): Promise<void> {
     const name: string = await this.dialogService.createInput({
-      title: 'Rename: ' + tag.getCompleteName(),
+      title: 'Rename: ' + tag.getNameWithParents(),
       placeholder: 'Name',
       defaultValue: tag.name,
       validationFn: value => {
         if (tag.parent) {
           return !tag.parent.children.map(t => t.name).includes(value);
         } else {
-          return !this.stateService.tags.filter(t => !t.parent).map(t => t.name).includes(value);
+          return !this.tags.filter(t => !t.parent).map(t => t.name).includes(value);
         }
       }
     });
@@ -148,19 +163,19 @@ export class TagService {
     if (!StringUtils.isEmpty(name)) {
       tag.name = name;
 
-      tag.parent?.sortChildren();
-      TagUtils.sort(this.stateService.tags);
+      this.sort(tag.parent?.children);
+      this.sort(this.tags);
 
-      this.stateService.save();
+      this.serializationService.save();
     }
   }
 
   public async openTagDelete(tag: Tag): Promise<void> {
     let message: string;
     if (tag.group) {
-      message = 'Delete \'' + tag.getCompleteName() + '\' and its descendants?';
+      message = 'Delete \'' + tag.getNameWithParents() + '\' and its descendants?';
     } else {
-      message = 'Delete \'' + tag.getCompleteName() + '\'';
+      message = 'Delete \'' + tag.getNameWithParents() + '\'';
     }
 
     if (await this.dialogService.createConfirmation({
@@ -170,20 +185,20 @@ export class TagService {
       ArrayUtils.remove(tag.parent?.children, tag);
 
       const tags: Tag[] = tag.collectChildren().concat(tag);
-      ArrayUtils.remove(this.stateService.tags, tags);
+      ArrayUtils.remove(this.tags, tags);
 
       for (const image of this.stateService.images) {
         ArrayUtils.remove(image.tags, tags)
       }
 
-      this.stateService.updateFilters();
-      this.stateService.save();
+      this.injector.get(FilterService).updateFilters();
+      this.serializationService.save();
     }
   }
 
   public async openTagParentChange(tag: Tag): Promise<void> {
     const children: Tag[] = tag.collectChildren();
-    const availableParents: Tag[] = this.stateService.tags.filter(t => {
+    const availableParents: Tag[] = this.tags.filter(t => {
       if (!t.group) return false;
       if (t == tag) return false;
       if (t == tag.parent) return false;
@@ -193,54 +208,55 @@ export class TagService {
     });
 
     const parent: Tag = await this.dialogService.createSelect({
-      title: 'Change Parent: ' + tag.getCompleteName(),
+      title: 'Change Parent: ' + tag.getNameWithParents(),
       options: availableParents,
       nullOption: tag.parent ? 'Root' : null,
       defaultValue: tag.parent,
       getText: option => option.getCompleteName()
     });
 
-    this.moveTagToParent(tag, parent);
+    this.changeParent(tag, parent);
   }
 
-  public moveTagToParent(tag: Tag, parent: Tag): void {
+  public changeParent(tag: Tag, parent: Tag): void {
+
     if (tag.group && parent === null) {
       // move group to root
       ArrayUtils.remove(tag.parent?.children, tag);
 
       tag.parent = null;
 
-      this.stateService.updateFilters(...this.stateService.images.filter(image => image.tags.includes(tag)));
-      this.stateService.save();
+      this.injector.get(FilterService).updateFilters(...this.stateService.images.filter(image => image.tags.includes(tag)));
+      this.serializationService.save();
     } else if (parent) {
       ArrayUtils.remove(tag.parent?.children, tag);
 
       tag.parent = parent;
       tag.parent.open = true;
       tag.parent.children.push(tag);
-      tag.parent.sortChildren();
+      this.sort(tag.parent.children);
 
-      this.stateService.updateFilters(...this.stateService.images.filter(image => image.tags.includes(tag)));
-      this.stateService.save();
+      this.injector.get(FilterService).updateFilters(...this.stateService.images.filter(image => image.tags.includes(tag)));
+      this.serializationService.save();
     }
   }
 
   public async editPseudoList(tag: Tag): Promise<void> {
     if (!tag.group) {
-      const options: Tag[] = this.stateService.tags.filter(t => {
+      const options: Tag[] = this.tags.filter(t => {
         if (t == tag) return false;
         if (t.group) return false;
         if (t.pseudo) return false;
         return true;
       });
 
-      TagUtils.sort(options, true);
+      this.sort(options, true);
 
       // TODO ask Gepeto how to reflect inputs with types
       const pseudoSelection: Tag[] = await this.dialogService.createMultiSelect<Tag>({
-        title: 'Edit Pseudo List: ' + tag.getCompleteName(),
+        title: 'Edit Pseudo List: ' + tag.getNameWithParents(),
         options: options,
-        getText: (option: Tag) => option.getCompleteName(),
+        getText: (option: Tag) => option.getNameWithParents(),
         defaultSelection: tag.children,
         disableFn: (option: Tag, selection: Tag[]) => {
           for (const value of selection) {
@@ -266,10 +282,10 @@ export class TagService {
         }
 
         tag.children = pseudoSelection;
-        TagUtils.sort(tag.children, true);
+        this.sort(tag.children, true);
 
-        this.stateService.updateFilters();
-        this.stateService.save();
+        this.injector.get(FilterService).updateFilters();
+        this.serializationService.save();
       }
     }
   }

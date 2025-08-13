@@ -33,7 +33,7 @@ export class TagDragDropService {
     console.log('drop: ' + currentTag.name);
 
     if (currentTag != this.dragStartTag && currentTag.parent != this.dragStartTag) {
-      this.tagService.moveTagToParent(this.dragStartTag, currentTag.group ? currentTag : currentTag.parent);
+      this.tagService.changeParent(this.dragStartTag, currentTag.group ? currentTag : currentTag.parent);
     }
   }
 
