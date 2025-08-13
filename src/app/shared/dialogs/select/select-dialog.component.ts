@@ -16,7 +16,7 @@ import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-conte
 })
 export class SelectDialogComponent<T> extends DialogContentBase<T> implements OnInit {
 
-  public override inputs: { title: string, options: T[], nullOption?: string, defaultValue?: T, getText: (option: T) => string, positiveButtonText?: string };
+  public override inputs: { title: string, options: T[], nullOption?: string, defaultValue?: T, getText?: (option: T) => string, positiveButtonText?: string };
 
   public configuration: DialogContainerConfiguration;
 
@@ -37,8 +37,12 @@ export class SelectDialogComponent<T> extends DialogContentBase<T> implements On
     };
   }
 
+  protected getText(option: T): string {
+    return this.inputs.getText ? this.inputs.getText(option) : option as string;
+  }
+
   protected canSubmit(): boolean {
-    return this.inputs.nullOption != null || this.value != null;
+    return this.value !== undefined;
   }
 
   public override submit(): void {

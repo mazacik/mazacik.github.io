@@ -140,6 +140,13 @@ export abstract class ArrayUtils {
     }
   }
 
+  public static move<T>(array: T[], object: T, index: number): void {
+    if (array && object && Number.isInteger(index)) {
+      this._remove(array, object);
+      array.splice(index, 0, object);
+    }
+  }
+
   public static getPrevious<T>(array: T[], object: T, loop: boolean = false): T {
     if (!this.isEmpty(array)) {
       return array[array.indexOf(object) - 1] || (loop ? array[array.length - 1] : undefined);

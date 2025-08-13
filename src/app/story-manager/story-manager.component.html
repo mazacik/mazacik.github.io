@@ -1,24 +1,79 @@
 <div class="header">
   <div class="header-start">
-    <i class="mobile-only icon-button fa-solid fa-bars" (click)="stateService.sidebarVisible = !stateService.sidebarVisible"></i>
-    <i class="desktop-only icon-button fa-solid" [ngClass]="stateService.sidebarVisible ? 'fa-bullseye' : 'fa-circle-dot'" tp="Focus Mode" (click)="stateService.sidebarVisible = !stateService.sidebarVisible"></i>
-    <!-- <i class="desktop-only icon-button fa-solid fa-book" tp="Story" (click)="adventureService.storyVisible = !adventureService.storyVisible"></i> -->
-    <!-- <i class="desktop-only icon-button fa-solid fa-file-import" tp="Import Data" (click)="import()"></i> -->
-    <!-- <i class="desktop-only icon-button fa-solid fa-file-export" tp="Export Data" (click)="export()"></i> -->
+    <ng-container *ngIf="stateService.currentStory">
+      <i class="icon-button fa-solid fa-arrow-left" (click)="navigationBack()"></i>
+    </ng-container>
   </div>
   <div class="header-center">
-    <input class="desktop-only countdown-input" #countdownInput [class.user-select-none]="countdownInput.readOnly" (click)="onCountdownInputClick(countdownInput)" (input)="onCountdownInputChange(countdownInput)" (keypress)="onCountdownInputSubmit($event, countdownInput)" (focus)="countdownInput.select()" placeholder="Countdown" />
+    <span>{{ getNavigationText() }}</span>
   </div>
   <div class="header-end">
+    <input
+      class="desktop-only countdown-input"
+      #countdownInput
+      [class.user-select-none]="countdownInput.readOnly"
+      (click)="onCountdownInputClick(countdownInput)"
+      (input)="onCountdownInputChange(countdownInput)"
+      (keypress)="onCountdownInputSubmit($event, countdownInput)"
+      (focus)="countdownInput.select()"
+      placeholder="Timer" />
     <i class="icon-button fa-solid" [ngClass]="applicationService.isDarkTheme() ? 'fa-moon' : 'fa-sun'" tp="Toggle Brightness Mode" (click)="applicationService.toggleTheme()"></i>
   </div>
 </div>
+<div *ngIf="stateService.currentStory" class="tags">
+  <input #tagInput (keypress)="onTagsInputSubmit($event, tagInput)" (focus)="tagInput.select()" placeholder="Add Tag" />
+</div>
 <div class="content">
-  <!-- Editor/Browser -->
-  <app-sidebar [class.display-none]="!stateService.sidebarVisible"></app-sidebar>
-  <div class="v-separator desktop-only" [class.mobile-only]="!stateService.sidebarVisible"></div>
-  <div class="modules" [class.desktop-only]="stateService.sidebarVisible">
-    <!-- Note Editor -->
-    <app-note-editor></app-note-editor>
-  </div>
+  @if (stateService.currentStory) {
+    @if (stateService.currentStory.currentNote) {
+      <!-- Note Editor -->
+      <div class="y-scrollbar-container">
+        <textarea class="note-content" spellcheck="false" placeholder="Text" [(ngModel)]="stateService.currentStory.currentNote.text" (ngModelChange)="onNoteTextChange()"></textarea>
+      </div>
+    } @else {
+      <!-- Note Browser -->
+      <div class="blocks-container">
+        <div class="block" (click)="createNote()">
+          <i class="fa-solid fa-plus"></i>
+        </div>
+        <div
+          *ngFor="let note of stateService.currentStory.notes"
+          class="block hover-container"
+          draggable="true"
+          (dragstart)="onDragStart(stateService.currentStory.notes, note)"
+          (dragenter)="onDragEnter(note)"
+          ondragover="event.preventDefault()"
+          (drop)="onDragDrop()"
+          (dragend)="onDragEnd()"
+          (click)="stateService.currentStory.currentNote = note">
+          <i class="icon-button-small icon-button-no-hover block-type fa-solid fa-file"></i>
+          <i class="icon-button-small block-edit hover-visible fa-solid fa-ellipsis-vertical" (click)="openNoteOptions($event, note)"></i>
+          <span class="block-title ellipsis">{{ note.title }}</span>
+          <span class="block-word-count">{{ note.wordCount }} words</span>
+        </div>
+      </div>
+    }
+  } @else {
+    <!-- Story Browser -->
+    <div class="blocks-container">
+      <div class="block" (click)="createStory()">
+        <i class="fa-solid fa-plus"></i>
+      </div>
+      <div
+        *ngFor="let story of stateService.stories"
+        class="block hover-container"
+        draggable="true"
+        (dragstart)="onDragStart(stateService.stories, story)"
+        (dragenter)="onDragEnter(story)"
+        ondragover="event.preventDefault()"
+        (drop)="onDragDrop()"
+        (dragend)="onDragEnd()"
+        (click)="stateService.currentStory = story">
+        <i class="icon-button-small icon-button-no-hover block-type fa-solid fa-folder"></i>
+        <i class="icon-button-small block-edit hover-visible fa-solid fa-ellipsis-vertical" (click)="openStoryOptions($event, story)"></i>
+        <span class="block-title ellipsis">{{ story.title }}</span>
+        <span *ngIf="story.status" class="block-word-count">{{ story.status }}</span>
+      </div>
+    </div>
+  }
 </div>

@@ -6,3 +6,7 @@ $sidebar-width: 300px;
 $gallery-tile-size: 220px;
 
 $transition-duration: 500ms;
+$transition-duration-fast: $transition-duration * 0.5;
+$transition-duration-fastest: $transition-duration * 0.25;
+$transition-duration-slow: $transition-duration * 2;
+$transition-duration-slowest: $transition-duration * 4;

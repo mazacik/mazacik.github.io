@@ -7,7 +7,7 @@ export class ApplicationService {
 
   private darkTheme: boolean = true;
 
-  public loading: WritableSignal<boolean> = signal(undefined);
+  public loading: WritableSignal<boolean> = signal(true);
   public changes: WritableSignal<boolean> = signal(undefined);
   public errors: WritableSignal<boolean> = signal(undefined);
 

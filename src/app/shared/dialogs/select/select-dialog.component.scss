@@ -3,4 +3,8 @@
 :host {
   display: block;
   padding: $gap;
+
+  select {
+    width: 100%;
+  }
 }

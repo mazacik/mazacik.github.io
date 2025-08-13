@@ -7,17 +7,22 @@
   flex-direction: column;
 
   .header {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     padding: $gap;
     gap: $gap;
     border-bottom: 1px solid var(--color-border);
-    justify-content: space-between;
 
     .header-start,
     .header-center,
     .header-end {
       display: flex;
       gap: $gap;
+      align-items: center;
+    }
+
+    .header-end {
+      justify-content: end;
     }
 
     .countdown-input {
@@ -33,53 +38,81 @@
     }
   }
 
+  .tags {
+    padding: 1rem 0 0 1rem;
+
+    input {
+      min-height: 0;
+      border: none;
+      caret-color: var(--color-text);
+      font-variant-numeric: tabular-nums;
+      user-select: none;
+    }
+  }
+
   .content {
     flex: 1;
     display: flex;
-    overflow-y: auto;
-    overflow-x: hidden;
+    padding: 1rem;
 
-    .modules {
-      flex: 3;
-      width: 0;
+    .blocks-container {
+      flex: 1;
+      height: fit-content;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+
+    .block {
+      align-content: center;
+      position: relative;
+      overflow: hidden;
+      padding: 2rem;
+      border: 1px solid var(--color-border);
+      border-radius: $gap;
+      text-align: center;
+      cursor: pointer;
+      transition-property: background-color;
+      transition-duration: $transition-duration-fast;
+
+      &:hover {
+        background-color: var(--color-background-hover);
+      }
+
+      .block-type {
+        position: absolute;
+        top: 0;
+        left: 0;
+        margin: $gap * 0.5;
+      }
+
+      .block-edit {
+        position: absolute;
+        top: 0;
+        right: 0;
+        margin: $gap * 0.5;
+      }
+
+      .block-title {
+        display: block;
+      }
+
+      .block-word-count {
+        font-size: xx-small;
+      }
+    }
+
+    .y-scrollbar-container {
+      flex: 1;
       display: flex;
-      transition-property: flex;
-      transition-duration: $transition-duration;
 
-      .adventure-container {
+      .note-content {
         flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        margin: $gap * 2;
-        gap: $gap * 2;
-        user-select: none;
-        height: -webkit-fill-available;
-
-        .story-container {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: flex-end;
-          flex: 1;
-        }
-
-        .node-container {
-          gap: $gap * 2;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          height: 33%;
-
-          transition-property: opacity;
-          transition-duration: $transition-duration;
-
-          .node-buttons-container {
-            display: flex;
-            gap: $gap;
-          }
-        }
+        resize: none;
+        border: none;
+        line-height: 1.5rem;
+        padding: ($gap * 0.5) $gap;
+        overflow-wrap: normal;
       }
     }
   }

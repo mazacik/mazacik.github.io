@@ -549,7 +549,7 @@ hr {
     transition-property: border-color, background-color;
     transition-duration: $transition-duration * 0.5;
 
-    &:hover {
+    &:not(.icon-button-no-hover):hover {
       border-color: rgba(0, 0, 0, 0.3);
       background-color: rgba(255, 255, 255, 0.3) !important;
     }

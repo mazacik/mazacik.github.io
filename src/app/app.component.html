@@ -1,4 +1,4 @@
-<div *ngIf="isBlurOverlayVisible()" @fade class="overlay-blur"></div>
 <div class="overlay-loading-bar" [style.backgroundColor]="getLoadingBarColor()"></div>
+<div *ngIf="applicationService.loading()" @fade class="overlay-blur"></div>
 <span *ngIf="applicationService.loading()" @fade class="loading-spinner"></span>
 <router-outlet></router-outlet>

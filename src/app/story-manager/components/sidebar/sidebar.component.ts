@@ -12,7 +12,7 @@ import { Note } from '../../models/note.interface';
 import { Story } from '../../models/story.interface';
 import { StoryManagerGoogleDriveService } from '../../services/story-manager-google-drive.service';
 import { StoryManagerStateService } from '../../services/story-manager-state.service';
-import { NoteTagManagerComponent } from '../notes/note-tag-manager/note-tag-manager.component';
+import { NoteTagManagerComponent } from '../note-tag-manager/note-tag-manager.component';
 
 @Component({
   selector: 'app-sidebar',
@@ -43,21 +43,6 @@ export class SidebarComponent implements OnInit {
 
   }
 
-  setCurrentNote(note: Note): void {
-    this.setCurrentStory(note.parent);
-    this.stateService.currentNote = note;
-    if (!ScreenUtils.isLargeScreen()) {
-      this.stateService.sidebarVisible = false;
-    }
-  }
-
-  setCurrentStory(story: Story, alsoNote: boolean = false): void {
-    this.stateService.currentStory = story;
-    if (alsoNote && !ArrayUtils.isEmpty(story.notes)) {
-      this.stateService.currentNote = story.notes[0];
-    }
-  }
-
   createStory(): void {
     this.dialogService.createInput({ title: 'Create Story', placeholder: 'Story Title' }).then(title => {
       if (title) {
@@ -80,7 +65,7 @@ export class SidebarComponent implements OnInit {
     this.dialogService.createConfirmation({ title: 'Delete Story', messages: ['Are you sure you want to delete "' + story.title + '"?'] }).then(result => {
       if (result) {
         if (story == this.stateService.currentStory) {
-          this.setCurrentStory(ArrayUtils.nearestRightFirst(this.stateService.stories, this.stateService.stories.indexOf(story)));
+          this.stateService.currentStory = ArrayUtils.nearestRightFirst(this.stateService.stories, this.stateService.stories.indexOf(story));
         }
 
         ArrayUtils.remove(this.stateService.stories, story);
@@ -106,10 +91,10 @@ export class SidebarComponent implements OnInit {
   createNote(story: Story): void {
     this.dialogService.createInput({ title: 'Create Note', placeholder: 'Note Title' }).then(title => {
       if (title) {
-        const note: Note = { title: title, text: '', tags: [], wordCount: 0, parent: story };
+        const note: Note = { title: title, text: '', tags: [], wordCount: 0 };
         story.notes.push(note);
-        this.stateService.currentNote = note;
         this.stateService.currentStory = story;
+        story.currentNote = note;
         this.googleService.update(true);
       }
     });
@@ -128,7 +113,7 @@ export class SidebarComponent implements OnInit {
     const notes: Note[] = story.notes;
     this.dialogService.createConfirmation({ title: 'Delete Note', messages: ['Are you sure you want to delete "' + note.title + '"?'] }).then(result => {
       if (result) {
-        if (note == this.stateService.currentNote) this.stateService.currentNote = null;
+        if (note == story.currentNote) story.currentNote = null;
         ArrayUtils.remove(notes, note);
         this.googleService.update(true);
       }

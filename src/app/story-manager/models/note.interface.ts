@@ -1,5 +1,3 @@
-import { Story } from "./story.interface";
-
 export interface Note {
 
   title: string;
@@ -7,7 +5,6 @@ export interface Note {
   tags: string[];
 
   // transient
-  parent: Story;
   wordCount: number;
 
 }

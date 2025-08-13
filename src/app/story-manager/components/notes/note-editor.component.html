@@ -1,8 +1,0 @@
-<ng-container *ngIf="stateService.currentNote">
-  <div class="note-header" [class.focus-mode]="!stateService.sidebarVisible">
-    <span class="note-title">{{ stateService.currentNote.parent.title }} / {{ stateService.currentNote.title }}</span>
-  </div>
-  <div class="y-scrollbar-container">
-    <textarea class="note-content" [class.focus-mode]="!stateService.sidebarVisible" spellcheck="false" placeholder="Text" [(ngModel)]="stateService.currentNote.text" (ngModelChange)="onChange()"></textarea>
-  </div>
-</ng-container>
