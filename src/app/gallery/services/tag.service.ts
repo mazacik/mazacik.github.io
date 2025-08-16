@@ -6,7 +6,7 @@ import { StringUtils } from "src/app/shared/utils/string.utils";
 import { Tag } from "../models/tag.class";
 import { FilterService } from "./filter.service";
 import { GalleryStateService } from "./gallery-state.service";
-import { SerializationService } from "./serialization.service";
+import { GallerySerializationService } from "./gallery-serialization.service";
 
 @Injectable({
   providedIn: 'root',
@@ -19,7 +19,7 @@ export class TagService {
     private injector: Injector,
     private dialogService: DialogService,
     private stateService: GalleryStateService,
-    private serializationService: SerializationService
+    private serializationService: GallerySerializationService
   ) { }
 
   public getRootTags(): Tag[] {

@@ -7,7 +7,7 @@ import { FullscreenComponent } from './components/fullscreen/fullscreen.componen
 import { MasonryComponent } from './components/masonry/masonry.component';
 import { TaggerComponent } from './components/tagger/tagger.component';
 import { GalleryStateService } from './services/gallery-state.service';
-import { SerializationService } from './services/serialization.service';
+import { GallerySerializationService } from './services/gallery-serialization.service';
 
 @Component({
   selector: 'app-gallery',
@@ -28,7 +28,7 @@ export class GalleryComponent implements OnInit {
   protected loading: boolean = true;
 
   constructor(
-    private serializationService: SerializationService,
+    private serializationService: GallerySerializationService,
     private applicationService: ApplicationService,
     protected stateService: GalleryStateService
   ) {

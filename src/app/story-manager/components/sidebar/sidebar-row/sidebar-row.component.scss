@@ -1,0 +1,18 @@
+@import 'src/styles/variables.scss';
+
+:host {
+  .article-container {
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    line-height: $button-height-small;
+
+    &:hover {
+      background-color: var(--color-background-hover);
+    }
+
+    .article-buttons {
+      text-align: end;
+    }
+  }
+}

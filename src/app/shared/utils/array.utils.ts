@@ -31,7 +31,7 @@ export abstract class ArrayUtils {
   }
 
   public static remove<T>(where: T[], what: T | T[], getKey?: (t: T) => any): boolean {
-    if (!this.isEmpty(where) && what) {
+    if (!this.isEmpty(where) && what !== undefined) {
       const length: number = where.length;
 
       if (Array.isArray(what)) {

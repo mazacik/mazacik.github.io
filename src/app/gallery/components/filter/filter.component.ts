@@ -6,7 +6,7 @@ import { ScreenUtils } from 'src/app/shared/utils/screen.utils';
 import { Filter } from '../../models/filter.interface';
 import { FilterService } from '../../services/filter.service';
 import { GalleryStateService } from '../../services/gallery-state.service';
-import { SerializationService } from '../../services/serialization.service';
+import { GallerySerializationService } from '../../services/gallery-serialization.service';
 import { TagService } from '../../services/tag.service';
 import { FilterRowComponent } from './filter-row/filter-row.component';
 
@@ -27,7 +27,7 @@ export class FilterComponent {
   }
 
   constructor(
-    private serializationService: SerializationService,
+    private serializationService: GallerySerializationService,
     protected tagService: TagService,
     protected filterService: FilterService,
     protected stateService: GalleryStateService

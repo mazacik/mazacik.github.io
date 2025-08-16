@@ -1,8 +1,7 @@
-import { Story } from "./story.interface";
+import { SerializableArticle } from "./serializable-article.interface";
 
 export interface Data {
 
-  stories: Story[];
-  tags: string[];
+  articles: SerializableArticle[];
 
 }

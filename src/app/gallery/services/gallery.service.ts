@@ -12,7 +12,7 @@ import { Tag } from "../models/tag.class";
 import { FilterService } from "./filter.service";
 import { GalleryGoogleDriveService } from "./gallery-google-drive.service";
 import { GalleryStateService } from "./gallery-state.service";
-import { SerializationService } from "./serialization.service";
+import { GallerySerializationService } from "./gallery-serialization.service";
 
 @Injectable({
   providedIn: 'root',
@@ -20,7 +20,7 @@ import { SerializationService } from "./serialization.service";
 export class GalleryService {
 
   public constructor(
-    private serializationService: SerializationService,
+    private serializationService: GallerySerializationService,
     private dialogService: DialogService,
     private tippyService: TippyService,
     private filterService: FilterService,

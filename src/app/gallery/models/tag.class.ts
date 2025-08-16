@@ -16,7 +16,7 @@ export class Tag implements Filter {
     return !this.group && this.children.length != 0;
   }
 
-  public getNameWithParents(separator: string = ' / '): string {
+  public getNameWithParents(separator: string = ' | '): string {
     return this.collectParents().concat(this).map(t => t.name).join(separator);
   }
 

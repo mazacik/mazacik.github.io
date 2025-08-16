@@ -16,16 +16,16 @@ bootstrapApplication(AppComponent, {
     provideAnimations(),
     provideRouter(routes, withRouterConfig({ paramsInheritanceStrategy: 'always' })),
     provideHttpClient(withFetch(), withInterceptors([GoogleDriveInterceptor])),
-    importProvidersFrom(provideFirebaseApp(() => initializeApp({
-      apiKey: "AIzaSyDOAks7IYxZn0CfhQfDYp06r5rP9B-4Jc8",
-      authDomain: "mazacik-69cda.firebaseapp.com",
-      projectId: "mazacik-69cda",
-      storageBucket: "mazacik-69cda.appspot.com",
-      messagingSenderId: "43148772573",
-      appId: "1:43148772573:web:86c8a9749dd20d99260734"
-    }))),
-    importProvidersFrom(provideFirestore(() => getFirestore())),
-    importProvidersFrom(provideAuth(() => getAuth())),
+    // importProvidersFrom(provideFirebaseApp(() => initializeApp({
+    //   apiKey: "AIzaSyDOAks7IYxZn0CfhQfDYp06r5rP9B-4Jc8",
+    //   authDomain: "mazacik-69cda.firebaseapp.com",
+    //   projectId: "mazacik-69cda",
+    //   storageBucket: "mazacik-69cda.appspot.com",
+    //   messagingSenderId: "43148772573",
+    //   appId: "1:43148772573:web:86c8a9749dd20d99260734"
+    // }))),
+    // importProvidersFrom(provideFirestore(() => getFirestore())),
+    // importProvidersFrom(provideAuth(() => getAuth())),
     provideTippyConfig({
       defaultVariation: 'tooltip',
       variations: {

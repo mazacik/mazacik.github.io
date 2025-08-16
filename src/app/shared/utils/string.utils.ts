@@ -15,7 +15,7 @@ export abstract class StringUtils {
   }
 
   public static isEmpty(input: string): boolean {
-    return !input || typeof input != 'string' || input.trim().length <= 0;
+    return !input || typeof input != 'string' || input.trim().length == 0;
   }
 
   public static getWordCount(input: string): number {

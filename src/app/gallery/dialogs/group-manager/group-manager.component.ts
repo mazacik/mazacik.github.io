@@ -10,7 +10,7 @@ import { GalleryGroup } from '../../models/gallery-group.class';
 import { GalleryImage } from '../../models/gallery-image.class';
 import { FilterService } from '../../services/filter.service';
 import { GalleryStateService } from '../../services/gallery-state.service';
-import { SerializationService } from '../../services/serialization.service';
+import { GallerySerializationService } from '../../services/gallery-serialization.service';
 
 @Component({
   selector: 'app-group-editor',
@@ -52,7 +52,7 @@ export class GroupManagerComponent extends DialogContentBase<void, {}> implement
 
   constructor(
     private filterService: FilterService,
-    private serializationService: SerializationService,
+    private serializationService: GallerySerializationService,
     protected stateService: GalleryStateService,
     protected dialogService: DialogService
   ) {

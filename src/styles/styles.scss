@@ -132,7 +132,7 @@ body.dark-theme {
 
 .fa-regular::before,
 .fa-solid::before {
-  min-width: 16px;
+  min-width: 14px;
   display: inline-block;
   text-align: center;
 }
@@ -237,6 +237,7 @@ body.dark-theme {
 
   &.margins {
     width: calc(100% - 2 * $gap);
+    justify-self: center;
     align-self: center;
   }
 
@@ -488,6 +489,10 @@ hr {
   width: fit-content;
 }
 
+.width-0 {
+  width: 0;
+}
+
 .width-100 {
   width: 100%;
 }
@@ -564,10 +569,10 @@ hr {
 }
 
 .icon-button-small {
-  width: $button-height * 0.66;
-  height: $button-height * 0.66;
-  min-width: $button-height * 0.66;
-  min-height: $button-height * 0.66;
+  width: $button-height-small;
+  height: $button-height-small;
+  min-width: $button-height-small;
+  min-height: $button-height-small;
 }
 
 span.button,
@@ -767,6 +772,7 @@ span.icon-button {
 
 .center {
   align-items: center;
+  align-content: center;
   justify-items: center;
   justify-content: center;
 }

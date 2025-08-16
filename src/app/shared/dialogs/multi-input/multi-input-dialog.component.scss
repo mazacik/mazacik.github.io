@@ -1,0 +1,29 @@
+@import 'src/styles/variables.scss';
+
+:host {
+  width: 650px;
+  padding: $gap;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: $gap;
+
+  .tag {
+    border: 1px solid var(--color-border);
+    border-radius: $gap;
+    padding: 0.2rem $gap;
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+  }
+
+  input {
+    flex: 1;
+    min-width: 220px;
+    min-height: 0;
+    border: none;
+    caret-color: var(--color-text);
+    font-variant-numeric: tabular-nums;
+    user-select: none;
+  }
+}

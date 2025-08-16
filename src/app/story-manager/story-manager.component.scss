@@ -25,25 +25,18 @@
       justify-content: end;
     }
 
+    .navigation-title {
+      display: block;
+    }
+
+    .navigation-description {
+      display: block;
+      font-size: xx-small;
+    }
+
     .countdown-input {
       border: none;
       text-align: center;
-      caret-color: var(--color-text);
-      font-variant-numeric: tabular-nums;
-      user-select: none;
-
-      &.error {
-        color: var(--color-negative);
-      }
-    }
-  }
-
-  .tags {
-    padding: 1rem 0 0 1rem;
-
-    input {
-      min-height: 0;
-      border: none;
       caret-color: var(--color-text);
       font-variant-numeric: tabular-nums;
       user-select: none;
@@ -53,67 +46,14 @@
   .content {
     flex: 1;
     display: flex;
-    padding: 1rem;
 
-    .blocks-container {
+    .note-content {
       flex: 1;
-      height: fit-content;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1rem;
-    }
-
-    .block {
-      align-content: center;
-      position: relative;
-      overflow: hidden;
-      padding: 2rem;
-      border: 1px solid var(--color-border);
-      border-radius: $gap;
-      text-align: center;
-      cursor: pointer;
-      transition-property: background-color;
-      transition-duration: $transition-duration-fast;
-
-      &:hover {
-        background-color: var(--color-background-hover);
-      }
-
-      .block-type {
-        position: absolute;
-        top: 0;
-        left: 0;
-        margin: $gap * 0.5;
-      }
-
-      .block-edit {
-        position: absolute;
-        top: 0;
-        right: 0;
-        margin: $gap * 0.5;
-      }
-
-      .block-title {
-        display: block;
-      }
-
-      .block-word-count {
-        font-size: xx-small;
-      }
-    }
-
-    .y-scrollbar-container {
-      flex: 1;
-      display: flex;
-
-      .note-content {
-        flex: 1;
-        resize: none;
-        border: none;
-        line-height: 1.5rem;
-        padding: ($gap * 0.5) $gap;
-        overflow-wrap: normal;
-      }
+      resize: none;
+      border: none;
+      line-height: 1.5rem;
+      padding: ($gap * 0.5) $gap;
+      overflow-wrap: normal;
     }
   }
 }
