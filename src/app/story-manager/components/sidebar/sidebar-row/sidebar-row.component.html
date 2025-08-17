@@ -1,0 +1,19 @@
+<div class="article-container hover-container">
+  <div class="flex gap flex-1">
+    <i *ngFor="let _ of [].constructor(article.collectParents().length)" class="fa-solid fa-angle-down opacity-0"></i>
+
+    @if (article.children.length) {
+      <i class="icon-button-small fa-solid" [ngClass]="article.open ? 'fa-angle-down' : 'fa-angle-right'" (click)="article.open = !article.open"></i>
+    } @else {
+      <i class="icon-button-small fa-solid opacity-0"></i>
+    }
+
+    <span class="ellipsis flex-1 width-0" [class.highlight]="article == stateService.current" (click)="stateService.current = article">{{ article.title }}</span>
+  </div>
+  <div class="article-buttons hover-visible">
+    <i class="icon-button-small fa-solid fa-ellipsis-vertical" (click)="stateService.options(article)"></i>
+  </div>
+</div>
+<div [@drawer2]="article.open" class="flex column overflow-hidden">
+  <app-sidebar-row *ngFor="let child of article.children" [article]="child"></app-sidebar-row>
+</div>

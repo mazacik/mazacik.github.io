@@ -39,10 +39,6 @@ export class InputDialogComponent extends DialogContentBase<string> implements O
   }
 
   protected canSubmit(): boolean {
-    if (StringUtils.isEmpty(this.value)) {
-      return false;
-    }
-
     if (this.inputs.validationFn && !this.inputs.validationFn(this.value)) {
       return false;
     }

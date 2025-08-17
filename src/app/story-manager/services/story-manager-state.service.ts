@@ -1,60 +1,80 @@
 import { Injectable } from "@angular/core";
+import { nanoid } from 'nanoid';
+import { DialogService } from "src/app/shared/services/dialog.service";
 import { ArrayUtils } from "src/app/shared/utils/array.utils";
 import { StringUtils } from "src/app/shared/utils/string.utils";
-import { Data } from "../models/data.interface";
-import { Note } from "../models/note.interface";
-import { Story } from "../models/story.interface";
+import { ArticleOptionsComponent } from "../components/dialogs/story-options/story-options.component";
+import { Article } from "../models/article.class";
+import { StoryManagerSerializationService } from "./story-manager-serialization.service";
 
 @Injectable({
   providedIn: 'root',
 })
 export class StoryManagerStateService {
 
-  public stories: Story[];
+  public articles: Article[];
 
-  public currentStory: Story;
-  public currentNote: Note;
+  public current: Article;
 
-  public sidebarVisible: boolean = true;
+  constructor(
+    private dialogService: DialogService,
+    private serializationService: StoryManagerSerializationService
+  ) { }
 
-  constructor() { }
-
-  public initialize(data: Data): void {
-    if (data && !ArrayUtils.isEmpty(data.stories)) {
-      this.stories = data.stories;
-      this.currentStory = this.stories[0];
-
-      if (!ArrayUtils.isEmpty(this.currentStory.notes)) {
-        this.currentNote = ArrayUtils.getFirst(this.currentStory.notes);
-      }
-
-      for (const story of this.stories) {
-        for (const note of story.notes) {
-          note.parent = story;
-          note.wordCount = StringUtils.getWordCount(note.text);
-        }
-      }
-    }
-
-    if (!this.stories) this.stories = [];
+  public getRoot(): Article[] {
+    return this.articles?.filter(article => !article.parent);
   }
 
-  public serialize(): Data {
-    return {
-      stories: this.stories.map(story => {
-        return {
-          title: story.title,
-          notes: story.notes.map(note => {
-            return {
-              title: note.title,
-              text: note.text,
-              tags: note.tags
-            } as Note;
-          }),
-          noteTags: story.noteTags
+  public save(instant: boolean = false): void {
+    this.serializationService.save(instant);
+  }
+
+  public create(parent: Article = null): void {
+    this.dialogService.createInput({ title: 'Create Article', placeholder: 'Text' }).then(title => {
+      if (title) {
+        const article: Article = new Article();
+        article.id = nanoid();
+        article.title = title;
+        article.text = '';
+        article.children = [];
+        article.parent = parent;
+        article.open = false;
+
+        if (parent) {
+          parent.children.push(article);
         }
-      })
-    } as Data;
+
+        this.articles.push(article);
+        this.serializationService.save(true);
+      }
+    });
+  }
+
+  public rename(article: Article): void {
+    this.dialogService.createInput({ title: 'Rename: ' + article.getNameWithParents(), placeholder: 'Text', defaultValue: article.title }).then(title => {
+      if (!StringUtils.isEmpty(title)) {
+        article.title = title;
+        this.serializationService.save(true);
+      }
+    });
+  }
+
+  public delete(article: Article): void {
+    this.dialogService.createConfirmation({ title: 'Delete: ' + article.getNameWithParents(), messages: ['Are you sure you want to delete "' + article.title + '"?'] }).then(confirmation => {
+      if (confirmation) {
+        if (article == this.current) {
+          this.current = ArrayUtils.nearestRightFirst(this.articles, this.articles.indexOf(article));
+        }
+
+        ArrayUtils.remove(this.articles, article);
+        ArrayUtils.remove(article.parent.children, article);
+        this.serializationService.save(true);
+      }
+    });
+  }
+
+  public options(article: Article = this.current): void {
+    this.dialogService.create(ArticleOptionsComponent, { article: article });
   }
 
 }

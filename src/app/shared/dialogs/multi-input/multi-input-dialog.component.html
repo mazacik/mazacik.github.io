@@ -1,0 +1,5 @@
+<div *ngFor="let value of values" class="tag">
+  <span>{{ value }}</span>
+  <i class="fa-solid fa-times cursor-pointer hover-brighten" (click)="remove(value)"></i>
+</div>
+<input #tagsInput [(ngModel)]="inputValue" placeholder="Start typing and press enter" (keypress)="onInputKeyPress($event)" (create)="tagsInput.focus()" (focus)="tagsInput.select()" />

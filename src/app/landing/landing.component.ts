@@ -19,7 +19,9 @@ export class LandingComponent implements OnInit {
   constructor(
     private router: Router,
     protected applicationService: ApplicationService
-  ) { }
+  ) {
+    this.applicationService.loading.set(false);
+  }
 
   ngOnInit(): void {
 
@@ -27,6 +29,7 @@ export class LandingComponent implements OnInit {
 
   navigate(value: string): void {
     sessionStorage.setItem('appId', value);
+    this.applicationService.loading.set(true);
     this.router.navigate([value]);
   }
 

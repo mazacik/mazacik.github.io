@@ -31,7 +31,7 @@ export abstract class ArrayUtils {
   }
 
   public static remove<T>(where: T[], what: T | T[], getKey?: (t: T) => any): boolean {
-    if (!this.isEmpty(where) && what) {
+    if (!this.isEmpty(where) && what !== undefined) {
       const length: number = where.length;
 
       if (Array.isArray(what)) {
@@ -137,6 +137,13 @@ export abstract class ArrayUtils {
     if (array && object) {
       this._remove(array, object);
       array.push(object);
+    }
+  }
+
+  public static move<T>(array: T[], object: T, index: number): void {
+    if (array && object && Number.isInteger(index)) {
+      this._remove(array, object);
+      array.splice(index, 0, object);
     }
   }
 

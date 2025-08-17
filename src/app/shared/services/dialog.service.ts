@@ -7,6 +7,7 @@ import { MessageDialogComponent } from '../dialogs/message/message-dialog.compon
 import { MultiSelectDialogComponent } from '../dialogs/multi-select/multi-select-dialog.component';
 import { SelectDialogComponent } from '../dialogs/select/select-dialog.component';
 import { ArrayUtils } from '../utils/array.utils';
+import { MultiInputDialogComponent } from '../dialogs/multi-input/multi-input-dialog.component';
 
 @Injectable({
   providedIn: 'root',
@@ -30,6 +31,10 @@ export class DialogService {
 
   public createInput(inputs: typeof InputDialogComponent.prototype.inputs): Promise<string> {
     return this.create(InputDialogComponent, inputs);
+  }
+
+  public createMultiInput(inputs: typeof MultiInputDialogComponent.prototype.inputs): Promise<string[]> {
+    return this.create(MultiInputDialogComponent, inputs);
   }
 
   public createSelect<T>(inputs: typeof SelectDialogComponent.prototype.inputs): Promise<T> {

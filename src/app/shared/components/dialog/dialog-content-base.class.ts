@@ -10,13 +10,15 @@ export abstract class DialogContentBase<ResultType, InputsType = {}> implements 
   public inputs: InputsType;
 
   processKeyboardShortcut(event: KeyboardEvent): void {
-    switch (event.key) {
-      case 'Enter':
-        this.submit();
-        return;
-      case 'Escape':
-        this.close();
-        return;
+    if ((event.target as HTMLElement).nodeName == 'BODY') {
+      switch (event.key) {
+        case 'Enter':
+          this.submit();
+          return;
+        case 'Escape':
+          this.close();
+          return;
+      }
     }
   }
 

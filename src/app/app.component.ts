@@ -34,10 +34,6 @@ export class AppComponent {
     });
   }
 
-  protected isBlurOverlayVisible(): boolean {
-    return this.applicationService.loading();
-  }
-
   protected getLoadingBarColor(): string {
     if (this.applicationService.changes()) {
       return 'orange';

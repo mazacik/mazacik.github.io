@@ -5,7 +5,7 @@ import { Tag } from 'src/app/gallery/models/tag.class';
 import { FilterService } from 'src/app/gallery/services/filter.service';
 import { GalleryStateService } from 'src/app/gallery/services/gallery-state.service';
 import { GalleryService } from 'src/app/gallery/services/gallery.service';
-import { SerializationService } from 'src/app/gallery/services/serialization.service';
+import { GallerySerializationService } from 'src/app/gallery/services/gallery-serialization.service';
 import { TagDragDropService } from 'src/app/gallery/services/tag-drag-drop.service';
 import { drawer2 } from 'src/app/shared/constants/animations.constants';
 import { VariableDirective } from 'src/app/shared/directives/variable.directive';
@@ -29,7 +29,7 @@ export class TaggerRowComponent {
 
   constructor(
     private filterService: FilterService,
-    private serializationService: SerializationService,
+    private serializationService: GallerySerializationService,
     protected tagDragDropService: TagDragDropService,
     protected galleryService: GalleryService,
     protected stateService: GalleryStateService

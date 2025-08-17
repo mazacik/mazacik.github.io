@@ -1,6 +1,7 @@
 import { AfterViewInit, Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthenticationService } from '../shared/services/authentication.serivce';
+import { ApplicationService } from '../shared/services/application.service';
 
 @Component({
   selector: 'app-login',
@@ -12,8 +13,11 @@ export class LoginComponent implements AfterViewInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private authenticationService: AuthenticationService
-  ) { }
+    private authenticationService: AuthenticationService,
+    applicationService: ApplicationService
+  ) { 
+    applicationService.loading.set(false);
+  }
 
   ngAfterViewInit(): void {
     this.route.queryParams.subscribe(params => {

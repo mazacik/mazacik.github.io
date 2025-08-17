@@ -1,20 +1,19 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { TippyDirective } from '@ngneat/helipopper';
 import { ApplicationService } from '../shared/services/application.service';
-import { StoryManagerGoogleDriveService } from './services/story-manager-google-drive.service';
-import { StoryManagerStateService } from './services/story-manager-state.service';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
-import { NoteEditorComponent } from './components/notes/note-editor.component';
+import { StoryManagerStateService } from './services/story-manager-state.service';
 
 @Component({
   selector: 'app-story-manager',
   standalone: true,
   imports: [
     CommonModule,
-    SidebarComponent,
-    NoteEditorComponent,
-    TippyDirective
+    FormsModule,
+    TippyDirective,
+    SidebarComponent
   ],
   templateUrl: './story-manager.component.html',
   styleUrls: ['./story-manager.component.scss']
@@ -25,41 +24,21 @@ export class StoryManagerComponent implements OnInit {
   private countdown = { hours: 0, minutes: 0, seconds: 0 };
   private countdownInterval: NodeJS.Timeout;
 
-  protected focusMode: boolean = false;
-
   constructor(
-    public googleService: StoryManagerGoogleDriveService,
     protected applicationService: ApplicationService,
     protected stateService: StoryManagerStateService
-  ) {
-    this.applicationService.loading.set(true);
-  }
+  ) { }
 
   ngOnInit(): void {
-    this.googleService.request().then(data => {
-      if (data) {
-        this.stateService.initialize(data);
-        this.applicationService.loading.set(false);
-      }
-    });
-  }
 
-  protected import(): void {
-    navigator.clipboard.readText().then(text => this.stateService.initialize(JSON.parse(text)));
-  }
-
-  protected export(): void {
-    const jsonData: string = JSON.stringify(this.stateService.serialize());
-    navigator.clipboard.writeText(jsonData);
-    console.log(jsonData);
   }
 
   protected onCountdownInputChange(element: HTMLInputElement): void {
     const value: string = element.value.replace(/\W/g, '');
     if (value.match(this.countdownInputRegex)) {
-      element.classList.remove('error');
+      element.classList.remove('negative');
     } else {
-      element.classList.add('error');
+      element.classList.add('negative');
     }
   }
 

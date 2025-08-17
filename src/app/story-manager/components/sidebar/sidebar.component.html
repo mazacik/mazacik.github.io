@@ -1,44 +1,16 @@
-<input class="desktop-only search-input" #searchInput (input)="onSearchInputChange(searchInput)" (focus)="searchInput.select()" placeholder="Search" />
-<div class="h-separator margins"></div>
-<div class="content-container y-scrollbar-container">
-  <div *ngFor="let story of stateService.stories" class="story-container">
-    <div class="story-label-container" (click)="setCurrentStory(story, true)" [dragdrop]="story" [dragdropParent]="stateService.stories" (dragend)="googleService.update()">
-      <span class="story-label" [class.highlight]="story == stateService.currentNote?.parent" [class.negative]="searchStories.includes(story)">{{ story.title }}</span>
-      <div class="story-info">
-        <span class="story-notes-word-count">{{ getNotesWordCount(story) }}</span>
-        <div class="story-buttons">
-          <i class="icon-button fa-solid fa-pen-to-square" tp="Rename" (click)="renameStory(story); $event.stopPropagation();"></i>
-          <i class="icon-button fa-solid fa-times" tp="Delete" (click)="deleteStory(story); $event.stopPropagation();"></i>
-        </div>
-      </div>
-    </div>
-    <div *ngIf="story == stateService.currentStory" @drawer class="notes-container">
-      <div *ngFor="let note of story.notes" class="note-container" (click)="setCurrentNote(note)" [dragdrop]="note" [dragdropParent]="story.notes" (dragend)="googleService.update()">
-        <div class="note-title-container">
-          <span class="note-title" [class.highlight]="note == stateService.currentNote" [class.negative]="searchNotes.includes(note)">{{ note.title }}</span>
-          <div class="note-tag-container">
-            <ng-container *ngFor="let tag of note.tags; let i = index;">
-              <div *ngIf="i != 0" class="v-separator"></div>
-              <span style="text-wrap: nowrap;">{{ tag }}</span>
-            </ng-container>
-          </div>
-        </div>
-        <div class="note-info-container stack-container">
-          <span class="note-word-count">{{ note.wordCount }}</span>
-          <div class="note-buttons">
-            <i class="icon-button fa-solid fa-tag" tp="Tags" (click)="editTags(note); $event.stopPropagation();"></i>
-            <i class="icon-button fa-solid fa-pen-to-square" tp="Rename" (click)="renameNote(note); $event.stopPropagation();"></i>
-            <i class="icon-button fa-solid fa-times" tp="Delete" (click)="deleteNote(story, note); $event.stopPropagation();"></i>
-          </div>
-        </div>
-      </div>
-      <div class="flex center gap">
-        <i class="icon-button fa-solid fa-plus" style="align-self: center;" tp="Create Note" (click)="createNote(story); $event.stopPropagation();"></i>
-      </div>
-    </div>
+<div class="desktop-only">
+  <input class="search-input" #searchInput (input)="onSearchInputChange(searchInput)" (focus)="searchInput.select()" placeholder="Search" />
+  <div class="h-separator"></div>
+</div>
+<div class="flex column y-scrollbar-container">
+  <div class="flex column">
+    <ng-container *ngFor="let article of stateService.getRoot(); let i = index">
+      <div *ngIf="i != 0" class="h-separator subtle"></div>
+      <app-sidebar-row [article]="article"></app-sidebar-row>
+    </ng-container>
   </div>
 </div>
-<div class="h-separator margins"></div>
+<div class="h-separator"></div>
 <div class="button-container">
-  <i class="icon-button fa-solid fa-plus" tp="Create Story" (click)="createStory()"></i>
+  <i class="icon-button-small fa-solid fa-plus" tp="Create Story" (click)="stateService.create()"></i>
 </div>

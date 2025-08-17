@@ -8,7 +8,7 @@ import { DialogService } from 'src/app/shared/services/dialog.service';
 import { GallerySettings } from '../../models/gallery-settings.interface';
 import { FilterService } from '../../services/filter.service';
 import { GalleryStateService } from '../../services/gallery-state.service';
-import { SerializationService } from '../../services/serialization.service';
+import { GallerySerializationService } from '../../services/gallery-serialization.service';
 
 @Component({
   selector: 'app-gallery-settings',
@@ -35,7 +35,7 @@ export class GallerySettingsComponent extends DialogContentBase<boolean> impleme
   private needsDataUpdate: boolean = false;
 
   constructor(
-    private serializationService: SerializationService,
+    private serializationService: GallerySerializationService,
     private dialogService: DialogService,
     private filterService: FilterService,
     protected applicationService: ApplicationService,
