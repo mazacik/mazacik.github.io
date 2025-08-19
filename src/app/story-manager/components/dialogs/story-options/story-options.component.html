@@ -1,2 +1,8 @@
 <div class="button action-button" (click)="rename()">Rename</div>
+
+@if (inputs.article.folder) {
+  <div class="button action-button" (click)="create(false)">Create Note</div>
+  <div class="button action-button" (click)="create(true)">Create Folder</div>
+}
+
 <div class="button action-button" (click)="delete()">Delete</div>

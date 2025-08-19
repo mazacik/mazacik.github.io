@@ -42,6 +42,7 @@ export class StoryManagerSerializationService {
     sa.title = article.title;
     sa.text = article.text;
     sa.childIds = article.children.map(c => c.id);
+    sa.folder = article.folder;
     return sa;
   }
 
@@ -49,17 +50,18 @@ export class StoryManagerSerializationService {
     const data: Data = await this.googleService.request();
 
     const stateService: StoryManagerStateService = this.injector.get(StoryManagerStateService);
-    stateService.articles = data.articles.map(article => this.parseArticle(article));
+    stateService.articles = data.articles.map(sa => this.parseArticle(sa));
     stateService.articles.forEach(a1 => a1.children = data.articles.find(a2 => a2.id == a1.id).childIds.map(cid => stateService.articles.find(a3 => a3.id == cid)));
     stateService.articles.forEach(a1 => a1.parent = stateService.articles.find(a2 => a2.children.includes(a1)));
   }
 
-  private parseArticle(input: SerializableArticle): Article {
+  private parseArticle(sa: SerializableArticle): Article {
     const article: Article = new Article();
-    article.id = input.id || nanoid();
-    article.title = input.title;
-    article.text = input.text;
+    article.id = sa.id || nanoid();
+    article.title = sa.title;
+    article.text = sa.text;
     article.open = false;
+    article.folder = sa.folder;
     return article;
   }
 

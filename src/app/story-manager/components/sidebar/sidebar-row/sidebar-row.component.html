@@ -2,13 +2,13 @@
   <div class="flex gap flex-1">
     <i *ngFor="let _ of [].constructor(article.collectParents().length)" class="fa-solid fa-angle-down opacity-0"></i>
 
-    @if (article.children.length) {
+    @if (article.folder) {
       <i class="icon-button-small fa-solid" [ngClass]="article.open ? 'fa-angle-down' : 'fa-angle-right'" (click)="article.open = !article.open"></i>
     } @else {
       <i class="icon-button-small fa-solid opacity-0"></i>
     }
 
-    <span class="ellipsis flex-1 width-0" [class.highlight]="article == stateService.current" (click)="stateService.current = article">{{ article.title }}</span>
+    <span class="ellipsis flex-1 width-0" [class.highlight]="isHighlight()" (click)="onClick()">{{ article.title }}</span>
   </div>
   <div class="article-buttons hover-visible">
     <i class="icon-button-small fa-solid fa-ellipsis-vertical" (click)="stateService.options(article)"></i>

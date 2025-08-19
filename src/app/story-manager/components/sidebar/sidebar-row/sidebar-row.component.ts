@@ -30,9 +30,16 @@ export class SidebarRowComponent implements OnInit {
 
   }
 
+  protected isHighlight(): boolean {
+    return this.article.collectChildren().concat(this.article).some(a => a == this.stateService.current);
+  }
+
   protected onClick(): void {
-    this.article.open = !this.article.open;
-    this.stateService.current = this.article;
+    if (this.article.folder) {
+      this.stateService.current = this.article.children[0];
+    } else {
+      this.stateService.current = this.article;
+    }
   }
 
 }
