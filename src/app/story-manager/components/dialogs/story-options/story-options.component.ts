@@ -16,10 +16,10 @@ import { StoryManagerStateService } from 'src/app/story-manager/services/story-m
 })
 export class ArticleOptionsComponent extends DialogContentBase<void> {
 
-  public override inputs: { article: Article };
+  public override inputs: { article?: Article };
 
   public configuration: DialogContainerConfiguration = {
-    title: () => this.inputs.article.title,
+    title: () => this.inputs.article ? this.inputs.article.title : 'Root',
     buttons: [{
       text: () => 'Cancel',
       click: () => this.close()
@@ -37,14 +37,14 @@ export class ArticleOptionsComponent extends DialogContentBase<void> {
     this.stateService.rename(this.inputs.article);
   }
 
-  public async delete(): Promise<void> {
-    this.close();
-    this.stateService.delete(this.inputs.article);
-  }
-
   public async create(folder: boolean): Promise<void> {
     this.close();
     this.stateService.create(this.inputs.article, folder);
+  }
+
+  public async delete(): Promise<void> {
+    this.close();
+    this.stateService.delete(this.inputs.article);
   }
 
   public close(): void {

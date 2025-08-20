@@ -32,7 +32,7 @@ export class StoryManagerSerializationService {
   private _save(): void {
     const data: Data = {} as Data;
     const stateService: StoryManagerStateService = this.injector.get(StoryManagerStateService);
-    data.articles = stateService.articles.map(article => this.serializeArticle(article));
+    data.articles = stateService.articles.filter(a => a.id != 'placeholder').map(article => this.serializeArticle(article));
     this.googleService.update(data);
   }
 

@@ -12,7 +12,7 @@
       [style.opacity]="image.group && stateService.groupEditorGroup && !stateService.groupEditorGroup.images.includes(image) ? '0.15' : '1'"
       (click)="onImageClick(image)">
       <div class="brick-container">
-        <img #imageElement [src]="image.thumbnailLink" loading="lazy" (create)="masonryBricks[image.id] = $event.nativeElement" (load)="imageElement.style.opacity = '1'" />
+        <img #imageElement [src]="image.thumbnailLink" loading="lazy" (create)="masonryBricks[image.id] = $event.nativeElement" (load)="imageElement.style.opacity = '0'" />
       </div>
       <ng-container *ngIf="areBrickButtonsVisible()">
         <div class="brick-header">

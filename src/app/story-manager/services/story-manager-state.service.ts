@@ -69,7 +69,7 @@ export class StoryManagerStateService {
     });
   }
 
-  public options(article: Article = this.current): void {
+  public options(article: Article): void {
     this.dialogService.create(ArticleOptionsComponent, { article: article });
   }
 
