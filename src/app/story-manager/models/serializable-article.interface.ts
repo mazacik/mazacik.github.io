@@ -3,4 +3,5 @@ export interface SerializableArticle {
   title: string;
   text: string;
   childIds: string[];
+  folder: boolean;
 }

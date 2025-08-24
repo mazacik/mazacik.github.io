@@ -2,10 +2,10 @@ import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { Tag } from 'src/app/gallery/models/tag.class';
 import { FilterService } from 'src/app/gallery/services/filter.service';
+import { GallerySerializationService } from 'src/app/gallery/services/gallery-serialization.service';
 import { GalleryStateService } from 'src/app/gallery/services/gallery-state.service';
 import { GalleryService } from 'src/app/gallery/services/gallery.service';
-import { GallerySerializationService } from 'src/app/gallery/services/gallery-serialization.service';
-import { TagDragDropService } from 'src/app/gallery/services/tag-drag-drop.service';
+import { TagService } from 'src/app/gallery/services/tag.service';
 import { drawer2 } from 'src/app/shared/constants/animations.constants';
 import { VariableDirective } from 'src/app/shared/directives/variable.directive';
 
@@ -22,9 +22,9 @@ export class FilterRowComponent {
   @Input() tag: Tag;
 
   constructor(
+    private tagService: TagService,
     private filterService: FilterService,
     private serializationService: GallerySerializationService,
-    protected tagDragDropService: TagDragDropService,
     protected galleryService: GalleryService,
     protected stateService: GalleryStateService
   ) { }
@@ -65,6 +65,36 @@ export class FilterRowComponent {
 
   protected getTags(): Tag[] {
     return this.tag.children.filter(t => !t.group);
+  }
+
+  // 
+
+  private static startObject: Tag;
+
+  public start(event: DragEvent, currentObject: Tag): void {
+    console.log('start: ' + currentObject.name);
+
+    FilterRowComponent.startObject = currentObject;
+  }
+
+  public enter(event: DragEvent, currentObject: Tag): void {
+    console.log('enter: ' + currentObject.name);
+  }
+
+  public leave(event: DragEvent, currentObject: Tag): void {
+    console.log('leave: ' + currentObject.name);
+  }
+
+  public drop(event: DragEvent, currentObject: Tag): void {
+    console.log('drop: ' + currentObject.name);
+
+    if (currentObject != FilterRowComponent.startObject && currentObject.parent != FilterRowComponent.startObject) {
+      this.tagService.changeParent(FilterRowComponent.startObject, currentObject.group ? currentObject : currentObject.parent);
+    }
+  }
+
+  public end(event: DragEvent, currentObject: Tag): void {
+    console.log('end: ' + currentObject.name);
   }
 
 }

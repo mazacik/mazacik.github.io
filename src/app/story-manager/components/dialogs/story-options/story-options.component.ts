@@ -2,9 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
 import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
-import { DialogService } from 'src/app/shared/services/dialog.service';
 import { Article } from 'src/app/story-manager/models/article.class';
-import { StoryManagerGoogleDriveService } from 'src/app/story-manager/services/story-manager-google-drive.service';
 import { StoryManagerStateService } from 'src/app/story-manager/services/story-manager-state.service';
 
 @Component({
@@ -18,12 +16,10 @@ import { StoryManagerStateService } from 'src/app/story-manager/services/story-m
 })
 export class ArticleOptionsComponent extends DialogContentBase<void> {
 
-  // TODO make a generic component like this (buttons that do something)
-
-  public override inputs: { article: Article };
+  public override inputs: { article?: Article };
 
   public configuration: DialogContainerConfiguration = {
-    title: () => this.inputs.article.title,
+    title: () => this.inputs.article ? this.inputs.article.title : 'Root',
     buttons: [{
       text: () => 'Cancel',
       click: () => this.close()
@@ -31,9 +27,7 @@ export class ArticleOptionsComponent extends DialogContentBase<void> {
   };
 
   constructor(
-    private dialogService: DialogService,
-    private stateService: StoryManagerStateService,
-    private googleService: StoryManagerGoogleDriveService,
+    private stateService: StoryManagerStateService
   ) {
     super();
   }
@@ -41,6 +35,11 @@ export class ArticleOptionsComponent extends DialogContentBase<void> {
   public async rename(): Promise<void> {
     this.close();
     this.stateService.rename(this.inputs.article);
+  }
+
+  public async create(folder: boolean): Promise<void> {
+    this.close();
+    this.stateService.create(this.inputs.article, folder);
   }
 
   public async delete(): Promise<void> {

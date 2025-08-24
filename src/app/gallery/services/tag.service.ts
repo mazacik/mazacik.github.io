@@ -219,7 +219,6 @@ export class TagService {
   }
 
   public changeParent(tag: Tag, parent: Tag): void {
-
     if (tag.group && parent === null) {
       // move group to root
       ArrayUtils.remove(tag.parent?.children, tag);

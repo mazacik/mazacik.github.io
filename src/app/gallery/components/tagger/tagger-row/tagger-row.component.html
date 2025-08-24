@@ -1,5 +1,5 @@
 <ng-container *ngIf="tag">
-  <div class="flex gap hover-brighten hover-container" style="line-height: 24px" (drop)="tagDragDropService.dragDrop($event, tag)" ondragover="event.preventDefault()">
+  <div class="flex gap hover-brighten hover-container" style="line-height: 24px" (drop)="drop($event, tag)" ondragover="event.preventDefault()">
     <div class="flex gap flex-1 width-100 min-width-0 align-items-center" [class.disabled]="tag.pseudo" [class.cursor-pointer]="!tag.pseudo" (click)="onTagClick()">
       <i *ngFor="let _ of [].constructor(tag.collectParents().length)" class="fa-solid fa-angle-down opacity-0"></i>
 
@@ -13,10 +13,10 @@
         class="flex-1 overflow-hidden"
         [ngClass]="getTextClass()"
         draggable="true"
-        (dragstart)="tagDragDropService.dragStart($event, tag)"
-        (dragenter)="tagDragDropService.dragEnter($event, tag)"
-        (dragleave)="tagDragDropService.dragLeave($event, tag)"
-        (dragend)="tagDragDropService.dragEnd($event, tag)"
+        (dragstart)="start($event, tag)"
+        (dragenter)="enter($event, tag)"
+        (dragleave)="leave($event, tag)"
+        (dragend)="end($event, tag)"
         ondragover="event.preventDefault()">
         <div class="flex pointer-events-none">
           <span class="ellipsis">{{ tag.name }}</span>

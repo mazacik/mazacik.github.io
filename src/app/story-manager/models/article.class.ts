@@ -3,6 +3,7 @@ export class Article {
   title: string;
   text: string;
   children: Article[];
+  folder: boolean;
 
   // transient
   parent: Article;

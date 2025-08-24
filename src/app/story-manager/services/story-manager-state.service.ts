@@ -29,25 +29,21 @@ export class StoryManagerStateService {
     this.serializationService.save(instant);
   }
 
-  public create(parent: Article = null): void {
-    this.dialogService.createInput({ title: 'Create Article', placeholder: 'Text' }).then(title => {
-      if (title) {
-        const article: Article = new Article();
-        article.id = nanoid();
-        article.title = title;
-        article.text = '';
-        article.children = [];
-        article.parent = parent;
-        article.open = false;
+  public async create(parent: Article, folder: boolean): Promise<void> {
+    const title: string = await this.dialogService.createInput({ title: folder ? 'Create Folder' : 'Create Note', placeholder: 'Title' });
+    if (title) {
+      const article: Article = new Article();
+      article.id = nanoid();
+      article.title = title;
+      article.text = '';
+      article.children = [];
+      article.parent = parent;
+      article.parent?.children.push(article);
+      article.folder = folder;
 
-        if (parent) {
-          parent.children.push(article);
-        }
-
-        this.articles.push(article);
-        this.serializationService.save(true);
-      }
-    });
+      this.articles.push(article);
+      this.serializationService.save(true);
+    }
   }
 
   public rename(article: Article): void {
@@ -67,13 +63,13 @@ export class StoryManagerStateService {
         }
 
         ArrayUtils.remove(this.articles, article);
-        ArrayUtils.remove(article.parent.children, article);
+        ArrayUtils.remove(article.parent?.children, article);
         this.serializationService.save(true);
       }
     });
   }
 
-  public options(article: Article = this.current): void {
+  public options(article: Article): void {
     this.dialogService.create(ArticleOptionsComponent, { article: article });
   }
 
