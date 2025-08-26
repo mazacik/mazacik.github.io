@@ -42,7 +42,7 @@ export class SidebarRowComponent implements OnInit {
       this.stateService.current = this.article;
     }
   }
-  
+
   // TODO drag in root makes open button not work first time
 
   private static object: Article;
