@@ -17,14 +17,11 @@
       <ng-container *ngIf="areBrickButtonsVisible()">
         <div class="brick-header">
           <i class="icon-button fa-heart" [ngClass]="image.heart ? 'fa-solid active' : 'fa-regular'" tp="Favorite" (click)="$event.stopPropagation(); galleryService.toggleFavorite(image)"></i>
-          <i
-            class="icon-button fa-bookmark"
-            [ngClass]="image.bookmark ? 'fa-solid active' : 'fa-regular'"
-            tp="Bookmark"
-            (click)="$event.stopPropagation(); galleryService.toggleBookmark(image)"></i>
+          <i class="icon-button fa-bookmark" [ngClass]="image.bookmark ? 'fa-solid active' : 'fa-regular'" tp="Bookmark" (click)="$event.stopPropagation(); galleryService.toggleBookmark(image)"></i>
+          <i *ngIf="image.group" class="icon-button active fa-solid fa-object-group" tp="Group Manager" (click)="galleryService.openImageGroupEditor(image.group); $event.stopPropagation()"></i>
         </div>
         <div class="brick-footer">
-          <i *ngIf="image.group" class="icon-button active fa-solid fa-object-group" tp="Group Manager" (click)="galleryService.openImageGroupEditor(image.group); $event.stopPropagation()"></i>
+          <span *ngIf="stateService.settings.showMasonryBrickFileNames" class="text-shadow">{{ image.name }}</span>
         </div>
       </ng-container>
     </div>

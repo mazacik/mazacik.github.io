@@ -108,7 +108,7 @@ export class ActivityComponent implements OnInit {
 
     const forEveryoneCount: number = Math.ceil(this.phrases.length / this.forEveryoneChanceOneIn);
     for (let i = 0; i < forEveryoneCount; i++) {
-      this.teams.forEach(team => team.roundsForEveryone.push(Math.floor(RandomUtils.random(i * this.forEveryoneChanceOneIn, (i + 1) * this.forEveryoneChanceOneIn))));
+      this.teams.forEach(team => team.roundsForEveryone.push(Math.floor(RandomUtils.number(i * this.forEveryoneChanceOneIn, (i + 1) * this.forEveryoneChanceOneIn))));
     }
   }
 

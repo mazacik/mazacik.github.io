@@ -38,7 +38,7 @@ export class GallerySerializationService {
     const data: Data = await this.googleService.getData();
     stateService.dataFolderId = data.dataFolderId;
     stateService.archiveFolderId = data.archiveFolderId;
-    stateService.comparison = data.comparison;
+    stateService.tournamentState = data.tournamentState;
 
     const filterService: FilterService = this.injector.get(FilterService);
     filterService.filterFavorites.state = data.heartsFilter || 0;
@@ -161,7 +161,7 @@ export class GallerySerializationService {
     data.bookmarksFilter = filterService.filterBookmarks.state;
     data.filterGroups = filterService.filterGroups.state;
     data.settings = stateService.settings;
-    data.comparison = stateService.comparison;
+    data.tournamentState = stateService.tournamentState;
     data.imageProperties = stateService.images.map(image => this.serializeImage(image));
     data.groupProperties = stateService.imageGroups.filter(group => !ArrayUtils.isEmpty(group.images)).map(group => this.serializeGroup(group));
     data.tagProperties = tagService.tags.map(tag => this.serializeTag(tag));

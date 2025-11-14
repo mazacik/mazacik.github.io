@@ -1,9 +1,13 @@
 export abstract class RandomUtils {
 
-  public static random(max: number): number;
-  public static random(min: number, max: number): number;
-  public static random(arg1: number, arg2?: number): number {
+  public static number(max: number): number;
+  public static number(min: number, max: number): number;
+  public static number(arg1: number, arg2?: number): number {
     return Math.random() * (arg2 ? arg2 - arg1 : arg1) + (arg2 ? arg1 : 0);
+  }
+
+  public static boolean(): boolean {
+    return this.from([true, false]);
   }
 
   public static from<T>(array: T[], except?: T | T[]): T {
@@ -15,7 +19,7 @@ export abstract class RandomUtils {
       }
     }
 
-    return array[Math.floor(this.random(array.length))];
+    return array[Math.floor(this.number(array.length))];
   }
 
   public static percentage(n: number): boolean {
@@ -28,7 +32,7 @@ export abstract class RandomUtils {
 
   public static color(): string {
     let h: number = (Math.random() + 0.618033988749895) % 1;
-    let s: number = this.random(0.4, 0.6);
+    let s: number = this.number(0.4, 0.6);
     let v: number = 0.95;
     let i: number = Math.floor(h * 6);
     let f: number = h * 6 - i;

@@ -13,6 +13,11 @@
     <span class="nowrap user-select-none">Show Videos</span>
     <app-checkbox [value]="stateService.settings.showVideos" (valueChange)="onShowVideosValueChange($event)"></app-checkbox>
   </div>
+    <div class="h-separator"></div>
+  <div class="option-container">
+    <span class="nowrap user-select-none">Show Masonry File Names</span>
+    <app-checkbox [value]="stateService.settings.showMasonryBrickFileNames" (valueChange)="onShowMasonryBrickFileNamesValueChange($event)"></app-checkbox>
+  </div>
   <div class="h-separator"></div>
   <div class="option-container">
     <span class="nowrap user-select-none">Auto Bookmark</span>

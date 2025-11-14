@@ -2,9 +2,6 @@
 
 :host {
   display: flex;
-  flex-direction: column;
-  overflow-x: hidden;
-  width: max-content;
 
   .comparison {
     display: flex;
@@ -15,11 +12,11 @@
     }
 
     .image-container {
-      flex: 1;
+      // flex: 1;
       padding: $gap;
       display: flex;
-      align-items: center;
-      justify-content: center;
+      // align-items: center;
+      // justify-content: center;
       cursor: pointer;
 
       &:hover {
@@ -36,12 +33,9 @@
   }
 
   .results {
-    height: 200px;
-    min-height: 200px;
-    overflow: auto;
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+    flex-direction: column;
+    overflow: auto;
     gap: $gap;
 
     @media screen and (max-width:768px) {
@@ -50,22 +44,17 @@
     }
 
     @media screen and (min-width:768px) {
-      width: calc(7*100px + 6 * $gap + 1.66 * $gap);
-      padding: $gap 0 $gap $gap * 1.66;
+      padding: $gap;
     }
 
     .image-container {
       width: 100px;
-      height: 100px;
       display: flex;
-      position: relative;
-      justify-content: center;
-      align-items: center;
 
       img {
         max-width: 100%;
         max-height: 100%;
-        border-radius: $gap;
+        // border-radius: $gap;
       }
     }
   }

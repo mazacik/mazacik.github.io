@@ -1,6 +1,7 @@
 import { Injectable, WritableSignal, signal } from "@angular/core";
 import { GalleryGroup } from "src/app/gallery/models/gallery-group.class";
 import { GalleryImage } from "src/app/gallery/models/gallery-image.class";
+import { TournamentState } from "src/app/shared/classes/tournament.class";
 import { ScreenUtils } from "src/app/shared/utils/screen.utils";
 import { GallerySettings } from "../models/gallery-settings.interface";
 
@@ -24,7 +25,7 @@ export class GalleryStateService {
 
   public groupEditorGroup: GalleryGroup;
 
-  public comparison: { [key: string]: string[] };
+  public tournamentState: TournamentState;
 
   constructor() { }
 

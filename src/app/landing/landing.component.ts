@@ -14,8 +14,6 @@ import { ApplicationService } from '../shared/services/application.service';
 })
 export class LandingComponent implements OnInit {
 
-  protected dev: number = 0;
-
   constructor(
     private router: Router,
     protected applicationService: ApplicationService

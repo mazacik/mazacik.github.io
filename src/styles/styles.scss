@@ -538,6 +538,10 @@ hr {
   }
 }
 
+.text-shadow {
+  text-shadow: -1px 0 var(--color-text-shadow), 0 1px var(--color-text-shadow), 1px 0 var(--color-text-shadow), 0 -1px var(--color-text-shadow);
+}
+
 .icon-button,
 .icon-button-small {
   display: flex;

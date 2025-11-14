@@ -1,17 +1,13 @@
 <div class="column">
   <!-- <span class="button" (click)="navigate('event/2024-splav')">Splav 2024</span> -->
-  <span class="button" (click)="navigate('games/activity')">Activity</span>
+  <!-- <span class="button" (click)="navigate('games/activity')">Activity</span>
   <span class="button" (click)="navigate('games/twister')">Twister</span>
-  <span class="button" (click)="navigate('games/nikdy-som')">Nikdy som</span>
-  <ng-container *ngIf="dev > 4">
-    <span class="button" (click)="navigate('gallery')">Gallery</span>
-    <span class="button" (click)="navigate('story-manager')">Story Manager</span>
-    <span class="button" (click)="navigate('comparison')">Comparison</span>
-  </ng-container>
+  <span class="button" (click)="navigate('games/nikdy-som')">Nikdy som</span> -->
+  <span class="button" (click)="navigate('gallery')">Gallery</span>
+  <span class="button" (click)="navigate('story-manager')">Story Manager</span>
 </div>
 <div class="v-separator"></div>
 <div class="column">
   <!-- <i class="icon-button fa-solid fa-gear" tp="Settings" (click)="null"></i> -->
   <i class="icon-button fa-solid" [ngClass]="applicationService.isDarkTheme() ? 'fa-moon' : 'fa-sun'" tp="Toggle Theme" (click)="applicationService.toggleTheme()"></i>
 </div>
-<div class="dev-container" (click)="dev = dev + 1"></div>

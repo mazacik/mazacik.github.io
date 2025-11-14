@@ -3,10 +3,9 @@
     <i class="icon-button fa-solid fa-filter" tp="Open Filter Configuration" (click)="stateService.filterVisible = !stateService.filterVisible"></i>
   </div>
   <i class="icon-button fa-solid fa-folder-plus" tp="Create Image Group" (click)="galleryService.openImageGroupEditor()"></i>
+  <i class="icon-button fa-solid fa-folder" tp="Comparison" (click)="galleryService.openComparison()"></i>
 </div>
-<div class="header-center">
-
-</div>
+<div class="header-center"></div>
 <div class="header-end">
   <i class="icon-button fa-brands fa-google-drive" tp="Google Drive" (click)="openGoogleDriveDataFolder()"></i>
   <i class="icon-button fa-solid fa-gear" tp="Settings" (click)="galleryService.openSettings()"></i>

@@ -61,6 +61,11 @@ export class GallerySettingsComponent extends DialogContentBase<boolean> impleme
     this.stateService.settings.showVideos = value;
   }
 
+  protected onShowMasonryBrickFileNamesValueChange(value: boolean): void {
+    this.needsDataUpdate = true;
+    this.stateService.settings.showMasonryBrickFileNames = value;
+  }
+
   protected onAutoBookmarkValueChange(value: boolean): void {
     this.needsDataUpdate = true;
     this.stateService.settings.autoBookmark = value;

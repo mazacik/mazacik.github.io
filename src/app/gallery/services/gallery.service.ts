@@ -13,6 +13,7 @@ import { FilterService } from "./filter.service";
 import { GalleryGoogleDriveService } from "./gallery-google-drive.service";
 import { GalleryStateService } from "./gallery-state.service";
 import { GallerySerializationService } from "./gallery-serialization.service";
+import { ImageComparisonComponent } from "../dialogs/image-comparison/image-comparison.component";
 
 @Injectable({
   providedIn: 'root',
@@ -44,6 +45,11 @@ export class GalleryService {
   public openImageGroupEditor(group?: GalleryGroup): void {
     this.dialogService.create(GroupManagerComponent, { sourceGroup: group });
   }
+
+    public openComparison(): void {
+    this.dialogService.create(ImageComparisonComponent);
+  }
+
 
   public openSettings(): void {
     this.dialogService.create(GallerySettingsComponent);
@@ -104,8 +110,8 @@ export class GalleryService {
       }
     }
 
-    if (this.stateService.comparison != null) {
-      for (const imageIds of Object.values(this.stateService.comparison)) {
+    if (this.stateService.tournamentState != null) {
+      for (const imageIds of Object.values(this.stateService.tournamentState)) {
         if (imageIds.includes(image.id)) {
           ArrayUtils.remove(imageIds, image.id);
         }
