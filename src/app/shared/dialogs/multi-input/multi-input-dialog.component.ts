@@ -8,15 +8,14 @@ import { StringUtils } from '../../utils/string.utils';
 import { CreateDirective } from '../../directives/create.directive';
 
 @Component({
-  selector: 'app-multi-input-dialog',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    CreateDirective
-  ],
-  templateUrl: './multi-input-dialog.component.html',
-  styleUrls: ['./multi-input-dialog.component.scss'],
+    selector: 'app-multi-input-dialog',
+    imports: [
+        CommonModule,
+        FormsModule,
+        CreateDirective
+    ],
+    templateUrl: './multi-input-dialog.component.html',
+    styleUrls: ['./multi-input-dialog.component.scss']
 })
 export class MultiInputDialogComponent extends DialogContentBase<string[]> implements OnInit {
 

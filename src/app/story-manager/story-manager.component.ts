@@ -7,16 +7,15 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { StoryManagerStateService } from './services/story-manager-state.service';
 
 @Component({
-  selector: 'app-story-manager',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    TippyDirective,
-    SidebarComponent
-  ],
-  templateUrl: './story-manager.component.html',
-  styleUrls: ['./story-manager.component.scss']
+    selector: 'app-story-manager',
+    imports: [
+        CommonModule,
+        FormsModule,
+        TippyDirective,
+        SidebarComponent
+    ],
+    templateUrl: './story-manager.component.html',
+    styleUrls: ['./story-manager.component.scss']
 })
 export class StoryManagerComponent implements OnInit {
 

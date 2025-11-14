@@ -15,17 +15,16 @@ import { TagService } from '../../services/tag.service';
 import { HeaderComponent } from '../header/header.component';
 
 @Component({
-  selector: 'app-masonry',
-  standalone: true,
-  imports: [
-    CommonModule,
-    CreateDirective,
-    TippyDirective,
-    HeaderComponent
-  ],
-  templateUrl: './masonry.component.html',
-  styleUrls: ['./masonry.component.scss'],
-  animations: [fade]
+    selector: 'app-masonry',
+    imports: [
+        CommonModule,
+        CreateDirective,
+        TippyDirective,
+        HeaderComponent
+    ],
+    templateUrl: './masonry.component.html',
+    styleUrls: ['./masonry.component.scss'],
+    animations: [fade]
 })
 export class MasonryComponent {
 

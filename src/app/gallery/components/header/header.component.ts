@@ -6,14 +6,13 @@ import { GalleryGoogleDriveService } from '../../services/gallery-google-drive.s
 import { GalleryStateService } from '../../services/gallery-state.service';
 
 @Component({
-  selector: 'app-header',
-  standalone: true,
-  imports: [
-    CommonModule,
-    TippyDirective
-  ],
-  templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss']
+    selector: 'app-header',
+    imports: [
+        CommonModule,
+        TippyDirective
+    ],
+    templateUrl: './header.component.html',
+    styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent {
 

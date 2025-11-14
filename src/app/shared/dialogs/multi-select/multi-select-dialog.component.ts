@@ -6,14 +6,13 @@ import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-conte
 import { ArrayUtils } from '../../utils/array.utils';
 
 @Component({
-  selector: 'app-multi-select-dialog',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
-  templateUrl: 'multi-select-dialog.component.html',
-  styleUrls: ['./multi-select-dialog.component.scss'],
+    selector: 'app-multi-select-dialog',
+    imports: [
+        CommonModule,
+        FormsModule
+    ],
+    templateUrl: 'multi-select-dialog.component.html',
+    styleUrls: ['./multi-select-dialog.component.scss']
 })
 export class MultiSelectDialogComponent<T> extends DialogContentBase<T[]> implements OnInit {
 

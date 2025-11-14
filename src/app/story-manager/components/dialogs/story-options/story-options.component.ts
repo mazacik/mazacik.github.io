@@ -6,13 +6,12 @@ import { Article } from 'src/app/story-manager/models/article.class';
 import { StoryManagerStateService } from 'src/app/story-manager/services/story-manager-state.service';
 
 @Component({
-  selector: 'app-story-options',
-  standalone: true,
-  imports: [
-    CommonModule
-  ],
-  templateUrl: './story-options.component.html',
-  styleUrls: ['./story-options.component.scss']
+    selector: 'app-story-options',
+    imports: [
+        CommonModule
+    ],
+    templateUrl: './story-options.component.html',
+    styleUrls: ['./story-options.component.scss']
 })
 export class ArticleOptionsComponent extends DialogContentBase<void> {
 

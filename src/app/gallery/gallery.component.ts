@@ -10,18 +10,17 @@ import { GalleryStateService } from './services/gallery-state.service';
 import { GallerySerializationService } from './services/gallery-serialization.service';
 
 @Component({
-  selector: 'app-gallery',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FilterComponent,
-    MasonryComponent,
-    FullscreenComponent,
-    TaggerComponent
-  ],
-  templateUrl: './gallery.component.html',
-  styleUrls: ['./gallery.component.scss'],
-  animations: [enter]
+    selector: 'app-gallery',
+    imports: [
+        CommonModule,
+        FilterComponent,
+        MasonryComponent,
+        FullscreenComponent,
+        TaggerComponent
+    ],
+    templateUrl: './gallery.component.html',
+    styleUrls: ['./gallery.component.scss'],
+    animations: [enter]
 })
 export class GalleryComponent implements OnInit {
 

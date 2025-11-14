@@ -8,15 +8,14 @@ import { DialogService } from './shared/services/dialog.service';
 import { KeyboardShortcutService } from './shared/services/keyboard-shortcut.service';
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterOutlet
-  ],
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
-  animations: [fade]
+    selector: 'app-root',
+    imports: [
+        CommonModule,
+        RouterOutlet
+    ],
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.scss'],
+    animations: [fade]
 })
 export class AppComponent {
 

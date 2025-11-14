@@ -11,12 +11,11 @@ import { TagService } from '../../services/tag.service';
 import { FilterRowComponent } from './filter-row/filter-row.component';
 
 @Component({
-  selector: 'app-filter',
-  standalone: true,
-  imports: [CommonModule, TippyDirective, FilterRowComponent],
-  animations: [drawer2],
-  templateUrl: './filter.component.html',
-  styleUrls: ['./filter.component.scss'],
+    selector: 'app-filter',
+    imports: [CommonModule, TippyDirective, FilterRowComponent],
+    animations: [drawer2],
+    templateUrl: './filter.component.html',
+    styleUrls: ['./filter.component.scss']
 })
 export class FilterComponent {
   protected ScreenUtils = ScreenUtils;

@@ -9,13 +9,12 @@ import { GallerySerializationService } from '../../services/gallery-serializatio
 import { GalleryStateService } from '../../services/gallery-state.service';
 
 @Component({
-  selector: 'app-image-comparison',
-  standalone: true,
-  imports: [
-    CommonModule
-  ],
-  templateUrl: './image-comparison.component.html',
-  styleUrls: ['./image-comparison.component.scss']
+    selector: 'app-image-comparison',
+    imports: [
+        CommonModule
+    ],
+    templateUrl: './image-comparison.component.html',
+    styleUrls: ['./image-comparison.component.scss']
 })
 export class ImageComparisonComponent extends DialogContentBase<void> implements OnInit {
 

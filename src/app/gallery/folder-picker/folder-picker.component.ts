@@ -8,13 +8,12 @@ import { GoogleFileUtils } from '../../shared/utils/google-file.utils';
 import { Data } from '../models/data.interface';
 
 @Component({
-  selector: 'app-folder-picker',
-  standalone: true,
-  imports: [
-    CommonModule
-  ],
-  templateUrl: './folder-picker.component.html',
-  styleUrls: ['./folder-picker.component.scss']
+    selector: 'app-folder-picker',
+    imports: [
+        CommonModule
+    ],
+    templateUrl: './folder-picker.component.html',
+    styleUrls: ['./folder-picker.component.scss']
 })
 export class FolderPickerComponent implements OnInit {
 

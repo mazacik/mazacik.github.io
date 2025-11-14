@@ -4,13 +4,12 @@ import { Router } from '@angular/router';
 import { ApplicationService } from '../shared/services/application.service';
 
 @Component({
-  selector: 'app-landing',
-  standalone: true,
-  imports: [
-    CommonModule
-  ],
-  templateUrl: './landing.component.html',
-  styleUrls: ['./landing.component.scss']
+    selector: 'app-landing',
+    imports: [
+        CommonModule
+    ],
+    templateUrl: './landing.component.html',
+    styleUrls: ['./landing.component.scss']
 })
 export class LandingComponent implements OnInit {
 

@@ -11,17 +11,16 @@ import { StoryManagerStateService } from '../../services/story-manager-state.ser
 import { SidebarRowComponent } from "./sidebar-row/sidebar-row.component";
 
 @Component({
-  selector: 'app-sidebar',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    TippyDirective,
-    SidebarRowComponent
-],
-  templateUrl: './sidebar.component.html',
-  styleUrls: ['./sidebar.component.scss'],
-  animations: [drawer]
+    selector: 'app-sidebar',
+    imports: [
+        CommonModule,
+        FormsModule,
+        TippyDirective,
+        SidebarRowComponent
+    ],
+    templateUrl: './sidebar.component.html',
+    styleUrls: ['./sidebar.component.scss'],
+    animations: [drawer]
 })
 export class SidebarComponent implements OnInit {
 

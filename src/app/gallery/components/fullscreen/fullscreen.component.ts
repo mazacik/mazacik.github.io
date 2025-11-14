@@ -20,25 +20,24 @@ import { GalleryService } from '../../services/gallery.service';
 import { TagService } from '../../services/tag.service';
 
 @Component({
-  selector: 'app-fullscreen',
-  standalone: true,
-  imports: [
-    CommonModule,
-    VariableDirective,
-    TippyDirective
-  ],
-  templateUrl: './fullscreen.component.html',
-  styleUrls: ['./fullscreen.component.scss'],
-  animations: [fade, trigger('fadeBetweenGroupImages', [
-    transition(':enter', [
-      style({ opacity: 0 }),
-      animate('333ms ease', style({ opacity: 1 }))
-    ]),
-    transition(':leave', [
-      style({ opacity: 1, 'pointer-events': 'none', 'z-index': -1 }),
-      animate('333ms 333ms ease', style({ opacity: 0 }))
-    ])
-  ])]
+    selector: 'app-fullscreen',
+    imports: [
+        CommonModule,
+        VariableDirective,
+        TippyDirective
+    ],
+    templateUrl: './fullscreen.component.html',
+    styleUrls: ['./fullscreen.component.scss'],
+    animations: [fade, trigger('fadeBetweenGroupImages', [
+            transition(':enter', [
+                style({ opacity: 0 }),
+                animate('333ms ease', style({ opacity: 1 }))
+            ]),
+            transition(':leave', [
+                style({ opacity: 1, 'pointer-events': 'none', 'z-index': -1 }),
+                animate('333ms 333ms ease', style({ opacity: 0 }))
+            ])
+        ])]
 })
 export class FullscreenComponent implements KeyboardShortcutTarget, OnInit, OnDestroy {
 

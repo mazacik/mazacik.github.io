@@ -8,13 +8,12 @@ import { DialogContentBase } from './dialog-content-base.class';
 import { DialogContainerConfiguration } from './dialog-container-configuration.interface';
 
 @Component({
-  selector: 'app-dialog-container',
-  standalone: true,
-  imports: [
-    CommonModule
-  ],
-  templateUrl: './dialog-container.component.html',
-  styleUrls: ['./dialog-container.component.scss']
+    selector: 'app-dialog-container',
+    imports: [
+        CommonModule
+    ],
+    templateUrl: './dialog-container.component.html',
+    styleUrls: ['./dialog-container.component.scss']
 })
 export class DialogContainerComponent<ResultType, InputsType> implements AfterViewInit {
 

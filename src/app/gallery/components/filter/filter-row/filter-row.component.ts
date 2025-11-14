@@ -10,12 +10,11 @@ import { drawer2 } from 'src/app/shared/constants/animations.constants';
 import { VariableDirective } from 'src/app/shared/directives/variable.directive';
 
 @Component({
-  selector: 'app-filter-row',
-  standalone: true,
-  imports: [CommonModule, VariableDirective],
-  animations: [drawer2],
-  templateUrl: './filter-row.component.html',
-  styleUrls: ['./filter-row.component.scss'],
+    selector: 'app-filter-row',
+    imports: [CommonModule, VariableDirective],
+    animations: [drawer2],
+    templateUrl: './filter-row.component.html',
+    styleUrls: ['./filter-row.component.scss']
 })
 export class FilterRowComponent {
 

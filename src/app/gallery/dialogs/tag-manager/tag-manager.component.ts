@@ -8,14 +8,13 @@ import { GalleryStateService } from '../../services/gallery-state.service';
 import { TagService } from '../../services/tag.service';
 
 @Component({
-  selector: 'app-tag-manager',
-  standalone: true,
-  imports: [
-    CommonModule,
-    TippyDirective
-  ],
-  templateUrl: './tag-manager.component.html',
-  styleUrls: ['./tag-manager.component.scss']
+    selector: 'app-tag-manager',
+    imports: [
+        CommonModule,
+        TippyDirective
+    ],
+    templateUrl: './tag-manager.component.html',
+    styleUrls: ['./tag-manager.component.scss']
 })
 export class TagManagerComponent extends DialogContentBase<void> {
 

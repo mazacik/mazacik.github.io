@@ -6,14 +6,13 @@ import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-conte
 import { StringUtils } from '../../utils/string.utils';
 
 @Component({
-  selector: 'app-input-dialog',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
-  templateUrl: 'input-dialog.component.html',
-  styleUrls: ['./input-dialog.component.scss'],
+    selector: 'app-input-dialog',
+    imports: [
+        CommonModule,
+        FormsModule
+    ],
+    templateUrl: 'input-dialog.component.html',
+    styleUrls: ['./input-dialog.component.scss']
 })
 export class InputDialogComponent extends DialogContentBase<string> implements OnInit {
 

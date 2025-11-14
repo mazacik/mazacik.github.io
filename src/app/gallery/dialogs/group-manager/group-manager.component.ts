@@ -13,15 +13,14 @@ import { GalleryStateService } from '../../services/gallery-state.service';
 import { GallerySerializationService } from '../../services/gallery-serialization.service';
 
 @Component({
-  selector: 'app-group-editor',
-  standalone: true,
-  imports: [
-    CommonModule,
-    DragDropDirective,
-    TippyDirective
-  ],
-  templateUrl: './group-manager.component.html',
-  styleUrls: ['./group-manager.component.scss']
+    selector: 'app-group-editor',
+    imports: [
+        CommonModule,
+        DragDropDirective,
+        TippyDirective
+    ],
+    templateUrl: './group-manager.component.html',
+    styleUrls: ['./group-manager.component.scss']
 })
 export class GroupManagerComponent extends DialogContentBase<void, {}> implements OnInit {
 

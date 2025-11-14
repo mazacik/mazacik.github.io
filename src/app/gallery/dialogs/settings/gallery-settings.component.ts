@@ -11,14 +11,13 @@ import { GalleryStateService } from '../../services/gallery-state.service';
 import { GallerySerializationService } from '../../services/gallery-serialization.service';
 
 @Component({
-  selector: 'app-gallery-settings',
-  standalone: true,
-  imports: [
-    CommonModule,
-    CheckboxComponent
-  ],
-  templateUrl: './gallery-settings.component.html',
-  styleUrls: ['./gallery-settings.component.scss']
+    selector: 'app-gallery-settings',
+    imports: [
+        CommonModule,
+        CheckboxComponent
+    ],
+    templateUrl: './gallery-settings.component.html',
+    styleUrls: ['./gallery-settings.component.scss']
 })
 export class GallerySettingsComponent extends DialogContentBase<boolean> implements OnInit {
 

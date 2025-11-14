@@ -8,15 +8,14 @@ import { StoryManagerGoogleDriveService } from 'src/app/story-manager/services/s
 import { StoryManagerStateService } from 'src/app/story-manager/services/story-manager-state.service';
 
 @Component({
-  selector: 'app-sidebar-row',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
-  templateUrl: './sidebar-row.component.html',
-  styleUrls: ['./sidebar-row.component.scss'],
-  animations: [drawer2]
+    selector: 'app-sidebar-row',
+    imports: [
+        CommonModule,
+        FormsModule
+    ],
+    templateUrl: './sidebar-row.component.html',
+    styleUrls: ['./sidebar-row.component.scss'],
+    animations: [drawer2]
 })
 export class SidebarRowComponent implements OnInit {
 

@@ -4,9 +4,10 @@ import { AuthenticationService } from '../shared/services/authentication.serivce
 import { ApplicationService } from '../shared/services/application.service';
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+    selector: 'app-login',
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.scss'],
+    standalone: false
 })
 export class LoginComponent implements AfterViewInit {
 

@@ -4,13 +4,12 @@ import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/d
 import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
 
 @Component({
-  selector: 'app-message-dialog',
-  standalone: true,
-  imports: [
-    CommonModule
-  ],
-  templateUrl: 'message-dialog.component.html',
-  styleUrls: ['./message-dialog.component.scss'],
+    selector: 'app-message-dialog',
+    imports: [
+        CommonModule
+    ],
+    templateUrl: 'message-dialog.component.html',
+    styleUrls: ['./message-dialog.component.scss']
 })
 export class MessageDialogComponent extends DialogContentBase<void> implements OnInit {
 

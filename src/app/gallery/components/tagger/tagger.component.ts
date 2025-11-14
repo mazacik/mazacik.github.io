@@ -9,16 +9,15 @@ import { TagService } from '../../services/tag.service';
 import { TaggerRowComponent } from './tagger-row/tagger-row.component';
 
 @Component({
-  selector: 'app-tagger',
-  standalone: true,
-  imports: [
-    CommonModule,
-    TippyDirective,
-    TaggerRowComponent
-  ],
-  animations: [drawer2],
-  templateUrl: './tagger.component.html',
-  styleUrls: ['./tagger.component.scss']
+    selector: 'app-tagger',
+    imports: [
+        CommonModule,
+        TippyDirective,
+        TaggerRowComponent
+    ],
+    animations: [drawer2],
+    templateUrl: './tagger.component.html',
+    styleUrls: ['./tagger.component.scss']
 })
 export class TaggerComponent {
 

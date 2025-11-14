@@ -5,14 +5,13 @@ import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/d
 import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
 
 @Component({
-  selector: 'app-select-dialog',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
-  templateUrl: 'select-dialog.component.html',
-  styleUrls: ['./select-dialog.component.scss'],
+    selector: 'app-select-dialog',
+    imports: [
+        CommonModule,
+        FormsModule
+    ],
+    templateUrl: 'select-dialog.component.html',
+    styleUrls: ['./select-dialog.component.scss']
 })
 export class SelectDialogComponent<T> extends DialogContentBase<T> implements OnInit {
 

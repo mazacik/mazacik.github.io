@@ -12,14 +12,13 @@ import { VariableDirective } from 'src/app/shared/directives/variable.directive'
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 
 @Component({
-  selector: 'app-tagger-row',
-  standalone: true,
-  imports: [
-    CommonModule, VariableDirective
-  ],
-  animations: [drawer2],
-  templateUrl: './tagger-row.component.html',
-  styleUrls: ['./tagger-row.component.scss']
+    selector: 'app-tagger-row',
+    imports: [
+        CommonModule, VariableDirective
+    ],
+    animations: [drawer2],
+    templateUrl: './tagger-row.component.html',
+    styleUrls: ['./tagger-row.component.scss']
 })
 export class TaggerRowComponent {
 
