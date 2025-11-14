@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
@@ -10,10 +10,9 @@ import { CreateDirective } from '../../directives/create.directive';
 @Component({
     selector: 'app-multi-input-dialog',
     imports: [
-        CommonModule,
-        FormsModule,
-        CreateDirective
-    ],
+    FormsModule,
+    CreateDirective
+],
     templateUrl: './multi-input-dialog.component.html',
     styleUrls: ['./multi-input-dialog.component.scss']
 })

@@ -1,21 +1,35 @@
-<ng-container *ngIf="contentComponentInstance">
+@if (contentComponentInstance) {
   <div class="glass-effect"></div>
-  <div *ngIf="!contentComponentInstance.configuration.hideClickOverlay" class="overlay-effect" #overlay (click)="overlayClick()"></div>
-  <div *ngIf="contentComponentInstance.configuration.title" #header class="header" (mousedown)="onHeaderMouseDown($event, header)">
-    <span class="header-title">{{ getTitle() }}</span>
-    <div class="flex gap">
-      <i *ngIf="!contentComponentInstance.configuration.hideHeaderCloseButton" class="icon-button fa-solid fa-times" (click)="contentComponentInstance.close()"></i>
+  @if (!contentComponentInstance.configuration.hideClickOverlay) {
+    <div class="overlay-effect" #overlay (click)="overlayClick()"></div>
+  }
+  @if (contentComponentInstance.configuration.title) {
+    <div #header class="header" (mousedown)="onHeaderMouseDown($event, header)">
+      <span class="header-title">{{ getTitle() }}</span>
+      <div class="flex gap">
+        @if (!contentComponentInstance.configuration.hideHeaderCloseButton) {
+          <i class="icon-button fa-solid fa-times" (click)="contentComponentInstance.close()"></i>
+        }
+      </div>
     </div>
+  }
+}
+@if (contentComponentType) {
+  <div class="content">
+    <ng-container #content></ng-container>
   </div>
-</ng-container>
-<div *ngIf="contentComponentType" class="content">
-  <ng-container #content></ng-container>
-</div>
-<div *ngIf="contentComponentInstance" class="buttons">
-  <ng-container *ngFor="let button of contentComponentInstance.configuration.buttons">
-    <ng-container *ngIf="!isHidden(button)">
-      <i *ngIf="button.iconClass" [class]="'icon-button ' + getButtonIconClass(button)" [class.disabled]="isDisabled(button)" (click)="button.click && button.click()"></i>
-      <div *ngIf="button.text" class="button" [class.disabled]="isDisabled(button)" (click)="button.click && button.click()">{{ getButtonText(button) }}</div>
-    </ng-container>
-  </ng-container>
-</div>
+}
+@if (contentComponentInstance) {
+  <div class="buttons">
+    @for (button of contentComponentInstance.configuration.buttons; track button) {
+      @if (!isHidden(button)) {
+        @if (button.iconClass) {
+          <i [class]="'icon-button ' + getButtonIconClass(button)" [class.disabled]="isDisabled(button)" (click)="button.click && button.click()"></i>
+        }
+        @if (button.text) {
+          <div class="button" [class.disabled]="isDisabled(button)" (click)="button.click && button.click()">{{ getButtonText(button) }}</div>
+        }
+      }
+    }
+  </div>
+}

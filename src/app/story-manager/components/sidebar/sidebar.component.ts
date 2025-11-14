@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TippyDirective } from '@ngneat/helipopper';
@@ -13,11 +13,10 @@ import { SidebarRowComponent } from "./sidebar-row/sidebar-row.component";
 @Component({
     selector: 'app-sidebar',
     imports: [
-        CommonModule,
-        FormsModule,
-        TippyDirective,
-        SidebarRowComponent
-    ],
+    FormsModule,
+    TippyDirective,
+    SidebarRowComponent
+],
     templateUrl: './sidebar.component.html',
     styleUrls: ['./sidebar.component.scss'],
     animations: [drawer]

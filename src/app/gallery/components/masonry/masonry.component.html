@@ -1,29 +1,34 @@
 <app-header></app-header>
 <div class="masonry-scroll-container" (create)="masonryScrollContainer = $event.nativeElement">
   <div class="masonry-container" (create)="masonryContainer = $event.nativeElement; updateLayout()">
-    <div
-      *ngFor="let image of filterService.masonryImages()"
-      @fade
-      class="masonry-brick"
-      [style.width.px]="image.masonryWidth"
-      [style.height.px]="image.masonryHeight"
-      [style.top.px]="image.masonryTop"
-      [style.left.px]="image.masonryLeft"
-      [style.opacity]="image.group && stateService.groupEditorGroup && !stateService.groupEditorGroup.images.includes(image) ? '0.15' : '1'"
-      (click)="onImageClick(image)">
-      <div class="brick-container">
-        <img #imageElement [src]="image.thumbnailLink" loading="lazy" (create)="masonryBricks[image.id] = $event.nativeElement" (load)="imageElement.style.opacity = '1'" />
+    @for (image of filterService.masonryImages(); track image) {
+      <div
+        @fade
+        class="masonry-brick"
+        [style.width.px]="image.masonryWidth"
+        [style.height.px]="image.masonryHeight"
+        [style.top.px]="image.masonryTop"
+        [style.left.px]="image.masonryLeft"
+        [style.opacity]="image.group && stateService.groupEditorGroup && !stateService.groupEditorGroup.images.includes(image) ? '0.15' : '1'"
+        (click)="onImageClick(image)">
+        <div class="brick-container">
+          <img #imageElement [src]="image.thumbnailLink" loading="lazy" (create)="masonryBricks[image.id] = $event.nativeElement" (load)="imageElement.style.opacity = '1'" />
+        </div>
+        @if (areBrickButtonsVisible()) {
+          <div class="brick-header">
+            <i class="icon-button fa-heart" [ngClass]="image.heart ? 'fa-solid active' : 'fa-regular'" tp="Favorite" (click)="$event.stopPropagation(); galleryService.toggleFavorite(image)"></i>
+            <i class="icon-button fa-bookmark" [ngClass]="image.bookmark ? 'fa-solid active' : 'fa-regular'" tp="Bookmark" (click)="$event.stopPropagation(); galleryService.toggleBookmark(image)"></i>
+            @if (image.group) {
+              <i class="icon-button active fa-solid fa-object-group" tp="Group Manager" (click)="galleryService.openImageGroupEditor(image.group); $event.stopPropagation()"></i>
+            }
+          </div>
+          <div class="brick-footer">
+            @if (stateService.settings.showMasonryBrickFileNames) {
+              <span class="text-shadow">{{ image.name }}</span>
+            }
+          </div>
+        }
       </div>
-      <ng-container *ngIf="areBrickButtonsVisible()">
-        <div class="brick-header">
-          <i class="icon-button fa-heart" [ngClass]="image.heart ? 'fa-solid active' : 'fa-regular'" tp="Favorite" (click)="$event.stopPropagation(); galleryService.toggleFavorite(image)"></i>
-          <i class="icon-button fa-bookmark" [ngClass]="image.bookmark ? 'fa-solid active' : 'fa-regular'" tp="Bookmark" (click)="$event.stopPropagation(); galleryService.toggleBookmark(image)"></i>
-          <i *ngIf="image.group" class="icon-button active fa-solid fa-object-group" tp="Group Manager" (click)="galleryService.openImageGroupEditor(image.group); $event.stopPropagation()"></i>
-        </div>
-        <div class="brick-footer">
-          <span *ngIf="stateService.settings.showMasonryBrickFileNames" class="text-shadow">{{ image.name }}</span>
-        </div>
-      </ng-container>
-    </div>
+    }
   </div>
 </div>

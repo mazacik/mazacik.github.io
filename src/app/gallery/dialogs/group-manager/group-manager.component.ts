@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit } from '@angular/core';
 import { TippyDirective } from '@ngneat/helipopper';
 import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
@@ -15,10 +15,9 @@ import { GallerySerializationService } from '../../services/gallery-serializatio
 @Component({
     selector: 'app-group-editor',
     imports: [
-        CommonModule,
-        DragDropDirective,
-        TippyDirective
-    ],
+    DragDropDirective,
+    TippyDirective
+],
     templateUrl: './group-manager.component.html',
     styleUrls: ['./group-manager.component.scss']
 })

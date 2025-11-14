@@ -1,3 +1,5 @@
 <div class="container">
-  <span *ngFor="let message of inputs.messages">{{ message }}</span>
+  @for (message of inputs.messages; track message) {
+    <span>{{ message }}</span>
+  }
 </div>

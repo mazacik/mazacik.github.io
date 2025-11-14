@@ -1,8 +1,14 @@
 <div class="container" [class.opacity-100]="!applicationService.loading()">
-  <div *ngIf="true" class="folders-container">
-    <span *ngFor="let dataFile of dataFiles" (click)="onDataFileClick(dataFile)">{{ dataFile.name.substring(0, dataFile.name.length - 10) }}</span>
-    <span *ngFor="let folder of folders" (click)="onFolderClick(folder)">{{ folder.name }}</span>
-  </div>
+  @if (true) {
+    <div class="folders-container">
+      @for (dataFile of dataFiles; track dataFile) {
+        <span (click)="onDataFileClick(dataFile)">{{ dataFile.name.substring(0, dataFile.name.length - 10) }}</span>
+      }
+      @for (folder of folders; track folder) {
+        <span (click)="onFolderClick(folder)">{{ folder.name }}</span>
+      }
+    </div>
+  }
   <div class="buttons-container">
     <i class="icon-button fa-solid" [ngClass]="applicationService.reduceBandwidth ? 'fa-signal' : 'fa-wifi'" tp="Toggle Low Bandwidth Mode" (click)="applicationService.reduceBandwidth = !applicationService.reduceBandwidth"></i>
   </div>

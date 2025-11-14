@@ -7,11 +7,13 @@
         <i class="icon-button fa-solid fa-arrow-left" tp="Back" tpPlacement="right" (click)="stateService.fullscreenImage.set(null)"></i>
         <div class="h-separator gap"></div>
         <i class="icon-button fa-solid fa-shuffle" tp="Random Image" tpPlacement="right" (click)="setRandomTarget()"></i>
-        <i *ngIf="target?.group" class="icon-button fa-solid fa-arrows-spin" tp="Random Image from Group" tpPlacement="right" (click)="setRandomGroupTarget()"></i>
+        @if (target?.group) {
+          <i class="icon-button fa-solid fa-arrows-spin" tp="Random Image from Group" tpPlacement="right" (click)="setRandomGroupTarget()"></i>
+        }
       </div>
       <div class="sidebar-center"></div>
       <div class="sidebar-end">
-        <ng-container *ngIf="ScreenUtils.isLargeScreen()">
+        @if (ScreenUtils.isLargeScreen()) {
           <i class="icon-button fa-solid fa-left-right" tp="Flip" tpPlacement="right" (click)="flip = !flip"></i>
           <div class="h-separator gap"></div>
           <i class="icon-button fa-solid fa-download" tp="Download" tpPlacement="right" (click)="googleService.download(target)"></i>
@@ -21,43 +23,56 @@
             class="icon-button fa-brands fa-yandex-international"
             tp="Yandex RIS"
             tpPlacement="right"
-            (click)="$event.stopPropagation(); galleryService.openYandexReverseImageSearch($event, target)"></i>
+          (click)="$event.stopPropagation(); galleryService.openYandexReverseImageSearch($event, target)"></i>
           <div class="h-separator gap"></div>
-        </ng-container>
+        }
         <i class="icon-button fa-solid fa-box" tp="Archive" tpPlacement="right" (click)="galleryService.delete(target, true)"></i>
         <i class="icon-button fa-solid fa-trash" tp="Delete" tpPlacement="right" (click)="galleryService.delete(target, false)"></i>
       </div>
     </div>
 
     <div class="width-100 height-100">
-      <div *ngIf="target" @fade class="stack-container">
-        <div *ngIf="!target.group" @fade class="non-group-container stack-container">
-          <div *ngFor="let image of [target]" @fade class="image-container">
-            <img [src]="getSrc(image)" [class.flip-h]="flip" (click)="onImageClick(image)" #imageElement (load)="imageElement.style.opacity = '1'" />
-          </div>
-        </div>
-
-        <div *ngIf="target.group" @fade class="has-group-container">
-          <div class="another-container stack-container">
-            <div *ngFor="let image of [target]" @fadeBetweenGroupImages class="image-container">
-              <img [src]="getSrc(image)" [class.flip-h]="flip" (click)="onImageClick(image)" #imageElement (load)="imageElement.style.opacity = '1'" />
+      @if (target) {
+        <div @fade class="stack-container">
+          @if (!target.group) {
+            <div @fade class="non-group-container stack-container">
+              @for (image of [target]; track image) {
+                <div @fade class="image-container">
+                  <img [src]="getSrc(image)" [class.flip-h]="flip" (click)="onImageClick(image)" #imageElement (load)="imageElement.style.opacity = '1'" />
+                </div>
+              }
             </div>
-          </div>
-          <div class="stack-container height-auto justify-content-center">
-            <div *ngFor="let group of [target.group]" @fade class="group-images-container">
-              <div *ngFor="let groupImage of group.images" class="group-image-container loading" (click)="stateService.fullscreenImage.set(groupImage)" #groupImageContainer>
-                <img
-                  [class.grayscale]="!groupImage.passesFilters"
-                  [style.width.px]="120 * groupImage.aspectRatio"
-                  [src]="groupImage.thumbnailLink"
-                  #groupImageElement
-                  (load)="groupImageContainer.classList.toggle('loading')" />
-                <div class="target-border" [class.target]="groupImage == target"></div>
+          }
+          @if (target.group) {
+            <div @fade class="has-group-container">
+              <div class="another-container stack-container">
+                @for (image of [target]; track image) {
+                  <div @fadeBetweenGroupImages class="image-container">
+                    <img [src]="getSrc(image)" [class.flip-h]="flip" (click)="onImageClick(image)" #imageElement (load)="imageElement.style.opacity = '1'" />
+                  </div>
+                }
+              </div>
+              <div class="stack-container height-auto justify-content-center">
+                @for (group of [target.group]; track group) {
+                  <div @fade class="group-images-container">
+                    @for (groupImage of group.images; track groupImage) {
+                      <div class="group-image-container loading" (click)="stateService.fullscreenImage.set(groupImage)" #groupImageContainer>
+                        <img
+                          [class.grayscale]="!groupImage.passesFilters"
+                          [style.width.px]="120 * groupImage.aspectRatio"
+                          [src]="groupImage.thumbnailLink"
+                          #groupImageElement
+                          (load)="groupImageContainer.classList.toggle('loading')" />
+                        <div class="target-border" [class.target]="groupImage == target"></div>
+                      </div>
+                    }
+                  </div>
+                }
               </div>
             </div>
-          </div>
+          }
         </div>
-      </div>
+      }
     </div>
 
     <div class="sidebar-right">
@@ -72,7 +87,9 @@
       </div>
       <div class="sidebar-center"></div>
       <div class="sidebar-end">
-        <i *ngIf="target?.group" class="icon-button active fa-solid fa-object-group" tp="Group Manager" tpPlacement="left" (click)="galleryService.openImageGroupEditor(target.group)"></i>
+        @if (target?.group) {
+          <i class="icon-button active fa-solid fa-object-group" tp="Group Manager" tpPlacement="left" (click)="galleryService.openImageGroupEditor(target.group)"></i>
+        }
         <i class="icon-button fa-solid fa-circle-info" tp="File Information" tpPlacement="left" (click)="galleryService.openFileInformation(target)"></i>
       </div>
     </div>

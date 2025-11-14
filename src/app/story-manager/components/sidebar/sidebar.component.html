@@ -4,10 +4,12 @@
 </div>
 <div class="flex column y-scrollbar-container">
   <div class="flex column">
-    <ng-container *ngFor="let article of stateService.getRoot(); let i = index">
-      <div *ngIf="i != 0" class="h-separator subtle"></div>
+    @for (article of stateService.getRoot(); track article; let i = $index) {
+      @if (i != 0) {
+        <div class="h-separator subtle"></div>
+      }
       <app-sidebar-row [article]="article"></app-sidebar-row>
-    </ng-container>
+    }
   </div>
 </div>
 <div class="h-separator"></div>

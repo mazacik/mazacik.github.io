@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
@@ -8,9 +8,8 @@ import { ArrayUtils } from '../../utils/array.utils';
 @Component({
     selector: 'app-multi-select-dialog',
     imports: [
-        CommonModule,
-        FormsModule
-    ],
+    FormsModule
+],
     templateUrl: 'multi-select-dialog.component.html',
     styleUrls: ['./multi-select-dialog.component.scss']
 })

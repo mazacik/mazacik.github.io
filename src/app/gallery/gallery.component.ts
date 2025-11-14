@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit } from '@angular/core';
 import { enter } from '../shared/constants/animations.constants';
 import { ApplicationService } from '../shared/services/application.service';
@@ -12,12 +12,11 @@ import { GallerySerializationService } from './services/gallery-serialization.se
 @Component({
     selector: 'app-gallery',
     imports: [
-        CommonModule,
-        FilterComponent,
-        MasonryComponent,
-        FullscreenComponent,
-        TaggerComponent
-    ],
+    FilterComponent,
+    MasonryComponent,
+    FullscreenComponent,
+    TaggerComponent
+],
     templateUrl: './gallery.component.html',
     styleUrls: ['./gallery.component.scss'],
     animations: [enter]

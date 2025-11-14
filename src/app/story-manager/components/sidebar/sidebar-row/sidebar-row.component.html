@@ -1,6 +1,8 @@
 <div class="article-container hover-container" [class.dragging-some]="isDraggingSome()" [class.dragging-this]="isDraggingThis()" (drop)="drop($event, article)" ondragover="event.preventDefault()">
   <div class="flex gap flex-1">
-    <i *ngFor="let _ of [].constructor(article.collectParents().length)" class="fa-solid fa-angle-down opacity-0"></i>
+    @for (_ of [].constructor(article.collectParents().length); track _) {
+      <i class="fa-solid fa-angle-down opacity-0"></i>
+    }
 
     @if (article.folder) {
       <i class="icon-button-small fa-solid" [ngClass]="article.open ? 'fa-angle-down' : 'fa-angle-right'" (click)="article.open = !article.open"></i>
@@ -19,12 +21,14 @@
       (dragend)="end($event, article)"
       ondragover="event.preventDefault()"
       >{{ article.title }}</span
-    >
+      >
+    </div>
+    <div class="article-buttons hover-visible">
+      <i class="icon-button-small fa-solid fa-ellipsis-vertical" (click)="stateService.options(article)"></i>
+    </div>
   </div>
-  <div class="article-buttons hover-visible">
-    <i class="icon-button-small fa-solid fa-ellipsis-vertical" (click)="stateService.options(article)"></i>
+  <div [@drawer2]="article.open" class="flex column overflow-hidden">
+    @for (child of article.children; track child) {
+      <app-sidebar-row [article]="child"></app-sidebar-row>
+    }
   </div>
-</div>
-<div [@drawer2]="article.open" class="flex column overflow-hidden">
-  <app-sidebar-row *ngFor="let child of article.children" [article]="child"></app-sidebar-row>
-</div>

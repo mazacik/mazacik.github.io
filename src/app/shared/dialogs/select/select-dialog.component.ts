@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
@@ -7,9 +7,8 @@ import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-conte
 @Component({
     selector: 'app-select-dialog',
     imports: [
-        CommonModule,
-        FormsModule
-    ],
+    FormsModule
+],
     templateUrl: 'select-dialog.component.html',
     styleUrls: ['./select-dialog.component.scss']
 })

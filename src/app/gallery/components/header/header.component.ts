@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component } from '@angular/core';
 import { TippyDirective } from '@ngneat/helipopper';
 import { GalleryService } from '../../services/gallery.service';
@@ -8,9 +8,8 @@ import { GalleryStateService } from '../../services/gallery-state.service';
 @Component({
     selector: 'app-header',
     imports: [
-        CommonModule,
-        TippyDirective
-    ],
+    TippyDirective
+],
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.scss']
 })

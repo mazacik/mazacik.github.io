@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component } from '@angular/core';
 import { TippyDirective } from '@ngneat/helipopper';
 import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
@@ -10,9 +10,8 @@ import { TagService } from '../../services/tag.service';
 @Component({
     selector: 'app-tag-manager',
     imports: [
-        CommonModule,
-        TippyDirective
-    ],
+    TippyDirective
+],
     templateUrl: './tag-manager.component.html',
     styleUrls: ['./tag-manager.component.scss']
 })

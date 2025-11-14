@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit } from '@angular/core';
 import { CheckboxComponent } from 'src/app/shared/components/checkbox/checkbox.component';
 import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
@@ -13,9 +13,8 @@ import { GallerySerializationService } from '../../services/gallery-serializatio
 @Component({
     selector: 'app-gallery-settings',
     imports: [
-        CommonModule,
-        CheckboxComponent
-    ],
+    CheckboxComponent
+],
     templateUrl: './gallery-settings.component.html',
     styleUrls: ['./gallery-settings.component.scss']
 })

@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit } from '@angular/core';
 import { GalleryImage } from 'src/app/gallery/models/gallery-image.class';
 import { Tournament } from 'src/app/shared/classes/tournament.class';
@@ -10,9 +10,7 @@ import { GalleryStateService } from '../../services/gallery-state.service';
 
 @Component({
     selector: 'app-image-comparison',
-    imports: [
-        CommonModule
-    ],
+    imports: [],
     templateUrl: './image-comparison.component.html',
     styleUrls: ['./image-comparison.component.scss']
 })

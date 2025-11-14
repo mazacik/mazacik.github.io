@@ -1,4 +1,4 @@
-<ng-container *ngIf="stateService.settings">
+@if (stateService.settings) {
   <div class="option-container">
     <span class="nowrap user-select-none">Dark Mode</span>
     <app-checkbox [value]="applicationService.isDarkTheme()" (valueChange)="applicationService.toggleTheme()"></app-checkbox>
@@ -13,7 +13,7 @@
     <span class="nowrap user-select-none">Show Videos</span>
     <app-checkbox [value]="stateService.settings.showVideos" (valueChange)="onShowVideosValueChange($event)"></app-checkbox>
   </div>
-    <div class="h-separator"></div>
+  <div class="h-separator"></div>
   <div class="option-container">
     <span class="nowrap user-select-none">Show Masonry File Names</span>
     <app-checkbox [value]="stateService.settings.showMasonryBrickFileNames" (valueChange)="onShowMasonryBrickFileNamesValueChange($event)"></app-checkbox>
@@ -26,4 +26,4 @@
   <div class="h-separator"></div>
   <div class="button action-button" (click)="bookmarkImages()">Bookmark All Images</div>
   <div class="button action-button" (click)="resetDialogPositions()">Reset Dialog Positions</div>
-</ng-container>
+}

@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, effect, HostListener } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Delay } from './shared/classes/delay.class';
@@ -10,9 +10,8 @@ import { KeyboardShortcutService } from './shared/services/keyboard-shortcut.ser
 @Component({
     selector: 'app-root',
     imports: [
-        CommonModule,
-        RouterOutlet
-    ],
+    RouterOutlet
+],
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
     animations: [fade]

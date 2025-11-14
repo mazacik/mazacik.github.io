@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
@@ -8,9 +8,8 @@ import { StringUtils } from '../../utils/string.utils';
 @Component({
     selector: 'app-input-dialog',
     imports: [
-        CommonModule,
-        FormsModule
-    ],
+    FormsModule
+],
     templateUrl: 'input-dialog.component.html',
     styleUrls: ['./input-dialog.component.scss']
 })

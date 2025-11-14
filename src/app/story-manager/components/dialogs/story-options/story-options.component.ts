@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component } from '@angular/core';
 import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
 import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
@@ -7,9 +7,7 @@ import { StoryManagerStateService } from 'src/app/story-manager/services/story-m
 
 @Component({
     selector: 'app-story-options',
-    imports: [
-        CommonModule
-    ],
+    imports: [],
     templateUrl: './story-options.component.html',
     styleUrls: ['./story-options.component.scss']
 })

@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { AfterViewInit, Component, ComponentRef, ElementRef, HostBinding, HostListener, Type, ViewChild, ViewContainerRef } from '@angular/core';
 import { DialogService } from '../../services/dialog.service';
 import { KeyboardShortcutService } from '../../services/keyboard-shortcut.service';
@@ -9,9 +9,7 @@ import { DialogContainerConfiguration } from './dialog-container-configuration.i
 
 @Component({
     selector: 'app-dialog-container',
-    imports: [
-        CommonModule
-    ],
+    imports: [],
     templateUrl: './dialog-container.component.html',
     styleUrls: ['./dialog-container.component.scss']
 })
