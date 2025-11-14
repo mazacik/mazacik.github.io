@@ -1,17 +1,17 @@
-@import 'src/styles/variables.scss';
+@use 'src/styles/variables.scss';
 
 :host {
   width: 650px;
-  padding: $gap;
+  padding: variables.$gap;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  gap: $gap;
+  gap: variables.$gap;
 
   .tag {
     border: 1px solid var(--color-border);
-    border-radius: $gap;
-    padding: 0.2rem $gap;
+    border-radius: variables.$gap;
+    padding: 0.2rem variables.$gap;
     display: flex;
     align-items: center;
     gap: 0.2rem;

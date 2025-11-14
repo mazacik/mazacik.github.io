@@ -1,9 +1,9 @@
-@import 'src/styles/variables.scss';
+@use 'src/styles/variables.scss';
 
 :host {
   display: flex;
   user-select: none;
-  transition: $transition-duration;
+  transition: variables.$transition-duration;
   overflow: hidden;
   height: 100%;
 
@@ -32,7 +32,7 @@
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    margin: $gap;
+    margin: variables.$gap;
 
     @media screen and (max-width:768px) {
       direction: rtl;
@@ -67,12 +67,12 @@
 
   .buttons-container {
     display: flex;
-    gap: $gap;
-    margin: 0 $gap $gap $gap;
+    gap: variables.$gap;
+    margin: 0 variables.$gap variables.$gap variables.$gap;
 
     .button {
       flex: 1;
-      gap: $gap;
+      gap: variables.$gap;
     }
   }
 

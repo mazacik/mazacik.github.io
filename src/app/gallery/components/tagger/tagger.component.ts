@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, effect, HostBinding } from '@angular/core';
-import { TippyDirective } from '@ngneat/helipopper';
 import { drawer2 } from 'src/app/shared/constants/animations.constants';
 import { ScreenUtils } from 'src/app/shared/utils/screen.utils';
 import { GalleryImage } from '../../models/gallery-image.class';
@@ -12,7 +11,6 @@ import { TaggerRowComponent } from './tagger-row/tagger-row.component';
     selector: 'app-tagger',
     imports: [
         CommonModule,
-        TippyDirective,
         TaggerRowComponent
     ],
     animations: [drawer2],

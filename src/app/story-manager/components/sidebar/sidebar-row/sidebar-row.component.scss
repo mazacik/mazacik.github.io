@@ -1,11 +1,11 @@
-@import 'src/styles/variables.scss';
+@use 'src/styles/variables.scss';
 
 :host {
   .article-container {
     cursor: pointer;
     display: flex;
     justify-content: space-between;
-    line-height: $button-height-small;
+    line-height: variables.$button-height-small;
 
     &:not(.dragging-some):hover,
     &.dragging-this {

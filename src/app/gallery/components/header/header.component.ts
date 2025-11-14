@@ -1,17 +1,13 @@
 
 import { Component } from '@angular/core';
-import { TippyDirective } from '@ngneat/helipopper';
 import { GalleryService } from '../../services/gallery.service';
 import { GalleryGoogleDriveService } from '../../services/gallery-google-drive.service';
 import { GalleryStateService } from '../../services/gallery-state.service';
 
 @Component({
-    selector: 'app-header',
-    imports: [
-    TippyDirective
-],
-    templateUrl: './header.component.html',
-    styleUrls: ['./header.component.scss']
+  selector: 'app-header',
+  templateUrl: './header.component.html',
+  styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent {
 

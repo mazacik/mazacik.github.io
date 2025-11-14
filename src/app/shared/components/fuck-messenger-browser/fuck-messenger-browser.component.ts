@@ -1,10 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostBinding, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
-import { TippyDirective } from '@ngneat/helipopper';
-import { CreateDirective } from 'src/app/shared/directives/create.directive';
-import { VariableDirective } from 'src/app/shared/directives/variable.directive';
 import { crossfade } from '../../constants/animations.constants';
 
 @Component({
@@ -12,11 +8,7 @@ import { crossfade } from '../../constants/animations.constants';
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
-    RouterLink,
-    TippyDirective,
-    VariableDirective,
-    CreateDirective
+    FormsModule
   ],
   templateUrl: './fuck-messenger-browser.component.html',
   styleUrls: ['./fuck-messenger-browser.component.scss'],

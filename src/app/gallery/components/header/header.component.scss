@@ -1,8 +1,8 @@
-@import 'src/styles/variables.scss';
+@use 'src/styles/variables.scss';
 
 :host {
-  padding: $gap;
-  height: $button-height;
+  padding: variables.$gap;
+  height: variables.$button-height;
   display: flex;
   justify-content: space-between;
   overflow: hidden;
@@ -12,13 +12,13 @@
       width: 3rem;
       min-width: 3rem;
       transition-property: width, min-width, opacity, margin, transform;
-      transition-duration: $transition-duration;
+      transition-duration: variables.$transition-duration;
 
       &:not(.drawer-hidden) {
         width: 0;
         min-width: 0;
         opacity: 0;
-        margin-right: -$gap;
+        margin-right: -(variables.$gap);
         transform: translateX(-3rem);
         pointer-events: none;
         border: 0;
@@ -31,7 +31,7 @@
   .header-end {
     display: flex;
     align-items: center;
-    gap: $gap;
+    gap: variables.$gap;
   }
 
   .header-start {

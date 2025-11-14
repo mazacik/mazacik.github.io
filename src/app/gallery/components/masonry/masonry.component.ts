@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, ElementRef, effect } from '@angular/core';
-import { TippyDirective } from '@ngneat/helipopper';
 import { GalleryImage } from 'src/app/gallery/models/gallery-image.class';
 import { Delay } from 'src/app/shared/classes/delay.class';
 import { fade } from 'src/app/shared/constants/animations.constants';
@@ -19,7 +18,6 @@ import { HeaderComponent } from '../header/header.component';
     imports: [
         CommonModule,
         CreateDirective,
-        TippyDirective,
         HeaderComponent
     ],
     templateUrl: './masonry.component.html',

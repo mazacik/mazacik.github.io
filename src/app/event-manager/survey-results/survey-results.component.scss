@@ -1,4 +1,4 @@
-@import 'src/styles/variables.scss';
+@use 'src/styles/variables.scss';
 
 :host {
   display: flex;
@@ -31,14 +31,14 @@
 
     .result-container {
       border: 1px solid var(--color-border);
-      border-radius: $gap;
+      border-radius: variables.$gap;
       display: flex;
       flex-direction: column;
       background-color: var(--color-background-secondary);
       padding: ($gap * 2);
 
       transition-property: gap;
-      transition-duration: $transition-duration;
+      transition-duration: variables.$transition-duration;
 
       &.closed {
         cursor: pointer;
@@ -57,7 +57,7 @@
       .result-options {
         display: flex;
         flex-direction: column;
-        gap: $gap;
+        gap: variables.$gap;
         width: 100%;
         overflow-x: auto;
         overflow-y: hidden;

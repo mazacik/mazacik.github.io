@@ -1,6 +1,5 @@
 
 import { Component } from '@angular/core';
-import { TippyDirective } from '@ngneat/helipopper';
 import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
 import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
 import { Tag } from '../../models/tag.class';
@@ -8,12 +7,9 @@ import { GalleryStateService } from '../../services/gallery-state.service';
 import { TagService } from '../../services/tag.service';
 
 @Component({
-    selector: 'app-tag-manager',
-    imports: [
-    TippyDirective
-],
-    templateUrl: './tag-manager.component.html',
-    styleUrls: ['./tag-manager.component.scss']
+  selector: 'app-tag-manager',
+  templateUrl: './tag-manager.component.html',
+  styleUrls: ['./tag-manager.component.scss']
 })
 export class TagManagerComponent extends DialogContentBase<void> {
 

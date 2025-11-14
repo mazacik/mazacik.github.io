@@ -5,8 +5,8 @@
   <div class="button action-button" (click)="createTag()">Create Tag</div>
   <div class="button action-button" (click)="createTagGroup()">Create Tag Group</div>
 } @else {
-  <div [tp]="this.getPseudoListEditDisabledMessage()">
+  <!-- <div [tp]="this.getPseudoListEditDisabledMessage()"> -->
     <div class="button action-button" [class.disabled]="isEditPseudoListDisabled()" (click)="editPseudoList()">Edit Pseudo List</div>
-  </div>
+  <!-- </div> -->
   <div class="button action-button" (click)="insertTagGroup()">Insert Tag Group</div>
 }

@@ -1,8 +1,8 @@
-@import 'src/styles/variables.scss';
+@use 'src/styles/variables.scss';
 
 :host {
   display: block;
-  padding: $gap $gap 0 $gap;
+  padding: variables.$gap variables.$gap 0 variables.$gap;
   line-height: 24px;
   user-select: none;
 

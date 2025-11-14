@@ -2,7 +2,6 @@ import { animate, style, transition, trigger } from '@angular/animations';
 import { CommonModule } from '@angular/common';
 import { Component, effect, OnDestroy, OnInit } from '@angular/core';
 import { SafeUrl } from '@angular/platform-browser';
-import { TippyDirective } from '@ngneat/helipopper';
 import { KeyboardShortcutTarget } from 'src/app/shared/classes/keyboard-shortcut-target.interface';
 import { fade } from 'src/app/shared/constants/animations.constants';
 import { VariableDirective } from 'src/app/shared/directives/variable.directive';
@@ -23,8 +22,7 @@ import { TagService } from '../../services/tag.service';
     selector: 'app-fullscreen',
     imports: [
         CommonModule,
-        VariableDirective,
-        TippyDirective
+        VariableDirective
     ],
     templateUrl: './fullscreen.component.html',
     styleUrls: ['./fullscreen.component.scss'],

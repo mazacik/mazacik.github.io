@@ -1,17 +1,17 @@
-@import 'src/styles/variables.scss';
+@use 'src/styles/variables.scss';
 
 :host {
   display: flex;
   flex-direction: column;
-  gap: $gap;
-  padding: $gap;
+  gap: variables.$gap;
+  padding: variables.$gap;
 
   .button {
     width: 100%;
 
     &.action-button {
       min-height: initial;
-      padding: $gap 0;
+      padding: variables.$gap 0;
     }
   }
 }

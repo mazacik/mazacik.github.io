@@ -1,17 +1,11 @@
+@use 'src/styles/variables.scss';
+
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap');
 
 @import '@fortawesome/fontawesome-free/css/fontawesome.css';
 @import '@fortawesome/fontawesome-free/css/regular.css';
 @import '@fortawesome/fontawesome-free/css/solid.css';
 @import '@fortawesome/fontawesome-free/css/brands.css';
-
-@import 'tippy.js/dist/tippy.css';
-
-@import 'firebaseui/dist/firebaseui.css';
-@import 'src/styles/firebase-changes.scss';
-
-
-@import 'src/styles/variables.scss';
 
 // scrollbar
 // @media screen and (min-width:768px) {
@@ -21,14 +15,14 @@
 //     }
 
 //     &::-webkit-scrollbar {
-//       width: $gap * 2;
-//       height: $gap * 2;
+//       width: variables.$gap * 2;
+//       height: variables.$gap * 2;
 //     }
 
 //     &::-webkit-scrollbar-thumb {
 //       background-clip: padding-box;
 //       border: solid transparent;
-//       border-width: $gap $gap $gap 0;
+//       border-width: variables.$gap variables.$gap variables.$gap 0;
 //       background-color: var(--color-border);
 //       min-width: 100px;
 //       min-height: 100px;
@@ -85,11 +79,11 @@ body.dark-theme {
 
 .tippy-box {
   background-color: var(--color-background-tippy);
-  border-radius: $gap * 1.5;
+  border-radius: variables.$gap * 1.5;
 
   .tippy-content {
     color: var(--color-text);
-    padding: $gap;
+    padding: variables.$gap;
   }
 }
 
@@ -224,19 +218,19 @@ body.dark-theme {
   align-self: normal;
 
   &.gap {
-    margin: $gap 0;
+    margin: variables.$gap 0;
   }
 
   &.gap-top {
-    margin-top: $gap;
+    margin-top: variables.$gap;
   }
 
   &.gap-bottom {
-    margin-bottom: $gap;
+    margin-bottom: variables.$gap;
   }
 
   &.margins {
-    width: calc(100% - 2 * $gap);
+    width: calc(100% - 2 * variables.$gap);
     justify-self: center;
     align-self: center;
   }
@@ -251,19 +245,19 @@ body.dark-theme {
   align-self: normal;
 
   &.gap {
-    margin: 0 $gap;
+    margin: 0 variables.$gap;
   }
 
   &.gap-left {
-    margin-left: $gap;
+    margin-left: variables.$gap;
   }
 
   &.gap-right {
-    margin-right: $gap;
+    margin-right: variables.$gap;
   }
 
   &.margins {
-    height: calc(100% - 2 * $gap);
+    height: calc(100% - 2 * variables.$gap);
     align-self: center;
   }
 }
@@ -300,8 +294,8 @@ i {
 input,
 textarea {
   min-width: 50px;
-  min-height: $button-height;
-  padding: 0 $gap;
+  min-height: variables.$button-height;
+  padding: 0 variables.$gap;
   border: 0;
   color: var(--color-text);
   background-color: transparent;
@@ -312,7 +306,7 @@ textarea {
 }
 
 select {
-  padding: $gap;
+  padding: variables.$gap;
   background-color: transparent;
 
   >option {
@@ -323,11 +317,11 @@ select {
 input,
 select,
 textarea {
-  min-height: $button-height;
+  min-height: variables.$button-height;
   display: flex;
   align-items: center;
   overflow-wrap: anywhere;
-  border-radius: $gap * 0.5;
+  border-radius: variables.$gap * 0.5;
   box-sizing: border-box;
   border: 1px solid var(--color-border);
   font-family: inherit;
@@ -515,15 +509,15 @@ hr {
 
 .button {
   width: fit-content;
-  min-width: $button-height;
-  min-height: $button-height;
+  min-width: variables.$button-height;
+  min-height: variables.$button-height;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: $gap;
+  border-radius: variables.$gap;
   cursor: pointer;
   user-select: none;
-  padding: 0 $gap;
+  padding: 0 variables.$gap;
   box-sizing: border-box;
   border: 1px solid var(--color-border);
 
@@ -531,7 +525,7 @@ hr {
   // text-shadow: -0.5px 0 var(--color-text-shadow), 0 0.5px var(--color-text-shadow), 0.5px 0 var(--color-text-shadow), 0 -0.5px var(--color-text-shadow);
 
   transition-property: background-color, opacity;
-  transition-duration: $transition-duration;
+  transition-duration: variables.$transition-duration;
 
   &:hover {
     background-color: rgba(255, 255, 255, 0.2) !important;
@@ -547,7 +541,7 @@ hr {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: $gap;
+  border-radius: variables.$gap;
   text-shadow: -1px 0 var(--color-text-shadow), 0 1px var(--color-text-shadow), 1px 0 var(--color-text-shadow), 0 -1px var(--color-text-shadow);
   box-sizing: border-box;
 
@@ -556,7 +550,7 @@ hr {
     border: 1px solid transparent;
 
     transition-property: border-color, background-color;
-    transition-duration: $transition-duration * 0.5;
+    transition-duration: variables.$transition-duration * 0.5;
 
     &:not(.icon-button-no-hover):hover {
       border-color: rgba(0, 0, 0, 0.3);
@@ -566,17 +560,17 @@ hr {
 }
 
 .icon-button {
-  width: $button-height;
-  height: $button-height;
-  min-width: $button-height;
-  min-height: $button-height;
+  width: variables.$button-height;
+  height: variables.$button-height;
+  min-width: variables.$button-height;
+  min-height: variables.$button-height;
 }
 
 .icon-button-small {
-  width: $button-height-small;
-  height: $button-height-small;
-  min-width: $button-height-small;
-  min-height: $button-height-small;
+  width: variables.$button-height-small;
+  height: variables.$button-height-small;
+  min-width: variables.$button-height-small;
+  min-height: variables.$button-height-small;
 }
 
 span.button,
@@ -642,11 +636,11 @@ span.icon-button {
 
 .gap,
 .gap-1 {
-  gap: $gap;
+  gap: variables.$gap;
 }
 
 .gap-2 {
-  gap: $gap * 2;
+  gap: variables.$gap * 2;
 }
 
 .gap-3 {
@@ -654,47 +648,47 @@ span.icon-button {
 }
 
 .margins-1 {
-  margin: $gap;
+  margin: variables.$gap;
 }
 
 .margins-1-v {
-  margin-top: $gap;
-  margin-bottom: $gap;
+  margin-top: variables.$gap;
+  margin-bottom: variables.$gap;
 }
 
 .margins-1-h {
-  margin-left: $gap;
-  margin-right: $gap;
+  margin-left: variables.$gap;
+  margin-right: variables.$gap;
 }
 
 .margins-1-t {
-  margin-top: $gap;
+  margin-top: variables.$gap;
 }
 
 .margins-1-r {
-  margin-right: $gap;
+  margin-right: variables.$gap;
 }
 
 .margins-1-b {
-  margin-bottom: $gap;
+  margin-bottom: variables.$gap;
 }
 
 .margins-1-l {
-  margin-left: $gap;
+  margin-left: variables.$gap;
 }
 
 .margins-2 {
-  margin: $gap * 2;
+  margin: variables.$gap * 2;
 }
 
 .margins-2-v {
-  margin-top: $gap * 2;
-  margin-bottom: $gap * 2;
+  margin-top: variables.$gap * 2;
+  margin-bottom: variables.$gap * 2;
 }
 
 .margins-2-h {
-  margin-left: $gap * 2;
-  margin-right: $gap * 2;
+  margin-left: variables.$gap * 2;
+  margin-right: variables.$gap * 2;
 }
 
 .margins-3 {
@@ -712,31 +706,31 @@ span.icon-button {
 }
 
 .padding-1 {
-  padding: $gap;
+  padding: variables.$gap;
 }
 
 .padding-1-v {
-  padding-top: $gap;
-  padding-bottom: $gap;
+  padding-top: variables.$gap;
+  padding-bottom: variables.$gap;
 }
 
 .padding-1-h {
-  padding-left: $gap;
-  padding-right: $gap;
+  padding-left: variables.$gap;
+  padding-right: variables.$gap;
 }
 
 .padding-2 {
-  padding: $gap * 2;
+  padding: variables.$gap * 2;
 }
 
 .padding-2-v {
-  padding-top: $gap * 2;
-  padding-bottom: $gap * 2;
+  padding-top: variables.$gap * 2;
+  padding-bottom: variables.$gap * 2;
 }
 
 .padding-2-h {
-  padding-left: $gap * 2;
-  padding-right: $gap * 2;
+  padding-left: variables.$gap * 2;
+  padding-right: variables.$gap * 2;
 }
 
 .padding-3 {

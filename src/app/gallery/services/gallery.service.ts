@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
-import { TippyService } from "@ngneat/helipopper";
 import { ApplicationService } from "src/app/shared/services/application.service";
 import { ArrayUtils } from "src/app/shared/utils/array.utils";
 import { DialogService } from "../../shared/services/dialog.service";
 import { GroupManagerComponent } from "../dialogs/group-manager/group-manager.component";
+import { ImageComparisonComponent } from "../dialogs/image-comparison/image-comparison.component";
 import { GallerySettingsComponent } from "../dialogs/settings/gallery-settings.component";
 import { TagManagerComponent } from "../dialogs/tag-manager/tag-manager.component";
 import { GalleryGroup } from "../models/gallery-group.class";
@@ -11,9 +11,8 @@ import { GalleryImage } from "../models/gallery-image.class";
 import { Tag } from "../models/tag.class";
 import { FilterService } from "./filter.service";
 import { GalleryGoogleDriveService } from "./gallery-google-drive.service";
-import { GalleryStateService } from "./gallery-state.service";
 import { GallerySerializationService } from "./gallery-serialization.service";
-import { ImageComparisonComponent } from "../dialogs/image-comparison/image-comparison.component";
+import { GalleryStateService } from "./gallery-state.service";
 
 @Injectable({
   providedIn: 'root',
@@ -23,7 +22,6 @@ export class GalleryService {
   public constructor(
     private serializationService: GallerySerializationService,
     private dialogService: DialogService,
-    private tippyService: TippyService,
     private filterService: FilterService,
     private stateService: GalleryStateService,
     private applicationService: ApplicationService,
@@ -46,7 +44,7 @@ export class GalleryService {
     this.dialogService.create(GroupManagerComponent, { sourceGroup: group });
   }
 
-    public openComparison(): void {
+  public openComparison(): void {
     this.dialogService.create(ImageComparisonComponent);
   }
 
@@ -63,17 +61,17 @@ export class GalleryService {
     const url: string = 'https://yandex.com/images/search?rpt=imageview&url=' + encodeURIComponent(target.thumbnailLink.replace(new RegExp('=s...'), '=s9999'));
     if (event.altKey) {
       navigator.clipboard.writeText(url);
-      this.tippyService.create(event.target as HTMLElement, 'URL copied to clipboard!', {
-        trigger: 'click',
-        onShow(instance) {
-          setTimeout(() => {
-            instance.hide();
-          }, 3000);
-        },
-        onHidden(instance) {
-          instance.destroy();
-        }
-      }).show();
+      // this.tippyService.create(event.target as HTMLElement, 'URL copied to clipboard!', {
+      //   trigger: 'click',
+      //   onShow(instance) {
+      //     setTimeout(() => {
+      //       instance.hide();
+      //     }, 3000);
+      //   },
+      //   onHidden(instance) {
+      //     instance.destroy();
+      //   }
+      // }).show();
     } else {
       window.open(url, '_blank');
     }

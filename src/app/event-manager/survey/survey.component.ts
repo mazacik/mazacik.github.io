@@ -2,10 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, ElementRef, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { TippyDirective } from '@ngneat/helipopper';
 import { crossfade, drawer2, fade, skip } from 'src/app/shared/constants/animations.constants';
 import { CreateDirective } from 'src/app/shared/directives/create.directive';
-import { VariableDirective } from 'src/app/shared/directives/variable.directive';
 import { FirebaseAuthService } from 'src/app/shared/services/firebase-auth.service';
 import { FirestoreService } from 'src/app/shared/services/firestore.service';
 import { Event } from '../models/event.interface';
@@ -21,10 +19,8 @@ import { EventManagerService } from '../services/event-manager.service';
     CommonModule,
     FormsModule,
     RouterLink,
-    TippyDirective,
-    VariableDirective,
     CreateDirective
-  ],
+],
   templateUrl: './survey.component.html',
   styleUrls: ['./survey.component.scss'],
   animations: [crossfade, drawer2, fade, skip]

@@ -1,4 +1,4 @@
-@import 'src/styles/variables.scss';
+@use 'src/styles/variables.scss';
 
 :host {
   display: flex;
@@ -20,7 +20,7 @@
     flex-direction: column;
     background-color: var(--color-background-secondary);
     border: 1px solid var(--color-border);
-    border-radius: $gap;
+    border-radius: variables.$gap;
     padding: ($gap * 2);
     gap: ($gap * 2);
     align-items: center;
@@ -44,7 +44,7 @@
     flex-direction: column;
     background-color: var(--color-background-secondary);
     border: 1px solid var(--color-border);
-    border-radius: $gap;
+    border-radius: variables.$gap;
     padding: ($gap * 2);
     gap: ($gap * 2);
 
@@ -70,7 +70,7 @@
       @media screen and (max-width:1000px) {
         grid-template-columns: auto;
         justify-items: center;
-        gap: $gap;
+        gap: variables.$gap;
       }
 
       @media screen and (min-width:1000px) {
@@ -80,7 +80,7 @@
 
       .auth-button.auth-ui-button {
         padding: 0;
-        border-radius: $gap;
+        border-radius: variables.$gap;
         overflow: hidden;
       }
 
@@ -104,7 +104,7 @@
     gap: ($gap * 2);
     background-color: var(--color-background-secondary);
     border: 1px solid var(--color-border);
-    border-radius: $gap;
+    border-radius: variables.$gap;
     padding: ($gap * 2);
     position: relative;
     width: 100%;
@@ -138,8 +138,8 @@
             cursor: pointer;
             padding: 0.5rem;
             border: 1px solid var(--color-border);
-            border-radius: $gap;
-            transition: $transition-duration * 0.5;
+            border-radius: variables.$gap;
+            transition: variables.$transition-duration * 0.5;
 
             &.selected {
               background-color: var(--color-secondary);
@@ -148,7 +148,7 @@
             .choice-labels {
               display: flex;
               align-items: center;
-              gap: $gap;
+              gap: variables.$gap;
 
               .choice-hyperlink {
                 cursor: pointer;

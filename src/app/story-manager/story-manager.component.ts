@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { TippyDirective } from '@ngneat/helipopper';
 import { ApplicationService } from '../shared/services/application.service';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { StoryManagerStateService } from './services/story-manager-state.service';
@@ -11,7 +10,6 @@ import { StoryManagerStateService } from './services/story-manager-state.service
     imports: [
         CommonModule,
         FormsModule,
-        TippyDirective,
         SidebarComponent
     ],
     templateUrl: './story-manager.component.html',

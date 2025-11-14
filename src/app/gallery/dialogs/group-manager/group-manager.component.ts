@@ -1,6 +1,5 @@
 
 import { Component, OnInit } from '@angular/core';
-import { TippyDirective } from '@ngneat/helipopper';
 import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
 import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
 import { DragDropDirective } from 'src/app/shared/directives/dragdrop.directive';
@@ -15,8 +14,7 @@ import { GallerySerializationService } from '../../services/gallery-serializatio
 @Component({
     selector: 'app-group-editor',
     imports: [
-    DragDropDirective,
-    TippyDirective
+    DragDropDirective
 ],
     templateUrl: './group-manager.component.html',
     styleUrls: ['./group-manager.component.scss']

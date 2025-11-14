@@ -1,8 +1,8 @@
-@import 'src/styles/variables.scss';
+@use 'src/styles/variables.scss';
 
 :host {
   display: flex;
-  gap: $gap;
+  gap: variables.$gap;
 }
 
 .column {
@@ -10,7 +10,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: $gap;
+  gap: variables.$gap;
 
   >* {
     width: 100%;
