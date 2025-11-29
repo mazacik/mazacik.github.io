@@ -3,7 +3,8 @@
   <div class="masonry-container" (create)="masonryContainer = $event.nativeElement; updateLayout()">
     @for (image of filterService.masonryImages(); track image) {
       <div
-        @fade
+        animate.enter="anim-fade-in"
+        animate.leave="anim-fade-out"
         class="masonry-brick"
         [style.width.px]="image.masonryWidth"
         [style.height.px]="image.masonryHeight"

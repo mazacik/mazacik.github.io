@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { drawer2 } from 'src/app/shared/constants/animations.constants';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 import { Article } from 'src/app/story-manager/models/article.class';
 import { StoryManagerGoogleDriveService } from 'src/app/story-manager/services/story-manager-google-drive.service';
@@ -14,8 +13,7 @@ import { StoryManagerStateService } from 'src/app/story-manager/services/story-m
         FormsModule
     ],
     templateUrl: './sidebar-row.component.html',
-    styleUrls: ['./sidebar-row.component.scss'],
-    animations: [drawer2]
+    styleUrls: ['./sidebar-row.component.scss']
 })
 export class SidebarRowComponent implements OnInit {
 

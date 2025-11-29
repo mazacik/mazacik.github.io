@@ -805,3 +805,64 @@ span.icon-button {
     }
   }
 }
+
+// animations
+:root {
+  --animation-duration: 500ms;
+  --animation-delay: 0ms;
+  --drawer-animation-duration: 500ms;
+}
+
+@keyframes anim-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes anim-fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+.anim-fade-in {
+  animation: anim-fade-in var(--animation-duration, 500ms) ease var(--animation-delay, 0ms) forwards;
+  will-change: opacity;
+}
+
+.anim-fade-out {
+  pointer-events: none;
+  animation: anim-fade-out var(--animation-duration, 500ms) ease var(--animation-delay, 0ms) forwards;
+  will-change: opacity;
+}
+
+.anim-fade-between {
+  --animation-duration: 333ms;
+}
+
+.anim-fade-between-leave {
+  --animation-duration: 333ms;
+  --animation-delay: 333ms;
+  z-index: -1;
+}
+
+.drawer-animated {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height var(--drawer-animation-duration, 500ms) ease, opacity var(--drawer-animation-duration, 500ms) ease;
+  will-change: max-height, opacity;
+}
+
+.drawer-animated.open {
+  max-height: 9999px;
+  opacity: 1;
+}

@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, effect, HostBinding } from '@angular/core';
-import { drawer2 } from 'src/app/shared/constants/animations.constants';
 import { ScreenUtils } from 'src/app/shared/utils/screen.utils';
 import { GalleryImage } from '../../models/gallery-image.class';
 import { GalleryStateService } from '../../services/gallery-state.service';
@@ -13,7 +12,6 @@ import { TaggerRowComponent } from './tagger-row/tagger-row.component';
         CommonModule,
         TaggerRowComponent
     ],
-    animations: [drawer2],
     templateUrl: './tagger.component.html',
     styleUrls: ['./tagger.component.scss']
 })

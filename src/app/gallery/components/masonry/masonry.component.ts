@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, ElementRef, effect } from '@angular/core';
 import { GalleryImage } from 'src/app/gallery/models/gallery-image.class';
 import { Delay } from 'src/app/shared/classes/delay.class';
-import { fade } from 'src/app/shared/constants/animations.constants';
 import { CreateDirective } from 'src/app/shared/directives/create.directive';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 import { ScreenUtils } from 'src/app/shared/utils/screen.utils';
@@ -21,8 +20,7 @@ import { HeaderComponent } from '../header/header.component';
         HeaderComponent
     ],
     templateUrl: './masonry.component.html',
-    styleUrls: ['./masonry.component.scss'],
-    animations: [fade]
+    styleUrls: ['./masonry.component.scss']
 })
 export class MasonryComponent {
 

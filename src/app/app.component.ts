@@ -2,7 +2,6 @@
 import { Component, effect, HostListener } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Delay } from './shared/classes/delay.class';
-import { fade } from './shared/constants/animations.constants';
 import { ApplicationService } from './shared/services/application.service';
 import { DialogService } from './shared/services/dialog.service';
 import { KeyboardShortcutService } from './shared/services/keyboard-shortcut.service';
@@ -13,8 +12,7 @@ import { KeyboardShortcutService } from './shared/services/keyboard-shortcut.ser
     RouterOutlet
 ],
     templateUrl: './app.component.html',
-    styleUrls: ['./app.component.scss'],
-    animations: [fade]
+    styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
 

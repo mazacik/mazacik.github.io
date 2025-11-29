@@ -1,9 +1,7 @@
-import { animate, style, transition, trigger } from '@angular/animations';
 import { CommonModule } from '@angular/common';
 import { Component, effect, OnDestroy, OnInit } from '@angular/core';
 import { SafeUrl } from '@angular/platform-browser';
 import { KeyboardShortcutTarget } from 'src/app/shared/classes/keyboard-shortcut-target.interface';
-import { fade } from 'src/app/shared/constants/animations.constants';
 import { VariableDirective } from 'src/app/shared/directives/variable.directive';
 import { ApplicationService } from 'src/app/shared/services/application.service';
 import { DialogService } from 'src/app/shared/services/dialog.service';
@@ -25,17 +23,7 @@ import { TagService } from '../../services/tag.service';
         VariableDirective
     ],
     templateUrl: './fullscreen.component.html',
-    styleUrls: ['./fullscreen.component.scss'],
-    animations: [fade, trigger('fadeBetweenGroupImages', [
-            transition(':enter', [
-                style({ opacity: 0 }),
-                animate('333ms ease', style({ opacity: 1 }))
-            ]),
-            transition(':leave', [
-                style({ opacity: 1, 'pointer-events': 'none', 'z-index': -1 }),
-                animate('333ms 333ms ease', style({ opacity: 0 }))
-            ])
-        ])]
+    styleUrls: ['./fullscreen.component.scss']
 })
 export class FullscreenComponent implements KeyboardShortcutTarget, OnInit, OnDestroy {
 

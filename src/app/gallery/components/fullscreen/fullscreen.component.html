@@ -23,7 +23,7 @@
             class="icon-button fa-brands fa-yandex-international"
             tp="Yandex RIS"
             tpPlacement="right"
-          (click)="$event.stopPropagation(); galleryService.openYandexReverseImageSearch($event, target)"></i>
+            (click)="$event.stopPropagation(); galleryService.openYandexReverseImageSearch($event, target)"></i>
           <div class="h-separator gap"></div>
         }
         <i class="icon-button fa-solid fa-box" tp="Archive" tpPlacement="right" (click)="galleryService.delete(target, true)"></i>
@@ -33,41 +33,35 @@
 
     <div class="width-100 height-100">
       @if (target) {
-        <div @fade class="stack-container">
+        <div animate.enter="anim-fade-in" animate.leave="anim-fade-out" class="stack-container">
           @if (!target.group) {
-            <div @fade class="non-group-container stack-container">
-              @for (image of [target]; track image) {
-                <div @fade class="image-container">
-                  <img [src]="getSrc(image)" [class.flip-h]="flip" (click)="onImageClick(image)" #imageElement (load)="imageElement.style.opacity = '1'" />
-                </div>
-              }
+            <div animate.enter="anim-fade-in" animate.leave="anim-fade-out" class="non-group-container stack-container">
+              <div animate.enter="anim-fade-in" animate.leave="anim-fade-out" class="image-container">
+                <img [src]="getSrc(target)" [class.flip-h]="flip" (click)="onImageClick(target)" #imageElement (load)="imageElement.style.opacity = '1'" />
+              </div>
             </div>
           }
           @if (target.group) {
-            <div @fade class="has-group-container">
+            <div animate.enter="anim-fade-in" animate.leave="anim-fade-out" class="has-group-container">
               <div class="another-container stack-container">
-                @for (image of [target]; track image) {
-                  <div @fadeBetweenGroupImages class="image-container">
-                    <img [src]="getSrc(image)" [class.flip-h]="flip" (click)="onImageClick(image)" #imageElement (load)="imageElement.style.opacity = '1'" />
-                  </div>
-                }
+                <div [animate.enter]="'anim-fade-in anim-fade-between'" [animate.leave]="'anim-fade-out anim-fade-between anim-fade-between-leave'" class="image-container">
+                  <img [src]="getSrc(target)" [class.flip-h]="flip" (click)="onImageClick(target)" #imageElement (load)="imageElement.style.opacity = '1'" />
+                </div>
               </div>
               <div class="stack-container height-auto justify-content-center">
-                @for (group of [target.group]; track group) {
-                  <div @fade class="group-images-container">
-                    @for (groupImage of group.images; track groupImage) {
-                      <div class="group-image-container loading" (click)="stateService.fullscreenImage.set(groupImage)" #groupImageContainer>
-                        <img
-                          [class.grayscale]="!groupImage.passesFilters"
-                          [style.width.px]="120 * groupImage.aspectRatio"
-                          [src]="groupImage.thumbnailLink"
-                          #groupImageElement
-                          (load)="groupImageContainer.classList.toggle('loading')" />
-                        <div class="target-border" [class.target]="groupImage == target"></div>
-                      </div>
-                    }
-                  </div>
-                }
+                <div animate.enter="anim-fade-in" animate.leave="anim-fade-out" class="group-images-container">
+                  @for (groupImage of target.group.images; track groupImage) {
+                    <div class="group-image-container loading" (click)="stateService.fullscreenImage.set(groupImage)" #groupImageContainer>
+                      <img
+                        [class.grayscale]="!groupImage.passesFilters"
+                        [style.width.px]="120 * groupImage.aspectRatio"
+                        [src]="groupImage.thumbnailLink"
+                        #groupImageElement
+                        (load)="groupImageContainer.classList.toggle('loading')" />
+                      <div class="target-border" [class.target]="groupImage == target"></div>
+                    </div>
+                  }
+                </div>
               </div>
             </div>
           }

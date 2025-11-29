@@ -1,6 +1,5 @@
 
 import { Component, OnInit } from '@angular/core';
-import { enter } from '../shared/constants/animations.constants';
 import { ApplicationService } from '../shared/services/application.service';
 import { FilterComponent } from './components/filter/filter.component';
 import { FullscreenComponent } from './components/fullscreen/fullscreen.component';
@@ -18,8 +17,7 @@ import { GallerySerializationService } from './services/gallery-serialization.se
     TaggerComponent
 ],
     templateUrl: './gallery.component.html',
-    styleUrls: ['./gallery.component.scss'],
-    animations: [enter]
+    styleUrls: ['./gallery.component.scss']
 })
 export class GalleryComponent implements OnInit {
 
