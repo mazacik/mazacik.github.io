@@ -1,4 +1,3 @@
-<app-header></app-header>
 <div class="masonry-scroll-container" (create)="masonryScrollContainer = $event.nativeElement">
   <div class="masonry-container" (create)="masonryContainer = $event.nativeElement; updateLayout()">
     @for (image of filterService.masonryImages(); track image) {

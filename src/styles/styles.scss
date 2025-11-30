@@ -1,4 +1,4 @@
-@use 'src/styles/variables.scss';
+﻿@use 'src/styles/variables.scss';
 
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap');
 
@@ -11,18 +11,18 @@
 // @media screen and (min-width:768px) {
 //   * {
 //     &::-webkit-scrollbar-track {
-//       // margin: (-$gap);
+//       // margin: (-$gap-1);
 //     }
 
 //     &::-webkit-scrollbar {
-//       width: variables.$gap * 2;
-//       height: variables.$gap * 2;
+//       width: variables.$gap-2;
+//       height: variables.$gap-2;
 //     }
 
 //     &::-webkit-scrollbar-thumb {
 //       background-clip: padding-box;
 //       border: solid transparent;
-//       border-width: variables.$gap variables.$gap variables.$gap 0;
+//       border-width: variables.$gap-1 variables.$gap-1 variables.$gap-1 0;
 //       background-color: var(--color-border);
 //       min-width: 100px;
 //       min-height: 100px;
@@ -68,60 +68,6 @@ body.dark-theme {
   --color-highlight: deepskyblue;
   --color-positive: yellowgreen;
   --color-negative: orangered;
-}
-
-// tippy
-@media screen and (max-width:768px) {
-  body>[data-tippy-root] {
-    display: none;
-  }
-}
-
-.tippy-box {
-  background-color: var(--color-background-tippy);
-  border-radius: variables.$gap * 1.5;
-
-  .tippy-content {
-    color: var(--color-text);
-    padding: variables.$gap;
-  }
-}
-
-.tippy-box[data-placement^='top']>.tippy-arrow::before {
-  bottom: -8px;
-  border-top-color: var(--color-background-tippy);
-}
-
-.tippy-box[data-placement^='bottom']>.tippy-arrow::before {
-  top: -8px;
-  border-bottom-color: var(--color-background-tippy);
-}
-
-.tippy-box[data-placement^='left']>.tippy-arrow::before {
-  right: -8px;
-  border-left-color: var(--color-background-tippy);
-}
-
-.tippy-box[data-placement^='right']>.tippy-arrow::before {
-  left: -8px;
-  border-right-color: var(--color-background-tippy);
-}
-
-.tippy-hover-menu-container {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-
-  .tippy-hover-menu-button {
-    text-align: center;
-    cursor: pointer;
-    border-radius: 4px;
-    padding: 4px 8px;
-
-    &:hover {
-      background-color: var(--color-border);
-    }
-  }
 }
 
 .fa-regular::before,
@@ -218,19 +164,19 @@ body.dark-theme {
   align-self: normal;
 
   &.gap {
-    margin: variables.$gap 0;
+    margin: variables.$gap-1 0;
   }
 
   &.gap-top {
-    margin-top: variables.$gap;
+    margin-top: variables.$gap-1;
   }
 
   &.gap-bottom {
-    margin-bottom: variables.$gap;
+    margin-bottom: variables.$gap-1;
   }
 
   &.margins {
-    width: calc(100% - 2 * variables.$gap);
+    width: calc(100% - variables.$gap-2);
     justify-self: center;
     align-self: center;
   }
@@ -245,19 +191,19 @@ body.dark-theme {
   align-self: normal;
 
   &.gap {
-    margin: 0 variables.$gap;
+    margin: 0 variables.$gap-1;
   }
 
   &.gap-left {
-    margin-left: variables.$gap;
+    margin-left: variables.$gap-1;
   }
 
   &.gap-right {
-    margin-right: variables.$gap;
+    margin-right: variables.$gap-1;
   }
 
   &.margins {
-    height: calc(100% - 2 * variables.$gap);
+    height: calc(100% - variables.$gap-2);
     align-self: center;
   }
 }
@@ -295,7 +241,7 @@ input,
 textarea {
   min-width: 50px;
   min-height: variables.$button-height;
-  padding: 0 variables.$gap;
+  padding: 0 variables.$gap-1;
   border: 0;
   color: var(--color-text);
   background-color: transparent;
@@ -306,7 +252,7 @@ textarea {
 }
 
 select {
-  padding: variables.$gap;
+  padding: variables.$gap-1;
   background-color: transparent;
 
   >option {
@@ -321,7 +267,7 @@ textarea {
   display: flex;
   align-items: center;
   overflow-wrap: anywhere;
-  border-radius: variables.$gap * 0.5;
+  border-radius: variables.$gap-1;
   box-sizing: border-box;
   border: 1px solid var(--color-border);
   font-family: inherit;
@@ -514,10 +460,10 @@ hr {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: variables.$gap;
+  border-radius: variables.$gap-1;
   cursor: pointer;
   user-select: none;
-  padding: 0 variables.$gap;
+  padding: 0 variables.$gap-1;
   box-sizing: border-box;
   border: 1px solid var(--color-border);
 
@@ -541,7 +487,7 @@ hr {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: variables.$gap;
+  border-radius: variables.$gap-1;
   text-shadow: -1px 0 var(--color-text-shadow), 0 1px var(--color-text-shadow), 1px 0 var(--color-text-shadow), 0 -1px var(--color-text-shadow);
   box-sizing: border-box;
 
@@ -636,115 +582,115 @@ span.icon-button {
 
 .gap,
 .gap-1 {
-  gap: variables.$gap;
+  gap: variables.$gap-1;
 }
 
 .gap-2 {
-  gap: variables.$gap * 2;
+  gap: variables.$gap-2;
 }
 
 .gap-3 {
-  gap: 1rem;
+  gap: variables.$gap-3;
 }
 
 .margins-1 {
-  margin: variables.$gap;
+  margin: variables.$gap-1;
 }
 
 .margins-1-v {
-  margin-top: variables.$gap;
-  margin-bottom: variables.$gap;
+  margin-top: variables.$gap-1;
+  margin-bottom: variables.$gap-1;
 }
 
 .margins-1-h {
-  margin-left: variables.$gap;
-  margin-right: variables.$gap;
+  margin-left: variables.$gap-1;
+  margin-right: variables.$gap-1;
 }
 
 .margins-1-t {
-  margin-top: variables.$gap;
+  margin-top: variables.$gap-1;
 }
 
 .margins-1-r {
-  margin-right: variables.$gap;
+  margin-right: variables.$gap-1;
 }
 
 .margins-1-b {
-  margin-bottom: variables.$gap;
+  margin-bottom: variables.$gap-1;
 }
 
 .margins-1-l {
-  margin-left: variables.$gap;
+  margin-left: variables.$gap-1;
 }
 
 .margins-2 {
-  margin: variables.$gap * 2;
+  margin: variables.$gap-2;
 }
 
 .margins-2-v {
-  margin-top: variables.$gap * 2;
-  margin-bottom: variables.$gap * 2;
+  margin-top: variables.$gap-2;
+  margin-bottom: variables.$gap-2;
 }
 
 .margins-2-h {
-  margin-left: variables.$gap * 2;
-  margin-right: variables.$gap * 2;
+  margin-left: variables.$gap-2;
+  margin-right: variables.$gap-2;
 }
 
 .margins-3 {
-  margin: 1rem;
+  margin: variables.$gap-3;
 }
 
 .margins-3-v {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  margin-top: variables.$gap-3;
+  margin-bottom: variables.$gap-3;
 }
 
 .margins-3-h {
-  margin-left: 1rem;
-  margin-right: 1rem;
+  margin-left: variables.$gap-3;
+  margin-right: variables.$gap-3;
 }
 
 .padding-1 {
-  padding: variables.$gap;
+  padding: variables.$gap-1;
 }
 
 .padding-1-v {
-  padding-top: variables.$gap;
-  padding-bottom: variables.$gap;
+  padding-top: variables.$gap-1;
+  padding-bottom: variables.$gap-1;
 }
 
 .padding-1-h {
-  padding-left: variables.$gap;
-  padding-right: variables.$gap;
+  padding-left: variables.$gap-1;
+  padding-right: variables.$gap-1;
 }
 
 .padding-2 {
-  padding: variables.$gap * 2;
+  padding: variables.$gap-2;
 }
 
 .padding-2-v {
-  padding-top: variables.$gap * 2;
-  padding-bottom: variables.$gap * 2;
+  padding-top: variables.$gap-2;
+  padding-bottom: variables.$gap-2;
 }
 
 .padding-2-h {
-  padding-left: variables.$gap * 2;
-  padding-right: variables.$gap * 2;
+  padding-left: variables.$gap-2;
+  padding-right: variables.$gap-2;
 }
 
 .padding-3 {
-  padding: 1rem;
+  padding: variables.$gap-3;
 }
 
 .padding-3-v {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  padding-top: variables.$gap-3;
+  padding-bottom: variables.$gap-3;
 }
 
 .padding-3-h {
-  padding-left: 1rem;
-  padding-right: 1rem;
+  padding-left: variables.$gap-3;
+  padding-right: variables.$gap-3;
 }
 
 .align-items-center {
@@ -787,25 +733,6 @@ span.icon-button {
   transform: scaleY(-1);
 }
 
-.loading-spinner {
-  width: 75px;
-  height: 75px;
-  border-width: 3px;
-  border-color: var(--color-background-secondary);
-  border-top-color: #fff;
-  animation: spin 1s infinite linear;
-  border-radius: 50%;
-  border-style: solid;
-  position: absolute;
-  z-index: 100;
-
-  @keyframes spin {
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-}
-
 // animations
 :root {
   --animation-duration: 500ms;
@@ -834,14 +761,14 @@ span.icon-button {
 }
 
 .anim-fade-in {
-  animation: anim-fade-in var(--animation-duration, 500ms) ease var(--animation-delay, 0ms) forwards;
-  will-change: opacity;
+  animation: anim-fade-in var(--animation-duration, 500ms) ease var(--animation-delay, 0ms) forwards !important;
+  will-change: opacity !important;
 }
 
 .anim-fade-out {
-  pointer-events: none;
-  animation: anim-fade-out var(--animation-duration, 500ms) ease var(--animation-delay, 0ms) forwards;
-  will-change: opacity;
+  pointer-events: none !important;
+  animation: anim-fade-out var(--animation-duration, 500ms) ease var(--animation-delay, 0ms) forwards !important;
+  will-change: opacity !important;
 }
 
 .anim-fade-between {

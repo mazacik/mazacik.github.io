@@ -1,9 +1,9 @@
-@use 'src/styles/variables.scss';
+﻿@use 'src/styles/variables.scss';
 
 :host {
   display: block;
   width: 650px;
-  padding: variables.$gap;
+  padding: variables.$gap-1;
 
   input {
     width: 100%;

@@ -10,17 +10,15 @@ import { FilterService } from '../../services/filter.service';
 import { GalleryStateService } from '../../services/gallery-state.service';
 import { GalleryService } from '../../services/gallery.service';
 import { TagService } from '../../services/tag.service';
-import { HeaderComponent } from '../header/header.component';
 
 @Component({
-    selector: 'app-masonry',
-    imports: [
-        CommonModule,
-        CreateDirective,
-        HeaderComponent
-    ],
-    templateUrl: './masonry.component.html',
-    styleUrls: ['./masonry.component.scss']
+  selector: 'app-masonry',
+  imports: [
+    CommonModule,
+    CreateDirective
+  ],
+  templateUrl: './masonry.component.html',
+  styleUrls: ['./masonry.component.scss']
 })
 export class MasonryComponent {
 

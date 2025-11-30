@@ -1,8 +1,8 @@
-@use 'src/styles/variables.scss';
+﻿@use 'src/styles/variables.scss';
 
 :host {
   display: block;
-  padding: variables.$gap;
+  padding: variables.$gap-1;
 
   select {
     width: 100%;

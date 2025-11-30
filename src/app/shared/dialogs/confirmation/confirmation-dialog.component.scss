@@ -1,5 +1,5 @@
-@use 'src/styles/variables.scss';
+﻿@use 'src/styles/variables.scss';
 
 .container {
-  padding: variables.$gap * 3;
+  padding: variables.$gap-3;
 }

@@ -4,7 +4,6 @@ import { SafeUrl } from '@angular/platform-browser';
 import { KeyboardShortcutTarget } from 'src/app/shared/classes/keyboard-shortcut-target.interface';
 import { VariableDirective } from 'src/app/shared/directives/variable.directive';
 import { ApplicationService } from 'src/app/shared/services/application.service';
-import { DialogService } from 'src/app/shared/services/dialog.service';
 import { KeyboardShortcutService } from 'src/app/shared/services/keyboard-shortcut.service';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 import { GoogleFileUtils } from 'src/app/shared/utils/google-file.utils';
@@ -40,7 +39,6 @@ export class FullscreenComponent implements KeyboardShortcutTarget, OnInit, OnDe
     private keyboardShortcutService: KeyboardShortcutService,
     protected googleService: GalleryGoogleDriveService,
     protected stateService: GalleryStateService,
-    protected dialogService: DialogService,
     protected galleryService: GalleryService,
     protected tagService: TagService,
     protected filterService: FilterService
@@ -133,6 +131,25 @@ export class FullscreenComponent implements KeyboardShortcutTarget, OnInit, OnDe
     if (this.applicationService.reduceBandwidth) {
       image.thumbnailLink = image.thumbnailLink.replace('=s220', '=s440');
     }
+  }
+
+  protected getFileSize(image: GalleryImage): string | null {
+    const size: number = Number(image?.size);
+    if (!image || Number.isNaN(size)) return null;
+    const kilobytes: number = size / 1024;
+    return kilobytes.toLocaleString(undefined, { maximumFractionDigits: 1 }) + ' KB';
+  }
+
+  protected getResolution(image: GalleryImage): string | null {
+    if (image?.imageMediaMetadata?.width && image?.imageMediaMetadata?.height) {
+      return image.imageMediaMetadata.width + ' x ' + image.imageMediaMetadata.height;
+    }
+
+    if (image?.videoMediaMetadata?.width && image?.videoMediaMetadata?.height) {
+      return image.videoMediaMetadata.width + ' x ' + image.videoMediaMetadata.height;
+    }
+
+    return null;
   }
 
   protected snapshot(): void {

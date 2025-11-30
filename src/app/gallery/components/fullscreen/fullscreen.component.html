@@ -13,21 +13,26 @@
       </div>
       <div class="sidebar-center"></div>
       <div class="sidebar-end">
-        @if (ScreenUtils.isLargeScreen()) {
-          <i class="icon-button fa-solid fa-left-right" tp="Flip" tpPlacement="right" (click)="flip = !flip"></i>
-          <div class="h-separator gap"></div>
-          <i class="icon-button fa-solid fa-download" tp="Download" tpPlacement="right" (click)="googleService.download(target)"></i>
-          <div class="h-separator gap"></div>
-          <i class="icon-button fa-brands fa-google-drive" tp="Google Drive" tpPlacement="right" (click)="$event.stopPropagation(); googleService.openSearch(target.name)"></i>
-          <i
-            class="icon-button fa-brands fa-yandex-international"
-            tp="Yandex RIS"
-            tpPlacement="right"
-            (click)="$event.stopPropagation(); galleryService.openYandexReverseImageSearch($event, target)"></i>
-          <div class="h-separator gap"></div>
+        @if (target?.group) {
+          <i class="icon-button active fa-solid fa-object-group" tp="Group Manager" tpPlacement="left" (click)="galleryService.openImageGroupEditor(target.group)"></i>
         }
-        <i class="icon-button fa-solid fa-box" tp="Archive" tpPlacement="right" (click)="galleryService.delete(target, true)"></i>
-        <i class="icon-button fa-solid fa-trash" tp="Delete" tpPlacement="right" (click)="galleryService.delete(target, false)"></i>
+        @if (target && (stateService.settings?.showFileInformation ?? true)) {
+          <div class="file-information">
+            <div class="file-name" [title]="target.name">{{ target.name }}</div>
+            @if (getFileSize(target); as fileSize) {
+              <div class="file-row">
+                <span class="label">Size</span>
+                <span class="value">{{ fileSize }}</span>
+              </div>
+            }
+            @if (getResolution(target); as resolution) {
+              <div class="file-row">
+                <span class="label">Resolution</span>
+                <span class="value">{{ resolution }}</span>
+              </div>
+            }
+          </div>
+        }
       </div>
     </div>
 
@@ -81,12 +86,24 @@
       </div>
       <div class="sidebar-center"></div>
       <div class="sidebar-end">
-        @if (target?.group) {
-          <i class="icon-button active fa-solid fa-object-group" tp="Group Manager" tpPlacement="left" (click)="galleryService.openImageGroupEditor(target.group)"></i>
+        @if (ScreenUtils.isLargeScreen()) {
+          <i class="icon-button fa-solid fa-left-right" tp="Flip" tpPlacement="right" (click)="flip = !flip"></i>
+          <div class="h-separator gap"></div>
+          <i class="icon-button fa-solid fa-download" tp="Download" tpPlacement="right" (click)="googleService.download(target)"></i>
+          <div class="h-separator gap"></div>
+          <i class="icon-button fa-brands fa-google-drive" tp="Google Drive" tpPlacement="right" (click)="$event.stopPropagation(); googleService.openSearch(target.name)"></i>
+          <i
+            class="icon-button fa-brands fa-yandex-international"
+            tp="Yandex RIS"
+            tpPlacement="right"
+            (click)="$event.stopPropagation(); galleryService.openYandexReverseImageSearch($event, target)"></i>
+          <div class="h-separator gap"></div>
         }
-        <i class="icon-button fa-solid fa-circle-info" tp="File Information" tpPlacement="left" (click)="galleryService.openFileInformation(target)"></i>
+        <i class="icon-button fa-solid fa-box" tp="Archive" tpPlacement="right" (click)="galleryService.delete(target, true)"></i>
+        <i class="icon-button fa-solid fa-trash" tp="Delete" tpPlacement="right" (click)="galleryService.delete(target, false)"></i>
       </div>
     </div>
+
   </div>
 </ng-container>
 

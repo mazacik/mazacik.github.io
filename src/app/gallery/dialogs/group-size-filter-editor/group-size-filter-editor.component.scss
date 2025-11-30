@@ -1,4 +1,4 @@
-@use 'src/styles/variables.scss';
+﻿@use 'src/styles/variables.scss';
 
 :host {
   width: max-content;
@@ -6,9 +6,9 @@
   align-content: center;
   grid-template-columns: auto 1fr;
   grid-auto-rows: min-content;
-  row-gap: variables.$gap;
-  column-gap: variables.$gap;
-  padding: variables.$gap * 3;
+  row-gap: variables.$gap-1;
+  column-gap: variables.$gap-1;
+  padding: variables.$gap-3;
 
   .element-label {
     align-self: center;

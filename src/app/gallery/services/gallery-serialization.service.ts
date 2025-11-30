@@ -5,13 +5,12 @@ import { GalleryImage } from "src/app/gallery/models/gallery-image.class";
 import { Delay } from "src/app/shared/classes/delay.class";
 import { GoogleMetadata } from "src/app/shared/classes/google-api/google-metadata.class";
 import { ApplicationService } from "src/app/shared/services/application.service";
-import { DialogService } from "src/app/shared/services/dialog.service";
 import { ArrayUtils } from "src/app/shared/utils/array.utils";
 import { GoogleFileUtils } from "src/app/shared/utils/google-file.utils";
-import { GallerySettingsComponent } from "../dialogs/settings/gallery-settings.component";
 import { Data } from "../models/data.interface";
 import { GroupData } from "../models/group-data.interface";
 import { ImageData } from "../models/image-data.interface";
+import { GallerySettings } from "../models/gallery-settings.interface";
 import { TagData } from "../models/tag-data.interface";
 import { Tag } from "../models/tag.class";
 import { FilterService } from "./filter.service";
@@ -28,7 +27,6 @@ export class GallerySerializationService {
     private injector: Injector,
     private sanitizer: DomSanitizer,
     private applicationService: ApplicationService,
-    private dialogService: DialogService,
     private googleService: GalleryGoogleDriveService
   ) { }
 
@@ -39,6 +37,12 @@ export class GallerySerializationService {
     stateService.dataFolderId = data.dataFolderId;
     stateService.archiveFolderId = data.archiveFolderId;
     stateService.tournamentState = data.tournamentState;
+    let settingsUpdated: boolean = !data.settings;
+    stateService.settings = data.settings ?? {} as GallerySettings;
+    if (stateService.settings.showFileInformation === undefined) {
+      stateService.settings.showFileInformation = true;
+      settingsUpdated = true;
+    }
 
     const filterService: FilterService = this.injector.get(FilterService);
     filterService.filterFavorites.state = data.heartsFilter || 0;
@@ -53,12 +57,6 @@ export class GallerySerializationService {
     ArrayUtils.push(tagService.tags, data.tagProperties.map(data => this.parseTag(data)));
     tagService.tags.forEach(tag => tag.children = data.tagProperties.find(t => t.id == tag.id).childIds.map(childId => tagService.tags.find(t => t.id == childId)));
     tagService.tags.forEach(tag => tag.parent = tagService.tags.find(t => t.children.includes(tag)));
-
-    if (data.settings) {
-      stateService.settings = data.settings;
-    } else {
-      await this.dialogService.create(GallerySettingsComponent);
-    }
 
     const recursionTracker: Set<Promise<void>> = new Set<Promise<void>>();
     await this.processImages(data, stateService.dataFolderId, stateService.images, tagService.tags, recursionTracker);
@@ -80,7 +78,7 @@ export class GallerySerializationService {
 
     filterService.updateFilters();
     this.applicationService.loading.set(false);
-    if (!data.settings) this.save();
+    if (settingsUpdated) this.save();
   }
 
   private async processImages(data: Data, folderId: string, collector: GalleryImage[], tags: Tag[], recursionTracker: Set<Promise<void>>): Promise<void> {
@@ -98,6 +96,7 @@ export class GallerySerializationService {
     image.name = metadata.name;
     image.mimeType = metadata.mimeType;
     image.parentFolderId = parentFolderId;
+    image.size = metadata.size ? Number(metadata.size) : undefined;
 
     if (reduceBandwidth) {
       image.thumbnailLink = metadata.thumbnailLink;

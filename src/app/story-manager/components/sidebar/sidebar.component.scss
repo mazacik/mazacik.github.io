@@ -1,4 +1,4 @@
-@use 'src/styles/variables.scss';
+﻿@use 'src/styles/variables.scss';
 
 :host {
   width: 280px;
@@ -14,12 +14,12 @@
   caret-color: var(--color-text);
   font-variant-numeric: tabular-nums;
   user-select: none;
-  padding: variables.$gap * 2;
+  padding: variables.$gap-2;
 }
 
 .button-container {
   display: flex;
   justify-content: center;
-  padding: variables.$gap 0;
-  gap: variables.$gap;
+  padding: variables.$gap-1 0;
+  gap: variables.$gap-1;
 }

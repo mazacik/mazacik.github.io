@@ -1,4 +1,4 @@
-@use 'src/styles/variables.scss';
+﻿@use 'src/styles/variables.scss';
 
 :host {
   display: flex;
@@ -13,7 +13,7 @@
 
     .image-container {
       // flex: 1;
-      padding: variables.$gap;
+      padding: variables.$gap-1;
       display: flex;
       // align-items: center;
       // justify-content: center;
@@ -27,7 +27,7 @@
         max-width: 100%;
         max-height: 100%;
         object-fit: contain;
-        border-radius: variables.$gap;
+        border-radius: variables.$gap-1;
       }
     }
   }
@@ -36,15 +36,15 @@
     display: flex;
     flex-direction: column;
     overflow: auto;
-    gap: variables.$gap;
+    gap: variables.$gap-1;
 
     @media screen and (max-width:768px) {
-      width: calc(3*100px + 2 * variables.$gap);
-      padding: variables.$gap;
+      width: calc(3*100px + variables.$gap-2);
+      padding: variables.$gap-1;
     }
 
     @media screen and (min-width:768px) {
-      padding: variables.$gap;
+      padding: variables.$gap-1;
     }
 
     .image-container {
@@ -54,7 +54,7 @@
       img {
         max-width: 100%;
         max-height: 100%;
-        // border-radius: variables.$gap;
+        // border-radius: variables.$gap-1;
       }
     }
   }

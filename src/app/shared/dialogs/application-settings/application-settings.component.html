@@ -1,0 +1,30 @@
+<div class="settings-layout">
+  <div class="tabs">
+    @for (tab of tabs; track tab.id) {
+      <div class="tab-button" [class.active]="tab.id === activeTabId" (click)="activeTabId = tab.id">
+        {{ tab.label }}
+      </div>
+    }
+  </div>
+
+  <div class="tab-content">
+    @if (activeTab?.items?.length) {
+      <div class="tab-panel">
+        @for (item of activeTab.items; track item.id) {
+          @if (item.type === 'toggle') {
+            <div class="option-container">
+              <span class="nowrap user-select-none">{{ item.label }}</span>
+              <app-checkbox [value]="item.getValue()" (valueChange)="item.onChange($event)"></app-checkbox>
+            </div>
+          } @else if (item.type === 'action') {
+            <div class="button action-button full-width" (click)="item.onClick()">{{ item.label }}</div>
+          }
+        }
+      </div>
+    } @else {
+      <div class="tab-panel">
+        <span class="nowrap user-select-none">No settings available.</span>
+      </div>
+    }
+  </div>
+</div>

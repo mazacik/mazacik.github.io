@@ -3,6 +3,7 @@ export abstract class GoogleMetadata {
   public id: string;
   public name: string
   public mimeType: string;
+  public size?: number;
 
   public thumbnailLink?: string;
   public imageMediaMetadata?: { width?: number, height?: number };

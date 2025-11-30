@@ -1,4 +1,4 @@
-@use 'src/styles/variables.scss';
+﻿@use 'src/styles/variables.scss';
 
 :host {
   width: 100%;
@@ -11,7 +11,7 @@
     background-color: var(--color-background-primary);
     // width: 100%;
     height: 100%;
-    padding: 1px variables.$gap variables.$gap variables.$gap;
+    padding: variables.$gap-1;
 
     .masonry-container {
       position: relative;
@@ -20,11 +20,11 @@
         position: absolute;
         transition-property: top, left, width, height, opacity;
         transition-duration: variables.$transition-duration;
-        padding-bottom: variables.$gap;
+        padding-bottom: variables.$gap-1;
         cursor: pointer;
 
         .brick-container {
-          border-radius: variables.$gap;
+          border-radius: variables.$gap-1;
           width: 100%;
           height: 100%;
           display: flex;
@@ -36,7 +36,7 @@
           img {
             width: 100%;
             user-select: none;
-            border-radius: variables.$gap;
+            border-radius: variables.$gap-1;
             contain: size;
 
             opacity: 0;
@@ -63,7 +63,7 @@
           width: 100%;
           position: absolute;
           display: flex;
-          padding: variables.$gap;
+          padding: variables.$gap-1;
           box-sizing: border-box;
           user-select: none;
           justify-content: center;
@@ -93,7 +93,7 @@
 
         .brick-footer {
           bottom: 0;
-          padding-bottom: variables.$gap * 2;
+          padding-bottom: variables.$gap-2;
         }
       }
     }

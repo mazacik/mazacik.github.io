@@ -1,8 +1,10 @@
-<div class="overlay-loading-bar" [style.backgroundColor]="getLoadingBarColor()"></div>
+<div class="loading-overlay-bar" [style.backgroundColor]="getLoadingBarColor()"></div>
 @if (applicationService.loading()) {
-  <div animate.enter="anim-fade-in" animate.leave="anim-fade-out" class="overlay-blur"></div>
+  <div class="loading-overlay-container" animate.enter="anim-fade-in" animate.leave="anim-fade-out">
+    <span class="loading-spinner"></span>
+  </div>
 }
-@if (applicationService.loading()) {
-  <span animate.enter="anim-fade-in" animate.leave="anim-fade-out" class="loading-spinner"></span>
-}
-<router-outlet></router-outlet>
+<app-header></app-header>
+<div class="app-content center">
+  <router-outlet></router-outlet>
+</div>
