@@ -5,11 +5,11 @@
     cursor: pointer;
     display: flex;
     justify-content: space-between;
-    line-height: variables.$button-height-small;
+    line-height: variables.$button-height-smaller;
 
     &:not(.dragging-some):hover,
     &.dragging-this {
-      background-color: var(--color-background-hover);
+      background-color: var(--color-surface-200);
     }
 
     .article-buttons {

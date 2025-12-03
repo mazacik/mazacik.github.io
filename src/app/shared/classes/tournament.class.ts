@@ -51,6 +51,8 @@ export class Tournament {
         // if (!this.hasPath(a, b) && !this.hasPath(b, a)) return [a, b];
       }
     }
+    
+    console.log(available.length);
 
     if (available.length === 0) return null;
     const [x, y] = available[Math.floor(Math.random() * available.length)];

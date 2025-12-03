@@ -19,6 +19,7 @@ export class MessageDialogComponent extends DialogContentBase<void> implements O
     this.configuration = {
       title: this.inputs.title,
       buttons: [{
+        id: 'ok',
         text: () => 'OK',
         click: () => this.resolve()
       }]

@@ -7,8 +7,7 @@
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
-  color: var(--color-text);
-  background-color: var(--color-background-primary);
+  color: var(--color-text-secondary);
   position: relative;
 }
 
@@ -44,7 +43,7 @@
     width: 75px;
     height: 75px;
     border-width: 3px;
-    border-color: var(--color-background-secondary);
+    border-color: var(--color-surface-200);
     border-top-color: #fff;
     animation: spin 1s infinite linear;
     border-radius: 50%;

@@ -128,7 +128,7 @@ export class FullscreenComponent implements KeyboardShortcutTarget, OnInit, OnDe
   }
 
   protected onImageClick(image: GalleryImage): void {
-    if (this.applicationService.reduceBandwidth) {
+    if (this.applicationService.reduceDataUsage) {
       image.thumbnailLink = image.thumbnailLink.replace('=s220', '=s440');
     }
   }

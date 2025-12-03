@@ -35,9 +35,11 @@ export class MultiSelectDialogComponent<T> extends DialogContentBase<T[]> implem
     this.configuration = {
       title: this.inputs.title,
       buttons: [{
+        id: 'cancel',
         text: 'Cancel',
         click: () => this.resolve(undefined)
       }, {
+        id: 'positive',
         text: () => {
           let text: string;
           if (this.inputs.positiveButtonText) {

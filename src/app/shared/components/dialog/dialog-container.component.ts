@@ -8,10 +8,10 @@ import { DialogContentBase } from './dialog-content-base.class';
 import { DialogContainerConfiguration } from './dialog-container-configuration.interface';
 
 @Component({
-    selector: 'app-dialog-container',
-    imports: [],
-    templateUrl: './dialog-container.component.html',
-    styleUrls: ['./dialog-container.component.scss']
+  selector: 'app-dialog-container',
+  imports: [],
+  templateUrl: './dialog-container.component.html',
+  styleUrls: ['./dialog-container.component.scss']
 })
 export class DialogContainerComponent<ResultType, InputsType> implements AfterViewInit {
 
@@ -104,7 +104,7 @@ export class DialogContainerComponent<ResultType, InputsType> implements AfterVi
     }
   }
 
-  @HostListener('document:mouseup', ['$event'])
+  @HostListener('document:mouseup')
   protected onHeaderMouseUp(): void {
     this.isMouseDown = false;
     if (this.top !== undefined) localStorage.setItem(this.contentComponentType.name + '.top', this.top?.toString());
@@ -155,7 +155,7 @@ export class DialogContainerComponent<ResultType, InputsType> implements AfterVi
   }
 
   @HostListener('click', ['$event'])
-  protected onClick(event: KeyboardEvent) {
+  protected onClick(event: PointerEvent) {
     this.keyboardShortcutService.requestFocus(this.contentComponentInstance);
   }
 

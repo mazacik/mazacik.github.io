@@ -1,4 +1,5 @@
 import { Injectable, Signal, signal, WritableSignal } from "@angular/core";
+import { AppConstants } from "../constants/app.constants";
 
 export type HeaderClasses = string | string[] | Set<string> | { [key: string]: boolean | number | string };
 
@@ -17,19 +18,6 @@ export interface HeaderConfig {
   end?: HeaderAction[];
 }
 
-export interface ApplicationSettings {
-  darkMode: boolean;
-  lowBandwidth: boolean;
-}
-
-export interface ModuleSettingsProvider {
-  id: string;
-  label: string;
-  items: SettingsItem[];
-}
-
-export type SettingsItem = SettingsToggle | SettingsAction;
-
 export interface SettingsToggle {
   id: string;
   type: 'toggle';
@@ -45,19 +33,50 @@ export interface SettingsAction {
   onClick: () => void;
 }
 
+export type SettingsItem = SettingsToggle | SettingsAction;
+
+export interface ModuleSettingsProvider {
+  id: string;
+  label: string;
+  items: SettingsItem[];
+}
+
+export interface ApplicationSettings extends ModuleSettingsProvider {
+}
+
+export interface ApplicationSettingsState {
+  darkMode: boolean;
+  reduceDataUsage: boolean;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class ApplicationService {
-
-  private readonly APP_SETTINGS_KEY: string = 'APPLICATION_SETTINGS';
 
   private persistentHeader: HeaderConfig = this.createEmptyHeader();
   private pageHeader: HeaderConfig = this.createEmptyHeader();
   private readonly headerCollector: WritableSignal<HeaderConfig> = signal(this.createEmptyHeader());
   public readonly header: Signal<HeaderConfig> = this.headerCollector.asReadonly();
 
-  private readonly appSettings: WritableSignal<ApplicationSettings> = signal(this.loadAppSettings());
+  private readonly appSettings: WritableSignal<ApplicationSettingsState> = signal(this.loadAppSettings());
+  private readonly applicationSettings: ApplicationSettings = {
+    id: 'app',
+    label: 'Application',
+    items: [{
+      id: 'dark-mode',
+      type: 'toggle',
+      label: 'Dark Mode',
+      getValue: () => this.isDarkTheme(),
+      onChange: value => this.setDarkMode(value)
+    }, {
+      id: 'reduce-data-usage',
+      type: 'toggle',
+      label: 'Reduce Data Usage',
+      getValue: () => this.reduceDataUsage,
+      onChange: value => this.reduceDataUsage = value
+    }]
+  };
   private readonly moduleSettingsProviders: ModuleSettingsProvider[] = [];
 
   public loading: WritableSignal<boolean> = signal(true);
@@ -82,16 +101,12 @@ export class ApplicationService {
     this.setAppSettings({ darkMode: !this.appSettings().darkMode });
   }
 
-  public get reduceBandwidth(): boolean {
-    return this.appSettings().lowBandwidth;
+  public get reduceDataUsage(): boolean {
+    return this.appSettings().reduceDataUsage;
   }
 
-  public set reduceBandwidth(reduceBandwidth: boolean) {
-    this.setLowBandwidth(reduceBandwidth);
-  }
-
-  public setLowBandwidth(lowBandwidth: boolean): void {
-    this.setAppSettings({ lowBandwidth });
+  public set reduceDataUsage(reduceDataUsage: boolean) {
+    this.setAppSettings({ reduceDataUsage });
   }
 
   public setPersistentHeader(config: HeaderConfig): void {
@@ -122,24 +137,16 @@ export class ApplicationService {
     return this.moduleSettingsProviders;
   }
 
-  public getApplicationSettings(): Signal<ApplicationSettings> {
+  public getApplicationSettings(): ApplicationSettings {
+    return this.applicationSettings;
+  }
+
+  public getApplicationSettingsState(): Signal<ApplicationSettingsState> {
     return this.appSettings.asReadonly();
   }
 
   public getApplicationSettingsItems(): SettingsItem[] {
-    return [{
-      id: 'dark-mode',
-      type: 'toggle',
-      label: 'Dark Mode',
-      getValue: () => this.isDarkTheme(),
-      onChange: value => this.setDarkMode(value)
-    }, {
-      id: 'low-bandwidth',
-      type: 'toggle',
-      label: 'Low Bandwidth Mode',
-      getValue: () => this.reduceBandwidth,
-      onChange: value => this.setLowBandwidth(value)
-    }];
+    return this.applicationSettings.items;
   }
 
   private updateHeader(): void {
@@ -162,31 +169,29 @@ export class ApplicationService {
     return { start: [], center: [], end: [] };
   }
 
-  private setAppSettings(settings: Partial<ApplicationSettings>): void {
-    const merged: ApplicationSettings = { ...this.appSettings(), ...settings };
+  private setAppSettings(settings: Partial<ApplicationSettingsState>): void {
+    const merged: ApplicationSettingsState = { ...this.appSettings(), ...settings };
     this.appSettings.set(merged);
     this.persistSettings(merged);
     this.applyTheme(merged.darkMode);
   }
 
-  private loadAppSettings(): ApplicationSettings {
-    const stored: string = window.localStorage.getItem(this.APP_SETTINGS_KEY);
+  private loadAppSettings(): ApplicationSettingsState {
+    const stored: string = localStorage.getItem(AppConstants.KEY_SETTINGS);
     if (stored) {
       try {
-        const parsed: ApplicationSettings = JSON.parse(stored);
-        if (parsed && typeof parsed.darkMode === 'boolean' && typeof parsed.lowBandwidth === 'boolean') {
+        const parsed: ApplicationSettingsState = JSON.parse(stored);
+        if (parsed && typeof parsed.darkMode === 'boolean' && typeof parsed.reduceDataUsage === 'boolean') {
           return parsed;
         }
       } catch { /* ignore */ }
     }
 
-    const legacyLowBandwidth: boolean = window.localStorage.getItem('REDUCE_BANDWIDTH') == '1';
-    return { darkMode: true, lowBandwidth: legacyLowBandwidth };
+    return { darkMode: true, reduceDataUsage: false };
   }
 
-  private persistSettings(settings: ApplicationSettings): void {
-    window.localStorage.setItem(this.APP_SETTINGS_KEY, JSON.stringify(settings));
-    window.localStorage.setItem('REDUCE_BANDWIDTH', settings.lowBandwidth ? '1' : '0');
+  private persistSettings(settings: ApplicationSettingsState): void {
+    localStorage.setItem(AppConstants.KEY_SETTINGS, JSON.stringify(settings));
   }
 
   private applyTheme(darkMode: boolean): void {

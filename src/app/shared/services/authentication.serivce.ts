@@ -2,6 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { firstValueFrom } from "rxjs";
 import { environment } from "src/environments/environment";
+import { AppConstants } from "../constants/app.constants";
 
 @Injectable({
   providedIn: 'root',
@@ -29,7 +30,7 @@ export class AuthenticationService {
     const url: string = "https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=" + redirect_uri
       + "&prompt=consent&response_type=code&client_id=" + clientId + "&scope=" + scope
       + "&access_type=offline";
-    window.location.href = url;
+    location.href = url;
   }
 
   async requestTokens(code: string): Promise<void> {
@@ -48,7 +49,7 @@ export class AuthenticationService {
       if (response) {
         this.accessToken = response.access_token;
         this.refreshToken = response.refresh_token;
-        window.localStorage.setItem('googleRefreshToken', this.refreshToken);
+        localStorage.setItem(AppConstants.KEY_GOOGLE_REFRESH_TOKEN, this.refreshToken);
       }
     }).catch(error => error);
   }
@@ -72,7 +73,7 @@ export class AuthenticationService {
   }
 
   getRefreshToken(): string {
-    if (!this.refreshToken) this.refreshToken = window.localStorage.getItem('googleRefreshToken');
+    if (!this.refreshToken) this.refreshToken = localStorage.getItem(AppConstants.KEY_GOOGLE_REFRESH_TOKEN);
     return this.refreshToken;
   }
 

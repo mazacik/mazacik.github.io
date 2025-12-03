@@ -18,6 +18,7 @@ export class ArticleOptionsComponent extends DialogContentBase<void> {
   public configuration: DialogContainerConfiguration = {
     title: () => this.inputs.article ? this.inputs.article.title : 'Root',
     buttons: [{
+      id: 'cancel',
       text: () => 'Cancel',
       click: () => this.close()
     }]

@@ -3,7 +3,8 @@ import { Component } from '@angular/core';
 import { CheckboxComponent } from '../../components/checkbox/checkbox.component';
 import { DialogContainerConfiguration } from '../../components/dialog/dialog-container-configuration.interface';
 import { DialogContentBase } from '../../components/dialog/dialog-content-base.class';
-import { ApplicationService, SettingsItem } from '../../services/application.service';
+import { AppConstants } from '../../constants/app.constants';
+import { ApplicationService, ModuleSettingsProvider } from '../../services/application.service';
 
 @Component({
   selector: 'app-application-settings',
@@ -20,32 +21,35 @@ export class ApplicationSettingsComponent extends DialogContentBase<void> {
   public configuration: DialogContainerConfiguration = {
     title: 'Settings',
     buttons: [{
+      id: 'close',
       text: () => 'Close',
       click: () => this.close()
     }],
     hideHeaderCloseButton: true
   };
 
-  public tabs: { id: string; label: string; items: SettingsItem[] }[] = [];
-  public activeTabId: string = 'app';
+  public tabs: ModuleSettingsProvider[] = [];
+  public activeTabId: string;
 
   constructor(
     protected applicationService: ApplicationService
   ) {
     super();
+    const applicationSettings = this.applicationService.getApplicationSettings();
     this.tabs = [
-      { id: 'app', label: 'Application', items: this.applicationService.getApplicationSettingsItems() },
-      ...this.applicationService.getRegisteredModuleSettings().map(provider => ({
-        id: provider.id,
-        label: provider.label,
-        items: provider.items
-      }))
+      applicationSettings,
+      ...this.applicationService.getRegisteredModuleSettings()
     ];
-    this.activeTabId = this.tabs[0]?.id ?? 'app';
+    this.activeTabId = sessionStorage.getItem(AppConstants.KEY_SETTINGS_ACTIVE_TAB) ?? applicationSettings.id;
   }
 
-  public get activeTab(): { id: string; label: string; items: SettingsItem[] } {
+  public get activeTab(): ModuleSettingsProvider | undefined {
     return this.tabs.find(tab => tab.id === this.activeTabId);
+  }
+
+  public setActiveTabId(activeTabId: string): void {
+    this.activeTabId = activeTabId;
+    sessionStorage.setItem(AppConstants.KEY_SETTINGS_ACTIVE_TAB, activeTabId);
   }
 
   public close(): void {

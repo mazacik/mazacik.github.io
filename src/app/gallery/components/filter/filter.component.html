@@ -32,7 +32,7 @@
   <div class="h-separator margins"></div>
   <div class="filters-container y-scrollbar-container">
     <div class="flex column margins-1-h">
-      @for (tag of tagService.getRootTags(); track tag; let i = $index) {
+      @for (tag of tagService.getRootTags(); track tag.id; let i = $index) {
         @if (i != 0) {
           <div class="h-separator subtle"></div>
         }
@@ -43,8 +43,8 @@
   </div>
   <div class="h-separator gap-bottom margins"></div>
   <div class="buttons-container">
-    <div class="button" (click)="tagService.openTagGroupCreate()"><i class="fa-solid fa-plus"></i>Create</div>
-    <div class="button" [class.disabled]="!canClear()" (click)="clearFilters()"><i class="fa-solid fa-filter-circle-xmark"></i>Clear</div>
+    <div class="button" (click)="tagService.openTagGroupCreate()">Create</div>
+    <div class="button" [class.disabled]="!canClear()" (click)="clearFilters()">Clear</div>
   </div>
 </div>
 <div class="v-separator desktop-only"></div>

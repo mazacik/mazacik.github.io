@@ -4,7 +4,7 @@
 </div>
 <div class="flex column y-scrollbar-container">
   <div class="flex column">
-    @for (article of stateService.getRoot(); track article; let i = $index) {
+    @for (article of stateService.getRoot(); track article.id; let i = $index) {
       @if (i != 0) {
         <div class="h-separator subtle"></div>
       }

@@ -18,6 +18,7 @@ export class TagManagerComponent extends DialogContentBase<void> {
   public configuration: DialogContainerConfiguration = {
     title: () => 'Tag: ' + this.inputs.tag.getNameWithParents(),
     buttons: [{
+      id: 'cancel',
       text: () => 'Cancel',
       click: () => this.close()
     }]

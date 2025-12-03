@@ -12,12 +12,12 @@ import { GalleryStateService } from '../../services/gallery-state.service';
 import { GallerySerializationService } from '../../services/gallery-serialization.service';
 
 @Component({
-    selector: 'app-group-editor',
-    imports: [
+  selector: 'app-group-manager',
+  imports: [
     DragDropDirective
-],
-    templateUrl: './group-manager.component.html',
-    styleUrls: ['./group-manager.component.scss']
+  ],
+  templateUrl: './group-manager.component.html',
+  styleUrls: ['./group-manager.component.scss']
 })
 export class GroupManagerComponent extends DialogContentBase<void, {}> implements OnInit {
 
@@ -26,6 +26,7 @@ export class GroupManagerComponent extends DialogContentBase<void, {}> implement
   public override configuration: DialogContainerConfiguration = {
     title: 'Group Manager',
     buttons: [{
+      id: 'disband',
       text: () => 'Disband',
       hidden: () => this.inputs.sourceGroup == null,
       click: () => {
@@ -36,9 +37,11 @@ export class GroupManagerComponent extends DialogContentBase<void, {}> implement
         });
       }
     }, {
+      id: 'cancel',
       text: () => 'Cancel',
       click: () => this.close()
     }, {
+      id: 'save',
       text: () => 'Save',
       disabled: () => this.stateService.groupEditorGroup.images.length < 2,
       click: () => this.submit()

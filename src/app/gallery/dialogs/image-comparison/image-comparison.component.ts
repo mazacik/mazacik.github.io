@@ -19,13 +19,16 @@ export class ImageComparisonComponent extends DialogContentBase<void> implements
   configuration: DialogContainerConfiguration = {
     title: 'Image Comparison',
     buttons: [{
+      id: 'undo',
       text: () => 'Undo',
       click: () => this.comparison = this.tournament.undo(),
       disabled: () => ArrayUtils.isEmpty(this.tournament.comparisons)
     }, {
+      id: 'reset',
       text: () => 'Reset',
       click: () => this.reset()
     }, {
+      id: 'close',
       text: () => 'Close',
       click: () => this.close()
     }]

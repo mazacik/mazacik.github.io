@@ -1,5 +1,4 @@
 @if (contentComponentInstance) {
-  <div class="glass-effect"></div>
   @if (!contentComponentInstance.configuration.hideClickOverlay) {
     <div class="overlay-effect" #overlay (click)="overlayClick()"></div>
   }
@@ -21,7 +20,7 @@
 }
 @if (contentComponentInstance) {
   <div class="buttons">
-    @for (button of contentComponentInstance.configuration.buttons; track button) {
+    @for (button of contentComponentInstance.configuration.buttons; track button.id) {
       @if (!isHidden(button)) {
         @if (button.iconClass) {
           <i [class]="'icon-button ' + getButtonIconClass(button)" [class.disabled]="isDisabled(button)" (click)="button.click && button.click()"></i>

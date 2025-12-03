@@ -5,7 +5,7 @@
     <div class="sidebar-left">
       <div class="sidebar-start">
         <i class="icon-button fa-solid fa-arrow-left" tp="Back" tpPlacement="right" (click)="stateService.fullscreenImage.set(null)"></i>
-        <div class="h-separator gap"></div>
+        <div class="h-separator"></div>
         <i class="icon-button fa-solid fa-shuffle" tp="Random Image" tpPlacement="right" (click)="setRandomTarget()"></i>
         @if (target?.group) {
           <i class="icon-button fa-solid fa-arrows-spin" tp="Random Image from Group" tpPlacement="right" (click)="setRandomGroupTarget()"></i>
@@ -55,7 +55,7 @@
               </div>
               <div class="stack-container height-auto justify-content-center">
                 <div animate.enter="anim-fade-in" animate.leave="anim-fade-out" class="group-images-container">
-                  @for (groupImage of target.group.images; track groupImage) {
+                  @for (groupImage of target.group.images; track groupImage.id) {
                     <div class="group-image-container loading" (click)="stateService.fullscreenImage.set(groupImage)" #groupImageContainer>
                       <img
                         [class.grayscale]="!groupImage.passesFilters"
@@ -77,7 +77,7 @@
     <div class="sidebar-right">
       <div class="sidebar-start">
         <i class="icon-button fa-solid fa-times" tp="Close" tpPlacement="left" (click)="stateService.fullscreenImage.set(null)"></i>
-        <div class="h-separator gap"></div>
+        <div class="h-separator"></div>
         <i class="icon-button fa-heart" [ngClass]="target?.heart ? 'fa-solid' : 'fa-regular'" tp="Favorite" tpPlacement="left" (click)="galleryService.toggleFavorite(target)"></i>
         <i class="icon-button fa-bookmark" [ngClass]="target?.bookmark ? 'fa-solid' : 'fa-regular'" tp="Bookmark" tpPlacement="left" (click)="galleryService.toggleBookmark(target)"></i>
         <div class="drawer-container" [class.drawer-visible]="!stateService.taggerVisible">
@@ -88,16 +88,16 @@
       <div class="sidebar-end">
         @if (ScreenUtils.isLargeScreen()) {
           <i class="icon-button fa-solid fa-left-right" tp="Flip" tpPlacement="right" (click)="flip = !flip"></i>
-          <div class="h-separator gap"></div>
+          <div class="h-separator"></div>
           <i class="icon-button fa-solid fa-download" tp="Download" tpPlacement="right" (click)="googleService.download(target)"></i>
-          <div class="h-separator gap"></div>
+          <div class="h-separator"></div>
           <i class="icon-button fa-brands fa-google-drive" tp="Google Drive" tpPlacement="right" (click)="$event.stopPropagation(); googleService.openSearch(target.name)"></i>
           <i
             class="icon-button fa-brands fa-yandex-international"
             tp="Yandex RIS"
             tpPlacement="right"
             (click)="$event.stopPropagation(); galleryService.openYandexReverseImageSearch($event, target)"></i>
-          <div class="h-separator gap"></div>
+          <div class="h-separator"></div>
         }
         <i class="icon-button fa-solid fa-box" tp="Archive" tpPlacement="right" (click)="galleryService.delete(target, true)"></i>
         <i class="icon-button fa-solid fa-trash" tp="Delete" tpPlacement="right" (click)="galleryService.delete(target, false)"></i>

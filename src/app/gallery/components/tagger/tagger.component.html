@@ -23,7 +23,7 @@
   <div class="h-separator margins"></div>
   <div class="filters-container y-scrollbar-container">
     <div class="flex column margins-1-h">
-      @for (tag of tagService.getRootTags(); track tag; let i = $index) {
+      @for (tag of tagService.getRootTags(); track tag.id; let i = $index) {
         @if (i != 0) {
           <div class="h-separator subtle"></div>
         }

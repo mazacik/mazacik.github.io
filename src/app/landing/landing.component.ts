@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApplicationService } from '../shared/services/application.service';
+import { AppConstants } from '../shared/constants/app.constants';
 
 @Component({
     selector: 'app-landing',
@@ -25,7 +26,7 @@ export class LandingComponent implements OnInit {
   }
 
   navigate(value: string): void {
-    sessionStorage.setItem('appId', value);
+    sessionStorage.setItem(AppConstants.KEY_ACTIVE_APP_ID, value);
     this.applicationService.loading.set(true);
     this.router.navigate([value]);
   }

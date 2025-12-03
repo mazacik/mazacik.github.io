@@ -7,67 +7,169 @@
 @import '@fortawesome/fontawesome-free/css/solid.css';
 @import '@fortawesome/fontawesome-free/css/brands.css';
 
-// scrollbar
-// @media screen and (min-width:768px) {
-//   * {
-//     &::-webkit-scrollbar-track {
-//       // margin: (-$gap-1);
-//     }
-
-//     &::-webkit-scrollbar {
-//       width: variables.$gap-2;
-//       height: variables.$gap-2;
-//     }
-
-//     &::-webkit-scrollbar-thumb {
-//       background-clip: padding-box;
-//       border: solid transparent;
-//       border-width: variables.$gap-1 variables.$gap-1 variables.$gap-1 0;
-//       background-color: var(--color-border);
-//       min-width: 100px;
-//       min-height: 100px;
-//     }
-//   }
-// }
-
 body.light-theme {
-  --color-background-primary: #ffffff;
-  --color-background-secondary: #e6e6e6;
-  --color-background-hover: rgba(0, 0, 0, 0.1);
-  --color-background-tippy: rgba(255, 255, 255, 0.75);
-  --color-background-dialog: rgba(0, 0, 0, 0.15);
+  --color-primary-0: #09090b;
+  --color-primary-50: #18181b;
+  --color-primary-100: #27272a;
+  --color-primary-200: #3f3f46;
+  --color-primary-300: #52525b;
+  --color-primary-400: #71717a;
+  --color-primary-500: #a1a1aa;
+  --color-primary-600: #d4d4d8;
+  --color-primary-700: #e4e4e7;
+  --color-primary-800: #f4f4f5;
+  --color-primary-900: #fafafa;
+  --color-primary-950: #ffffff;
 
-  --color-border: rgba(0, 0, 0, 0.2);
+  --color-surface-0: #ffffff;
+  --color-surface-50: #fafafa;
+  --color-surface-100: #f4f4f5;
+  --color-surface-200: #e4e4e7;
+  --color-surface-300: #d4d4d8;
+  --color-surface-400: #a1a1aa;
+  --color-surface-500: #71717a;
+  --color-surface-600: #52525b;
+  --color-surface-700: #3f3f46;
+  --color-surface-800: #27272a;
+  --color-surface-900: #18181b;
+  --color-surface-950: #09090b;
 
-  --color-text: black;
-  --color-text-hover: rgb(28, 28, 28);
-  --color-text-shadow: rgba(255, 255, 255, 0.65);
-
-  --color-primary: #0075ff;
-  --color-secondary: #155197;
-  --color-highlight: deepskyblue;
   --color-positive: forestgreen;
   --color-negative: orangered;
+  --color-highlight: deepskyblue;
 }
 
 body.dark-theme {
-  --color-background-primary: #202124;
-  --color-background-secondary: #2b2c2f;
-  --color-background-hover: rgba(255, 255, 255, 0.1);
-  --color-background-tippy: rgba(0, 0, 0, 0.75);
-  --color-background-dialog: rgba(0, 0, 0, 0.65);
+  --color-primary-0: #ffffff;
+  --color-primary-50: #fafafa;
+  --color-primary-100: #f4f4f5;
+  --color-primary-200: #e4e4e7;
+  --color-primary-300: #d4d4d8;
+  --color-primary-400: #a1a1aa;
+  --color-primary-500: #71717a;
+  --color-primary-600: #52525b;
+  --color-primary-700: #3f3f46;
+  --color-primary-800: #27272a;
+  --color-primary-900: #18181b;
+  --color-primary-950: #09090b;
 
-  --color-border: rgba(255, 255, 255, 0.2);
+  --color-surface-0: #09090b;
+  --color-surface-50: #18181b;
+  --color-surface-100: #27272a;
+  --color-surface-200: #3f3f46;
+  --color-surface-300: #52525b;
+  --color-surface-400: #71717a;
+  --color-surface-500: #a1a1aa;
+  --color-surface-600: #d4d4d8;
+  --color-surface-700: #e4e4e7;
+  --color-surface-800: #f4f4f5;
+  --color-surface-900: #fafafa;
+  --color-surface-950: #ffffff;
 
-  --color-text-shadow: rgba(0, 0, 0, 0.65);
-  --color-text: #e1e1e1;
-  --color-text-hover: white;
-
-  --color-primary: #0075ff;
-  --color-secondary: #155197;
-  --color-highlight: deepskyblue;
   --color-positive: yellowgreen;
   --color-negative: orangered;
+  --color-highlight: deepskyblue;
+}
+
+body {
+  --color-text-primary: var(--color-primary-800);
+  --color-text-primary-hover: var(--color-primary-900);
+  --color-text-primary-active: var(--color-primary-950);
+
+  --color-text-secondary: var(--color-primary-200);
+  --color-text-secondary-hover: var(--color-primary-100);
+  --color-text-secondary-active: var(--color-primary-50);
+
+  --color-button-background-primary: var(--color-surface-800);
+  --color-button-background-primary-hover: var(--color-surface-700);
+  --color-button-background-primary-active: var(--color-surface-600);
+
+  --color-button-background-secondary: var(--color-surface-100);
+  --color-button-background-secondary-hover: var(--color-surface-200);
+  --color-button-background-secondary-active: var(--color-surface-300);
+
+  --color-border: var(--color-surface-200);
+  --color-border-lighter: var(--color-surface-300);
+  --color-border-darker: var(--color-surface-100);
+
+  --color-text-shadow: var(--color-primary-900);
+
+  background-color: var(--color-surface-100);
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  font-family: "Montserrat", sans-serif;
+  font-size: 14px;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+i {
+  font-style: normal;
+}
+
+input,
+textarea {
+  min-width: 50px;
+  min-height: variables.$button-height;
+  padding: 0 variables.$gap-1;
+  border: 0;
+  color: var(--color-text-secondary);
+  background-color: transparent;
+
+  &:focus-visible {
+    outline: initial;
+  }
+}
+
+select {
+  padding: variables.$gap-1;
+  background-color: transparent;
+
+  >option {
+    background-color: var(--color-surface-100);
+  }
+}
+
+input,
+select,
+textarea {
+  min-height: variables.$button-height;
+  display: flex;
+  align-items: center;
+  overflow-wrap: anywhere;
+  border-radius: variables.$gap-1;
+  box-sizing: border-box;
+  border: 1px solid var(--color-border);
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  font-weight: inherit;
+
+  &:focus-visible {
+    outline: initial;
+  }
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  appearance: textfield;
+  -moz-appearance: textfield;
 }
 
 .fa-regular::before,
@@ -75,6 +177,11 @@ body.dark-theme {
   min-width: 14px;
   display: inline-block;
   text-align: center;
+}
+
+.glass-effect {
+  backdrop-filter: blur(5px);
+  background-color: color-mix(in srgb, var(--color-surface-0) 65%, transparent);
 }
 
 .nowrap {
@@ -102,7 +209,7 @@ body.dark-theme {
 }
 
 .underline {
-  text-decoration: underline solid var(--color-text);
+  text-decoration: underline solid var(--color-text-secondary);
 }
 
 .underline-highlight {
@@ -118,7 +225,7 @@ body.dark-theme {
 }
 
 .underline-dashed {
-  text-decoration: underline dashed var(--color-text);
+  text-decoration: underline dashed var(--color-text-secondary);
 }
 
 .underline-dashed-highlight {
@@ -216,82 +323,6 @@ body.dark-theme {
   cursor: pointer;
 }
 
-html,
-body {
-  width: 100%;
-  height: 100%;
-  font-family: "Montserrat", sans-serif;
-  font-size: 14px;
-}
-
-body {
-  margin: 0;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-i {
-  font-style: normal;
-}
-
-input,
-textarea {
-  min-width: 50px;
-  min-height: variables.$button-height;
-  padding: 0 variables.$gap-1;
-  border: 0;
-  color: var(--color-text);
-  background-color: transparent;
-
-  &:focus-visible {
-    outline: initial;
-  }
-}
-
-select {
-  padding: variables.$gap-1;
-  background-color: transparent;
-
-  >option {
-    background-color: var(--color-background-primary);
-  }
-}
-
-input,
-select,
-textarea {
-  min-height: variables.$button-height;
-  display: flex;
-  align-items: center;
-  overflow-wrap: anywhere;
-  border-radius: variables.$gap-1;
-  box-sizing: border-box;
-  border: 1px solid var(--color-border);
-  font-family: inherit;
-  font-size: inherit;
-  color: inherit;
-  font-weight: inherit;
-
-  &:focus-visible {
-    outline: initial;
-  }
-}
-
-/* Chrome, Safari, Edge, Opera */
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-/* Firefox */
-input[type=number] {
-  -moz-appearance: textfield;
-}
-
 .display-none {
   display: none !important;
 }
@@ -369,7 +400,7 @@ input[type=number] {
 
 hr {
   margin: 0;
-  border-color: var(--color-text);
+  border-color: var(--color-text-secondary);
   border-style: solid;
   border-width: 2px;
   border-bottom: 0;
@@ -421,8 +452,12 @@ hr {
   }
 }
 
+.fluid {
+  width: auto !important;
+}
+
 .width-auto {
-  width: auto;
+  width: auto !important;
 }
 
 .width-fit {
@@ -449,10 +484,6 @@ hr {
   height: 100%;
 }
 
-.white-space-nowrap {
-  white-space: nowrap;
-}
-
 .button {
   width: fit-content;
   min-width: variables.$button-height;
@@ -467,14 +498,25 @@ hr {
   box-sizing: border-box;
   border: 1px solid var(--color-border);
 
-  background-color: var(--color-background-hover);
-  // text-shadow: -0.5px 0 var(--color-text-shadow), 0 0.5px var(--color-text-shadow), 0.5px 0 var(--color-text-shadow), 0 -0.5px var(--color-text-shadow);
+  background-color: var(--color-button-background-secondary);
 
   transition-property: background-color, opacity;
   transition-duration: variables.$transition-duration;
 
   &:hover {
-    background-color: rgba(255, 255, 255, 0.2) !important;
+    color: var(--color-text-secondary-hover);
+    background-color: var(--color-button-background-secondary-hover);
+  }
+
+  &:active,
+  &.active {
+    color: var(--color-text-secondary-active);
+    background-color: var(--color-button-background-secondary-active);
+  }
+
+  &.smaller {
+    min-width: variables.$button-height-smaller;
+    min-height: variables.$button-height-smaller;
   }
 }
 
@@ -490,33 +532,38 @@ hr {
   border-radius: variables.$gap-1;
   text-shadow: -1px 0 var(--color-text-shadow), 0 1px var(--color-text-shadow), 1px 0 var(--color-text-shadow), 0 -1px var(--color-text-shadow);
   box-sizing: border-box;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-button-background-secondary);
 
-  @media screen and (min-width:768px) {
-    cursor: pointer;
-    border: 1px solid transparent;
-
-    transition-property: border-color, background-color;
-    transition-duration: variables.$transition-duration * 0.5;
-
-    &:not(.icon-button-no-hover):hover {
-      border-color: rgba(0, 0, 0, 0.3);
-      background-color: rgba(255, 255, 255, 0.3) !important;
-    }
+  &:hover {
+    color: var(--color-text-secondary-hover);
+    background-color: var(--color-button-background-secondary-hover);
   }
-}
 
-.icon-button {
+  &:active,
+  &.active {
+    color: var(--color-text-secondary-active);
+    background-color: var(--color-button-background-secondary-active);
+  }
+
   width: variables.$button-height;
   height: variables.$button-height;
   min-width: variables.$button-height;
   min-height: variables.$button-height;
-}
 
-.icon-button-small {
-  width: variables.$button-height-small;
-  height: variables.$button-height-small;
-  min-width: variables.$button-height-small;
-  min-height: variables.$button-height-small;
+  &.smaller {
+    width: variables.$button-height-smaller;
+    height: variables.$button-height-smaller;
+    min-width: variables.$button-height-smaller;
+    min-height: variables.$button-height-smaller;
+  }
+
+  @media screen and (min-width:768px) {
+    cursor: pointer;
+
+    transition-property: background-color;
+    transition-duration: variables.$transition-duration * 0.5;
+  }
 }
 
 span.button,
@@ -762,13 +809,11 @@ span.icon-button {
 
 .anim-fade-in {
   animation: anim-fade-in var(--animation-duration, 500ms) ease var(--animation-delay, 0ms) forwards !important;
-  will-change: opacity !important;
 }
 
 .anim-fade-out {
   pointer-events: none !important;
   animation: anim-fade-out var(--animation-duration, 500ms) ease var(--animation-delay, 0ms) forwards !important;
-  will-change: opacity !important;
 }
 
 .anim-fade-between {
@@ -786,7 +831,6 @@ span.icon-button {
   max-height: 0;
   opacity: 0;
   transition: max-height var(--drawer-animation-duration, 500ms) ease, opacity var(--drawer-animation-duration, 500ms) ease;
-  will-change: max-height, opacity;
 }
 
 .drawer-animated.open {

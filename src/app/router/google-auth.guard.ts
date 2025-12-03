@@ -1,9 +1,10 @@
 import { inject } from "@angular/core";
 import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot } from "@angular/router";
 import { AuthenticationService } from "../shared/services/authentication.serivce";
+import { AppConstants } from "../shared/constants/app.constants";
 
 export const GoogleAuthGuard: CanActivateFn = async (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
-  sessionStorage.setItem('appId', route.url.join(''));
+  sessionStorage.setItem(AppConstants.KEY_ACTIVE_APP_ID, route.url.join(''));
   console.log('guard: start');
 
   const router: Router = inject(Router);

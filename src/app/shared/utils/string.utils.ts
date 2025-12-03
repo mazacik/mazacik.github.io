@@ -22,15 +22,4 @@ export abstract class StringUtils {
     return input.split(new RegExp('[^ /\n]+', 'g')).length - 1;
   }
 
-  public static encryptSimple(value: string): string {
-    return value.split('').reverse().join('');
-    return value.split('').map(c => {
-      const n: number = c.charCodeAt(0);
-      if ((n < 65 || n > 90) && (n < 97 || n > 122)) return c;
-      if (n == 90) return 'A';
-      if (n == 122) return 'a';
-      return String.fromCharCode(n + 1);
-    }).join('');
-  }
-
 }

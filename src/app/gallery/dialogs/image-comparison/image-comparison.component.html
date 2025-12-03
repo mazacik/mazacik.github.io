@@ -11,7 +11,7 @@
 }
 <div class="v-separator"></div>
 <div class="results">
-  @for (image of tournament.getRanking(); track image) {
+  @for (image of tournament.getRanking(); track image.id) {
     <div class="image-container">
       <img class="image" [src]="image.thumbnailLink" />
     </div>

@@ -1,7 +1,7 @@
 @if (tag) {
   <div class="flex gap cursor-pointer hover-brighten hover-container" style="line-height: 24px" (drop)="drop($event, tag)" ondragover="event.preventDefault()">
     <div class="flex gap flex-1 width-100 min-width-0 align-items-center" (click)="onTagClick()">
-      @for (_ of [].constructor(tag.collectParents().length); track _) {
+      @for (_ of [].constructor(tag.collectParents().length); track $index) {
         <i class="fa-solid fa-angle-down opacity-0"></i>
       }
       @if (tag.group) {
@@ -39,10 +39,10 @@
   </div>
   @if (tag.group) {
     <div class="flex column overflow-hidden drawer-animated" [class.open]="tag.open">
-      @for (child of getTagGroups(); track child) {
+      @for (child of getTagGroups(); track child.id) {
         <app-filter-row [tag]="child"></app-filter-row>
       }
-      @for (child of getTags(); track child) {
+      @for (child of getTags(); track child.id) {
         <app-filter-row [tag]="child"></app-filter-row>
       }
     </div>

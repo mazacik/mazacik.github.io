@@ -34,8 +34,8 @@ export class MasonryComponent {
     protected stateService: GalleryStateService,
     protected galleryService: GalleryService
   ) {
-    effect(() => this.updateLayout());
-    // effect(() => this.scrollTo(this.stateService.target()));
+    effect(() => this.updateLayout(this.filterService.masonryImages()));
+
     new ResizeObserver(() => {
       if (ScreenUtils.isLargeScreen()) {
         this.requestLayoutUpdate();
@@ -54,10 +54,8 @@ export class MasonryComponent {
     });
   }
 
-  protected updateLayout(): void {
-    if (this.masonryContainer) {
-      if (this.filterService.masonryImages().length == 0) return;
-
+  protected updateLayout(images: GalleryImage[] = this.filterService.masonryImages()): void {
+    if (this.masonryContainer && !ArrayUtils.isEmpty(images)) {
       const minColumnWidth: number = ScreenUtils.isLargeScreen() ? 250 : 200;
       const masonryGap: number = ScreenUtils.isLargeScreen() ? 9.6666666666 : 4.3333333333;
 

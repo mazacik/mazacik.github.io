@@ -2,6 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { lastValueFrom } from "rxjs";
 import { BaseGoogleDriveService } from "../../shared/services/base-google-drive.service";
+import { GalleryConstants } from "../constants/gallery.constants";
 import { Data } from "../models/data.interface";
 
 @Injectable({
@@ -9,7 +10,6 @@ import { Data } from "../models/data.interface";
 })
 export class GalleryGoogleDriveService extends BaseGoogleDriveService {
 
-  private _fileId: string;
   protected readonly FIELDS: string = 'id,name,mimeType,size,thumbnailLink,imageMediaMetadata,videoMediaMetadata';
 
   constructor(
@@ -19,18 +19,11 @@ export class GalleryGoogleDriveService extends BaseGoogleDriveService {
   }
 
   public get dataFileId(): string {
-    if (!this._fileId) {
-      const dataFileId: string = sessionStorage.getItem('dataFileId');
-      if (dataFileId) {
-        this._fileId = dataFileId;
-      }
-    }
-    return this._fileId;
+    return sessionStorage.getItem(GalleryConstants.KEY_GALLERY_DATA_FILE_ID);
   }
 
   public set dataFileId(fileId: string) {
-    this._fileId = fileId;
-    sessionStorage.setItem('dataFileId', fileId);
+    sessionStorage.setItem(GalleryConstants.KEY_GALLERY_DATA_FILE_ID, fileId);
   }
 
   public async getData(): Promise<Data> {

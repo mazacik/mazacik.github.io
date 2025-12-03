@@ -118,15 +118,6 @@ export class GalleryComponent implements OnInit, OnDestroy {
           this.serializationService.save();
         }
       }, {
-        id: 'show-masonry-file-names',
-        type: 'toggle',
-        label: 'Show Masonry File Names',
-        getValue: () => !!this.stateService.settings?.showMasonryBrickFileNames,
-        onChange: value => {
-          this.stateService.settings.showMasonryBrickFileNames = value;
-          this.serializationService.save();
-        }
-      }, {
         id: 'auto-bookmark',
         type: 'toggle',
         label: 'Auto Bookmark',

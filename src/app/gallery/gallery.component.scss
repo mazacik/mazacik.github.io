@@ -8,8 +8,6 @@
   .fullscreen-container {
     display: flex;
     overflow: hidden;
-    backdrop-filter: blur(5px);
-    background-color: var(--color-background-dialog);
     transition: variables.$transition-duration;
     z-index: 1;
   }

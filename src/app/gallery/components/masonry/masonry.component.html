@@ -1,6 +1,6 @@
 <div class="masonry-scroll-container" (create)="masonryScrollContainer = $event.nativeElement">
   <div class="masonry-container" (create)="masonryContainer = $event.nativeElement; updateLayout()">
-    @for (image of filterService.masonryImages(); track image) {
+    @for (image of filterService.masonryImages(); track image.id) {
       <div
         animate.enter="anim-fade-in"
         animate.leave="anim-fade-out"
@@ -23,9 +23,7 @@
             }
           </div>
           <div class="brick-footer">
-            @if (stateService.settings.showMasonryBrickFileNames) {
-              <span class="text-shadow">{{ image.name }}</span>
-            }
+            
           </div>
         }
       </div>

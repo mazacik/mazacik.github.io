@@ -37,12 +37,7 @@ export class GallerySerializationService {
     stateService.dataFolderId = data.dataFolderId;
     stateService.archiveFolderId = data.archiveFolderId;
     stateService.tournamentState = data.tournamentState;
-    let settingsUpdated: boolean = !data.settings;
     stateService.settings = data.settings ?? {} as GallerySettings;
-    if (stateService.settings.showFileInformation === undefined) {
-      stateService.settings.showFileInformation = true;
-      settingsUpdated = true;
-    }
 
     const filterService: FilterService = this.injector.get(FilterService);
     filterService.filterFavorites.state = data.heartsFilter || 0;
@@ -78,7 +73,6 @@ export class GallerySerializationService {
 
     filterService.updateFilters();
     this.applicationService.loading.set(false);
-    if (settingsUpdated) this.save();
   }
 
   private async processImages(data: Data, folderId: string, collector: GalleryImage[], tags: Tag[], recursionTracker: Set<Promise<void>>): Promise<void> {
@@ -87,7 +81,7 @@ export class GallerySerializationService {
       recursionTracker.add(this.processImages(data, folder.id, collector, tags, recursionTracker));
     }
 
-    ArrayUtils.push(collector, metadata.filter(meta => GoogleFileUtils.isImage(meta) || GoogleFileUtils.isVideo(meta)).map(imageMetadata => this.metaToImage(imageMetadata, data.imageProperties.find(imageProperty => imageProperty.id == imageMetadata.id), folderId, tags, this.applicationService.reduceBandwidth)));
+    ArrayUtils.push(collector, metadata.filter(meta => GoogleFileUtils.isImage(meta) || GoogleFileUtils.isVideo(meta)).map(imageMetadata => this.metaToImage(imageMetadata, data.imageProperties.find(imageProperty => imageProperty.id == imageMetadata.id), folderId, tags, this.applicationService.reduceDataUsage)));
   }
 
   private metaToImage(metadata: GoogleMetadata, properties: ImageData, parentFolderId: string, tags: Tag[], reduceBandwidth: boolean): GalleryImage {
