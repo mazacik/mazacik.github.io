@@ -10,33 +10,34 @@ import { GallerySerializationService } from '../../services/gallery-serializatio
 import { GalleryStateService } from '../../services/gallery-state.service';
 
 @Component({
-    selector: 'app-image-comparison',
-    imports: [DecimalPipe],
-    templateUrl: './image-comparison.component.html',
-    styleUrls: ['./image-comparison.component.scss']
+  selector: 'app-image-comparison',
+  imports: [DecimalPipe],
+  templateUrl: './image-comparison.component.html',
+  styleUrls: ['./image-comparison.component.scss']
 })
 export class ImageComparisonComponent extends DialogContentBase<void> implements OnInit {
 
   configuration: DialogContainerConfiguration = {
     title: 'Image Comparison',
-    buttons: [{
-      id: 'undo',
-      text: () => 'Undo',
+    headerButtons: [{
+      iconClass: 'fa-solid fa-rotate-left',
+      click: () => this.reset()
+    }, {
+      iconClass: 'fa-solid fa-backward-step',
       click: () => this.undo(),
       disabled: () => ArrayUtils.isEmpty(this.tournament.comparisons)
     }, {
-      id: 'reset',
-      text: () => 'Reset',
-      click: () => this.reset()
+      iconClass: 'fa-solid fa-list-check',
+      click: () => this.toggleProgressBar()
     }, {
-      id: 'close',
-      text: () => 'Close',
+      iconClass: 'fa-solid fa-times',
       click: () => this.close()
     }]
   }
 
   tournament: Tournament = null;
   comparison: [GalleryImage, GalleryImage] = null;
+  protected progressBarVisible: boolean = true;
   protected totalComparisons: number = 0;
   protected remainingComparisons: number = 0;
   protected completedComparisons: number = 0;
@@ -77,6 +78,10 @@ export class ImageComparisonComponent extends DialogContentBase<void> implements
 
   public close(): void {
     this.resolve();
+  }
+
+  private toggleProgressBar(): void {
+    this.progressBarVisible = !this.progressBarVisible;
   }
 
   public get progressPercent(): number {

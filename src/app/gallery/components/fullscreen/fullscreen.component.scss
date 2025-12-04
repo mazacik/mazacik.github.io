@@ -5,11 +5,11 @@
   height: 100%;
   overflow: hidden;
 
-  @media screen and (max-width:768px) {
+  @media screen and (max-width:1280px) {
     min-width: 100%;
   }
 
-  @media screen and (min-width:768px) {
+  @media screen and (min-width:1280px) {
     .drawer-container {
       width: 3rem;
       min-width: 3rem;
@@ -38,7 +38,7 @@
   .non-group-container {
     overflow: auto;
 
-    @media screen and (max-width:768px) {
+    @media screen and (max-width:1280px) {
       position: absolute;
       top: 0;
       left: variables.$gap-1;
@@ -63,7 +63,7 @@
     .another-container {
       overflow: auto;
 
-      @media screen and (max-width:768px) {
+      @media screen and (max-width:1280px) {
         position: absolute;
         top: 0;
         left: variables.$gap-1;
@@ -221,7 +221,7 @@
     }
   }
 
-  @media screen and (max-width:768px) {
+  @media screen and (max-width:1280px) {
     .file-information {
       max-width: none;
     }

@@ -17,8 +17,11 @@ export class ArticleOptionsComponent extends DialogContentBase<void> {
 
   public configuration: DialogContainerConfiguration = {
     title: () => this.inputs.article ? this.inputs.article.title : 'Root',
-    buttons: [{
-      id: 'cancel',
+    headerButtons: [{
+      iconClass: 'fa-solid fa-times',
+      click: () => this.close()
+    }],
+    footerButtons: [{
       text: () => 'Cancel',
       click: () => this.close()
     }]

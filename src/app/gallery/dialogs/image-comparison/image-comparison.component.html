@@ -15,15 +15,17 @@
     </div>
   }
 
-  <div class="comparison-progress">
+  @if (progressBarVisible) {
+    <div class="comparison-progress">
     <div class="progress-bar">
       <div class="progress-bar-fill" [style.width.%]="progressPercent"></div>
       <div class="progress-bar-label">{{ completedComparisons }}/{{ totalComparisons }} ({{ progressPercent | number: '1.0-0' }}%)</div>
     </div>
   </div>
+  }
 </div>
-<div class="v-separator"></div>
-<div class="results">
+<div class="v-separator desktop-only"></div>
+<div class="results desktop-only">
   @for (image of tournament.getRanking(); track image.id) {
     <div class="image-container">
       <img class="image" [src]="image.thumbnailLink" />

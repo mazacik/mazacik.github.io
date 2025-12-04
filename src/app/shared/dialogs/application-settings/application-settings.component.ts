@@ -20,12 +20,14 @@ export class ApplicationSettingsComponent extends DialogContentBase<void> {
 
   public configuration: DialogContainerConfiguration = {
     title: 'Settings',
-    buttons: [{
-      id: 'close',
-      text: () => 'Close',
+    headerButtons: [{
+      iconClass: 'fa-solid fa-times',
       click: () => this.close()
     }],
-    hideHeaderCloseButton: true
+    footerButtons: [{
+      text: 'Close',
+      click: () => this.close()
+    }]
   };
 
   public tabs: ModuleSettingsProvider[] = [];

@@ -12,14 +12,14 @@
     pointer-events: none;
   }
 
-  @media screen and (max-width:768px) {
+  @media screen and (max-width:1280px) {
     position: absolute;
     z-index: 1;
     backdrop-filter: blur(5px);
     background-color: var(--color-surface-300);
   }
 
-  @media screen and (min-width:768px) {
+  @media screen and (min-width:1280px) {
     width: 300.8px;
     min-width: 300.8px;
 
@@ -34,7 +34,7 @@
     align-items: center;
     margin: variables.$gap-1;
 
-    @media screen and (max-width:768px) {
+    @media screen and (max-width:1280px) {
       direction: rtl;
     }
   }
@@ -44,12 +44,12 @@
     flex-direction: column;
     box-sizing: border-box;
 
-    @media screen and (max-width:768px) {
+    @media screen and (max-width:1280px) {
       width: 100vw;
       min-width: 100vw;
     }
 
-    @media screen and (min-width:768px) {
+    @media screen and (min-width:1280px) {
       width: 300px;
       min-width: 300px;
     }

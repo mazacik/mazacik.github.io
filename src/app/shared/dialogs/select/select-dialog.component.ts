@@ -24,12 +24,14 @@ export class SelectDialogComponent<T> extends DialogContentBase<T> implements On
     this.value = this.inputs.defaultValue;
     this.configuration = {
       title: this.inputs.title,
-      buttons: [{
-        id: 'cancel',
+      headerButtons: [{
+        iconClass: 'fa-solid fa-times',
+        click: () => this.close()
+      }],
+      footerButtons: [{
         text: () => 'Cancel',
         click: () => this.resolve(undefined)
       }, {
-        id: 'positive',
         text: () => this.inputs.positiveButtonText || 'Submit',
         disabled: () => !this.canSubmit(),
         click: () => this.submit()

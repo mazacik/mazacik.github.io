@@ -67,7 +67,7 @@ export class GalleryComponent implements OnInit, OnDestroy {
       }, {
         id: 'open-comparison',
         tooltip: 'Comparison',
-        classes: ['fa-solid', 'fa-folder'],
+        classes: ['fa-solid', 'fa-code-compare'],
         onClick: () => this.galleryService.openComparison()
       }],
       end: [{

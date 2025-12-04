@@ -18,12 +18,14 @@ export class ConfirmationDialogComponent extends DialogContentBase<boolean> impl
   ngOnInit(): void {
     this.configuration = {
       title: this.inputs.title,
-      buttons: [{
-        id: 'positive',
+      headerButtons: [{
+        iconClass: 'fa-solid fa-times',
+        click: () => this.close()
+      }],
+      footerButtons: [{
         text: () => this.inputs.positiveButtonText || 'Yes',
         click: () => this.resolve(true)
       }, {
-        id: 'negative',
         text: () => this.inputs.negativeButtonText || 'No',
         click: () => this.resolve(false)
       }]

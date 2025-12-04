@@ -30,12 +30,14 @@ export class MultiInputDialogComponent extends DialogContentBase<string[]> imple
     this.values = [...this.inputs.defaultValues];
     this.configuration = {
       title: this.inputs.title,
-      buttons: [{
-        id: 'cancel',
+      headerButtons: [{
+        iconClass: 'fa-solid fa-times',
+        click: () => this.close()
+      }],
+      footerButtons: [{
         text: () => 'Cancel',
         click: () => this.resolve(undefined)
       }, {
-        id: 'positive',
         text: () => this.inputs.positiveButtonText || 'Submit',
         disabled: () => !this.canSubmit(),
         click: () => this.submit()

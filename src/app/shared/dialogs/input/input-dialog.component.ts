@@ -25,12 +25,14 @@ export class InputDialogComponent extends DialogContentBase<string> implements O
     this.value = this.inputs.defaultValue;
     this.configuration = {
       title: this.inputs.title,
-      buttons: [{
-        id: 'cancel',
+      headerButtons: [{
+        iconClass: 'fa-solid fa-times',
+        click: () => this.close()
+      }],
+      footerButtons: [{
         text: () => 'Cancel',
         click: () => this.resolve(undefined)
       }, {
-        id: 'negative',
         text: () => this.inputs.positiveButtonText || 'Submit',
         disabled: () => !this.canSubmit(),
         click: () => this.submit()

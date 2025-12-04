@@ -25,8 +25,11 @@ export class GroupManagerComponent extends DialogContentBase<void, {}> implement
 
   public override configuration: DialogContainerConfiguration = {
     title: 'Group Manager',
-    buttons: [{
-      id: 'disband',
+    headerButtons: [{
+      iconClass: 'fa-solid fa-times',
+      click: () => this.close()
+    }],
+    footerButtons: [{
       text: () => 'Disband',
       hidden: () => this.inputs.sourceGroup == null,
       click: () => {
@@ -37,11 +40,9 @@ export class GroupManagerComponent extends DialogContentBase<void, {}> implement
         });
       }
     }, {
-      id: 'cancel',
       text: () => 'Cancel',
       click: () => this.close()
     }, {
-      id: 'save',
       text: () => 'Save',
       disabled: () => this.stateService.groupEditorGroup.images.length < 2,
       click: () => this.submit()

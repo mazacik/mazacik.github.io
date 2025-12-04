@@ -3,7 +3,7 @@ export abstract class ScreenUtils {
   private constructor() { }
 
   public static isLargeScreen(): boolean {
-    return window.innerWidth > 1000;
+    return window.innerWidth > 1280;
   }
 
   public static isElementVisible(element: HTMLElement, container?: HTMLElement): boolean {

@@ -18,8 +18,11 @@ export class MessageDialogComponent extends DialogContentBase<void> implements O
   ngOnInit(): void {
     this.configuration = {
       title: this.inputs.title,
-      buttons: [{
-        id: 'ok',
+      headerButtons: [{
+        iconClass: 'fa-solid fa-times',
+        click: () => this.close()
+      }],
+      footerButtons: [{
         text: () => 'OK',
         click: () => this.resolve()
       }]

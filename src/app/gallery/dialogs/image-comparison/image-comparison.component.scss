@@ -14,16 +14,14 @@
     display: flex;
     overflow: hidden;
 
-    @media screen and (max-width:768px) {
+    @media screen and (max-width:1280px) {
       aspect-ratio: 2;
     }
 
     .image-container {
-      // flex: 1;
       padding: variables.$gap-1;
       display: flex;
-      // align-items: center;
-      // justify-content: center;
+      justify-content: center;
       cursor: pointer;
 
       &:hover {
@@ -86,15 +84,7 @@
     flex-direction: column;
     overflow: auto;
     gap: variables.$gap-1;
-
-    @media screen and (max-width:768px) {
-      width: calc(3*100px + variables.$gap-2);
-      padding: variables.$gap-1;
-    }
-
-    @media screen and (min-width:768px) {
-      padding: variables.$gap-1;
-    }
+    padding: variables.$gap-1;
 
     .image-container {
       width: 100px;

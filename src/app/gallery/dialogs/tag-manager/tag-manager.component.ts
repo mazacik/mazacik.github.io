@@ -17,8 +17,11 @@ export class TagManagerComponent extends DialogContentBase<void> {
 
   public configuration: DialogContainerConfiguration = {
     title: () => 'Tag: ' + this.inputs.tag.getNameWithParents(),
-    buttons: [{
-      id: 'cancel',
+    headerButtons: [{
+      iconClass: 'fa-solid fa-times',
+      click: () => this.close()
+    }],
+    footerButtons: [{
       text: () => 'Cancel',
       click: () => this.close()
     }]
