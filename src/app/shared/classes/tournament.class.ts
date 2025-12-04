@@ -11,14 +11,8 @@ export class Tournament {
   private images: GalleryImage[] = [];
   private graph = new Map<GalleryImage, GalleryImage[]>();
 
-
-  private _comparisons: [GalleryImage, GalleryImage][] = [];
-  public get comparisons(): [GalleryImage, GalleryImage][] {
-    return this._comparisons;
-  }
-  private set comparisons(value) {
-    this._comparisons = value;
-  }
+  public comparisons: [GalleryImage, GalleryImage][] = [];
+  private availableComparisonsCount: number | null = null;
 
   public start(images: GalleryImage[], state: TournamentState): void {
     this.images = images;
@@ -35,28 +29,47 @@ export class Tournament {
       this.comparisons = state.comparisons.filter(([winnerId, loserId]) => imageIds.includes(winnerId) && imageIds.includes(loserId)).map(([winnerId, loserId]) => [imageMap[winnerId], imageMap[loserId]]);
       this.comparisons.forEach(([winner, loser]) => this.handleUserInput(winner, loser));
     }
+
+    this.availableComparisonsCount = null;
   }
 
   public getNextComparison(): [GalleryImage, GalleryImage] {
-    const available: [GalleryImage, GalleryImage][] = [];
+    const available: [GalleryImage, GalleryImage][] = this.collectAvailableComparisons();
 
+    if (available.length === 0) return null;
+    const [x, y] = available[Math.floor(Math.random() * available.length)];
+    return RandomUtils.boolean() ? [x, y] : [y, x];
+  }
+
+  public getComparisonProgress(): { total: number; remaining: number; completed: number } {
+    if (this.availableComparisonsCount === null) {
+      this.collectAvailableComparisons();
+    }
+
+    const completed: number = this.comparisons.length;
+    const remaining: number = this.availableComparisonsCount ?? 0;
+
+    return {
+      completed: completed,
+      remaining: remaining,
+      total: completed + remaining
+    };
+  }
+
+  private collectAvailableComparisons(): [GalleryImage, GalleryImage][] {
+    const available: [GalleryImage, GalleryImage][] = [];
     const queue = this.images;
-    // const queue = this.getRanking();
 
     for (let i = 0; i < queue.length; i++) {
       for (let j = i + 1; j < queue.length; j++) {
         const a = queue[i];
         const b = queue[j];
         if (!this.hasPath(a, b) && !this.hasPath(b, a)) available.push([a, b]);
-        // if (!this.hasPath(a, b) && !this.hasPath(b, a)) return [a, b];
       }
     }
-    
-    console.log(available.length);
 
-    if (available.length === 0) return null;
-    const [x, y] = available[Math.floor(Math.random() * available.length)];
-    return RandomUtils.boolean() ? [x, y] : [y, x];
+    this.availableComparisonsCount = available.length;
+    return available;
   }
 
   private hasPath(from: GalleryImage, to: GalleryImage, collector: string[] = []): boolean {
@@ -80,6 +93,7 @@ export class Tournament {
     this.comparisons.push([winner, loser]);
 
     this.updateTransitiveRelations(winner, loser);
+    this.availableComparisonsCount = null;
   }
 
   private updateTransitiveRelations(winner: GalleryImage, loser: GalleryImage): void {
@@ -135,6 +149,7 @@ export class Tournament {
       this.updateTransitiveRelations(winner, loser);
     }
 
+    this.availableComparisonsCount = null;
     return comparison;
   }
 

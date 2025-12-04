@@ -3,7 +3,14 @@
 :host {
   display: flex;
 
+  .comparison-wrapper {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+  }
+
   .comparison {
+    flex: 1;
     display: flex;
     overflow: hidden;
 
@@ -28,6 +35,48 @@
         max-height: 100%;
         object-fit: contain;
         border-radius: variables.$gap-1;
+      }
+    }
+  }
+
+  .comparison.comparison-empty {
+    align-items: center;
+    justify-content: center;
+    padding: variables.$gap-2;
+    border: 1px dashed var(--color-border);
+    border-radius: variables.$gap-1;
+    color: var(--color-text-secondary);
+  }
+
+  .comparison-progress {
+    display: flex;
+    flex-direction: column;
+
+    .progress-bar {
+      position: relative;
+      border-radius: variables.$gap-1;
+      background-color: var(--color-button-background-secondary-hover);
+      overflow: hidden;
+      height: variables.$button-height-smaller;
+      margin: variables.$gap-1;
+      isolation: isolate;
+
+      .progress-bar-fill {
+        height: 100%;
+        width: 0;
+        background-color: var(--color-positive);
+        transition: width variables.$transition-duration-fast ease;
+      }
+
+      .progress-bar-label {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: var(--color-text-secondary);
+        font-weight: 600;
+        pointer-events: none;
+        mix-blend-mode: difference; // invert against the fill so text stays readable on light and dark backgrounds
       }
     }
   }

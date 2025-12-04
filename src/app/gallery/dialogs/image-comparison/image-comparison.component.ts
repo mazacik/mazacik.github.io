@@ -1,4 +1,5 @@
 
+import { DecimalPipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { GalleryImage } from 'src/app/gallery/models/gallery-image.class';
 import { Tournament } from 'src/app/shared/classes/tournament.class';
@@ -10,7 +11,7 @@ import { GalleryStateService } from '../../services/gallery-state.service';
 
 @Component({
     selector: 'app-image-comparison',
-    imports: [],
+    imports: [DecimalPipe],
     templateUrl: './image-comparison.component.html',
     styleUrls: ['./image-comparison.component.scss']
 })
@@ -21,7 +22,7 @@ export class ImageComparisonComponent extends DialogContentBase<void> implements
     buttons: [{
       id: 'undo',
       text: () => 'Undo',
-      click: () => this.comparison = this.tournament.undo(),
+      click: () => this.undo(),
       disabled: () => ArrayUtils.isEmpty(this.tournament.comparisons)
     }, {
       id: 'reset',
@@ -36,6 +37,9 @@ export class ImageComparisonComponent extends DialogContentBase<void> implements
 
   tournament: Tournament = null;
   comparison: [GalleryImage, GalleryImage] = null;
+  protected totalComparisons: number = 0;
+  protected remainingComparisons: number = 0;
+  protected completedComparisons: number = 0;
 
   constructor(
     private serializationService: GallerySerializationService,
@@ -51,14 +55,19 @@ export class ImageComparisonComponent extends DialogContentBase<void> implements
   protected start(): void {
     this.tournament = new Tournament();
     this.tournament.start(this.stateService.images.slice(), this.stateService.tournamentState);
-    this.comparison = this.tournament.getNextComparison();
+    this.refreshComparisonAndProgress();
   }
 
   protected onImageClick(winner: GalleryImage, loser: GalleryImage): void {
     this.tournament.handleUserInput(winner, loser);
-    this.comparison = this.tournament.getNextComparison();
-    this.stateService.tournamentState = this.tournament.getState();
-    this.serializationService.save();
+    this.refreshComparisonAndProgress();
+    this.syncTournamentState();
+  }
+
+  protected undo(): void {
+    this.comparison = this.tournament.undo();
+    this.refreshProgress();
+    this.syncTournamentState();
   }
 
   protected reset(): void {
@@ -68,6 +77,28 @@ export class ImageComparisonComponent extends DialogContentBase<void> implements
 
   public close(): void {
     this.resolve();
+  }
+
+  public get progressPercent(): number {
+    return this.totalComparisons === 0 ? 0 : (this.completedComparisons / this.totalComparisons) * 100;
+  }
+
+  private refreshComparisonAndProgress(): void {
+    this.comparison = this.tournament.getNextComparison();
+    this.refreshProgress();
+  }
+
+  private refreshProgress(): void {
+    if (!this.tournament) return;
+    const progress = this.tournament.getComparisonProgress();
+    this.completedComparisons = progress.completed;
+    this.remainingComparisons = progress.remaining;
+    this.totalComparisons = progress.total;
+  }
+
+  private syncTournamentState(): void {
+    this.stateService.tournamentState = this.tournament.getState();
+    this.serializationService.save();
   }
 
 }
