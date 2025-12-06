@@ -36,39 +36,45 @@
       </div>
     </div>
 
-    <div class="width-100 height-100">
-      <div animate.enter="anim-fade-in" animate.leave="anim-fade-out" class="stack-container">
-        @if (target.group) {
-          <div animate.enter="anim-fade-in" animate.leave="anim-fade-out" class="has-group-container">
-            <div class="another-container stack-container">
-              <div [animate.enter]="'anim-fade-in anim-fade-between'" [animate.leave]="'anim-fade-out anim-fade-between anim-fade-between-leave'" class="image-container">
-                <img [src]="getSrc(target)" [class.flip-h]="flip" (click)="onImageClick(target)" #imageElement (load)="imageElement.style.opacity = '1'" />
-              </div>
-            </div>
-            <div class="stack-container height-auto justify-content-center">
-              <div animate.enter="anim-fade-in" animate.leave="anim-fade-out" class="group-images-container">
-                @for (groupImage of target.group.images; track groupImage.id) {
-                  <div class="group-image-container loading" (click)="stateService.fullscreenImage.set(groupImage)" #groupImageContainer>
-                    <img
-                      [class.grayscale]="!groupImage.passesFilters"
-                      [style.width.px]="120 * groupImage.aspectRatio"
-                      [src]="groupImage.thumbnailLink"
-                      #groupImageElement
-                      (load)="groupImageContainer.classList.toggle('loading')" />
-                    <div class="target-border" [class.target]="groupImage == target"></div>
-                  </div>
+    <div class="stack-container anim-fade" animate.enter="anim-fade-in" animate.leave="anim-fade-out">
+      @if (target.group) {
+        <div class="has-group-container anim-fade" animate.enter="anim-fade-in" animate.leave="anim-fade-out">
+          <div class="another-container stack-container">
+            <div class="image-container stack-container-alt">
+              @for (image of [target]; track image.id) {
+                @if (!loadingT) {
+                  <img class="anim-fade" [src]="getSrc(image)" [class.flip-h]="flip" (click)="onImageClick(image)" animate.enter="anim-fade-in" animate.leave="anim-fade-out" />
                 }
-              </div>
+              }
             </div>
           </div>
-        } @else {
-          <div animate.enter="anim-fade-in" animate.leave="anim-fade-out" class="non-group-container stack-container">
-            <div animate.enter="anim-fade-in" animate.leave="anim-fade-out" class="image-container">
-              <img [src]="getSrc(target)" [class.flip-h]="flip" (click)="onImageClick(target)" #imageElement (load)="imageElement.style.opacity = '1'" />
+          <div class="stack-container height-auto justify-content-center">
+            <div class="group-images-container anim-fade" animate.enter="anim-fade-in" animate.leave="anim-fade-out">
+              @for (groupImage of target.group.images; track groupImage.id) {
+                <div class="group-image-container loading" (click)="stateService.fullscreenImage.set(groupImage)" #groupImageContainer>
+                  <img
+                    [class.grayscale]="!groupImage.passesFilters"
+                    [style.width.px]="120 * groupImage.aspectRatio"
+                    [src]="groupImage.thumbnailLink"
+                    #groupImageElement
+                    (load)="groupImageContainer.classList.toggle('loading')" />
+                  <div class="target-border" [class.target]="groupImage == target"></div>
+                </div>
+              }
             </div>
           </div>
-        }
-      </div>
+        </div>
+      } @else {
+        <div class="non-group-container stack-container anim-fade" animate.enter="anim-fade-in" animate.leave="anim-fade-out">
+          <div class="image-container stack-container-alt">
+            @for (image of [target]; track image.id) {
+              @if (!loadingT) {
+                <img class="anim-fade" [src]="getSrc(image)" [class.flip-h]="flip" (click)="onImageClick(image)" animate.enter="anim-fade-in" animate.leave="anim-fade-out" />
+              }
+            }
+          </div>
+        </div>
+      }
     </div>
 
     <div class="sidebar-right">

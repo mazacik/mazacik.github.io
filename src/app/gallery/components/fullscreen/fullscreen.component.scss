@@ -48,7 +48,7 @@
     }
 
     .image-container {
-      padding: variables.$gap-1 0;
+      margin: variables.$gap-1 0;
     }
   }
 
@@ -141,11 +141,6 @@
 
       outline: none;
       user-select: none;
-
-      transition-property: opacity;
-      transition-duration: variables.$transition-duration;
-
-      opacity: 0;
     }
   }
 
