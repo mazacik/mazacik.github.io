@@ -1,6 +1,8 @@
 ﻿@use 'src/styles/variables.scss';
 
 :host {
+  width: 100%;
+  height: 100%;
   display: flex;
 
   .comparison-wrapper {
@@ -19,10 +21,11 @@
     }
 
     .image-container {
-      padding: variables.$gap-1;
+      margin: variables.$gap-1;
       display: flex;
       justify-content: center;
       cursor: pointer;
+      flex: 1;
 
       &:hover {
         background-color: var(--color-border);
@@ -33,6 +36,9 @@
         max-height: 100%;
         object-fit: contain;
         border-radius: variables.$gap-1;
+        flex: 1;
+        outline: none;
+        user-select: none;
       }
     }
   }

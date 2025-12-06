@@ -1,8 +1,8 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { lastValueFrom } from "rxjs";
+import { AppConstants } from "src/app/shared/constants/app.constants";
 import { BaseGoogleDriveService } from "../../shared/services/base-google-drive.service";
-import { GalleryConstants } from "../constants/gallery.constants";
 import { Data } from "../models/data.interface";
 
 @Injectable({
@@ -19,11 +19,11 @@ export class GalleryGoogleDriveService extends BaseGoogleDriveService {
   }
 
   public get dataFileId(): string {
-    return sessionStorage.getItem(GalleryConstants.KEY_GALLERY_DATA_FILE_ID);
+    return sessionStorage.getItem(AppConstants.KEY_GOOGLE_DATA_FILE_ID);
   }
 
   public set dataFileId(fileId: string) {
-    sessionStorage.setItem(GalleryConstants.KEY_GALLERY_DATA_FILE_ID, fileId);
+    sessionStorage.setItem(AppConstants.KEY_GOOGLE_DATA_FILE_ID, fileId);
   }
 
   public async getData(): Promise<Data> {

@@ -10,7 +10,10 @@ import { DialogContentBase } from './dialog-content-base.class';
   selector: 'app-dialog-container',
   imports: [],
   templateUrl: './dialog-container.component.html',
-  styleUrls: ['./dialog-container.component.scss']
+  styleUrls: ['./dialog-container.component.scss'],
+  host: {
+    '[class.display-none]': 'hidden'
+  }
 })
 export class DialogContainerComponent<ResultType, InputsType> implements AfterViewInit {
 
@@ -18,6 +21,7 @@ export class DialogContainerComponent<ResultType, InputsType> implements AfterVi
 
   public top: number;
   public left: number;
+  protected hidden: boolean = true;
   protected borderWarning: boolean = false;
 
   public contentComponentType: Type<DialogContentBase<ResultType, InputsType>>;
@@ -51,6 +55,13 @@ export class DialogContainerComponent<ResultType, InputsType> implements AfterVi
     this.contentComponentInstance = contentRef.instance;
     this.contentComponentInstance.inputs = this.inputs;
     this.contentComponentInstance.resolve = this.resolve;
+
+    if (contentRef.instance.configuration.waitForContent) {
+      this.hidden = true;
+      contentRef.instance.configuration.waitForContent.finally(() => this.hidden = false);
+    } else {
+      this.hidden = false;
+    }
 
     this.keyboardShortcutService.register(this.contentComponentInstance);
 

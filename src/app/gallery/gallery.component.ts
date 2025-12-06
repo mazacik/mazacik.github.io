@@ -39,8 +39,8 @@ export class GalleryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.registerModuleSettings();
     this.configureHeader();
+    this.registerModuleSettings();
     this.serializationService.processData().then(() => this.loading = false);
   }
 
@@ -64,11 +64,6 @@ export class GalleryComponent implements OnInit, OnDestroy {
         tooltip: 'Create Image Group',
         classes: ['fa-solid', 'fa-folder-plus'],
         onClick: () => this.galleryService.openImageGroupEditor()
-      }, {
-        id: 'open-comparison',
-        tooltip: 'Comparison',
-        classes: ['fa-solid', 'fa-code-compare'],
-        onClick: () => this.galleryService.openComparison()
       }],
       end: [{
         id: 'google-drive',
@@ -83,9 +78,7 @@ export class GalleryComponent implements OnInit, OnDestroy {
     if (!this.stateService.settings) {
       this.stateService.settings = {} as any;
     }
-    if (this.stateService.settings.showFileInformation === undefined) {
-      this.stateService.settings.showFileInformation = true;
-    }
+
     this.applicationService.registerModuleSettings({
       id: 'gallery-settings',
       label: 'Gallery',

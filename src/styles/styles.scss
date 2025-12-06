@@ -450,14 +450,25 @@ hr {
   height: 100%;
   display: grid;
   grid-template-areas: "content";
+  position: relative;
 
   >* {
     grid-area: content;
   }
 }
 
+.stack-container-alt {
+  position: relative;
+
+  >* {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+  }
+}
+
 .fluid {
-  width: auto !important;
+  width: 100% !important;
 }
 
 .width-auto {
@@ -498,7 +509,7 @@ hr {
   border-radius: variables.$gap-1;
   cursor: pointer;
   user-select: none;
-  padding: 0 variables.$gap-1;
+  padding: 0 variables.$gap-3;
   box-sizing: border-box;
   border: 1px solid var(--color-border);
 
@@ -521,6 +532,7 @@ hr {
   &.smaller {
     min-width: variables.$button-height-smaller;
     min-height: variables.$button-height-smaller;
+    padding: 0 variables.$gap-1;
   }
 }
 
@@ -784,60 +796,18 @@ span.icon-button {
   transform: scaleY(-1);
 }
 
-// animations
-:root {
-  --animation-duration: 500ms;
-  --animation-delay: 0ms;
-  --drawer-animation-duration: 500ms;
-}
-
-@keyframes anim-fade-in {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes anim-fade-out {
-  from {
-    opacity: 1;
-  }
-
-  to {
-    opacity: 0;
-  }
+.anim-fade {
+  opacity: 1;
+  transition: opacity variables.$transition-duration ease;
 }
 
 .anim-fade-in {
-  animation: anim-fade-in var(--animation-duration, 500ms) ease var(--animation-delay, 0ms) forwards !important;
+  @starting-style {
+    opacity: 0;
+  }
 }
 
 .anim-fade-out {
-  pointer-events: none !important;
-  animation: anim-fade-out var(--animation-duration, 500ms) ease var(--animation-delay, 0ms) forwards !important;
-}
-
-.anim-fade-between {
-  --animation-duration: 333ms;
-}
-
-.anim-fade-between-leave {
-  --animation-duration: 333ms;
-  --animation-delay: 333ms;
-  z-index: -1;
-}
-
-.drawer-animated {
-  overflow: hidden;
-  max-height: 0;
   opacity: 0;
-  transition: max-height var(--drawer-animation-duration, 500ms) ease, opacity var(--drawer-animation-duration, 500ms) ease;
-}
-
-.drawer-animated.open {
-  max-height: 9999px;
-  opacity: 1;
+  pointer-events: none;
 }

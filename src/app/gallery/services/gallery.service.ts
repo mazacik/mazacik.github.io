@@ -3,7 +3,6 @@ import { ApplicationService } from "src/app/shared/services/application.service"
 import { ArrayUtils } from "src/app/shared/utils/array.utils";
 import { DialogService } from "../../shared/services/dialog.service";
 import { GroupManagerComponent } from "../dialogs/group-manager/group-manager.component";
-import { ImageComparisonComponent } from "../dialogs/image-comparison/image-comparison.component";
 import { TagManagerComponent } from "../dialogs/tag-manager/tag-manager.component";
 import { GalleryGroup } from "../models/gallery-group.class";
 import { GalleryImage } from "../models/gallery-image.class";
@@ -30,10 +29,6 @@ export class GalleryService {
   // TODO move dialog result functionality here
   public openImageGroupEditor(group?: GalleryGroup): void {
     this.dialogService.create(GroupManagerComponent, { sourceGroup: group });
-  }
-
-  public openComparison(): void {
-    this.dialogService.create(ImageComparisonComponent);
   }
 
   public openTagOptions(tag: Tag): void {

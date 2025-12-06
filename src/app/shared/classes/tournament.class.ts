@@ -26,8 +26,7 @@ export class Tournament {
 
     if (state) {
       const imageIds = this.images.map(image => image.id);
-      this.comparisons = state.comparisons.filter(([winnerId, loserId]) => imageIds.includes(winnerId) && imageIds.includes(loserId)).map(([winnerId, loserId]) => [imageMap[winnerId], imageMap[loserId]]);
-      this.comparisons.forEach(([winner, loser]) => this.handleUserInput(winner, loser));
+      state.comparisons.filter(([winnerId, loserId]) => imageIds.includes(winnerId) && imageIds.includes(loserId)).map(([winnerId, loserId]) => [imageMap[winnerId], imageMap[loserId]]).forEach(([winner, loser]) => this.handleUserInput(winner, loser));
     }
 
     this.availableComparisonsCount = null;
@@ -93,7 +92,6 @@ export class Tournament {
     this.comparisons.push([winner, loser]);
 
     this.updateTransitiveRelations(winner, loser);
-    this.availableComparisonsCount = null;
   }
 
   private updateTransitiveRelations(winner: GalleryImage, loser: GalleryImage): void {

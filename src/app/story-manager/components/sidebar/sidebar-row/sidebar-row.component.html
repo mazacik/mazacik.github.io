@@ -27,7 +27,7 @@
       <i class="icon-button-small fa-solid fa-ellipsis-vertical" (click)="stateService.options(article)"></i>
     </div>
   </div>
-  <div class="flex column overflow-hidden drawer-animated" [class.open]="article.open">
+  <div class="flex column overflow-hidden drawer" [class.open]="article.open">
     @for (child of article.children; track child.id) {
       <app-sidebar-row [article]="child"></app-sidebar-row>
     }

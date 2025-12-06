@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
 import { NgClass } from '@angular/common';
-import { ApplicationService, HeaderAction, HeaderClasses, HeaderConfig } from 'src/app/shared/services/application.service';
+import { Component } from '@angular/core';
+import { ApplicationService, HeaderAction, HeaderClasses } from 'src/app/shared/services/application.service';
 
 @Component({
   selector: 'app-header',

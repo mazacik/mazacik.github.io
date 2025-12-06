@@ -2,20 +2,8 @@
 
 :host {
   display: flex;
-  gap: variables.$gap-1;
-}
-
-.column {
-  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: variables.$gap-1;
-
-  >* {
-    width: 100%;
-    cursor: pointer;
-    user-select: none;
-    background-color: var(--color-surface-200);
-  }
 }

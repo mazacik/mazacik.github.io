@@ -1,4 +1,4 @@
-<ng-container *ngVar="stateService.fullscreenImage() as target">
+@if (stateService.fullscreenImage(); as target) {
   <img style="display: none" [src]="target?.thumbnailLink" (load)="loadingT = false" />
   <img style="display: none" [src]="target?.contentLink" (load)="loadingC = false" />
   <div class="fullscreen-container">
@@ -17,7 +17,7 @@
           <i class="icon-button active fa-solid fa-object-group" tp="Group Manager" tpPlacement="left" (click)="galleryService.openImageGroupEditor(target.group)"></i>
         }
         @if (target && (stateService.settings?.showFileInformation ?? true)) {
-          <div class="file-information">
+          <div class="file-information glass-effect">
             <div class="file-name" [title]="target.name">{{ target.name }}</div>
             @if (getFileSize(target); as fileSize) {
               <div class="file-row">
@@ -103,9 +103,7 @@
         <i class="icon-button fa-solid fa-trash" tp="Delete" tpPlacement="right" (click)="galleryService.delete(target, false)"></i>
       </div>
     </div>
-
   </div>
-</ng-container>
-
+}
 <!-- <iframe *ngIf="video" class="fullscreen-content" [src]="image.contentLink" [style]="'max-width:' + image.videoMediaMetadata.width + 'px;max-height:' + image.videoMediaMetadata.height + 'px;'" frameborder="0" allowfullscreen></iframe> -->
 <!-- <video *ngIf="video" id="video-element" class="fullscreen-content" controls [src]="image.contentLink" [style]="'max-width:' + image.videoMediaMetadata.width + 'px;max-height:' + image.videoMediaMetadata.height + 'px;'"></video> -->

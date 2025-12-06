@@ -6,6 +6,7 @@ export interface DialogContainerConfiguration {
   headerButtons?: DialogButton[];
   footerButtons?: DialogButton[];
 
+  waitForContent?: Promise<void>;
   hideClickOverlay?: boolean;
   allowMultiple?: boolean;
 

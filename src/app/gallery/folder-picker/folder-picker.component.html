@@ -1,12 +1,6 @@
-<div class="container" [class.opacity-100]="!applicationService.loading()">
-  @if (true) {
-    <div class="folders-container">
-      @for (dataFile of dataFiles; track dataFile.id) {
-        <span (click)="onDataFileClick(dataFile)">{{ dataFile.name.substring(0, dataFile.name.length - 10) }}</span>
-      }
-      @for (folder of folders; track folder.id) {
-        <span (click)="onFolderClick(folder)">{{ folder.name }}</span>
-      }
-    </div>
-  }
-</div>
+@for (dataFile of dataFiles; track dataFile.id) {
+  <span class="button fluid" (click)="onDataFileClick(dataFile)">{{ dataFile.name.substring(0, dataFile.name.length - 10) }}</span>
+}
+@for (folder of folders; track folder.id) {
+  <span class="button fluid" (click)="onFolderClick(folder)">{{ folder.name }}</span>
+}

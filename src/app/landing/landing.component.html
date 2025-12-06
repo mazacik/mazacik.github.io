@@ -1,4 +1,3 @@
-<div class="column">
-  <span class="button" (click)="navigate('gallery')">Gallery</span>
-  <span class="button" (click)="navigate('story-manager')">Story Manager</span>
-</div>
+@for (app of apps; track app.id) {
+  <span class="button fluid" (click)="navigate(app)">{{ app.label }}</span>
+}

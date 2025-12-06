@@ -1,34 +1,43 @@
 <div class="comparison-wrapper">
   @if (comparison) {
+    <img style="display: none" [src]="comparison[0].thumbnailLink" (load)="loadingLT = false" />
+    <img style="display: none" [src]="comparison[1].thumbnailLink" (load)="loadingRT = false" />
+    <!-- <img style="display: none" [src]="comparison[0].contentLink" (load)="loadingLC = false" /> -->
+    <!-- <img style="display: none" [src]="comparison[1].contentLink" (load)="loadingRC = false" /> -->
+
     <div class="comparison">
-      <div class="image-container" (click)="onImageClick(comparison[0], comparison[1])">
-        <img class="image" [src]="comparison[0].thumbnailLink" />
+      <div class="image-container stack-container-alt" (click)="onImageClick(comparison[0], comparison[1])">
+        @for (item of [comparison[0]]; track item.id) {
+          @if (!loadingLT) {
+            <img class="image anim-fade" [src]="getSrc(comparison[0])" animate.enter="anim-fade-in" animate.leave="anim-fade-out" />
+          }
+        }
       </div>
       <div class="v-separator"></div>
-      <div class="image-container" (click)="onImageClick(comparison[1], comparison[0])">
-        <img class="image" [src]="comparison[1].thumbnailLink" />
+      <div class="image-container stack-container-alt" (click)="onImageClick(comparison[1], comparison[0])">
+        @for (item of [comparison[1]]; track item.id) {
+          @if (!loadingRT) {
+            <img class="image anim-fade" [src]="getSrc(comparison[1])" animate.enter="anim-fade-in" animate.leave="anim-fade-out" />
+          }
+        }
       </div>
     </div>
-  } @else {
-    <div class="comparison comparison-empty">
-      <span>All comparisons completed.</span>
-    </div>
-  }
 
-  @if (progressBarVisible) {
-    <div class="comparison-progress">
-    <div class="progress-bar">
-      <div class="progress-bar-fill" [style.width.%]="progressPercent"></div>
-      <div class="progress-bar-label">{{ completedComparisons }}/{{ totalComparisons }} ({{ progressPercent | number: '1.0-0' }}%)</div>
-    </div>
-  </div>
+    @if (progressBarVisible) {
+      <div class="comparison-progress">
+        <div class="progress-bar">
+          <div class="progress-bar-fill" [style.width.%]="progressPercent"></div>
+          <div class="progress-bar-label">{{ completedComparisons }}/{{ totalComparisons }} ({{ progressPercent | number: '1.0-0' }}%)</div>
+        </div>
+      </div>
+    }
   }
 </div>
-<div class="v-separator desktop-only"></div>
+<!-- <div class="v-separator desktop-only"></div>
 <div class="results desktop-only">
   @for (image of tournament.getRanking(); track image.id) {
     <div class="image-container">
       <img class="image" [src]="image.thumbnailLink" />
     </div>
   }
-</div>
+</div> -->
