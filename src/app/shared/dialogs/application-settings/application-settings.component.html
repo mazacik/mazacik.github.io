@@ -1,0 +1,28 @@
+<div class="settings-layout">
+  <div class="tabs">
+    @for (tab of tabs; track tab.id) {
+      <div class="button smaller fluid" [class.active]="tab.id === activeTabId" (click)="setActiveTabId(tab.id)">{{ tab.label }}</div>
+    }
+  </div>
+  <div class="v-separator"></div>
+  <div class="tab-content">
+    @if (activeTab?.items?.length) {
+      <div class="tab-panel">
+        @for (item of activeTab.items; track item.id) {
+          @if (item.type === 'toggle') {
+            <div class="button smaller fluid option-container" (click)="item.onChange(!item.getValue())">
+              <span class="nowrap user-select-none">{{ item.label }}</span>
+              <app-checkbox [value]="item.getValue()"></app-checkbox>
+            </div>
+          } @else if (item.type === 'action') {
+            <div class="button smaller fluid option-container" (click)="item.onClick()">{{ item.label }}<i class="fa-solid fa-play fa-sm"></i></div>
+          }
+        }
+      </div>
+    } @else {
+      <div class="tab-panel">
+        <span class="nowrap user-select-none">No settings available.</span>
+      </div>
+    }
+  </div>
+</div>

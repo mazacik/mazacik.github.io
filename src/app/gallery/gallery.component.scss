@@ -1,4 +1,4 @@
-@import 'src/styles/variables.scss';
+@use 'src/styles/variables.scss';
 
 :host {
   width: 100%;
@@ -8,9 +8,7 @@
   .fullscreen-container {
     display: flex;
     overflow: hidden;
-    backdrop-filter: blur(5px);
-    background-color: var(--color-background-dialog);
-    transition: $transition-duration;
+    transition: variables.$transition-duration;
     z-index: 1;
   }
 }

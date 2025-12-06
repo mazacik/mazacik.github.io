@@ -1,83 +1,65 @@
-import { Routes } from '@angular/router';
+import { inject } from '@angular/core';
+import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot, Routes } from '@angular/router';
+import { ImageComparisonComponent } from './gallery/dialogs/image-comparison/image-comparison.component';
 import { FolderPickerComponent } from './gallery/folder-picker/folder-picker.component';
 import { GalleryComponent } from './gallery/gallery.component';
-import { ActivityComponent } from './games/activity/activity.component';
-import { NikdySomComponent } from './games/nikdy-som/nikdy-som.component';
-import { TwisterComponent } from './games/twister/twister.component';
 import { LandingComponent } from './landing/landing.component';
 import { LoginComponent } from './login/login.component';
-import { GoogleAuthGuard } from './router/google-auth.guard';
-import { HasFolderGuard } from './router/has-folder.guard';
-import { NotMessengerBrowserGuard } from './router/not-messenger-browser.guard copy';
-import { FuckMessengerBrowserComponent } from './shared/components/fuck-messenger-browser/fuck-messenger-browser.component';
+import { authGuard } from './router/google-auth.guard';
+import { AppConstants } from './shared/constants/app.constants';
+import { DialogService } from './shared/services/dialog.service';
 import { StoryManagerComponent } from './story-manager/story-manager.component';
 
+const activeAppGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+  console.log('activeAppGuard');
+  return sessionStorage.getItem(AppConstants.KEY_ACTIVE_APP_ID) ? true : inject(Router).navigate(['']);
+}
+
+const folderGuard: CanActivateFn = async (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+  console.log('folderGuard');
+
+  const router = inject(Router);
+
+  if (sessionStorage.getItem(AppConstants.KEY_GOOGLE_DATA_FILE_ID)) {
+    return true;
+  } else {
+    await inject(DialogService).create(FolderPickerComponent);
+    if (sessionStorage.getItem(AppConstants.KEY_GOOGLE_DATA_FILE_ID)) {
+      return true;
+    }
+  }
+
+  return router.navigate(['']);
+}
+
 export const routes: Routes = [{
-  path: 'messenger-browser',
-  canActivate: [NotMessengerBrowserGuard],
-  component: FuckMessengerBrowserComponent
-}, {
   path: 'login',
+  canActivate: [activeAppGuard],
   component: LoginComponent
 }, {
-  path: 'story-manager',
-  canActivate: [GoogleAuthGuard],
-  component: StoryManagerComponent
-}, {
-  path: 'folder-picker',
-  canActivate: [GoogleAuthGuard],
-  component: FolderPickerComponent
-}, {
   path: 'gallery',
-  canActivate: [GoogleAuthGuard, HasFolderGuard],
-  component: GalleryComponent
-}, {
-  //   path: 'comparison',
-  //   component: TournamentComponent
-  //   }, {
-  //   path: 'event/:id',
-  //   component: EventManagerComponent,
-  //   children: [{
-  //     path: 'hlasovanie/vysledky',
-  //     component: SurveyResultsComponent
-  //   }, {
-  //     path: 'hlasovanie',
-  //     canActivate: [MessengerBrowserGuard],
-  //     component: SurveyComponent
-  //   }, {
-  //     path: 'prihlaska',
-  //     component: EventApplicationComponent
-  //   }, {
-  //     path: 'pravidla',
-  //     component: RulesComponent
-  //   }, {
-  //     path: '**',
-  //     redirectTo: 'hlasovanie'
-  //   }]
-  // }, {
-  path: 'home',
-  component: LandingComponent
-}, {
-  path: 'games',
+  canActivateChild: [authGuard],
   children: [{
-    path: 'activity',
-    component: ActivityComponent
-  }, {
-    path: 'twister',
-    component: TwisterComponent
-  }, {
-    path: 'nikdy-som',
-    component: NikdySomComponent
-  }, {
-    path: '**',
-    redirectTo: '/'
+    path: '',
+    canActivate: [folderGuard],
+    component: GalleryComponent
   }]
 }, {
+  path: 'comparison',
+  canActivateChild: [authGuard],
+  children: [{
+    path: '',
+    canActivate: [folderGuard],
+    component: ImageComparisonComponent
+  }]
+}, {
+  path: 'story-manager',
+  canActivate: [authGuard],
+  component: StoryManagerComponent
+}, {
+  path: '',
+  component: LandingComponent
+}, {
   path: '**',
-  redirectTo: 'home'
+  redirectTo: ''
 }];
-
-// {
-//   path: '',
-//   component: LandingComponent
-// }, 

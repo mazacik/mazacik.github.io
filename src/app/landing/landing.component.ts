@@ -1,36 +1,44 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { AppConstants } from '../shared/constants/app.constants';
 import { ApplicationService } from '../shared/services/application.service';
+
+interface ApplicationConfig {
+  id: string;
+  label: string;
+}
 
 @Component({
   selector: 'app-landing',
-  standalone: true,
-  imports: [
-    CommonModule
-  ],
+  imports: [CommonModule],
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.scss']
 })
-export class LandingComponent implements OnInit {
+export class LandingComponent {
 
-  protected dev: number = 0;
+  protected apps: ApplicationConfig[] = [{
+    id: 'gallery',
+    label: 'Gallery'
+  }, {
+    id: 'comparison',
+    label: 'Comparison'
+  }, {
+    id: 'story-manager',
+    label: 'Story Manager'
+  }];
 
   constructor(
     private router: Router,
-    protected applicationService: ApplicationService
+    private applicationService: ApplicationService
   ) {
     this.applicationService.loading.set(false);
   }
 
-  ngOnInit(): void {
-
-  }
-
-  navigate(value: string): void {
-    sessionStorage.setItem('appId', value);
-    this.applicationService.loading.set(true);
-    this.router.navigate([value]);
+  protected navigate(app: ApplicationConfig): void {
+    sessionStorage.setItem(AppConstants.KEY_ACTIVE_APP_ID, app.id);
+    sessionStorage.removeItem(AppConstants.KEY_GOOGLE_DATA_FILE_ID);
+    this.router.navigate([app.id]);
   }
 
 }

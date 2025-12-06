@@ -22,7 +22,11 @@ export class GroupSizeFilterEditor extends DialogContentBase<boolean> implements
 
   public configuration: DialogContainerConfiguration = {
     title: 'Group Size Filter Editor',
-    buttons: [{
+    headerButtons: [{
+      iconClass: 'fa-solid fa-times',
+      click: () => this.close()
+    }],
+    footerButtons: [{
       text: () => 'Close',
       click: () => this.close()
     }, {

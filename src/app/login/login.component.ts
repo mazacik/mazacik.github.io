@@ -1,37 +1,35 @@
 import { AfterViewInit, Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthenticationService } from '../shared/services/authentication.serivce';
+import { firstValueFrom } from 'rxjs';
+import { AppConstants } from '../shared/constants/app.constants';
 import { ApplicationService } from '../shared/services/application.service';
+import { AuthenticationService } from '../shared/services/authentication.serivce';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  styleUrls: ['./login.component.scss'],
+  standalone: false
 })
 export class LoginComponent implements AfterViewInit {
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private authenticationService: AuthenticationService,
-    applicationService: ApplicationService
-  ) { 
-    applicationService.loading.set(false);
+    protected authenticationService: AuthenticationService,
+    protected applicationService: ApplicationService
+  ) {
+    this.applicationService.loading.set(true);
   }
 
-  ngAfterViewInit(): void {
-    this.route.queryParams.subscribe(params => {
-      const code: string = params['code'];
-      if (code) {
-        this.authenticationService.requestTokens(code).finally(() => {
-          this.router.navigate([sessionStorage.getItem('appId') || '']);
-        });
-      }
-    });
-  }
-
-  signIn() {
-    this.authenticationService.startAuthentication();
+  public async ngAfterViewInit(): Promise<void> {
+    const code: string = await firstValueFrom(this.route.queryParams)['code'];
+    if (code) {
+      await this.authenticationService.requestTokens(code);
+      this.router.navigate([sessionStorage.getItem(AppConstants.KEY_ACTIVE_APP_ID) ?? '']);
+    } else {
+      this.applicationService.loading.set(false);
+    }
   }
 
 }

@@ -1,8 +1,6 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { TippyDirective } from '@ngneat/helipopper';
-import { drawer } from 'src/app/shared/constants/animations.constants';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 import { StringUtils } from 'src/app/shared/utils/string.utils';
 import { Article } from '../../models/article.class';
@@ -12,16 +10,12 @@ import { SidebarRowComponent } from "./sidebar-row/sidebar-row.component";
 
 @Component({
   selector: 'app-sidebar',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    TippyDirective,
-    SidebarRowComponent
-],
-  templateUrl: './sidebar.component.html',
-  styleUrls: ['./sidebar.component.scss'],
-  animations: [drawer]
+    imports: [
+        FormsModule,
+        SidebarRowComponent
+    ],
+    templateUrl: './sidebar.component.html',
+    styleUrls: ['./sidebar.component.scss']
 })
 export class SidebarComponent implements OnInit {
 

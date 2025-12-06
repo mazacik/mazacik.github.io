@@ -1,9 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, ElementRef, effect } from '@angular/core';
-import { TippyDirective } from '@ngneat/helipopper';
 import { GalleryImage } from 'src/app/gallery/models/gallery-image.class';
 import { Delay } from 'src/app/shared/classes/delay.class';
-import { fade } from 'src/app/shared/constants/animations.constants';
 import { CreateDirective } from 'src/app/shared/directives/create.directive';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 import { ScreenUtils } from 'src/app/shared/utils/screen.utils';
@@ -12,20 +10,15 @@ import { FilterService } from '../../services/filter.service';
 import { GalleryStateService } from '../../services/gallery-state.service';
 import { GalleryService } from '../../services/gallery.service';
 import { TagService } from '../../services/tag.service';
-import { HeaderComponent } from '../header/header.component';
 
 @Component({
   selector: 'app-masonry',
-  standalone: true,
   imports: [
     CommonModule,
-    CreateDirective,
-    TippyDirective,
-    HeaderComponent
+    CreateDirective
   ],
   templateUrl: './masonry.component.html',
-  styleUrls: ['./masonry.component.scss'],
-  animations: [fade]
+  styleUrls: ['./masonry.component.scss']
 })
 export class MasonryComponent {
 
@@ -41,8 +34,8 @@ export class MasonryComponent {
     protected stateService: GalleryStateService,
     protected galleryService: GalleryService
   ) {
-    effect(() => this.updateLayout());
-    // effect(() => this.scrollTo(this.stateService.target()));
+    effect(() => this.updateLayout(this.filterService.masonryImages()));
+
     new ResizeObserver(() => {
       if (ScreenUtils.isLargeScreen()) {
         this.requestLayoutUpdate();
@@ -61,10 +54,8 @@ export class MasonryComponent {
     });
   }
 
-  protected updateLayout(): void {
-    if (this.masonryContainer) {
-      if (this.filterService.masonryImages().length == 0) return;
-
+  protected updateLayout(images: GalleryImage[] = this.filterService.masonryImages()): void {
+    if (this.masonryContainer && !ArrayUtils.isEmpty(images)) {
       const minColumnWidth: number = ScreenUtils.isLargeScreen() ? 250 : 200;
       const masonryGap: number = ScreenUtils.isLargeScreen() ? 9.6666666666 : 4.3333333333;
 

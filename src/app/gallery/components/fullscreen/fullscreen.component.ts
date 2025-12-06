@@ -1,13 +1,9 @@
-import { animate, style, transition, trigger } from '@angular/animations';
 import { CommonModule } from '@angular/common';
 import { Component, effect, OnDestroy, OnInit } from '@angular/core';
 import { SafeUrl } from '@angular/platform-browser';
-import { TippyDirective } from '@ngneat/helipopper';
 import { KeyboardShortcutTarget } from 'src/app/shared/classes/keyboard-shortcut-target.interface';
-import { fade } from 'src/app/shared/constants/animations.constants';
 import { VariableDirective } from 'src/app/shared/directives/variable.directive';
 import { ApplicationService } from 'src/app/shared/services/application.service';
-import { DialogService } from 'src/app/shared/services/dialog.service';
 import { KeyboardShortcutService } from 'src/app/shared/services/keyboard-shortcut.service';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 import { GoogleFileUtils } from 'src/app/shared/utils/google-file.utils';
@@ -20,25 +16,13 @@ import { GalleryService } from '../../services/gallery.service';
 import { TagService } from '../../services/tag.service';
 
 @Component({
-  selector: 'app-fullscreen',
-  standalone: true,
-  imports: [
-    CommonModule,
-    VariableDirective,
-    TippyDirective
-  ],
-  templateUrl: './fullscreen.component.html',
-  styleUrls: ['./fullscreen.component.scss'],
-  animations: [fade, trigger('fadeBetweenGroupImages', [
-    transition(':enter', [
-      style({ opacity: 0 }),
-      animate('333ms ease', style({ opacity: 1 }))
-    ]),
-    transition(':leave', [
-      style({ opacity: 1, 'pointer-events': 'none', 'z-index': -1 }),
-      animate('333ms 333ms ease', style({ opacity: 0 }))
-    ])
-  ])]
+    selector: 'app-fullscreen',
+    imports: [
+        CommonModule,
+        VariableDirective
+    ],
+    templateUrl: './fullscreen.component.html',
+    styleUrls: ['./fullscreen.component.scss']
 })
 export class FullscreenComponent implements KeyboardShortcutTarget, OnInit, OnDestroy {
 
@@ -55,7 +39,6 @@ export class FullscreenComponent implements KeyboardShortcutTarget, OnInit, OnDe
     private keyboardShortcutService: KeyboardShortcutService,
     protected googleService: GalleryGoogleDriveService,
     protected stateService: GalleryStateService,
-    protected dialogService: DialogService,
     protected galleryService: GalleryService,
     protected tagService: TagService,
     protected filterService: FilterService
@@ -145,9 +128,28 @@ export class FullscreenComponent implements KeyboardShortcutTarget, OnInit, OnDe
   }
 
   protected onImageClick(image: GalleryImage): void {
-    if (this.applicationService.reduceBandwidth) {
+    if (this.applicationService.reduceDataUsage) {
       image.thumbnailLink = image.thumbnailLink.replace('=s220', '=s440');
     }
+  }
+
+  protected getFileSize(image: GalleryImage): string | null {
+    const size: number = Number(image?.size);
+    if (!image || Number.isNaN(size)) return null;
+    const kilobytes: number = size / 1024;
+    return kilobytes.toLocaleString(undefined, { maximumFractionDigits: 1 }) + ' KB';
+  }
+
+  protected getResolution(image: GalleryImage): string | null {
+    if (image?.imageMediaMetadata?.width && image?.imageMediaMetadata?.height) {
+      return image.imageMediaMetadata.width + ' x ' + image.imageMediaMetadata.height;
+    }
+
+    if (image?.videoMediaMetadata?.width && image?.videoMediaMetadata?.height) {
+      return image.videoMediaMetadata.width + ' x ' + image.videoMediaMetadata.height;
+    }
+
+    return null;
   }
 
   protected snapshot(): void {

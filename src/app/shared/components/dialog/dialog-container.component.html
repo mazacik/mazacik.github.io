@@ -1,21 +1,47 @@
-<ng-container *ngIf="contentComponentInstance">
-  <div class="glass-effect"></div>
-  <div *ngIf="!contentComponentInstance.configuration.hideClickOverlay" class="overlay-effect" #overlay (click)="overlayClick()"></div>
-  <div *ngIf="contentComponentInstance.configuration.title" #header class="header" (mousedown)="onHeaderMouseDown($event, header)">
-    <span class="header-title">{{ getTitle() }}</span>
-    <div class="flex gap">
-      <i *ngIf="!contentComponentInstance.configuration.hideHeaderCloseButton" class="icon-button fa-solid fa-times" (click)="contentComponentInstance.close()"></i>
+<div class="dialog-container" [style.top.px]="top" [style.left.px]="left" [class.border-warning]="borderWarning">
+  @if (contentComponentInstance) {
+    @if (!contentComponentInstance.configuration.hideClickOverlay) {
+      <div class="overlay-effect" #overlay (click)="overlayClick()"></div>
+    }
+    @if (contentComponentInstance.configuration.title || contentComponentInstance.configuration.headerButtons) {
+      <div #header class="header" (mousedown)="onHeaderMouseDown($event, header)">
+        @if (contentComponentInstance.configuration.title) {
+          <span class="header-title">{{ getTitle() }}</span>
+        }
+        @if (contentComponentInstance.configuration.headerButtons) {
+          <div class="flex gap">
+            @for (button of contentComponentInstance.configuration.headerButtons; track $index) {
+              @if (!isHidden(button)) {
+                @if (button.iconClass) {
+                  <i [class]="'icon-button ' + getButtonIconClass(button)" [class.disabled]="isDisabled(button)" (click)="button.click && button.click()"></i>
+                }
+                @if (button.text) {
+                  <div class="button" [class.disabled]="isDisabled(button)" (click)="button.click && button.click()">{{ getButtonText(button) }}</div>
+                }
+              }
+            }
+          </div>
+        }
+      </div>
+    }
+  }
+  @if (contentComponentType) {
+    <div class="content">
+      <ng-container #content></ng-container>
     </div>
-  </div>
-</ng-container>
-<div *ngIf="contentComponentType" class="content">
-  <ng-container #content></ng-container>
-</div>
-<div *ngIf="contentComponentInstance" class="buttons">
-  <ng-container *ngFor="let button of contentComponentInstance.configuration.buttons">
-    <ng-container *ngIf="!isHidden(button)">
-      <i *ngIf="button.iconClass" [class]="'icon-button ' + getButtonIconClass(button)" [class.disabled]="isDisabled(button)" (click)="button.click && button.click()"></i>
-      <div *ngIf="button.text" class="button" [class.disabled]="isDisabled(button)" (click)="button.click && button.click()">{{ getButtonText(button) }}</div>
-    </ng-container>
-  </ng-container>
+  }
+  @if (contentComponentInstance?.configuration.footerButtons) {
+    <div class="buttons">
+      @for (button of contentComponentInstance.configuration.footerButtons; track $index) {
+        @if (!isHidden(button)) {
+          @if (button.iconClass) {
+            <i [class]="'icon-button ' + getButtonIconClass(button)" [class.disabled]="isDisabled(button)" (click)="button.click && button.click()"></i>
+          }
+          @if (button.text) {
+            <div class="button" [class.disabled]="isDisabled(button)" (click)="button.click && button.click()">{{ getButtonText(button) }}</div>
+          }
+        }
+      }
+    </div>
+  }
 </div>

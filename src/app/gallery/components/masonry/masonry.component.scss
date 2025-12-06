@@ -1,4 +1,4 @@
-@import 'src/styles/variables.scss';
+﻿@use 'src/styles/variables.scss';
 
 :host {
   width: 100%;
@@ -8,10 +8,9 @@
   .masonry-scroll-container {
     overflow-x: hidden;
     overflow-y: scroll;
-    background-color: var(--color-background-primary);
     // width: 100%;
     height: 100%;
-    padding: 1px $gap $gap $gap;
+    padding: variables.$gap-1;
 
     .masonry-container {
       position: relative;
@@ -19,33 +18,33 @@
       .masonry-brick {
         position: absolute;
         transition-property: top, left, width, height, opacity;
-        transition-duration: $transition-duration;
-        padding-bottom: $gap;
+        transition-duration: variables.$transition-duration;
+        padding-bottom: variables.$gap-1;
         cursor: pointer;
 
         .brick-container {
-          border-radius: $gap;
+          border-radius: variables.$gap-1;
           width: 100%;
           height: 100%;
           display: flex;
-          background-color: var(--color-background-secondary);
+          background-color: var(--color-surface-200);
           transition-property: outline, background-color;
-          transition-duration: $transition-duration;
+          transition-duration: variables.$transition-duration;
           outline: 1px solid transparent;
 
           img {
             width: 100%;
             user-select: none;
-            border-radius: $gap;
+            border-radius: variables.$gap-1;
             contain: size;
 
             opacity: 0;
             transition-property: opacity, margin;
-            transition-duration: $transition-duration;
+            transition-duration: variables.$transition-duration;
           }
         }
 
-        @media screen and (min-width:768px) {
+        @media screen and (min-width:1280px) {
           &:hover {
 
             .brick-header,
@@ -63,21 +62,22 @@
           width: 100%;
           position: absolute;
           display: flex;
-          padding: $gap;
+          padding: variables.$gap-1;
           box-sizing: border-box;
           user-select: none;
           justify-content: center;
           align-items: center;
+          gap: variables.$gap-1;
 
           .icon-button {
             opacity: 0;
             pointer-events: none;
-            // transition: $transition-duration;
+            background-color: transparent;
+            border-color: transparent;
 
-            &.no-hover {
-              cursor: default !important;
-              border-color: transparent !important;
-              background-color: transparent !important;
+            &:hover {
+              border-color: var(--color-border);
+              backdrop-filter: blur(3px);
             }
 
             &.active {
@@ -93,7 +93,7 @@
 
         .brick-footer {
           bottom: 0;
-          padding-bottom: $gap * 2;
+          padding-bottom: variables.$gap-2;
         }
       }
     }

@@ -7,19 +7,16 @@ import { GallerySerializationService } from 'src/app/gallery/services/gallery-se
 import { GalleryStateService } from 'src/app/gallery/services/gallery-state.service';
 import { GalleryService } from 'src/app/gallery/services/gallery.service';
 import { TagService } from 'src/app/gallery/services/tag.service';
-import { drawer2 } from 'src/app/shared/constants/animations.constants';
 import { VariableDirective } from 'src/app/shared/directives/variable.directive';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 
 @Component({
-  selector: 'app-tagger-row',
-  standalone: true,
-  imports: [
-    CommonModule, VariableDirective
-  ],
-  animations: [drawer2],
-  templateUrl: './tagger-row.component.html',
-  styleUrls: ['./tagger-row.component.scss']
+    selector: 'app-tagger-row',
+    imports: [
+        CommonModule, VariableDirective
+    ],
+    templateUrl: './tagger-row.component.html',
+    styleUrls: ['./tagger-row.component.scss']
 })
 export class TaggerRowComponent {
 

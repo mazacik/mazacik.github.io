@@ -1,4 +1,10 @@
-<div class="overlay-loading-bar" [style.backgroundColor]="getLoadingBarColor()"></div>
-<div *ngIf="applicationService.loading()" @fade class="overlay-blur"></div>
-<span *ngIf="applicationService.loading()" @fade class="loading-spinner"></span>
-<router-outlet></router-outlet>
+<div class="loading-overlay-bar" [style.backgroundColor]="getLoadingBarColor()"></div>
+@if (applicationService.loading()) {
+  <div class="loading-overlay-container" animate.enter="anim-fade-in" animate.leave="anim-fade-out">
+    <span class="loading-spinner"></span>
+  </div>
+}
+<app-header></app-header>
+<div class="app-content center">
+  <router-outlet></router-outlet>
+</div>

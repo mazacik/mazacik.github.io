@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
@@ -8,15 +8,13 @@ import { StringUtils } from '../../utils/string.utils';
 import { CreateDirective } from '../../directives/create.directive';
 
 @Component({
-  selector: 'app-multi-input-dialog',
-  standalone: true,
-  imports: [
-    CommonModule,
+    selector: 'app-multi-input-dialog',
+    imports: [
     FormsModule,
     CreateDirective
-  ],
-  templateUrl: './multi-input-dialog.component.html',
-  styleUrls: ['./multi-input-dialog.component.scss'],
+],
+    templateUrl: './multi-input-dialog.component.html',
+    styleUrls: ['./multi-input-dialog.component.scss']
 })
 export class MultiInputDialogComponent extends DialogContentBase<string[]> implements OnInit {
 
@@ -32,7 +30,11 @@ export class MultiInputDialogComponent extends DialogContentBase<string[]> imple
     this.values = [...this.inputs.defaultValues];
     this.configuration = {
       title: this.inputs.title,
-      buttons: [{
+      headerButtons: [{
+        iconClass: 'fa-solid fa-times',
+        click: () => this.close()
+      }],
+      footerButtons: [{
         text: () => 'Cancel',
         click: () => this.resolve(undefined)
       }, {

@@ -2,16 +2,16 @@
 <div class="tag-manager-container">
   <div class="header">
     <div class="flex gap">
-      <ng-container *ngIf="!ScreenUtils.isLargeScreen()">
+      @if (!ScreenUtils.isLargeScreen()) {
         <i class="icon-button fa-solid hover-brighten" [ngClass]="groupMode ? 'fa-images' : 'fa-image'" [class.disabled]="target?.group == null" [class.positive]="groupMode" (click)="groupMode = !groupMode"></i>
-      </ng-container>
+      }
     </div>
     <span class="margins-3-h">Tag Manager</span>
     <div class="flex gap flex-end-h">
       <i class="icon-button fa-solid" [ngClass]="ScreenUtils.isLargeScreen() ? 'fa-caret-right' : 'fa-times'" tp="Collapse" tpPlacement="left" (click)="stateService.taggerVisible = false"></i>
     </div>
   </div>
-  <ng-container *ngIf="ScreenUtils.isLargeScreen()">
+  @if (ScreenUtils.isLargeScreen()) {
     <div class="h-separator margins"></div>
     <div class="flex center gap-3 margins-3-v">
       <div class="flex center gap cursor-pointer hover-brighten" [class.disabled]="target?.group == null" [class.positive]="groupMode" (click)="groupMode = !groupMode">
@@ -19,14 +19,16 @@
         <span>Group Mode</span>
       </div>
     </div>
-  </ng-container>
+  }
   <div class="h-separator margins"></div>
   <div class="filters-container y-scrollbar-container">
     <div class="flex column margins-1-h">
-      <ng-container *ngFor="let tag of tagService.getRootTags(); let i = index;">
-        <div *ngIf="i != 0" class="h-separator subtle"></div>
+      @for (tag of tagService.getRootTags(); track tag.id; let i = $index) {
+        @if (i != 0) {
+          <div class="h-separator subtle"></div>
+        }
         <app-tagger-row [tag]="tag" [target]="target" [groupMode]="groupMode"></app-tagger-row>
-      </ng-container>
+      }
     </div>
   </div>
   <div class="buttons-container">

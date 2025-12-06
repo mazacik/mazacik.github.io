@@ -1,6 +1,5 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit } from '@angular/core';
-import { TippyDirective } from '@ngneat/helipopper';
 import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
 import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
 import { DragDropDirective } from 'src/app/shared/directives/dragdrop.directive';
@@ -13,12 +12,9 @@ import { GalleryStateService } from '../../services/gallery-state.service';
 import { GallerySerializationService } from '../../services/gallery-serialization.service';
 
 @Component({
-  selector: 'app-group-editor',
-  standalone: true,
+  selector: 'app-group-manager',
   imports: [
-    CommonModule,
-    DragDropDirective,
-    TippyDirective
+    DragDropDirective
   ],
   templateUrl: './group-manager.component.html',
   styleUrls: ['./group-manager.component.scss']
@@ -29,7 +25,11 @@ export class GroupManagerComponent extends DialogContentBase<void, {}> implement
 
   public override configuration: DialogContainerConfiguration = {
     title: 'Group Manager',
-    buttons: [{
+    headerButtons: [{
+      iconClass: 'fa-solid fa-times',
+      click: () => this.close()
+    }],
+    footerButtons: [{
       text: () => 'Disband',
       hidden: () => this.inputs.sourceGroup == null,
       click: () => {

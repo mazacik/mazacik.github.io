@@ -3,9 +3,10 @@ import { DialogButton } from "./dialog-button.class";
 export interface DialogContainerConfiguration {
 
   title: string | (() => string);
-  buttons: DialogButton[];
+  headerButtons?: DialogButton[];
+  footerButtons?: DialogButton[];
 
-  hideHeaderCloseButton?: boolean;
+  waitForContent?: Promise<void>;
   hideClickOverlay?: boolean;
   allowMultiple?: boolean;
 

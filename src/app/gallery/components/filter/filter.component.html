@@ -5,14 +5,14 @@
     </div>
     <span class="margins-3-h">Filter Configuration</span>
     <div class="flex gap flex-end-h">
-      <ng-container *ngIf="!ScreenUtils.isLargeScreen()">
+      @if (!ScreenUtils.isLargeScreen()) {
         <i class="icon-button fa-heart" [ngClass]="getFilterIconClass(filterService.filterFavorites)" (click)="toggleFilter(filterService.filterFavorites)"></i>
         <i class="icon-button fa-bookmark" [ngClass]="getFilterIconClass(filterService.filterBookmarks)" (click)="toggleFilter(filterService.filterBookmarks)"></i>
         <i class="icon-button fa-object-group" [ngClass]="getFilterIconClass(filterService.filterGroups)" (click)="toggleFilter(filterService.filterGroups)"></i>
-      </ng-container>
+      }
     </div>
   </div>
-  <ng-container *ngIf="ScreenUtils.isLargeScreen()">
+  @if (ScreenUtils.isLargeScreen()) {
     <div class="h-separator margins"></div>
     <div class="flex center gap-3 margins-3-v">
       <div class="flex center gap cursor-pointer hover-brighten" (click)="toggleFilter(filterService.filterFavorites)">
@@ -28,21 +28,23 @@
         <span [ngClass]="getFilterClass(filterService.filterGroups)">Groups</span>
       </div>
     </div>
-  </ng-container>
+  }
   <div class="h-separator margins"></div>
   <div class="filters-container y-scrollbar-container">
     <div class="flex column margins-1-h">
-      <ng-container *ngFor="let tag of tagService.getRootTags(); let i = index">
-        <div *ngIf="i != 0" class="h-separator subtle"></div>
+      @for (tag of tagService.getRootTags(); track tag.id; let i = $index) {
+        @if (i != 0) {
+          <div class="h-separator subtle"></div>
+        }
         <app-filter-row [tag]="tag"></app-filter-row>
-      </ng-container>
+      }
     </div>
     <div class="test"></div>
   </div>
   <div class="h-separator gap-bottom margins"></div>
   <div class="buttons-container">
-    <div class="button" (click)="tagService.openTagGroupCreate()"><i class="fa-solid fa-plus"></i>Create</div>
-    <div class="button" [class.disabled]="!canClear()" (click)="clearFilters()"><i class="fa-solid fa-filter-circle-xmark"></i>Clear</div>
+    <div class="button" (click)="tagService.openTagGroupCreate()">Create</div>
+    <div class="button" [class.disabled]="!canClear()" (click)="clearFilters()">Clear</div>
   </div>
 </div>
 <div class="v-separator desktop-only"></div>

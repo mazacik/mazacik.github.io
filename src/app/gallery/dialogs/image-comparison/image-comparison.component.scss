@@ -1,26 +1,31 @@
-@import 'src/styles/variables.scss';
+﻿@use 'src/styles/variables.scss';
 
 :host {
+  width: 100%;
+  height: 100%;
   display: flex;
-  flex-direction: column;
-  overflow-x: hidden;
-  width: max-content;
+
+  .comparison-wrapper {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+  }
 
   .comparison {
+    flex: 1;
     display: flex;
     overflow: hidden;
 
-    @media screen and (max-width:768px) {
-      aspect-ratio: 2;
+    @media (orientation: portrait) {
+      flex-direction: column;
     }
 
     .image-container {
-      flex: 1;
-      padding: $gap;
+      margin: variables.$gap-1;
       display: flex;
-      align-items: center;
       justify-content: center;
       cursor: pointer;
+      flex: 1;
 
       &:hover {
         background-color: var(--color-border);
@@ -30,42 +35,71 @@
         max-width: 100%;
         max-height: 100%;
         object-fit: contain;
-        border-radius: $gap;
+        border-radius: variables.$gap-1;
+        flex: 1;
+        outline: none;
+        user-select: none;
+      }
+    }
+  }
+
+  .comparison.comparison-empty {
+    align-items: center;
+    justify-content: center;
+    padding: variables.$gap-2;
+    border: 1px dashed var(--color-border);
+    border-radius: variables.$gap-1;
+    color: var(--color-text-secondary);
+  }
+
+  .comparison-progress {
+    display: flex;
+    flex-direction: column;
+
+    .progress-bar {
+      position: relative;
+      border-radius: variables.$gap-1;
+      background-color: var(--color-button-background-secondary-hover);
+      overflow: hidden;
+      height: variables.$button-height-smaller;
+      margin: variables.$gap-1;
+      isolation: isolate;
+
+      .progress-bar-fill {
+        height: 100%;
+        width: 0;
+        background-color: var(--color-positive);
+        transition: width variables.$transition-duration-fast ease;
+      }
+
+      .progress-bar-label {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: var(--color-text-secondary);
+        font-weight: 600;
+        pointer-events: none;
+        mix-blend-mode: difference; // invert against the fill so text stays readable on light and dark backgrounds
       }
     }
   }
 
   .results {
-    height: 200px;
-    min-height: 200px;
-    overflow: auto;
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: $gap;
-
-    @media screen and (max-width:768px) {
-      width: calc(3*100px + 2 * $gap);
-      padding: $gap;
-    }
-
-    @media screen and (min-width:768px) {
-      width: calc(7*100px + 6 * $gap + 1.66 * $gap);
-      padding: $gap 0 $gap $gap * 1.66;
-    }
+    flex-direction: column;
+    overflow: auto;
+    gap: variables.$gap-1;
+    padding: variables.$gap-1;
 
     .image-container {
       width: 100px;
-      height: 100px;
       display: flex;
-      position: relative;
-      justify-content: center;
-      align-items: center;
 
       img {
         max-width: 100%;
         max-height: 100%;
-        border-radius: $gap;
+        // border-radius: variables.$gap-1;
       }
     }
   }

@@ -2,13 +2,10 @@ import { inject } from "@angular/core";
 import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot } from "@angular/router";
 import { AuthenticationService } from "../shared/services/authentication.serivce";
 
-export const GoogleAuthGuard: CanActivateFn = async (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
-  sessionStorage.setItem('appId', route.url.join(''));
+export const authGuard: CanActivateFn = async (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
   console.log('guard: start');
 
-  const router: Router = inject(Router);
   const authenticationService: AuthenticationService = inject(AuthenticationService);
-
   if (authenticationService.getAccessToken()) {
     console.log('guard: has access token, return true');
     return true;
@@ -28,5 +25,5 @@ export const GoogleAuthGuard: CanActivateFn = async (route: ActivatedRouteSnapsh
   }
 
   console.log('guard: return false');
-  return router.navigate(['login']);
+  return inject(Router).navigate(['login']);
 }

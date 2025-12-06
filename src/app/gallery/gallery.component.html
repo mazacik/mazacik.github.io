@@ -1,10 +1,12 @@
-<div *ngIf="!loading" @enter class="stack-container">
-  <div class="flex" style="height: 100vh">
-    <app-filter></app-filter>
-    <app-masonry></app-masonry>
+@if (!loading) {
+  <div animate.enter="anim-fade-in" class="stack-container">
+    <div class="flex overflow-auto">
+      <app-filter></app-filter>
+      <app-masonry></app-masonry>
+    </div>
+    <div class="fullscreen-container glass-effect height-100" [class.transparent]="!stateService.fullscreenImage()">
+      <app-fullscreen></app-fullscreen>
+      <app-tagger></app-tagger>
+    </div>
   </div>
-  <div class="fullscreen-container" [class.transparent]="!stateService.fullscreenImage()" style="height: 100vh">
-    <app-fullscreen></app-fullscreen>
-    <app-tagger></app-tagger>
-  </div>
-</div>
+}

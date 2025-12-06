@@ -1,23 +1,28 @@
 <input [(ngModel)]="query" placeholder="Search" autofocus />
 <div class="content-container">
   <div class="y-scrollbar-container selection-container">
-    <div *ngFor="let option of selection" class="flex-1 flex gap align-items-center cursor-pointer hover-brighten" (click)="toggle(option)">
-      <i class="fa-solid fa-check" style="margin-top: 1px"></i>
-      <span>{{ getText(option) }}</span>
-      <i class="fa-solid fa-check opacity-0"></i>
-    </div>
+    @for (option of selection; track option) {
+      <div class="flex-1 flex gap align-items-center cursor-pointer hover-brighten" (click)="toggle(option)">
+        <i class="fa-solid fa-check" style="margin-top: 1px"></i>
+        <span>{{ getText(option) }}</span>
+        <i class="fa-solid fa-check opacity-0"></i>
+      </div>
+    }
   </div>
-  <div *ngIf="selection.length" class="h-separator"></div>
+  @if (selection.length) {
+    <div class="h-separator"></div>
+  }
   <div class="y-scrollbar-container options-container">
-    <div
-      *ngFor="let option of inputs.options"
-      class="flex-1 flex gap align-items-center cursor-pointer hover-brighten"
-      [class.disabled]="inputs.disableFn && inputs.disableFn(option, selection)"
-      [class.unavailable]="!isAvailable(option)"
-      (click)="toggle(option)">
-      <i class="fa-solid fa-check opacity-0"></i>
-      <span>{{ getText(option) }}</span>
-      <i class="fa-solid fa-check opacity-0"></i>
-    </div>
+    @for (option of inputs.options; track option) {
+      <div
+        class="flex-1 flex gap align-items-center cursor-pointer hover-brighten"
+        [class.disabled]="inputs.disableFn && inputs.disableFn(option, selection)"
+        [class.unavailable]="!isAvailable(option)"
+        (click)="toggle(option)">
+        <i class="fa-solid fa-check opacity-0"></i>
+        <span>{{ getText(option) }}</span>
+        <i class="fa-solid fa-check opacity-0"></i>
+      </div>
+    }
   </div>
 </div>

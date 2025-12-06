@@ -1,7 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostBinding } from '@angular/core';
-import { TippyDirective } from '@ngneat/helipopper';
-import { drawer2 } from 'src/app/shared/constants/animations.constants';
 import { ScreenUtils } from 'src/app/shared/utils/screen.utils';
 import { Filter } from '../../models/filter.interface';
 import { FilterService } from '../../services/filter.service';
@@ -11,12 +9,10 @@ import { TagService } from '../../services/tag.service';
 import { FilterRowComponent } from './filter-row/filter-row.component';
 
 @Component({
-  selector: 'app-filter',
-  standalone: true,
-  imports: [CommonModule, TippyDirective, FilterRowComponent],
-  animations: [drawer2],
-  templateUrl: './filter.component.html',
-  styleUrls: ['./filter.component.scss'],
+    selector: 'app-filter',
+    imports: [CommonModule, FilterRowComponent],
+    templateUrl: './filter.component.html',
+    styleUrls: ['./filter.component.scss']
 })
 export class FilterComponent {
   protected ScreenUtils = ScreenUtils;

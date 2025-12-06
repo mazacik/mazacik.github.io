@@ -1,7 +1,7 @@
-@import 'src/styles/variables.scss';
+﻿@use 'src/styles/variables.scss';
 
 .container {
   display: flex;
   flex-direction: column;
-  padding: $gap * 3;
+  padding: variables.$gap-3;
 }

@@ -1,20 +1,20 @@
-@import 'src/styles/variables.scss';
+﻿@use 'src/styles/variables.scss';
 
 :host {
   width: 100%;
   height: 100%;
   overflow: hidden;
 
-  @media screen and (max-width:768px) {
+  @media screen and (max-width:1280px) {
     min-width: 100%;
   }
 
-  @media screen and (min-width:768px) {
+  @media screen and (min-width:1280px) {
     .drawer-container {
       width: 3rem;
       min-width: 3rem;
       transition-property: width, min-width, opacity, transform;
-      transition-duration: $transition-duration;
+      transition-duration: variables.$transition-duration;
 
       &:not(.drawer-visible) {
         width: 0;
@@ -32,22 +32,23 @@
     height: 100%;
     display: flex;
     justify-content: space-between;
+    position: relative;
   }
 
   .non-group-container {
     overflow: auto;
 
-    @media screen and (max-width:768px) {
+    @media screen and (max-width:1280px) {
       position: absolute;
       top: 0;
-      left: $gap;
-      right: $gap;
-      width: calc(100% - $gap * 2);
+      left: variables.$gap-1;
+      right: variables.$gap-1;
+      width: calc(100% - variables.$gap-2);
       z-index: -1;
     }
 
     .image-container {
-      padding: $gap 0;
+      padding: variables.$gap-1 0;
     }
   }
 
@@ -55,19 +56,19 @@
     display: flex;
     flex-direction: column;
     overflow: auto;
-    gap: $gap;
-    padding: $gap 0;
+    gap: variables.$gap-1;
+    padding: variables.$gap-1 0;
     justify-content: flex-end;
 
     .another-container {
       overflow: auto;
 
-      @media screen and (max-width:768px) {
+      @media screen and (max-width:1280px) {
         position: absolute;
         top: 0;
-        left: $gap;
-        right: $gap;
-        width: calc(100% - $gap * 2);
+        left: variables.$gap-1;
+        right: variables.$gap-1;
+        width: calc(100% - variables.$gap-2);
         z-index: -1;
       }
     }
@@ -77,7 +78,7 @@
       flex-direction: row;
       overflow-y: hidden;
       padding: 0;
-      gap: $gap;
+      gap: variables.$gap-1;
 
       .group-image-container {
         height: 120px;
@@ -86,11 +87,11 @@
         cursor: pointer;
 
         transition-property: background-color;
-        transition-duration: $transition-duration;
+        transition-duration: variables.$transition-duration;
         background-color: transparent;
 
         &.loading {
-          background-color: var(--color-background-secondary);
+          background-color: var(--color-surface-200);
 
           img {
             opacity: 0;
@@ -101,7 +102,7 @@
           height: 120px;
           border-radius: inherit;
           transition-property: opacity;
-          transition-duration: $transition-duration;
+          transition-duration: variables.$transition-duration;
 
           &.grayscale {
             opacity: 0.5 !important;
@@ -142,7 +143,7 @@
       user-select: none;
 
       transition-property: opacity;
-      transition-duration: $transition-duration;
+      transition-duration: variables.$transition-duration;
 
       opacity: 0;
     }
@@ -154,14 +155,17 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: $gap;
+    padding: variables.$gap-1;
     z-index: 1;
+    position: relative;
+    overflow: visible;
 
     .sidebar-start,
     .sidebar-center,
     .sidebar-end {
       display: flex;
       flex-direction: column;
+      gap: variables.$gap-1;
     }
   }
 
@@ -171,7 +175,51 @@
     .sidebar-start,
     .sidebar-center,
     .sidebar-end {
+      gap: variables.$gap-1;
       align-items: flex-end;
+    }
+  }
+
+  .file-information {
+    width: fit-content;
+    display: grid;
+    padding: variables.$gap-3;
+    border-radius: 6px;
+    border: 1px solid var(--color-border);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    gap: variables.$gap-2;
+
+    .file-name {
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .file-row {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: baseline;
+      column-gap: variables.$gap-2;
+      row-gap: variables.$gap-2;
+      font-size: 0.95rem;
+    }
+
+    .label {
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      font-size: 0.75rem;
+      opacity: 0.8;
+      white-space: nowrap;
+    }
+
+    .value {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  @media screen and (max-width:1280px) {
+    .file-information {
+      max-width: none;
     }
   }
 

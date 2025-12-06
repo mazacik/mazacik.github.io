@@ -1,69 +1,144 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { SafeUrl } from '@angular/platform-browser';
 import { GalleryImage } from 'src/app/gallery/models/gallery-image.class';
-import { Contender } from 'src/app/shared/classes/contender.class';
 import { Tournament } from 'src/app/shared/classes/tournament.class';
-import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
-import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
+import { ApplicationService } from 'src/app/shared/services/application.service';
+import { GoogleFileUtils } from 'src/app/shared/utils/google-file.utils';
+import { GallerySerializationService } from '../../services/gallery-serialization.service';
 import { GalleryStateService } from '../../services/gallery-state.service';
 
 @Component({
   selector: 'app-image-comparison',
-  standalone: true,
-  imports: [
-    CommonModule
-  ],
+  imports: [DecimalPipe],
   templateUrl: './image-comparison.component.html',
   styleUrls: ['./image-comparison.component.scss']
 })
-export class ImageComparisonComponent extends DialogContentBase<boolean> implements OnInit {
+export class ImageComparisonComponent implements OnInit, OnDestroy {
 
-  public override inputs: { images: GalleryImage[] };
+  tournament: Tournament = null;
+  comparison: [GalleryImage, GalleryImage] = null;
+  protected progressBarVisible: boolean = true;
+  protected totalComparisons: number = 0;
+  protected remainingComparisons: number = 0;
+  protected completedComparisons: number = 0;
 
-  tournament: Tournament<GalleryImage>;
-
-  configuration: DialogContainerConfiguration = {
-    title: 'Image Comparison',
-    buttons: [{
-      text: () => 'Reset',
-      click: () => this.reset()
-    }, {
-      text: () => 'Save',
-      click: () => this.save()
-    }]
-  }
+  protected loadingLT: boolean = true;
+  protected loadingRT: boolean = true;
+  protected loadingLC: boolean = true;
+  protected loadingRC: boolean = true;
 
   constructor(
-    private stateService: GalleryStateService
+    private applicationService: ApplicationService,
+    private serializationService: GallerySerializationService,
+    protected stateService: GalleryStateService
   ) {
-    super();
+    this.applicationService.loading.set(true);
   }
 
   ngOnInit(): void {
-    this.tournament = new Tournament(this.inputs.images, image => image.id, this.stateService.comparison);
+    this.configureHeader();
+    this.registerModuleSettings();
+    this.serializationService.processData().then(() => this.start());
   }
 
-  protected onImageClick(winner: Contender<GalleryImage>, loser: Contender<GalleryImage>): void {
+  ngOnDestroy(): void {
+    this.applicationService.clearPageHeader();
+  }
+
+  private configureHeader(): void {
+    this.applicationService.setPageHeader({
+      end: [{
+        id: 'undo',
+        tooltip: 'Undo',
+        classes: ['fa-solid', 'fa-rotate-left'],
+        onClick: () => this.undo(),
+        hidden: () => !this.tournament || this.tournament.comparisons.length == 0
+      }, {
+        id: 'progress-bar',
+        tooltip: 'Toggle Progress Bar',
+        classes: ['fa-solid', 'fa-solid fa-list-check'],
+        onClick: () => this.toggleProgressBar()
+      }]
+    });
+  }
+
+  private registerModuleSettings(): void {
+    if (!this.stateService.settings) {
+      this.stateService.settings = {} as any;
+    }
+
+    this.applicationService.registerModuleSettings({
+      id: 'comparison-settings',
+      label: 'Comparison',
+      items: [{
+        id: 'reset',
+        type: 'action',
+        label: 'Reset',
+        onClick: () => this.reset()
+      }]
+    });
+  }
+
+  protected start(): void {
+    this.tournament = new Tournament();
+    this.tournament.start(this.stateService.images.filter(image => GoogleFileUtils.isImage(image)), this.stateService.tournamentState);
+    this.nextComparison();
+  }
+
+  protected onImageClick(winner: GalleryImage, loser: GalleryImage): void {
     this.tournament.handleUserInput(winner, loser);
+    this.nextComparison();
+    this.stateService.tournamentState = this.tournament.getState();
+    this.serializationService.save();
+  }
+
+  public nextComparison(): void {
+    this.comparison = this.tournament.getNextComparison();
+    this.updateProgress();
+    this.loadingLT = true;
+    this.loadingLC = true;
+    this.loadingRT = true;
+    this.loadingRC = true;
+  }
+
+  protected undo(): void {
+    this.comparison = this.tournament.undo();
+    this.updateProgress();
+    this.stateService.tournamentState = this.tournament.getState();
+    this.serializationService.save();
   }
 
   protected reset(): void {
-    this.tournament.reset();
+    this.stateService.tournamentState = null;
+    this.serializationService.save();
+    this.start();
   }
 
-  protected save(): void {
-    const comparison: { [key: string]: string[] } = {};
-    for (const item of this.tournament.contenders) {
-      comparison[item.id] = item.directlyBetterThan.map(dbt => dbt.id);
+  private toggleProgressBar(): void {
+    this.progressBarVisible = !this.progressBarVisible;
+  }
+
+  public get progressPercent(): number {
+    return this.totalComparisons === 0 ? 0 : (this.completedComparisons / this.totalComparisons) * 100;
+  }
+
+  private updateProgress(): void {
+    if (!this.tournament) return;
+    const progress = this.tournament.getComparisonProgress();
+    this.completedComparisons = progress.completed;
+    this.remainingComparisons = progress.remaining;
+    this.totalComparisons = progress.total;
+  }
+
+  protected getSrc(image: GalleryImage): SafeUrl {
+    if (image == this.comparison[0]) {
+      if (!this.loadingLC) return image.contentLink;
+      if (!this.loadingLT) return image.thumbnailLink;
+    } else if (image == this.comparison[1]) {
+      if (!this.loadingRC) return image.contentLink;
+      if (!this.loadingRT) return image.thumbnailLink;
     }
-
-    this.stateService.comparison = comparison;
-    this.stateService.save(true);
-    this.resolve(false);
-  }
-
-  public close(): void {
-    this.resolve(false);
   }
 
 }

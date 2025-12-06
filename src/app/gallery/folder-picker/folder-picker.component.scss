@@ -1,42 +1,11 @@
-@import 'src/styles/variables.scss';
+﻿@use 'src/styles/variables.scss';
 
-.container {
+:host {
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100%;
-  color: var(--color-text);
-  gap: $gap;
-
-  opacity: 0;
-  transition-property: opacity;
-  transition-duration: $transition-duration;
-}
-
-.folders-container {
-  display: flex;
-  flex-direction: column;
-  border: 1px solid var(--color-text);
-  border-radius: $gap;
-  width: 300px;
-
-  span {
-    padding: $gap;
-    border-bottom: 1px solid var(--color-text);
-    cursor: pointer;
-    user-select: none;
-
-    &:hover {
-      background-color: var(--color-background-hover);
-    }
-
-    &:last-child {
-      border: 0;
-    }
-  }
-}
-
-.buttons-container {
-  display: flex;
+  gap: variables.$gap-1;
+  padding: variables.$gap-1;
 }

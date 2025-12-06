@@ -1,18 +1,16 @@
 import { Injectable } from "@angular/core";
-import { TippyService } from "@ngneat/helipopper";
 import { ApplicationService } from "src/app/shared/services/application.service";
 import { ArrayUtils } from "src/app/shared/utils/array.utils";
 import { DialogService } from "../../shared/services/dialog.service";
 import { GroupManagerComponent } from "../dialogs/group-manager/group-manager.component";
-import { GallerySettingsComponent } from "../dialogs/settings/gallery-settings.component";
 import { TagManagerComponent } from "../dialogs/tag-manager/tag-manager.component";
 import { GalleryGroup } from "../models/gallery-group.class";
 import { GalleryImage } from "../models/gallery-image.class";
 import { Tag } from "../models/tag.class";
 import { FilterService } from "./filter.service";
 import { GalleryGoogleDriveService } from "./gallery-google-drive.service";
-import { GalleryStateService } from "./gallery-state.service";
 import { GallerySerializationService } from "./gallery-serialization.service";
+import { GalleryStateService } from "./gallery-state.service";
 
 @Injectable({
   providedIn: 'root',
@@ -22,31 +20,15 @@ export class GalleryService {
   public constructor(
     private serializationService: GallerySerializationService,
     private dialogService: DialogService,
-    private tippyService: TippyService,
     private filterService: FilterService,
     private stateService: GalleryStateService,
     private applicationService: ApplicationService,
     private googleService: GalleryGoogleDriveService
   ) { }
 
-  public openFileInformation(image: GalleryImage): void {
-    this.dialogService.createMessage({
-      title: 'File Information',
-      messages: [
-        'File Name: ' + image.name,
-        'File Type: ' + image.mimeType,
-        'Resolution: ' + image.imageMediaMetadata.width + '×' + image.imageMediaMetadata.height
-      ]
-    });
-  }
-
   // TODO move dialog result functionality here
   public openImageGroupEditor(group?: GalleryGroup): void {
     this.dialogService.create(GroupManagerComponent, { sourceGroup: group });
-  }
-
-  public openSettings(): void {
-    this.dialogService.create(GallerySettingsComponent);
   }
 
   public openTagOptions(tag: Tag): void {
@@ -54,23 +36,7 @@ export class GalleryService {
   }
 
   public openYandexReverseImageSearch(event: MouseEvent, target: GalleryImage): void {
-    const url: string = 'https://yandex.com/images/search?rpt=imageview&url=' + encodeURIComponent(target.thumbnailLink.replace(new RegExp('=s...'), '=s9999'));
-    if (event.altKey) {
-      navigator.clipboard.writeText(url);
-      this.tippyService.create(event.target as HTMLElement, 'URL copied to clipboard!', {
-        trigger: 'click',
-        onShow(instance) {
-          setTimeout(() => {
-            instance.hide();
-          }, 3000);
-        },
-        onHidden(instance) {
-          instance.destroy();
-        }
-      }).show();
-    } else {
-      window.open(url, '_blank');
-    }
+    window.open('https://yandex.com/images/search?rpt=imageview&url=' + encodeURIComponent(target.thumbnailLink.replace(new RegExp('=s...'), '=s9999')), '_blank');
   }
 
   public async delete(image: GalleryImage, archive: boolean, askForConfirmation: boolean = true): Promise<void> {
@@ -104,8 +70,8 @@ export class GalleryService {
       }
     }
 
-    if (this.stateService.comparison != null) {
-      for (const imageIds of Object.values(this.stateService.comparison)) {
+    if (this.stateService.tournamentState != null) {
+      for (const imageIds of Object.values(this.stateService.tournamentState)) {
         if (imageIds.includes(image.id)) {
           ArrayUtils.remove(imageIds, image.id);
         }

@@ -1,19 +1,33 @@
-@import 'src/styles/variables.scss';
+﻿@use 'src/styles/variables.scss';
 
 :host {
-  border: 1px solid var(--color-border);
-  position: fixed;
-  border-radius: $gap * 1.5;
-  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
   z-index: 200;
-  min-width: 300px;
+  overflow: hidden;
+}
 
-  @media screen and (max-width:768px) {
-    max-width: calc(100% - $gap * 3);
-    max-height: calc(100% - $gap * 3);
+.dialog-container {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-border);
+  border-radius: variables.$gap-2;
+  min-width: 300px;
+  background-color: var(--color-surface-100);
+
+  @media screen and (max-width:1280px) {
+    max-width: calc(100% - variables.$gap-1 * 2);
+    max-height: calc(100% - variables.$gap-1 * 2);
+    margin: variables.$gap-1;
+    top: 0 !important;
+    left: 0 !important;
   }
 
-  @media screen and (min-width:768px) {
+  @media screen and (min-width:1280px) {
     max-width: 80%;
     max-height: 80%;
   }
@@ -27,9 +41,8 @@
   }
 
   .content {
+    display: flex;
     overflow: auto;
-    border-top: 1px solid var(--color-border);
-    border-bottom: 1px solid var(--color-border);
   }
 }
 
@@ -38,11 +51,12 @@
   align-items: center;
   justify-content: space-between;
   user-select: none;
-  padding: 1rem;
-  gap: $gap;
+  padding: variables.$gap-3;
+  gap: variables.$gap-1;
+  border-bottom: 1px solid var(--color-border);
 
   &:has(i) {
-    padding: $gap $gap $gap 1rem;
+    padding: variables.$gap-1 variables.$gap-1 variables.$gap-1 variables.$gap-3;
   }
 
   .header-title {
@@ -51,30 +65,20 @@
 }
 
 .buttons {
-  gap: $gap;
-  padding: $gap;
-  height: $button-height;
+  gap: variables.$gap-1;
+  padding: variables.$gap-1;
+  height: variables.$button-height;
   display: flex;
   align-items: center;
   justify-content: space-evenly;
+  border-top: 1px solid var(--color-border);
 }
 
 .button {
   flex: 1;
-  transition: $transition-duration;
+  transition: variables.$transition-duration;
   white-space: nowrap;
   min-width: auto;
-}
-
-.glass-effect {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: -1;
-  background-color: var(--color-background-dialog);
-  backdrop-filter: blur(5px);
 }
 
 .overlay-effect {
@@ -83,6 +87,6 @@
   right: 0;
   bottom: 0;
   left: 0;
-  z-index: -2;
+  z-index: -1;
   user-select: none;
 }

@@ -1,18 +1,16 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
 import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
 
 @Component({
-  selector: 'app-select-dialog',
-  standalone: true,
-  imports: [
-    CommonModule,
+    selector: 'app-select-dialog',
+    imports: [
     FormsModule
-  ],
-  templateUrl: 'select-dialog.component.html',
-  styleUrls: ['./select-dialog.component.scss'],
+],
+    templateUrl: 'select-dialog.component.html',
+    styleUrls: ['./select-dialog.component.scss']
 })
 export class SelectDialogComponent<T> extends DialogContentBase<T> implements OnInit {
 
@@ -26,7 +24,11 @@ export class SelectDialogComponent<T> extends DialogContentBase<T> implements On
     this.value = this.inputs.defaultValue;
     this.configuration = {
       title: this.inputs.title,
-      buttons: [{
+      headerButtons: [{
+        iconClass: 'fa-solid fa-times',
+        click: () => this.close()
+      }],
+      footerButtons: [{
         text: () => 'Cancel',
         click: () => this.resolve(undefined)
       }, {

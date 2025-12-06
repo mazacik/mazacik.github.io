@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
@@ -6,14 +6,12 @@ import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-conte
 import { ArrayUtils } from '../../utils/array.utils';
 
 @Component({
-  selector: 'app-multi-select-dialog',
-  standalone: true,
-  imports: [
-    CommonModule,
+    selector: 'app-multi-select-dialog',
+    imports: [
     FormsModule
-  ],
-  templateUrl: 'multi-select-dialog.component.html',
-  styleUrls: ['./multi-select-dialog.component.scss'],
+],
+    templateUrl: 'multi-select-dialog.component.html',
+    styleUrls: ['./multi-select-dialog.component.scss']
 })
 export class MultiSelectDialogComponent<T> extends DialogContentBase<T[]> implements OnInit {
 
@@ -36,7 +34,11 @@ export class MultiSelectDialogComponent<T> extends DialogContentBase<T[]> implem
     this.selection = this.inputs.defaultSelection ? [...this.inputs.defaultSelection] : [];
     this.configuration = {
       title: this.inputs.title,
-      buttons: [{
+      headerButtons: [{
+        iconClass: 'fa-solid fa-times',
+        click: () => this.close()
+      }],
+      footerButtons: [{
         text: 'Cancel',
         click: () => this.resolve(undefined)
       }, {

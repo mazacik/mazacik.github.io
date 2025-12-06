@@ -1,29 +1,9 @@
-@import 'src/styles/variables.scss';
+﻿@use 'src/styles/variables.scss';
 
 :host {
-  display: flex;
-  gap: $gap;
-}
-
-.column {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: $gap;
-
-  >* {
-    width: 100%;
-    cursor: pointer;
-    user-select: none;
-    background-color: var(--color-background-hover);
-  }
-}
-
-.dev-container {
-  height: 100px;
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
+  gap: variables.$gap-1;
 }

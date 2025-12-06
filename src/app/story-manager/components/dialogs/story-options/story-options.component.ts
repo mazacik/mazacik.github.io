@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component } from '@angular/core';
 import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/dialog-container-configuration.interface';
 import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
@@ -6,13 +6,10 @@ import { Article } from 'src/app/story-manager/models/article.class';
 import { StoryManagerStateService } from 'src/app/story-manager/services/story-manager-state.service';
 
 @Component({
-  selector: 'app-story-options',
-  standalone: true,
-  imports: [
-    CommonModule
-  ],
-  templateUrl: './story-options.component.html',
-  styleUrls: ['./story-options.component.scss']
+    selector: 'app-story-options',
+    imports: [],
+    templateUrl: './story-options.component.html',
+    styleUrls: ['./story-options.component.scss']
 })
 export class ArticleOptionsComponent extends DialogContentBase<void> {
 
@@ -20,7 +17,11 @@ export class ArticleOptionsComponent extends DialogContentBase<void> {
 
   public configuration: DialogContainerConfiguration = {
     title: () => this.inputs.article ? this.inputs.article.title : 'Root',
-    buttons: [{
+    headerButtons: [{
+      iconClass: 'fa-solid fa-times',
+      click: () => this.close()
+    }],
+    footerButtons: [{
       text: () => 'Cancel',
       click: () => this.close()
     }]

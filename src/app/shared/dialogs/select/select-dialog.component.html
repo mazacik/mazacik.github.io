@@ -1,4 +1,8 @@
 <select [(ngModel)]="value">
-  <option *ngIf="inputs.nullOption !== undefined" [ngValue]="null" [selected]="!value">{{ inputs.nullOption }}</option>
-  <option *ngFor="let option of inputs.options" [ngValue]="option" [selected]="value === option">{{ getText(option) }}</option>
+  @if (inputs.nullOption !== undefined) {
+    <option [ngValue]="null" [selected]="!value">{{ inputs.nullOption }}</option>
+  }
+  @for (option of inputs.options; track option) {
+    <option [ngValue]="option" [selected]="value === option">{{ getText(option) }}</option>
+  }
 </select>

@@ -1,8 +1,8 @@
-@import 'src/styles/variables.scss';
+﻿@use 'src/styles/variables.scss';
 
 :host {
   display: block;
-  padding: $gap $gap 0 $gap;
+  padding: variables.$gap-1 variables.$gap-1 0 variables.$gap-1;
   line-height: 24px;
   user-select: none;
 
@@ -14,7 +14,7 @@
     display: flex;
     flex-direction: column;
 
-    @media screen and (min-width:768px) {
+    @media screen and (min-width:1280px) {
       height: 50vh;
     }
 

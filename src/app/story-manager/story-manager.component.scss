@@ -1,4 +1,4 @@
-@import 'src/styles/variables.scss';
+﻿@use 'src/styles/variables.scss';
 
 :host {
   width: 100%;
@@ -9,15 +9,15 @@
   .header {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
-    padding: $gap;
-    gap: $gap;
+    padding: variables.$gap-1;
+    gap: variables.$gap-1;
     border-bottom: 1px solid var(--color-border);
 
     .header-start,
     .header-center,
     .header-end {
       display: flex;
-      gap: $gap;
+      gap: variables.$gap-1;
       align-items: center;
     }
 
@@ -37,7 +37,7 @@
     .countdown-input {
       border: none;
       text-align: center;
-      caret-color: var(--color-text);
+      caret-color: var(--color-text-secondary);
       font-variant-numeric: tabular-nums;
       user-select: none;
     }
@@ -52,7 +52,7 @@
       resize: none;
       border: none;
       line-height: 1.5rem;
-      padding: ($gap * 0.5) $gap;
+      padding: (variables.$gap-1) variables.$gap-1;
       overflow-wrap: normal;
     }
   }

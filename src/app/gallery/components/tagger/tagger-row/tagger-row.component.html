@@ -1,14 +1,14 @@
-<ng-container *ngIf="tag">
+@if (tag) {
   <div class="flex gap hover-brighten hover-container" style="line-height: 24px" (drop)="drop($event, tag)" ondragover="event.preventDefault()">
     <div class="flex gap flex-1 width-100 min-width-0 align-items-center" [class.disabled]="tag.pseudo" [class.cursor-pointer]="!tag.pseudo" (click)="onTagClick()">
-      <i *ngFor="let _ of [].constructor(tag.collectParents().length)" class="fa-solid fa-angle-down opacity-0"></i>
-
+      @for (_ of [].constructor(tag.collectParents().length); track $index) {
+        <i class="fa-solid fa-angle-down opacity-0"></i>
+      }
       @if (tag.group) {
         <i class="fa-solid" [ngClass]="tag.open ? 'fa-angle-down' : 'fa-angle-right'" style="margin-top: 1px"></i>
       } @else {
         <i class="fa-solid fa-angle-down opacity-0"></i>
       }
-
       <div
         class="flex-1 overflow-hidden"
         [ngClass]="getTextClass()"
@@ -20,11 +20,13 @@
         ondragover="event.preventDefault()">
         <div class="flex pointer-events-none">
           <span class="ellipsis">{{ tag.name }}</span>
-          <ng-container *ngIf="stateService.settings.showTagCount">
+          @if (stateService.settings.showTagCount) {
             <ng-container *ngVar="tag.getCount(stateService.images) as count">
-              <span *ngIf="count !== null" class="pointer-events-none" style="white-space: pre"> {{ tag.pseudo ? '➝' : '•' }} {{ count }}</span>
+              @if (count !== null) {
+                <span class="pointer-events-none" style="white-space: pre"> {{ tag.pseudo ? '➝' : '•' }} {{ count }}</span>
+              }
             </ng-container>
-          </ng-container>
+          }
         </div>
       </div>
     </div>
@@ -32,8 +34,14 @@
       <i class="hover-positive fa-solid fa-ellipsis-vertical" (click)="galleryService.openTagOptions(tag)"></i>
     </div>
   </div>
-  <div *ngIf="tag.group" [@drawer2]="tag.open" class="flex column overflow-hidden">
-    <app-tagger-row *ngFor="let child of getTagGroups()" [tag]="child" [target]="target" [groupMode]="groupMode"></app-tagger-row>
-    <app-tagger-row *ngFor="let child of getTags()" [tag]="child" [target]="target" [groupMode]="groupMode"></app-tagger-row>
-  </div>
-</ng-container>
+  @if (tag.group) {
+    <div class="flex column overflow-hidden drawer" [class.open]="tag.open">
+      @for (child of getTagGroups(); track child.id) {
+        <app-tagger-row [tag]="child" [target]="target" [groupMode]="groupMode"></app-tagger-row>
+      }
+      @for (child of getTags(); track child.id) {
+        <app-tagger-row [tag]="child" [target]="target" [groupMode]="groupMode"></app-tagger-row>
+      }
+    </div>
+  }
+}
