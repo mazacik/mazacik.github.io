@@ -9,7 +9,7 @@ export interface TournamentState {
 export class Tournament {
 
   private images: GalleryImage[] = [];
-  private graph = new Map<GalleryImage, GalleryImage[]>();
+  private graph = new Map<GalleryImage, Set<GalleryImage>>();
 
   public comparisons: [GalleryImage, GalleryImage][] = [];
   private availableComparisonsCount: number | null = null;
@@ -20,7 +20,7 @@ export class Tournament {
 
     const imageMap: { [id: string]: GalleryImage } = {};
     for (const image of this.images) {
-      this.graph.set(image, []);
+      this.graph.set(image, new Set<GalleryImage>());
       imageMap[image.id] = image;
     }
 
@@ -71,39 +71,34 @@ export class Tournament {
     return available;
   }
 
-  private hasPath(from: GalleryImage, to: GalleryImage, collector: string[] = []): boolean {
-    if (from === to) return true;
-
-    collector.push(from.id);
-
-    for (const next of this.graph.get(from)) {
-      if (!collector.includes(next.id) && this.hasPath(next, to, collector)) {
-        return true;
-      }
-    }
-
-    return false;
+  private hasPath(from: GalleryImage, to: GalleryImage): boolean {
+    return this.graph.get(from)?.has(to) ?? false;
   }
 
   public handleUserInput(winner: GalleryImage, loser: GalleryImage): void {
     if (winner === loser) return;
 
-    ArrayUtils.push(this.graph.get(winner), loser);
+    this.graph.get(winner).add(loser);
     this.comparisons.push([winner, loser]);
 
     this.updateTransitiveRelations(winner, loser);
   }
 
   private updateTransitiveRelations(winner: GalleryImage, loser: GalleryImage): void {
-    // Anything loser beats should also be beaten by winner
-    for (const subLoser of this.graph.get(loser)) {
-      ArrayUtils.push(this.graph.get(winner), subLoser);
+    const successors = new Set<GalleryImage>(this.graph.get(loser));
+    successors.add(loser);
+
+    const predecessors: GalleryImage[] = [];
+    for (const [node, edges] of this.graph.entries()) {
+      if (node === winner || edges.has(winner)) {
+        predecessors.push(node);
+      }
     }
 
-    // Anything that beats winner should now also beat loser
-    for (const [, edges] of this.graph.entries()) {
-      if (edges.includes(winner)) {
-        ArrayUtils.push(edges, loser);
+    for (const predecessor of predecessors) {
+      const edges = this.graph.get(predecessor);
+      for (const successor of successors) {
+        edges.add(successor);
       }
     }
   }
@@ -139,11 +134,11 @@ export class Tournament {
     if (ArrayUtils.isEmpty(this.comparisons)) return null;
     const comparison = this.comparisons.pop();
 
-    this.graph = new Map<GalleryImage, GalleryImage[]>();
-    this.images.forEach(image => this.graph.set(image, []));
+    this.graph = new Map<GalleryImage, Set<GalleryImage>>();
+    this.images.forEach(image => this.graph.set(image, new Set<GalleryImage>()));
 
     for (const [winner, loser] of this.comparisons) {
-      ArrayUtils.push(this.graph.get(winner), loser);
+      this.graph.get(winner).add(loser);
       this.updateTransitiveRelations(winner, loser);
     }
 
