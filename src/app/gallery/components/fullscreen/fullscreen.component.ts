@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { Component, effect, OnDestroy, OnInit } from '@angular/core';
 import { SafeUrl } from '@angular/platform-browser';
 import { KeyboardShortcutTarget } from 'src/app/shared/classes/keyboard-shortcut-target.interface';
-import { VariableDirective } from 'src/app/shared/directives/variable.directive';
 import { ApplicationService } from 'src/app/shared/services/application.service';
 import { KeyboardShortcutService } from 'src/app/shared/services/keyboard-shortcut.service';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
@@ -16,13 +15,10 @@ import { GalleryService } from '../../services/gallery.service';
 import { TagService } from '../../services/tag.service';
 
 @Component({
-    selector: 'app-fullscreen',
-    imports: [
-        CommonModule,
-        VariableDirective
-    ],
-    templateUrl: './fullscreen.component.html',
-    styleUrls: ['./fullscreen.component.scss']
+  selector: 'app-fullscreen',
+  imports: [CommonModule],
+  templateUrl: './fullscreen.component.html',
+  styleUrls: ['./fullscreen.component.scss']
 })
 export class FullscreenComponent implements KeyboardShortcutTarget, OnInit, OnDestroy {
 

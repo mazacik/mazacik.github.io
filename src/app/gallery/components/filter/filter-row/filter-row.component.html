@@ -20,12 +20,8 @@
         ondragover="event.preventDefault()">
         <div class="flex pointer-events-none">
           <span class="ellipsis">{{ tag.name }}</span>
-          @if (stateService.settings.showTagCount) {
-            <ng-container *ngVar="tag.getCount(stateService.images) as count">
-              @if (count !== null) {
-                <span class="pointer-events-none" style="white-space: pre"> {{ tag.pseudo ? '➝' : '•' }} {{ count }}</span>
-              }
-            </ng-container>
+          @if (stateService.settings.showTagCount && tag.getCount(stateService.images); as count) {
+            <span class="pointer-events-none" style="white-space: pre"> {{ tag.pseudo ? '➝' : '•' }} {{ count }}</span>
           }
         </div>
       </div>
