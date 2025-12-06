@@ -8,12 +8,8 @@ export interface TournamentState {
 
 export class Tournament {
 
-  // TODO performance improvement: consider bitset-based sets to reduce memory/GC pressure
-
   private images: GalleryImage[] = [];
   private graph = new Map<GalleryImage, Set<GalleryImage>>();
-  private availableComparisons: [GalleryImage, GalleryImage][] = [];
-  private availableKeyToIndex = new Map<string, number>();
 
   public comparisons: [GalleryImage, GalleryImage][] = [];
   private availableComparisonsCount: number | null = null;
@@ -33,7 +29,7 @@ export class Tournament {
       state.comparisons.filter(([winnerId, loserId]) => imageIds.includes(winnerId) && imageIds.includes(loserId)).map(([winnerId, loserId]) => [imageMap[winnerId], imageMap[loserId]]).forEach(([winner, loser]) => this.handleUserInput(winner, loser));
     }
 
-    this.rebuildAvailableComparisons();
+    this.availableComparisonsCount = null;
   }
 
   public getNextComparison(): [GalleryImage, GalleryImage] {
@@ -60,11 +56,19 @@ export class Tournament {
   }
 
   private collectAvailableComparisons(): [GalleryImage, GalleryImage][] {
-    if (this.availableComparisonsCount === null) {
-      this.rebuildAvailableComparisons();
+    const available: [GalleryImage, GalleryImage][] = [];
+    const queue = this.images;
+
+    for (let i = 0; i < queue.length; i++) {
+      for (let j = i + 1; j < queue.length; j++) {
+        const a = queue[i];
+        const b = queue[j];
+        if (!this.hasPath(a, b) && !this.hasPath(b, a)) available.push([a, b]);
+      }
     }
 
-    return this.availableComparisons;
+    this.availableComparisonsCount = available.length;
+    return available;
   }
 
   private hasPath(from: GalleryImage, to: GalleryImage): boolean {
@@ -97,17 +101,6 @@ export class Tournament {
         edges.add(successor);
       }
     }
-
-    this.pruneAvailableComparisons(predecessors, successors);
-  }
-
-  private pruneAvailableComparisons(predecessors: Iterable<GalleryImage>, successors: Iterable<GalleryImage>): void {
-    for (const predecessor of predecessors) {
-      for (const successor of successors) {
-        this.removeAvailablePair(predecessor, successor);
-      }
-    }
-    this.availableComparisonsCount = this.availableComparisons.length;
   }
 
   public getRanking(): GalleryImage[] {
@@ -143,15 +136,13 @@ export class Tournament {
 
     this.graph = new Map<GalleryImage, Set<GalleryImage>>();
     this.images.forEach(image => this.graph.set(image, new Set<GalleryImage>()));
-    this.availableComparisons = [];
-    this.availableKeyToIndex = new Map<string, number>();
 
     for (const [winner, loser] of this.comparisons) {
       this.graph.get(winner).add(loser);
       this.updateTransitiveRelations(winner, loser);
     }
 
-    this.rebuildAvailableComparisons();
+    this.availableComparisonsCount = null;
     return comparison;
   }
 
@@ -159,53 +150,6 @@ export class Tournament {
     return {
       comparisons: this.comparisons.map(([winner, loser]) => [winner.id, loser.id])
     };
-  }
-
-  private rebuildAvailableComparisons(): void {
-    this.availableComparisons = [];
-    this.availableKeyToIndex = new Map<string, number>();
-
-    const queue = this.images;
-
-    for (let i = 0; i < queue.length; i++) {
-      for (let j = i + 1; j < queue.length; j++) {
-        const a = queue[i];
-        const b = queue[j];
-        if (!this.hasPath(a, b) && !this.hasPath(b, a)) this.addAvailablePair(a, b);
-      }
-    }
-
-    this.availableComparisonsCount = this.availableComparisons.length;
-  }
-
-  private addAvailablePair(a: GalleryImage, b: GalleryImage): void {
-    const key = this.makePairKey(a, b);
-    if (this.availableKeyToIndex.has(key)) return;
-    this.availableKeyToIndex.set(key, this.availableComparisons.length);
-    this.availableComparisons.push([a, b]);
-  }
-
-  private removeAvailablePair(a: GalleryImage, b: GalleryImage): void {
-    const key = this.makePairKey(a, b);
-    const index = this.availableKeyToIndex.get(key);
-    if (index === undefined) return;
-
-    const lastIndex = this.availableComparisons.length - 1;
-    if (lastIndex > -1) {
-      if (index !== lastIndex) {
-        const lastPair = this.availableComparisons[lastIndex];
-        this.availableComparisons[index] = lastPair;
-        this.availableKeyToIndex.set(this.makePairKey(lastPair[0], lastPair[1]), index);
-      }
-      this.availableComparisons.pop();
-    }
-
-    this.availableKeyToIndex.delete(key);
-  }
-
-  private makePairKey(a: GalleryImage, b: GalleryImage): string {
-    const [first, second] = [a.id, b.id].sort();
-    return `${first}|${second}`;
   }
 
 }

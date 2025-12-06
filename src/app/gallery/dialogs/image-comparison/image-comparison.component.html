@@ -2,8 +2,8 @@
   @if (comparison) {
     <img style="display: none" [src]="comparison[0].thumbnailLink" (load)="loadingLT = false" />
     <img style="display: none" [src]="comparison[1].thumbnailLink" (load)="loadingRT = false" />
-    <!-- <img style="display: none" [src]="comparison[0].contentLink" (load)="loadingLC = false" /> -->
-    <!-- <img style="display: none" [src]="comparison[1].contentLink" (load)="loadingRC = false" /> -->
+    <img style="display: none" [src]="comparison[0].contentLink" (load)="loadingLC = false" />
+    <img style="display: none" [src]="comparison[1].contentLink" (load)="loadingRC = false" />
 
     <div class="comparison">
       <div class="image-container stack-container-alt" (click)="onImageClick(comparison[0], comparison[1])">
@@ -13,7 +13,7 @@
           }
         }
       </div>
-      <div class="v-separator"></div>
+      <div class="h-separator v-separator"></div>
       <div class="image-container stack-container-alt" (click)="onImageClick(comparison[1], comparison[0])">
         @for (item of [comparison[1]]; track item.id) {
           @if (!loadingRT) {
@@ -24,6 +24,7 @@
     </div>
 
     @if (progressBarVisible) {
+      <div class="h-separator"></div>
       <div class="comparison-progress">
         <div class="progress-bar">
           <div class="progress-bar-fill" [style.width.%]="progressPercent"></div>

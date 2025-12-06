@@ -52,7 +52,8 @@ export class ImageComparisonComponent implements OnInit, OnDestroy {
         id: 'undo',
         tooltip: 'Undo',
         classes: ['fa-solid', 'fa-rotate-left'],
-        onClick: () => this.undo()
+        onClick: () => this.undo(),
+        hidden: () => !this.tournament || this.tournament.comparisons.length == 0
       }, {
         id: 'progress-bar',
         tooltip: 'Toggle Progress Bar',
