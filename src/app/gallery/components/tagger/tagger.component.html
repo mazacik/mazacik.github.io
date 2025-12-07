@@ -8,7 +8,7 @@
     </div>
     <span class="margins-3-h">Tag Manager</span>
     <div class="flex gap flex-end-h">
-      <i class="icon-button fa-solid" [ngClass]="ScreenUtils.isLargeScreen() ? 'fa-caret-right' : 'fa-times'" tp="Collapse" tpPlacement="left" (click)="stateService.taggerVisible = false"></i>
+      <i class="icon-button fa-solid" [ngClass]="ScreenUtils.isLargeScreen() ? 'fa-caret-right' : 'fa-times'" title="Collapse" tpPlacement="left" (click)="stateService.taggerVisible = false"></i>
     </div>
   </div>
   @if (ScreenUtils.isLargeScreen()) {

@@ -118,6 +118,13 @@ export class FullscreenComponent implements KeyboardShortcutTarget, OnInit, OnDe
     }
   }
 
+  protected openGroupComparison(): void {
+    const target: GalleryImage = this.stateService.fullscreenImage();
+    if (target?.group) {
+      this.stateService.comparisonImages = target.group.images;
+    }
+  }
+
   protected getSrc(image: GalleryImage): SafeUrl {
     if (!this.loadingC) return image.contentLink;
     if (!this.loadingT) return image.thumbnailLink;

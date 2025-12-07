@@ -9,6 +9,8 @@
     display: flex;
     flex: 1;
     flex-direction: column;
+    justify-content: end;
+    overflow: auto;
   }
 
   .comparison {
@@ -52,55 +54,43 @@
     color: var(--color-text-secondary);
   }
 
-  .comparison-progress {
-    display: flex;
-    flex-direction: column;
+  .progress-bar {
+    position: relative;
+    border-radius: variables.$gap-1;
+    background-color: var(--color-button-background-secondary-hover);
+    overflow: hidden;
+    height: variables.$button-height-smaller;
+    margin: variables.$gap-1;
 
-    .progress-bar {
-      position: relative;
-      border-radius: variables.$gap-1;
-      background-color: var(--color-button-background-secondary-hover);
-      overflow: hidden;
-      height: variables.$button-height-smaller;
-      margin: variables.$gap-1;
-      isolation: isolate;
+    .progress-bar-fill {
+      height: 100%;
+      width: 0;
+      background-color: var(--color-positive);
+      transition: width variables.$transition-duration-fast ease;
+    }
 
-      .progress-bar-fill {
-        height: 100%;
-        width: 0;
-        background-color: var(--color-positive);
-        transition: width variables.$transition-duration-fast ease;
-      }
-
-      .progress-bar-label {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        color: var(--color-text-secondary);
-        font-weight: 600;
-        pointer-events: none;
-        mix-blend-mode: difference; // invert against the fill so text stays readable on light and dark backgrounds
-      }
+    .progress-bar-label {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: var(--color-text-secondary);
+      font-weight: 600;
+      pointer-events: none;
+      mix-blend-mode: difference; // invert against the fill so text stays readable on light and dark backgrounds
     }
   }
 
   .results {
     display: flex;
-    flex-direction: column;
     overflow: auto;
     gap: variables.$gap-1;
     padding: variables.$gap-1;
+    margin: auto 0;
 
-    .image-container {
-      width: 100px;
+    img {
       display: flex;
-
-      img {
-        max-width: 100%;
-        max-height: 100%;
-        // border-radius: variables.$gap-1;
-      }
+      max-height: 100%;
     }
   }
 }

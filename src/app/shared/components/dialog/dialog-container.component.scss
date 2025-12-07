@@ -8,6 +8,7 @@
   left: 0;
   z-index: 200;
   overflow: hidden;
+  pointer-events: none;
 }
 
 .dialog-container {
@@ -18,6 +19,7 @@
   border-radius: variables.$gap-2;
   min-width: 300px;
   background-color: var(--color-surface-100);
+  pointer-events: all;
 
   @media screen and (max-width:1280px) {
     max-width: calc(100% - variables.$gap-1 * 2);

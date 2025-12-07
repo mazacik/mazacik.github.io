@@ -15,7 +15,7 @@
       (keypress)="onCountdownInputSubmit($event, countdownInput)"
       (focus)="countdownInput.select()"
       placeholder="Timer" />
-    <i class="icon-button fa-solid" [ngClass]="applicationService.isDarkTheme() ? 'fa-moon' : 'fa-sun'" tp="Toggle Brightness Mode" (click)="applicationService.toggleTheme()"></i>
+    <i class="icon-button fa-solid" [ngClass]="applicationService.isDarkTheme() ? 'fa-moon' : 'fa-sun'" title="Toggle Brightness Mode" (click)="applicationService.toggleTheme()"></i>
   </div>
 </div>
 <div class="flex height-100 overflow-hidden">

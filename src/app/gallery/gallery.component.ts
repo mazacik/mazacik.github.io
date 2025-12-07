@@ -26,7 +26,6 @@ import { GalleryStateService } from './services/gallery-state.service';
 export class GalleryComponent implements OnInit, OnDestroy {
 
   protected loading: boolean = true;
-  protected mode: 'masonry' | 'comparison' = 'masonry';
 
   constructor(
     private serializationService: GallerySerializationService,
@@ -46,16 +45,15 @@ export class GalleryComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.applicationService.removeHeaderButtons('start', ['toggle-filter']);
     this.applicationService.removeHeaderButtons('end', ['open-comparison', 'google-drive']);
   }
 
   private configureHeader(): void {
     this.applicationService.addHeaderButtons('end', [{
       id: 'open-comparison',
-      tooltip: () => this.mode == 'masonry' ? 'Comparison' : 'Masonry',
-      classes: () => this.mode == 'masonry' ? ['fa-solid', 'fa-code-compare'] : ['fa-solid', 'fa-images'],
-      onClick: () => this.mode = this.mode == 'masonry' ? 'comparison' : 'masonry'
+      tooltip: () => !!this.stateService.comparisonImages ? 'Masonry' : 'Comparison',
+      classes: () => !!this.stateService.comparisonImages ? ['fa-solid', 'fa-images'] : ['fa-solid', 'fa-code-compare'],
+      onClick: () => this.stateService.comparisonImages = (!!this.stateService.comparisonImages ? null : this.filterService.images())
     }, {
       id: 'google-drive',
       tooltip: 'Google Drive',

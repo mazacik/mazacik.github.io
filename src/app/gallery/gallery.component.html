@@ -1,14 +1,14 @@
 @if (!loading) {
   <div class="stack-container">
     <div class="flex overflow-auto">
-      @if (mode == 'masonry') {
+      @if (!!stateService.comparisonImages) {
+        <app-image-comparison></app-image-comparison>
+      } @else {
         <app-filter></app-filter>
         <app-masonry></app-masonry>
-      } @else {
-        <app-image-comparison></app-image-comparison>
       }
     </div>
-    <div class="fullscreen-container glass-effect height-100" [class.transparent]="!stateService.fullscreenImage()">
+    <div class="fullscreen-container glass-effect height-100" [class.transparent]="!stateService.fullscreenImage() || stateService.comparisonImages">
       <app-fullscreen></app-fullscreen>
       <app-tagger></app-tagger>
     </div>

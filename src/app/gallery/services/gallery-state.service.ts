@@ -19,6 +19,7 @@ export class GalleryStateService {
   public readonly imageGroups: GalleryGroup[] = [];
 
   public readonly fullscreenImage: WritableSignal<GalleryImage> = signal(null);
+  public comparisonImages: GalleryImage[] = null;
 
   public filterVisible: boolean = ScreenUtils.isLargeScreen();
   public taggerVisible: boolean = ScreenUtils.isLargeScreen();

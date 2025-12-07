@@ -5,7 +5,7 @@
     <div class="order-container">
       @for (image of stateService.groupEditorGroup.images; track image.id) {
         <div class="image-container" (click)="stateService.fullscreenImage.set(image)" [dragdrop]="image" [dragdropParent]="stateService.groupEditorGroup.images">
-          <i class="icon-button-small fa-solid fa-times" tp="Remove" (click)="$event.stopPropagation(); removeImage(image)"></i>
+          <i class="icon-button-small fa-solid fa-times" title="Remove" (click)="$event.stopPropagation(); removeImage(image)"></i>
           <img [src]="image.thumbnailLink" [style.width.px]="120 * image.aspectRatio" #imageElement (load)="imageElement.style.opacity = '1'" />
         </div>
       }
