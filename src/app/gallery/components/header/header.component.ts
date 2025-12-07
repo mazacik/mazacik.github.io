@@ -25,9 +25,23 @@ export class HeaderComponent {
     return typeof classes === 'function' ? classes() : classes;
   }
 
+  protected isDisabled(action: HeaderAction): boolean {
+    const disabled = action.disabled;
+    return typeof disabled === 'function' ? disabled() : !!disabled;
+  }
+
   protected isHidden(action: HeaderAction): boolean {
     const hidden = action.hidden;
     return typeof hidden === 'function' ? hidden() : !!hidden;
+  }
+
+  protected getTooltip(action: HeaderAction): string {
+    const tooltip = action.tooltip;
+    return typeof tooltip === 'function' ? tooltip() : tooltip;
+  }
+
+  protected onClick(action: HeaderAction): void {
+    if (action.onClick && !this.isDisabled(action) && !this.isHidden(action)) action.onClick();
   }
 
   protected trackById(_index: number, action: HeaderAction): string {

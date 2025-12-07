@@ -7,6 +7,7 @@ import { ApplicationService } from 'src/app/shared/services/application.service'
 import { GoogleFileUtils } from 'src/app/shared/utils/google-file.utils';
 import { GallerySerializationService } from '../../services/gallery-serialization.service';
 import { GalleryStateService } from '../../services/gallery-state.service';
+import { FilterService } from '../../services/filter.service';
 
 @Component({
   selector: 'app-image-comparison',
@@ -31,53 +32,38 @@ export class ImageComparisonComponent implements OnInit, OnDestroy {
   constructor(
     private applicationService: ApplicationService,
     private serializationService: GallerySerializationService,
-    protected stateService: GalleryStateService
-  ) {
-    this.applicationService.loading.set(true);
-  }
+    private filterService: FilterService,
+    private stateService: GalleryStateService
+  ) { }
 
   ngOnInit(): void {
     this.configureHeader();
-    this.registerModuleSettings();
-    this.serializationService.processData().then(() => this.start());
+    this.start();
   }
 
   ngOnDestroy(): void {
-    this.applicationService.clearPageHeader();
+    this.applicationService.removeHeaderButtons('start', ['comparison-reset', 'comparison-undo', 'comparison-progress-bar']);
   }
 
   private configureHeader(): void {
-    this.applicationService.setPageHeader({
-      end: [{
-        id: 'undo',
-        tooltip: 'Undo',
-        classes: ['fa-solid', 'fa-rotate-left'],
-        onClick: () => this.undo(),
-        hidden: () => !this.tournament || this.tournament.comparisons.length == 0
-      }, {
-        id: 'progress-bar',
-        tooltip: 'Toggle Progress Bar',
-        classes: ['fa-solid', 'fa-solid fa-list-check'],
-        onClick: () => this.toggleProgressBar()
-      }]
-    });
-  }
-
-  private registerModuleSettings(): void {
-    if (!this.stateService.settings) {
-      this.stateService.settings = {} as any;
-    }
-
-    this.applicationService.registerModuleSettings({
-      id: 'comparison-settings',
-      label: 'Comparison',
-      items: [{
-        id: 'reset',
-        type: 'action',
-        label: 'Reset',
-        onClick: () => this.reset()
-      }]
-    });
+    this.applicationService.addHeaderButtons('start', [{
+      id: 'comparison-reset',
+      tooltip: 'Reset Comparison',
+      classes: ['fa-solid', 'fa-rotate-left'],
+      onClick: () => this.reset(),
+      disabled: () => !this.tournament || this.tournament.comparisons.length == 0
+    }, {
+      id: 'comparison-undo',
+      tooltip: 'Undo Comparison',
+      classes: ['fa-solid', 'fa-delete-left'],
+      onClick: () => this.undo(),
+      disabled: () => !this.tournament || this.tournament.comparisons.length == 0
+    }, {
+      id: 'comparison-progress-bar',
+      tooltip: 'Toggle Comparison Progress Bar',
+      classes: ['fa-solid', 'fa-solid fa-list-check'],
+      onClick: () => this.toggleProgressBar()
+    }]);
   }
 
   protected start(): void {
@@ -109,7 +95,7 @@ export class ImageComparisonComponent implements OnInit, OnDestroy {
     this.serializationService.save();
   }
 
-  protected reset(): void {
+  public reset(): void {
     this.stateService.tournamentState = null;
     this.serializationService.save();
     this.start();

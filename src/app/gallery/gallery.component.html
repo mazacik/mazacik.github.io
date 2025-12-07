@@ -1,8 +1,12 @@
 @if (!loading) {
-  <div animate.enter="anim-fade-in" class="stack-container">
+  <div class="stack-container">
     <div class="flex overflow-auto">
-      <app-filter></app-filter>
-      <app-masonry></app-masonry>
+      @if (mode == 'masonry') {
+        <app-filter></app-filter>
+        <app-masonry></app-masonry>
+      } @else {
+        <app-image-comparison></app-image-comparison>
+      }
     </div>
     <div class="fullscreen-container glass-effect height-100" [class.transparent]="!stateService.fullscreenImage()">
       <app-fullscreen></app-fullscreen>

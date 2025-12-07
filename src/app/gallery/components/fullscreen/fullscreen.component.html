@@ -36,7 +36,46 @@
       </div>
     </div>
 
-    <div class="stack-container anim-fade" animate.enter="anim-fade-in" animate.leave="anim-fade-out">
+    <div class="flex-1 stack-container-alt anim-fade" animate.enter="anim-fade-in" animate.leave="anim-fade-out">
+      @if (target.group) {
+        <div class="has-group-container anim-fade" animate.enter="anim-fade-in" animate.leave="anim-fade-out">
+          <div class="another-container stack-container">
+            <div class="image-container stack-container-alt">
+              @for (image of [target]; track image.id) {
+                @if (!loadingT) {
+                  <img class="anim-fade" [src]="getSrc(image)" [class.flip-h]="flip" (click)="onImageClick(image)" animate.enter="anim-fade-in" animate.leave="anim-fade-out" />
+                }
+              }
+            </div>
+          </div>
+          <div class="stack-container height-auto justify-content-center">
+            <div class="group-images-container anim-fade" animate.enter="anim-fade-in" animate.leave="anim-fade-out">
+              @for (groupImage of target.group.images; track groupImage.id) {
+                <div class="group-image-container loading" (click)="stateService.fullscreenImage.set(groupImage)" #groupImageContainer>
+                  <img
+                    [class.grayscale]="!groupImage.passesFilters"
+                    [style.width.px]="120 * groupImage.aspectRatio"
+                    [src]="groupImage.thumbnailLink"
+                    #groupImageElement
+                    (load)="groupImageContainer.classList.toggle('loading')" />
+                  <div class="target-border" [class.target]="groupImage == target"></div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      } @else {
+        @for (image of [target]; track image.id) {
+          @if (!loadingT) {
+            <div class="test456 anim-fade" animate.enter="anim-fade-in" animate.leave="anim-fade-out">
+              <img class="test123" [src]="getSrc(image)" [class.flip-h]="flip" (click)="onImageClick(image)" />
+            </div>
+          }
+        }
+      }
+    </div>
+
+    <!-- <div class="stack-container anim-fade" animate.enter="anim-fade-in" animate.leave="anim-fade-out">
       @if (target.group) {
         <div class="has-group-container anim-fade" animate.enter="anim-fade-in" animate.leave="anim-fade-out">
           <div class="another-container stack-container">
@@ -75,7 +114,7 @@
           </div>
         </div>
       }
-    </div>
+    </div> -->
 
     <div class="sidebar-right">
       <div class="sidebar-start">

@@ -5,17 +5,18 @@ import { FilterComponent } from './components/filter/filter.component';
 import { FullscreenComponent } from './components/fullscreen/fullscreen.component';
 import { MasonryComponent } from './components/masonry/masonry.component';
 import { TaggerComponent } from './components/tagger/tagger.component';
+import { ImageComparisonComponent } from './dialogs/image-comparison/image-comparison.component';
 import { FilterService } from './services/filter.service';
 import { GalleryGoogleDriveService } from './services/gallery-google-drive.service';
 import { GallerySerializationService } from './services/gallery-serialization.service';
 import { GalleryStateService } from './services/gallery-state.service';
-import { GalleryService } from './services/gallery.service';
 
 @Component({
   selector: 'app-gallery',
   imports: [
     FilterComponent,
     MasonryComponent,
+    ImageComparisonComponent,
     FullscreenComponent,
     TaggerComponent
   ],
@@ -25,12 +26,12 @@ import { GalleryService } from './services/gallery.service';
 export class GalleryComponent implements OnInit, OnDestroy {
 
   protected loading: boolean = true;
+  protected mode: 'masonry' | 'comparison' = 'masonry';
 
   constructor(
     private serializationService: GallerySerializationService,
     private applicationService: ApplicationService,
     protected stateService: GalleryStateService,
-    private galleryService: GalleryService,
     private googleService: GalleryGoogleDriveService,
     private filterService: FilterService,
     private dialogService: DialogService
@@ -45,33 +46,22 @@ export class GalleryComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.applicationService.clearPageHeader();
+    this.applicationService.removeHeaderButtons('start', ['toggle-filter']);
+    this.applicationService.removeHeaderButtons('end', ['open-comparison', 'google-drive']);
   }
 
   private configureHeader(): void {
-    this.applicationService.setPageHeader({
-      start: [{
-        id: 'toggle-filter',
-        tooltip: 'Open Filter Configuration',
-        classes: ['fa-solid', 'fa-filter'],
-        containerClasses: () => ({
-          'drawer-container': true,
-          'drawer-hidden': !this.stateService.filterVisible
-        }),
-        onClick: () => this.stateService.filterVisible = !this.stateService.filterVisible
-      }, {
-        id: 'create-group',
-        tooltip: 'Create Image Group',
-        classes: ['fa-solid', 'fa-folder-plus'],
-        onClick: () => this.galleryService.openImageGroupEditor()
-      }],
-      end: [{
-        id: 'google-drive',
-        tooltip: 'Google Drive',
-        classes: ['fa-brands', 'fa-google-drive'],
-        onClick: () => this.googleService.openFolderById(this.stateService.dataFolderId)
-      }]
-    });
+    this.applicationService.addHeaderButtons('end', [{
+      id: 'open-comparison',
+      tooltip: () => this.mode == 'masonry' ? 'Comparison' : 'Masonry',
+      classes: () => this.mode == 'masonry' ? ['fa-solid', 'fa-code-compare'] : ['fa-solid', 'fa-images'],
+      onClick: () => this.mode = this.mode == 'masonry' ? 'comparison' : 'masonry'
+    }, {
+      id: 'google-drive',
+      tooltip: 'Google Drive',
+      classes: ['fa-brands', 'fa-google-drive'],
+      onClick: () => this.googleService.openFolderById(this.stateService.dataFolderId)
+    }], 'first');
   }
 
   private registerModuleSettings(): void {

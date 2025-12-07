@@ -45,14 +45,6 @@ export const routes: Routes = [{
     component: GalleryComponent
   }]
 }, {
-  path: 'comparison',
-  canActivateChild: [authGuard],
-  children: [{
-    path: '',
-    canActivate: [folderGuard],
-    component: ImageComparisonComponent
-  }]
-}, {
   path: 'story-manager',
   canActivate: [authGuard],
   component: StoryManagerComponent

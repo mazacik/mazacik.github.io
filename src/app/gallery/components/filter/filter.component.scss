@@ -3,11 +3,13 @@
 :host {
   display: flex;
   user-select: none;
-  transition: variables.$transition-duration;
   overflow: hidden;
   height: 100%;
 
-  &:not(.visible) {
+  transition-property: margin-left opacity;
+  transition-duration: variables.$transition-duration;
+
+  &.hidden {
     opacity: 0;
     pointer-events: none;
   }
@@ -23,7 +25,7 @@
     width: 300.8px;
     min-width: 300.8px;
 
-    &:not(.visible) {
+    &.hidden {
       margin-left: -300.8px;
     }
   }

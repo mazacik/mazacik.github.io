@@ -31,19 +31,17 @@ export class AppComponent {
       }
     });
 
-    this.applicationService.setPersistentHeader({
-      end: [{
-        id: 'toggle-theme',
-        tooltip: 'Toggle Theme',
-        classes: () => ['fa-solid', this.applicationService.isDarkTheme() ? 'fa-moon' : 'fa-sun'],
-        onClick: () => this.applicationService.toggleTheme()
-      }, {
-        id: 'open-settings',
-        tooltip: 'Settings',
-        classes: ['fa-solid', 'fa-gear'],
-        onClick: () => this.dialogService.create(ApplicationSettingsComponent)
-      }]
-    });
+    this.applicationService.addHeaderButtons('end', [{
+      id: 'toggle-theme',
+      tooltip: 'Toggle Theme',
+      classes: () => ['fa-solid', this.applicationService.isDarkTheme() ? 'fa-moon' : 'fa-sun'],
+      onClick: () => this.applicationService.toggleTheme()
+    }, {
+      id: 'open-settings',
+      tooltip: 'Settings',
+      classes: ['fa-solid', 'fa-gear'],
+      onClick: () => this.dialogService.create(ApplicationSettingsComponent)
+    }]);
   }
 
   protected getLoadingBarColor(): string {
