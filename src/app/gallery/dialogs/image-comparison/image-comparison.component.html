@@ -16,8 +16,13 @@
   @if (progressBarVisible) {
     <div class="h-separator"></div>
     <div class="progress-bar">
-      <div class="progress-bar-fill" [style.width.%]="progressPercent"></div>
-      <div class="progress-bar-label">{{ completedComparisons }}/{{ totalComparisons }} ({{ progressPercent | number: '1.0-0' }}%)</div>
+      @if (comparison) {
+        <div class="progress-bar-fill" [style.width.%]="estimateProgressPercent"></div>
+        <div class="progress-bar-label">{{ completeComparisons }}/~{{ estimateTotalComparisons }} ({{ estimateProgressPercent | number: '1.0-0' }}%)</div>
+      } @else {
+        <div class="progress-bar-fill" [style.width.%]="100"></div>
+        <div class="progress-bar-label">{{ completeComparisons }}/{{ completeComparisons }} ({{ 100 | number: '1.0-0' }}%)</div>
+      }
     </div>
   }
 </div>

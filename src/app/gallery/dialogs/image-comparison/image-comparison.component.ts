@@ -22,7 +22,8 @@ export class ImageComparisonComponent implements OnInit, OnDestroy {
   protected progressBarVisible: boolean = true;
   protected totalComparisons: number = 0;
   protected remainingComparisons: number = 0;
-  protected completedComparisons: number = 0;
+  protected completeComparisons: number = 0;
+  protected estimateTotalComparisons: number = 0;
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -70,6 +71,7 @@ export class ImageComparisonComponent implements OnInit, OnDestroy {
     this.tournament = new Tournament();
     const images = this.stateService.images.filter(image => GoogleFileUtils.isImage(image));
     const imagesToCompare = this.stateService.comparisonImages.filter(image => GoogleFileUtils.isImage(image));
+    this.estimateTotalComparisons = this.calculateEstimateTotalComparisons(imagesToCompare.length);
     this.tournament.start(images, imagesToCompare, this.stateService.tournamentState);
     this.nextComparison();
   }
@@ -104,13 +106,23 @@ export class ImageComparisonComponent implements OnInit, OnDestroy {
   }
 
   public get progressPercent(): number {
-    return this.totalComparisons === 0 ? 0 : (this.completedComparisons / this.totalComparisons) * 100;
+    return this.totalComparisons === 0 ? 0 : (this.completeComparisons / this.totalComparisons) * 100;
+  }
+
+  public get estimateProgressPercent(): number {
+    return this.estimateTotalComparisons === 0 ? 0 : Math.min(100, (this.completeComparisons / this.estimateTotalComparisons) * 100);
+  }
+
+  private calculateEstimateTotalComparisons(imageCount: number): number {
+    if (imageCount <= 1) return 0;
+    const factor = 0.52; // tuned so k * N * log2(N) matches observed workloads
+    return Math.round(factor * imageCount * Math.log2(imageCount));
   }
 
   private updateProgress(): void {
     if (!this.tournament) return;
     const progress = this.tournament.getComparisonProgress();
-    this.completedComparisons = progress.completed;
+    this.completeComparisons = progress.completed;
     this.remainingComparisons = progress.remaining;
     this.totalComparisons = progress.total;
   }
