@@ -3,6 +3,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { GalleryImage } from 'src/app/gallery/models/gallery-image.class';
 import { Tournament } from 'src/app/shared/classes/tournament.class';
+import { ImageComponent } from 'src/app/shared/components/image/image.component';
 import { ApplicationService } from 'src/app/shared/services/application.service';
 import { GoogleFileUtils } from 'src/app/shared/utils/google-file.utils';
 import { GallerySerializationService } from '../../services/gallery-serialization.service';
@@ -10,7 +11,7 @@ import { GalleryStateService } from '../../services/gallery-state.service';
 
 @Component({
   selector: 'app-image-comparison',
-  imports: [DecimalPipe],
+  imports: [ImageComponent, DecimalPipe],
   templateUrl: './image-comparison.component.html',
   styleUrls: ['./image-comparison.component.scss']
 })
@@ -22,9 +23,6 @@ export class ImageComparisonComponent implements OnInit, OnDestroy {
   protected totalComparisons: number = 0;
   protected remainingComparisons: number = 0;
   protected completedComparisons: number = 0;
-
-  protected loadingL: boolean;
-  protected loadingR: boolean;
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -76,8 +74,8 @@ export class ImageComparisonComponent implements OnInit, OnDestroy {
     this.nextComparison();
   }
 
-  protected onImageClick(winner: GalleryImage, loser: GalleryImage): void {
-    this.tournament.handleUserInput(winner, loser);
+  protected onImageClick(winner: GalleryImage): void {
+    this.tournament.handleUserInput(winner, winner == this.comparison[0] ? this.comparison[1] : this.comparison[0]);
     this.nextComparison();
     this.stateService.tournamentState = this.tournament.getState();
     this.serializationService.save();
@@ -86,29 +84,6 @@ export class ImageComparisonComponent implements OnInit, OnDestroy {
   public nextComparison(): void {
     this.comparison = this.tournament.getNextComparison();
     this.updateProgress();
-
-    if (this.comparison) {
-      this.loadingL = true;
-      this.loadingR = true;
-
-      const [imageL, imageR] = this.comparison;
-
-      const imageDecoderL = new Image();
-      imageDecoderL.src = imageL.contentLink;
-      imageDecoderL.decode().finally(() => {
-        if (imageL == this.comparison[0]) {
-          this.loadingL = false;
-        }
-      });
-
-      const imageDecoderR = new Image();
-      imageDecoderR.src = imageR.contentLink;
-      imageDecoderR.decode().finally(() => {
-        if (imageR == this.comparison[1]) {
-          this.loadingR = false;
-        }
-      });
-    }
   }
 
   protected getLoadingSrc(image: GalleryImage): SafeStyle {

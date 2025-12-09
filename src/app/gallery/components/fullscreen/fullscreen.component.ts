@@ -2,11 +2,13 @@ import { CommonModule } from '@angular/common';
 import { Component, effect, OnDestroy, OnInit } from '@angular/core';
 import { SafeUrl } from '@angular/platform-browser';
 import { KeyboardShortcutTarget } from 'src/app/shared/classes/keyboard-shortcut-target.interface';
+import { ImageComponent } from 'src/app/shared/components/image/image.component';
 import { ApplicationService } from 'src/app/shared/services/application.service';
 import { KeyboardShortcutService } from 'src/app/shared/services/keyboard-shortcut.service';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 import { GoogleFileUtils } from 'src/app/shared/utils/google-file.utils';
 import { ScreenUtils } from 'src/app/shared/utils/screen.utils';
+import { GalleryGroup } from '../../models/gallery-group.class';
 import { GalleryImage } from '../../models/gallery-image.class';
 import { FilterService } from '../../services/filter.service';
 import { GalleryGoogleDriveService } from '../../services/gallery-google-drive.service';
@@ -16,7 +18,7 @@ import { TagService } from '../../services/tag.service';
 
 @Component({
   selector: 'app-fullscreen',
-  imports: [CommonModule],
+  imports: [CommonModule, ImageComponent],
   templateUrl: './fullscreen.component.html',
   styleUrls: ['./fullscreen.component.scss']
 })
@@ -28,6 +30,9 @@ export class FullscreenComponent implements KeyboardShortcutTarget, OnInit, OnDe
   protected loadingC: boolean = true;
   protected video: boolean = false;
   protected flip: boolean = false;
+
+  protected currentGroup: GalleryGroup;
+  protected groupTracker = 0;
 
   constructor(
     // private sanitizer: DomSanitizer,
@@ -51,6 +56,11 @@ export class FullscreenComponent implements KeyboardShortcutTarget, OnInit, OnDe
         }
 
         this.keyboardShortcutService.requestFocus(this);
+
+        if (this.currentGroup != target.group) {
+          this.currentGroup = target.group;
+          this.groupTracker++;
+        }
 
         // used in <video> display method
         // if (GoogleFileUtils.isVideo(image) && !this.applicationService.reduceBandwidth && !image.contentLink) {

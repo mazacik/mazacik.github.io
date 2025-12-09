@@ -1,6 +1,5 @@
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot, Routes } from '@angular/router';
-import { ImageComparisonComponent } from './gallery/dialogs/image-comparison/image-comparison.component';
 import { FolderPickerComponent } from './gallery/folder-picker/folder-picker.component';
 import { GalleryComponent } from './gallery/gallery.component';
 import { LandingComponent } from './landing/landing.component';
@@ -11,13 +10,10 @@ import { DialogService } from './shared/services/dialog.service';
 import { StoryManagerComponent } from './story-manager/story-manager.component';
 
 const activeAppGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
-  console.log('activeAppGuard');
   return sessionStorage.getItem(AppConstants.KEY_ACTIVE_APP_ID) ? true : inject(Router).navigate(['']);
 }
 
 const folderGuard: CanActivateFn = async (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
-  console.log('folderGuard');
-
   const router = inject(Router);
 
   if (sessionStorage.getItem(AppConstants.KEY_GOOGLE_DATA_FILE_ID)) {

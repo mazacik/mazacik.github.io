@@ -56,9 +56,10 @@ export class DialogContainerComponent<ResultType, InputsType> implements AfterVi
     this.contentComponentInstance.inputs = this.inputs;
     this.contentComponentInstance.resolve = this.resolve;
 
-    if (contentRef.instance.configuration.waitForContent) {
+    const waitForContent: Promise<void> = contentRef.instance.configuration?.waitForContent;
+    if (waitForContent) {
       this.hidden = true;
-      contentRef.instance.configuration.waitForContent.finally(() => this.hidden = false);
+      waitForContent.finally(() => this.hidden = false);
     } else {
       this.hidden = false;
     }
@@ -83,6 +84,7 @@ export class DialogContainerComponent<ResultType, InputsType> implements AfterVi
 
   protected getTitle(): string {
     const configuration: DialogContainerConfiguration = this.contentComponentInstance.configuration;
+    if (!configuration) return '';
     return typeof configuration.title == 'function' ? configuration.title() : configuration.title;
   }
 

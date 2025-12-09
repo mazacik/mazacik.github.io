@@ -35,42 +35,25 @@
       </div>
     </div>
 
-    <div class="flex-1 stack-container-alt" animate.enter="anim-fade-in" animate.leave="anim-fade-out">
+    <div class="flex-1 stack-container">
       @if (target.group) {
-        <div class="group-container" animate.enter="anim-fade-in" animate.leave="anim-fade-out">
-          <div class="another-container stack-container">
-            <div class="image-container stack-container">
-              @for (image of [target]; track image.id) {
-                @if (!loadingT) {
-                  <img [src]="getSrc(image)" [class.flip-h]="flip" (click)="onImageClick(image)" animate.enter="anim-fade-in" animate.leave="anim-fade-out" />
+        <div class="group-container">
+          <app-image [src]="target.contentLink" [placeholderSrc]="target.thumbnailLink" (click)="onImageClick(target)"></app-image>
+          <div class="group-images-container stack-container-alt height-auto justify-content-center">
+            @for (group of [target.group]; track groupTracker) {
+              <div class="group-images-scroll-container" animate.enter="anim-fade-in" animate.leave="anim-fade-out">
+                @for (groupImage of group.images; track groupImage.id) {
+                  <div class="group-image-container" (click)="stateService.fullscreenImage.set(groupImage)">
+                    <app-image [src]="groupImage.thumbnailLink" [class.grayscale]="!groupImage.passesFilters" [style.width.px]="120 * groupImage.aspectRatio"></app-image>
+                    <div class="target-border" [class.target]="groupImage == target"></div>
+                  </div>
                 }
-              }
-            </div>
-          </div>
-          <div class="stack-container height-auto justify-content-center">
-            <div class="group-images-container" animate.enter="anim-fade-in" animate.leave="anim-fade-out">
-              @for (groupImage of target.group.images; track groupImage.id) {
-                <div class="group-image-container loading" (click)="stateService.fullscreenImage.set(groupImage)" #groupImageContainer>
-                  <img
-                    [class.grayscale]="!groupImage.passesFilters"
-                    [style.width.px]="120 * groupImage.aspectRatio"
-                    [src]="groupImage.thumbnailLink"
-                    #groupImageElement
-                    (load)="groupImageContainer.classList.toggle('loading')" />
-                  <div class="target-border" [class.target]="groupImage == target"></div>
-                </div>
-              }
-            </div>
+              </div>
+            }
           </div>
         </div>
       } @else {
-        @for (image of [target]; track image.id) {
-          @if (!loadingT) {
-            <div class="no-group-container" animate.enter="anim-fade-in" animate.leave="anim-fade-out">
-              <img class="no-group-image-container" [src]="getSrc(image)" [class.flip-h]="flip" (click)="onImageClick(image)" />
-            </div>
-          }
-        }
+        <app-image class="margins-1-v" [src]="target.contentLink" [placeholderSrc]="target.thumbnailLink" (click)="onImageClick(target)"></app-image>
       }
     </div>
 
