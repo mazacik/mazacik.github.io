@@ -2,13 +2,15 @@ import { Injectable, Signal, signal, WritableSignal } from "@angular/core";
 import { AppConstants } from "../constants/app.constants";
 
 export type HeaderClasses = string | string[] | Set<string> | { [key: string]: boolean | number | string };
+export type HeaderSection = 'start' | 'middle' | 'end';
 
 export interface HeaderAction {
   id: string;
   classes: HeaderClasses | (() => HeaderClasses);
-  tooltip?: string;
+  tooltip?: string | (() => string);
   onClick?: () => void;
   containerClasses?: HeaderClasses | (() => HeaderClasses);
+  disabled?: boolean | (() => boolean);
   hidden?: boolean | (() => boolean);
 }
 
@@ -54,8 +56,8 @@ export interface ApplicationSettingsState {
 })
 export class ApplicationService {
 
-  private persistentHeader: HeaderConfig = this.createEmptyHeader();
-  private pageHeader: HeaderConfig = this.createEmptyHeader();
+  private readonly headerSections: HeaderSection[] = ['start', 'middle', 'end'];
+  private headerState: HeaderConfig = this.createEmptyHeader();
   private readonly headerCollector: WritableSignal<HeaderConfig> = signal(this.createEmptyHeader());
   public readonly header: Signal<HeaderConfig> = this.headerCollector.asReadonly();
 
@@ -109,19 +111,44 @@ export class ApplicationService {
     this.setAppSettings({ reduceDataUsage });
   }
 
-  public setPersistentHeader(config: HeaderConfig): void {
-    this.persistentHeader = this.cloneHeader(config);
+  public addHeaderButton(section: HeaderSection, action: HeaderAction, position: 'first' | 'last' = 'last'): void {
+    this.addHeaderButtons(section, [action], position);
+  }
+
+  public addHeaderButtons(section: HeaderSection, actions: HeaderAction[], position: 'first' | 'last' = 'last'): void {
+    const existing = this.headerState[section] ?? [];
+    const filteredExisting = existing.filter(action => !actions.some(newAction => newAction.id === action.id));
+
+    if (position === 'first') {
+      this.headerState[section] = [...actions, ...filteredExisting];
+    } else {
+      this.headerState[section] = [...filteredExisting, ...actions];
+    }
+
     this.updateHeader();
   }
 
-  public setPageHeader(config: HeaderConfig): void {
-    this.pageHeader = this.cloneHeader(config);
-    this.updateHeader();
+  public removeHeaderButton(section: HeaderSection, id: string): void {
+    this.removeHeaderButtons(section, [id]);
   }
 
-  public clearPageHeader(): void {
-    this.pageHeader = this.createEmptyHeader();
-    this.updateHeader();
+  public removeHeaderButtons(section: HeaderSection, ids: string[]): void {
+    const sections: HeaderSection[] = section ? [section] : this.headerSections;
+    let headerChanged: boolean = false;
+
+    sections.forEach(currentSection => {
+      const existing = this.headerState[currentSection] ?? [];
+      const filtered = existing.filter(action => !ids.includes(action.id));
+
+      if (filtered.length !== existing.length) {
+        this.headerState[currentSection] = filtered;
+        headerChanged = true;
+      }
+    });
+
+    if (headerChanged) {
+      this.updateHeader();
+    }
   }
 
   public registerModuleSettings(provider: ModuleSettingsProvider): void {
@@ -151,18 +178,10 @@ export class ApplicationService {
 
   private updateHeader(): void {
     this.headerCollector.set({
-      start: [...(this.persistentHeader.start ?? []), ...(this.pageHeader.start ?? [])],
-      center: [...(this.persistentHeader.center ?? []), ...(this.pageHeader.center ?? [])],
-      end: [...(this.pageHeader.end ?? []), ...(this.persistentHeader.end ?? [])]
+      start: [...(this.headerState.start ?? [])],
+      center: [...(this.headerState.center ?? [])],
+      end: [...(this.headerState.end ?? [])]
     });
-  }
-
-  private cloneHeader(config: HeaderConfig): HeaderConfig {
-    return {
-      start: [...(config.start ?? [])],
-      center: [...(config.center ?? [])],
-      end: [...(config.end ?? [])]
-    };
   }
 
   private createEmptyHeader(): HeaderConfig {

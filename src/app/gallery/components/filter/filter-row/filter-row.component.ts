@@ -6,11 +6,10 @@ import { GallerySerializationService } from 'src/app/gallery/services/gallery-se
 import { GalleryStateService } from 'src/app/gallery/services/gallery-state.service';
 import { GalleryService } from 'src/app/gallery/services/gallery.service';
 import { TagService } from 'src/app/gallery/services/tag.service';
-import { VariableDirective } from 'src/app/shared/directives/variable.directive';
 
 @Component({
     selector: 'app-filter-row',
-    imports: [CommonModule, VariableDirective],
+    imports: [CommonModule],
     templateUrl: './filter-row.component.html',
     styleUrls: ['./filter-row.component.scss']
 })

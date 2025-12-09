@@ -39,8 +39,7 @@
             contain: size;
 
             opacity: 0;
-            transition-property: opacity, margin;
-            transition-duration: variables.$transition-duration;
+            transition: opacity variables.$transition-duration ease;
           }
         }
 

@@ -1,16 +1,16 @@
 <div class="dialog-container" [style.top.px]="top" [style.left.px]="left" [class.border-warning]="borderWarning">
-  @if (contentComponentInstance) {
-    @if (!contentComponentInstance.configuration.hideClickOverlay) {
+  @if (contentComponentInstance?.configuration; as configuration) {
+    @if (!configuration.hideClickOverlay) {
       <div class="overlay-effect" #overlay (click)="overlayClick()"></div>
     }
-    @if (contentComponentInstance.configuration.title || contentComponentInstance.configuration.headerButtons) {
+    @if (configuration.title || configuration.headerButtons) {
       <div #header class="header" (mousedown)="onHeaderMouseDown($event, header)">
-        @if (contentComponentInstance.configuration.title) {
+        @if (configuration.title) {
           <span class="header-title">{{ getTitle() }}</span>
         }
-        @if (contentComponentInstance.configuration.headerButtons) {
+        @if (configuration.headerButtons) {
           <div class="flex gap">
-            @for (button of contentComponentInstance.configuration.headerButtons; track $index) {
+            @for (button of configuration.headerButtons; track $index) {
               @if (!isHidden(button)) {
                 @if (button.iconClass) {
                   <i [class]="'icon-button ' + getButtonIconClass(button)" [class.disabled]="isDisabled(button)" (click)="button.click && button.click()"></i>
@@ -30,9 +30,9 @@
       <ng-container #content></ng-container>
     </div>
   }
-  @if (contentComponentInstance?.configuration.footerButtons) {
+  @if (contentComponentInstance?.configuration; as configuration) {
     <div class="buttons">
-      @for (button of contentComponentInstance.configuration.footerButtons; track $index) {
+      @for (button of configuration.footerButtons; track $index) {
         @if (!isHidden(button)) {
           @if (button.iconClass) {
             <i [class]="'icon-button ' + getButtonIconClass(button)" [class.disabled]="isDisabled(button)" (click)="button.click && button.click()"></i>

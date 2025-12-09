@@ -1,8 +1,8 @@
 <div class="header-start">
   @for (action of headerConfig().start; track trackById($index, action)) {
     @if (!isHidden(action)) {
-      <div [ngClass]="resolveClasses(action.containerClasses)">
-        <i class="icon-button" [ngClass]="resolveClasses(action.classes)" [attr.tp]="action.tooltip" (click)="action.onClick?.()"></i>
+      <div [ngClass]="resolveClasses(action.containerClasses)" [title]="getTooltip(action)">
+        <i class="icon-button" [ngClass]="resolveClasses(action.classes)" [class.disabled]="isDisabled(action)" (click)="onClick(action)"></i>
       </div>
     }
   }
@@ -10,8 +10,8 @@
 <div class="header-center">
   @for (action of headerConfig().center; track trackById($index, action)) {
     @if (!isHidden(action)) {
-      <div [ngClass]="resolveClasses(action.containerClasses)">
-        <i class="icon-button" [ngClass]="resolveClasses(action.classes)" [attr.tp]="action.tooltip" (click)="action.onClick?.()"></i>
+      <div [ngClass]="resolveClasses(action.containerClasses)" [title]="getTooltip(action)">
+        <i class="icon-button" [ngClass]="resolveClasses(action.classes)" [class.disabled]="isDisabled(action)" (click)="onClick(action)"></i>
       </div>
     }
   }
@@ -19,8 +19,8 @@
 <div class="header-end">
   @for (action of headerConfig().end; track trackById($index, action)) {
     @if (!isHidden(action)) {
-      <div [ngClass]="resolveClasses(action.containerClasses)">
-        <i class="icon-button" [ngClass]="resolveClasses(action.classes)" [attr.tp]="action.tooltip" (click)="action.onClick?.()"></i>
+      <div [ngClass]="resolveClasses(action.containerClasses)" [title]="getTooltip(action)">
+        <i class="icon-button" [ngClass]="resolveClasses(action.classes)" [class.disabled]="isDisabled(action)" (click)="onClick(action)"></i>
       </div>
     }
   }

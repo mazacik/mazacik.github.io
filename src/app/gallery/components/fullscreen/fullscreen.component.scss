@@ -35,117 +35,65 @@
     position: relative;
   }
 
-  .non-group-container {
-    overflow: auto;
+  .no-group-container {
+    display: flex;
+    justify-content: center;
+    margin: variables.$gap-1 0;
 
-    @media screen and (max-width:1280px) {
-      position: absolute;
-      top: 0;
-      left: variables.$gap-1;
-      right: variables.$gap-1;
-      width: calc(100% - variables.$gap-2);
-      z-index: -1;
-    }
-
-    .image-container {
-      padding: variables.$gap-1 0;
+    img {
+      outline: none;
+      object-fit: contain;
+      user-select: none;
+      max-width: 100%;
+      max-height: 100%;
     }
   }
 
-  .has-group-container {
+  .group-container {
     display: flex;
     flex-direction: column;
-    overflow: auto;
     gap: variables.$gap-1;
     padding: variables.$gap-1 0;
     justify-content: flex-end;
 
-    .another-container {
+    .group-images-container {
+      height: 120px;
+      display: grid;
       overflow: auto;
 
-      @media screen and (max-width:1280px) {
-        position: absolute;
-        top: 0;
-        left: variables.$gap-1;
-        right: variables.$gap-1;
-        width: calc(100% - variables.$gap-2);
-        z-index: -1;
-      }
-    }
+      .group-images-scroll-container {
+        display: grid;
+        grid-auto-flow: column dense;
+        grid-gap: variables.$gap-1;
+        justify-self: center;
 
-    .group-images-container {
-      display: flex;
-      flex-direction: row;
-      overflow-y: hidden;
-      padding: 0;
-      gap: variables.$gap-1;
+        .group-image-container {
+          display: flex;
+          position: relative;
+          border-radius: variables.$gap-1;
+          cursor: pointer;
 
-      .group-image-container {
-        height: 120px;
-        position: relative;
-        border-radius: 4px;
-        cursor: pointer;
-
-        transition-property: background-color;
-        transition-duration: variables.$transition-duration;
-        background-color: transparent;
-
-        &.loading {
-          background-color: var(--color-surface-200);
-
-          img {
-            opacity: 0;
-          }
-        }
-
-        img {
-          height: 120px;
-          border-radius: inherit;
-          transition-property: opacity;
-          transition-duration: variables.$transition-duration;
-
-          &.grayscale {
+          app-image.grayscale {
             opacity: 0.5 !important;
             filter: grayscale(1);
           }
-        }
 
-        .target-border {
-          position: absolute;
-          top: 0;
-          right: 0;
-          bottom: 0;
-          left: 0;
-          border-radius: inherit;
-          pointer-events: none;
+          .target-border {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            border-radius: inherit;
+            pointer-events: none;
 
-          &.target {
-            box-sizing: border-box;
-            border: 2px solid var(--color-positive);
+            &.target {
+              box-sizing: border-box;
+              border: 2px solid var(--color-positive);
+            }
           }
         }
       }
-    }
-  }
-
-  .image-container {
-    display: flex;
-    justify-content: center;
-    overflow: auto;
-    box-sizing: border-box;
-
-    img {
-      height: 100%;
-      overflow: auto;
-      object-fit: contain;
-
-      outline: none;
-      user-select: none;
-
-      transition-property: opacity;
-      transition-duration: variables.$transition-duration;
-
-      opacity: 0;
     }
   }
 

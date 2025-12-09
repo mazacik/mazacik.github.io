@@ -1,26 +1,25 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostBinding } from '@angular/core';
+import { Component } from '@angular/core';
 import { ScreenUtils } from 'src/app/shared/utils/screen.utils';
 import { Filter } from '../../models/filter.interface';
 import { FilterService } from '../../services/filter.service';
-import { GalleryStateService } from '../../services/gallery-state.service';
 import { GallerySerializationService } from '../../services/gallery-serialization.service';
+import { GalleryStateService } from '../../services/gallery-state.service';
 import { TagService } from '../../services/tag.service';
 import { FilterRowComponent } from './filter-row/filter-row.component';
 
 @Component({
-    selector: 'app-filter',
-    imports: [CommonModule, FilterRowComponent],
-    templateUrl: './filter.component.html',
-    styleUrls: ['./filter.component.scss']
+  selector: 'app-filter',
+  imports: [CommonModule, FilterRowComponent],
+  templateUrl: './filter.component.html',
+  styleUrls: ['./filter.component.scss'],
+  host: {
+    '[class.hidden]': '!stateService.filterVisible'
+  }
 })
 export class FilterComponent {
-  protected ScreenUtils = ScreenUtils;
 
-  @HostBinding('class.visible')
-  public get classVisible(): boolean {
-    return this.stateService.filterVisible;
-  }
+  protected ScreenUtils = ScreenUtils;
 
   constructor(
     private serializationService: GallerySerializationService,

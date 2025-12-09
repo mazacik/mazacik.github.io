@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, ElementRef, effect } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, effect } from '@angular/core';
 import { GalleryImage } from 'src/app/gallery/models/gallery-image.class';
 import { Delay } from 'src/app/shared/classes/delay.class';
 import { CreateDirective } from 'src/app/shared/directives/create.directive';
@@ -10,6 +10,7 @@ import { FilterService } from '../../services/filter.service';
 import { GalleryStateService } from '../../services/gallery-state.service';
 import { GalleryService } from '../../services/gallery.service';
 import { TagService } from '../../services/tag.service';
+import { ApplicationService } from 'src/app/shared/services/application.service';
 
 @Component({
   selector: 'app-masonry',
@@ -20,7 +21,7 @@ import { TagService } from '../../services/tag.service';
   templateUrl: './masonry.component.html',
   styleUrls: ['./masonry.component.scss']
 })
-export class MasonryComponent {
+export class MasonryComponent implements OnInit, OnDestroy {
 
   protected masonryBricks: { [key: string]: HTMLImageElement } = {};
   protected masonryContainer: HTMLElement;
@@ -29,6 +30,7 @@ export class MasonryComponent {
   constructor(
     elementRef: ElementRef,
     private cdr: ChangeDetectorRef,
+    private applicationService: ApplicationService,
     protected tagService: TagService,
     protected filterService: FilterService,
     protected stateService: GalleryStateService,
@@ -41,6 +43,28 @@ export class MasonryComponent {
         this.requestLayoutUpdate();
       }
     }).observe(elementRef.nativeElement);
+  }
+
+  ngOnInit(): void {
+    this.applicationService.addHeaderButtons('start', [{
+      id: 'toggle-filter',
+      tooltip: 'Open Filter Configuration',
+      classes: ['fa-solid', 'fa-filter'],
+      containerClasses: () => ({
+        'drawer-container': true,
+        'drawer-hidden': !this.stateService.filterVisible
+      }),
+      onClick: () => this.stateService.filterVisible = !this.stateService.filterVisible
+    }, {
+      id: 'create-group',
+      tooltip: 'Create Image Group',
+      classes: ['fa-solid', 'fa-folder-plus'],
+      onClick: () => this.galleryService.openImageGroupEditor()
+    }]);
+  }
+
+  ngOnDestroy(): void {
+    this.applicationService.removeHeaderButtons('start', ['toggle-filter', 'create-group']);
   }
 
   private layoutUpdateDelay: Delay = new Delay(100);

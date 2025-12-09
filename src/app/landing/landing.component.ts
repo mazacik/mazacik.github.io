@@ -21,9 +21,6 @@ export class LandingComponent {
     id: 'gallery',
     label: 'Gallery'
   }, {
-    id: 'comparison',
-    label: 'Comparison'
-  }, {
     id: 'story-manager',
     label: 'Story Manager'
   }];

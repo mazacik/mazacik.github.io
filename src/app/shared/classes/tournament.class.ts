@@ -10,17 +10,25 @@ export class Tournament {
 
   // TODO performance improvement: consider bitset-based sets to reduce memory/GC pressure
 
-  private images: GalleryImage[] = [];
+  private images: GalleryImage[];
+  private imagesToCompare: GalleryImage[];
   private graph = new Map<GalleryImage, Set<GalleryImage>>();
-  private availableComparisons: [GalleryImage, GalleryImage][] = [];
-  private availableKeyToIndex = new Map<string, number>();
+  private availableComparisons: [GalleryImage, GalleryImage][];
+  private availableKeyToIndex: Map<string, number>;
 
-  public comparisons: [GalleryImage, GalleryImage][] = [];
+  public comparisons: [GalleryImage, GalleryImage][];
   private availableComparisonsCount: number | null = null;
 
-  public start(images: GalleryImage[], state: TournamentState): void {
-    this.images = images;
-    ArrayUtils.shuffle(this.images);
+  public start(images: GalleryImage[], imagesToCompare: GalleryImage[], state: TournamentState): void {
+    this.comparisons = [];
+    this.availableComparisons = [];
+    this.availableKeyToIndex = new Map<string, number>();
+    this.availableComparisonsCount = null;
+    this.graph = new Map<GalleryImage, Set<GalleryImage>>();
+
+    this.images = images ?? [];
+    this.imagesToCompare = imagesToCompare ?? [];
+    ArrayUtils.shuffle(this.imagesToCompare);
 
     const imageMap: { [id: string]: GalleryImage } = {};
     for (const image of this.images) {
@@ -112,17 +120,18 @@ export class Tournament {
 
   public getRanking(): GalleryImage[] {
     const indegree = new Map<GalleryImage, number>();
-    this.images.forEach(image => indegree.set(image, 0));
+    this.imagesToCompare.forEach(image => indegree.set(image, 0));
 
     // Count incoming edges
     for (const [, losers] of this.graph.entries()) {
       for (const loser of losers) {
-        indegree.set(loser, (indegree.get(loser)) + 1);
+        if (!indegree.has(loser)) continue;
+        indegree.set(loser, (indegree.get(loser) ?? 0) + 1);
       }
     }
 
     // Kahn's algorithm
-    const queue: GalleryImage[] = this.images.filter(image => (indegree.get(image) ?? 0) === 0);
+    const queue: GalleryImage[] = this.imagesToCompare.filter(image => (indegree.get(image) ?? 0) === 0);
     const order: GalleryImage[] = [];
 
     while (queue.length) {
@@ -165,15 +174,15 @@ export class Tournament {
     this.availableComparisons = [];
     this.availableKeyToIndex = new Map<string, number>();
 
-    const queue = this.images;
-
-    for (let i = 0; i < queue.length; i++) {
-      for (let j = i + 1; j < queue.length; j++) {
-        const a = queue[i];
-        const b = queue[j];
+    for (let i = 0; i < this.imagesToCompare.length; i++) {
+      for (let j = i + 1; j < this.imagesToCompare.length; j++) {
+        const a = this.imagesToCompare[i];
+        const b = this.imagesToCompare[j];
         if (!this.hasPath(a, b) && !this.hasPath(b, a)) this.addAvailablePair(a, b);
       }
     }
+
+    console.log(this.availableComparisons);
 
     this.availableComparisonsCount = this.availableComparisons.length;
   }
