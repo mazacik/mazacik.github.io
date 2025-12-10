@@ -37,7 +37,7 @@
 
     <div class="flex-1 stack-container">
       @if (target.group) {
-        <div class="group-container">
+        <div class="group-container" animate.enter="anim-fade-in" animate.leave="anim-fade-out">
           <app-image [src]="target.contentLink" [placeholderSrc]="target.thumbnailLink" (click)="onImageClick(target)"></app-image>
           <div class="group-images-container stack-container-alt height-auto justify-content-center">
             @for (group of [target.group]; track groupTracker) {
@@ -53,7 +53,13 @@
           </div>
         </div>
       } @else {
-        <app-image class="margins-1-v" [src]="target.contentLink" [placeholderSrc]="target.thumbnailLink" (click)="onImageClick(target)"></app-image>
+        <app-image
+          class="margins-1-v"
+          [src]="target.contentLink"
+          [placeholderSrc]="target.thumbnailLink"
+          (click)="onImageClick(target)"
+          animate.enter="anim-fade-in"
+          animate.leave="anim-fade-out"></app-image>
       }
     </div>
 
