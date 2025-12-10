@@ -3,6 +3,8 @@ import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot } fr
 import { AuthenticationService } from "../shared/services/authentication.serivce";
 
 export const authGuard: CanActivateFn = async (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+  const router = inject(Router);
+
   console.log('guard: start');
 
   const authenticationService: AuthenticationService = inject(AuthenticationService);
@@ -25,5 +27,5 @@ export const authGuard: CanActivateFn = async (route: ActivatedRouteSnapshot, st
   }
 
   console.log('guard: return false');
-  return inject(Router).navigate(['login']);
+  return router.navigate(['login']);
 }
