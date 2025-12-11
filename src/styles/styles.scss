@@ -813,15 +813,18 @@ span.icon-button {
 }
 
 .anim-drawer {
-  color: red;
-  transition: height variables.$transition-duration ease;
-
-  @starting-style {
-    height: 0 !important;
-  }
+  // display: grid;
+  // grid-template-rows: 0fr; // collapse first row
+  // overflow: hidden;
+  // transition: grid-template-rows variables.$transition-duration ease,
+  // grid-auto-rows variables.$transition-duration ease;
 
   &.open {
-    color: green;
-    height: auto;
+    // grid-template-rows: 1fr;
+    // grid-auto-rows: 1fr;
+  }
+
+  &:not(.open) {
+    height: 0;
   }
 }
