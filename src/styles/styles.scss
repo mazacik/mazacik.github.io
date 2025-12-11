@@ -799,7 +799,7 @@ span.icon-button {
 }
 
 .anim-fade-in {
-  transition: opacity variables.$transition-duration ease !important;
+  transition: opacity variables.$transition-duration ease;
 
   @starting-style {
     opacity: 0 !important;
@@ -809,12 +809,12 @@ span.icon-button {
 .anim-fade-out {
   opacity: 0 !important;
   pointer-events: none !important;
-  transition: opacity variables.$transition-duration ease !important;
+  transition: opacity variables.$transition-duration ease;
 }
 
 .anim-drawer {
   color: red;
-  transition: height variables.$transition-duration ease !important;
+  transition: height variables.$transition-duration ease;
 
   @starting-style {
     height: 0 !important;
