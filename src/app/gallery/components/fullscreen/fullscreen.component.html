@@ -1,7 +1,7 @@
 @if (stateService.fullscreenImage(); as target) {
   <img style="display: none" [src]="target.thumbnailLink" (load)="loadingT = false" />
   <img style="display: none" [src]="target.contentLink" (load)="loadingC = false" />
-  <div class="fullscreen-container">
+  <div class="fullscreen-container anim-fade-in" animate.leave="anim-fade-out">
     <div class="sidebar-left">
       <div class="sidebar-start">
         <i class="icon-button fa-solid fa-arrow-left" title="Back" tpPlacement="right" (click)="stateService.fullscreenImage.set(null)"></i>
@@ -37,11 +37,11 @@
 
     <div class="flex-1 stack-container">
       @if (target.group) {
-        <div class="group-container" animate.enter="anim-fade-in" animate.leave="anim-fade-out">
+        <div class="group-container anim-fade-in" animate.leave="anim-fade-out">
           <app-image [src]="target.contentLink" [placeholderSrc]="target.thumbnailLink" (click)="onImageClick(target)"></app-image>
           <div class="group-images-container stack-container-alt height-auto justify-content-center">
             @for (group of [target.group]; track groupTracker) {
-              <div class="group-images-scroll-container" animate.enter="anim-fade-in" animate.leave="anim-fade-out">
+              <div class="group-images-scroll-container anim-fade-in" animate.leave="anim-fade-out">
                 @for (groupImage of group.images; track groupImage.id) {
                   <div class="group-image-container" (click)="stateService.fullscreenImage.set(groupImage)">
                     <app-image [src]="groupImage.thumbnailLink" [class.grayscale]="!groupImage.passesFilters" [style.width.px]="120 * groupImage.aspectRatio"></app-image>
@@ -53,13 +53,7 @@
           </div>
         </div>
       } @else {
-        <app-image
-          class="margins-1-v"
-          [src]="target.contentLink"
-          [placeholderSrc]="target.thumbnailLink"
-          (click)="onImageClick(target)"
-          animate.enter="anim-fade-in"
-          animate.leave="anim-fade-out"></app-image>
+        <app-image class="margins-1-v anim-fade-in" [src]="target.contentLink" [placeholderSrc]="target.thumbnailLink" (click)="onImageClick(target)" animate.leave="anim-fade-out"></app-image>
       }
     </div>
 

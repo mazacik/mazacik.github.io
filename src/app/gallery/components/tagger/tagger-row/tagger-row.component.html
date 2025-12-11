@@ -31,7 +31,7 @@
     </div>
   </div>
   @if (tag.group) {
-    <div class="flex column overflow-hidden drawer" [class.open]="tag.open">
+    <div class="flex column overflow-hidden anim-drawer" [class.open]="tag.open">
       @for (child of getTagGroups(); track child.id) {
         <app-tagger-row [tag]="child" [target]="target" [groupMode]="groupMode"></app-tagger-row>
       }
