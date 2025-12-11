@@ -10,6 +10,7 @@ import { FilterService } from './services/filter.service';
 import { GalleryGoogleDriveService } from './services/gallery-google-drive.service';
 import { GallerySerializationService } from './services/gallery-serialization.service';
 import { GalleryStateService } from './services/gallery-state.service';
+import { ScreenUtils } from '../shared/utils/screen.utils';
 
 @Component({
   selector: 'app-gallery',
@@ -58,7 +59,8 @@ export class GalleryComponent implements OnInit, OnDestroy {
       id: 'google-drive',
       tooltip: 'Google Drive',
       classes: ['fa-brands', 'fa-google-drive'],
-      onClick: () => this.googleService.openFolderById(this.stateService.dataFolderId)
+      onClick: () => this.googleService.openFolderById(this.stateService.dataFolderId),
+      hidden: () => !ScreenUtils.isLargeScreen()
     }], 'first');
   }
 

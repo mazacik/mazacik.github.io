@@ -1,6 +1,6 @@
 <div class="loading-overlay-bar" [style.backgroundColor]="getLoadingBarColor()"></div>
 @if (applicationService.loading()) {
-  <div class="loading-overlay-container" animate.enter="anim-fade-in" animate.leave="anim-fade-out">
+  <div class="loading-overlay-container anim-fade-in" animate.leave="anim-fade-out">
     <span class="loading-spinner"></span>
   </div>
 }

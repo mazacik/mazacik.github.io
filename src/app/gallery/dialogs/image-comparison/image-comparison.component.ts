@@ -8,6 +8,7 @@ import { ApplicationService } from 'src/app/shared/services/application.service'
 import { GoogleFileUtils } from 'src/app/shared/utils/google-file.utils';
 import { GallerySerializationService } from '../../services/gallery-serialization.service';
 import { GalleryStateService } from '../../services/gallery-state.service';
+import { DialogService } from 'src/app/shared/services/dialog.service';
 
 @Component({
   selector: 'app-image-comparison',
@@ -29,7 +30,8 @@ export class ImageComparisonComponent implements OnInit, OnDestroy {
     private sanitizer: DomSanitizer,
     private applicationService: ApplicationService,
     private serializationService: GallerySerializationService,
-    private stateService: GalleryStateService
+    private stateService: GalleryStateService,
+    private dialogService: DialogService
   ) { }
 
   ngOnInit(): void {
@@ -38,7 +40,7 @@ export class ImageComparisonComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.applicationService.removeHeaderButtons('start', ['comparison-close', 'comparison-reset', 'comparison-undo', 'comparison-progress-bar']);
+    this.applicationService.removeHeaderButtons('start', ['comparison-close', 'comparison-reset', 'comparison-undo', 'comparison-skip', 'comparison-progress-bar']);
   }
 
   private configureHeader(): void {
@@ -51,7 +53,13 @@ export class ImageComparisonComponent implements OnInit, OnDestroy {
       id: 'comparison-reset',
       tooltip: 'Reset Comparison',
       classes: ['fa-solid', 'fa-rotate-left'],
-      onClick: () => this.reset(),
+      onClick: () => {
+        this.dialogService.createConfirmation({ title: 'Reset Comparison', messages: ['Are you sure?'] }).then(success => {
+          if (success) {
+            this.reset();
+          }
+        });
+      },
       disabled: () => !this.tournament || this.tournament.comparisons.length == 0
     }, {
       id: 'comparison-undo',
@@ -60,9 +68,14 @@ export class ImageComparisonComponent implements OnInit, OnDestroy {
       onClick: () => this.undo(),
       disabled: () => !this.tournament || this.tournament.comparisons.length == 0
     }, {
+      id: 'comparison-skip',
+      tooltip: 'Skip Comparison',
+      classes: ['fa-solid', 'fa-forward'],
+      onClick: () => this.comparison = this.tournament.getNextComparison()
+    }, {
       id: 'comparison-progress-bar',
       tooltip: 'Toggle Comparison Progress Bar',
-      classes: ['fa-solid', 'fa-solid fa-list-check'],
+      classes: ['fa-solid', 'fa-list-check'],
       onClick: () => this.progressBarVisible = !this.progressBarVisible
     }]);
   }

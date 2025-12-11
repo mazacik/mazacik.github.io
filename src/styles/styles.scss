@@ -811,3 +811,17 @@ span.icon-button {
   pointer-events: none !important;
   transition: opacity variables.$transition-duration ease !important;
 }
+
+.anim-drawer {
+  color: red;
+  transition: height variables.$transition-duration ease !important;
+
+  @starting-style {
+    height: 0 !important;
+  }
+
+  &.open {
+    color: green;
+    height: auto;
+  }
+}
