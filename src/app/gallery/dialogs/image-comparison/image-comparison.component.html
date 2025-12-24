@@ -18,7 +18,7 @@
     <div class="progress-bar">
       @if (comparison) {
         <div class="progress-bar-fill" [style.width.%]="estimateProgressPercent"></div>
-        <div class="progress-bar-label">{{ completeComparisons }}/~{{ estimateTotalComparisons }} ({{ estimateProgressPercent | number: '1.0-0' }}%)</div>
+        <div class="progress-bar-label">{{ completeComparisons }}/~{{ estimateTotalComparisons }}/{{ totalComparisons }} ({{ estimateProgressPercent | number: '1.0-0' }}%)</div>
       } @else {
         <div class="progress-bar-fill" [style.width.%]="100"></div>
         <div class="progress-bar-label">{{ completeComparisons }}/{{ completeComparisons }} ({{ 100 | number: '1.0-0' }}%)</div>
