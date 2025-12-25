@@ -5,6 +5,7 @@
   flex-direction: column;
   gap: variables.$gap-1;
   padding: variables.$gap-1;
+  flex: 1;
 
   .button {
     width: 100%;
