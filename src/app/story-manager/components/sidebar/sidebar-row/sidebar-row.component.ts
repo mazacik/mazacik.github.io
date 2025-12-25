@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 import { Article } from 'src/app/story-manager/models/article.class';
@@ -7,15 +7,15 @@ import { StoryManagerGoogleDriveService } from 'src/app/story-manager/services/s
 import { StoryManagerStateService } from 'src/app/story-manager/services/story-manager-state.service';
 
 @Component({
-    selector: 'app-sidebar-row',
-    imports: [
-        CommonModule,
-        FormsModule
-    ],
-    templateUrl: './sidebar-row.component.html',
-    styleUrls: ['./sidebar-row.component.scss']
+  selector: 'app-sidebar-row',
+  imports: [
+    CommonModule,
+    FormsModule
+  ],
+  templateUrl: './sidebar-row.component.html',
+  styleUrls: ['./sidebar-row.component.scss']
 })
-export class SidebarRowComponent implements OnInit {
+export class SidebarRowComponent {
 
   @Input() article: Article;
 
@@ -24,17 +24,17 @@ export class SidebarRowComponent implements OnInit {
     protected stateService: StoryManagerStateService
   ) { }
 
-  ngOnInit(): void {
-
+  protected isCurrent(): boolean {
+    return this.article.collectChildren().concat(this.article).some(a => a == this.stateService.current);
   }
 
-  protected isHighlight(): boolean {
-    return this.article.collectChildren().concat(this.article).some(a => a == this.stateService.current);
+  protected isSearchResult(): boolean {
+    return this.article.collectChildren().concat(this.article).some(a => this.stateService.searchResults.includes(a));
   }
 
   protected onClick(): void {
     if (this.article.folder) {
-      this.stateService.current = this.article.children[0];
+      this.article.open = !this.article.open;
     } else {
       this.stateService.current = this.article;
     }

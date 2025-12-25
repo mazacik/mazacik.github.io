@@ -15,6 +15,8 @@ export class StoryManagerStateService {
   public articles: Article[];
 
   public current: Article;
+  public searchQuery: string;
+  public searchResults: Article[] = [];
 
   constructor(
     private dialogService: DialogService,
@@ -23,6 +25,15 @@ export class StoryManagerStateService {
 
   public getRoot(): Article[] {
     return this.articles?.filter(article => !article.parent);
+  }
+
+  public collectArticles(): Article[] {
+    const articles = [];
+    for (const article of this.articles) {
+      articles.push(article);
+      articles.push(article.collectChildren());
+    }    
+    return articles;
   }
 
   public save(instant: boolean = false): void {

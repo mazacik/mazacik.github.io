@@ -1,11 +1,34 @@
 ﻿@use 'src/styles/variables.scss';
 
 :host {
-  width: 280px;
+  display: flex;
+  user-select: none;
+  overflow: hidden;
+  height: 100%;
+  width: variables.$sidebar-width;
+  min-width: variables.$sidebar-width;
+}
+
+.sidebar-container {
   display: flex;
   flex-direction: column;
-  overflow-x: hidden;
-  overflow-y: auto;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  margin: variables.$gap-1;
+
+  @media screen and (max-width:1280px) {
+    direction: rtl;
+  }
+}
+
+.search-container {
+  margin: 0 variables.$gap-1 variables.$gap-1 variables.$gap-1;
 }
 
 .search-input {
@@ -15,11 +38,21 @@
   font-variant-numeric: tabular-nums;
   user-select: none;
   padding: variables.$gap-2;
+  border-radius: variables.$gap-1;
+  background-color: var(--color-surface-200);
 }
 
-.button-container {
+.items-container {
+  flex: 1;
+}
+
+.buttons-container {
   display: flex;
-  justify-content: center;
-  padding: variables.$gap-1 0;
   gap: variables.$gap-1;
+  margin: 0 variables.$gap-1 variables.$gap-1 variables.$gap-1;
+
+  .button {
+    flex: 1;
+    gap: variables.$gap-1;
+  }
 }
