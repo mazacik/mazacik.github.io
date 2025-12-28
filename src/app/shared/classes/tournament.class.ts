@@ -146,6 +146,25 @@ export class Tournament {
     return order;
   }
 
+  public getNextBestBeatenImages(image: GalleryImage, limit: number = 3): GalleryImage[] {
+    if (!image || limit <= 0) return [];
+
+    const beatenImages = this.graph.get(image);
+    if (!beatenImages || beatenImages.size === 0) return [];
+
+    const ranking = this.getRanking();
+    const startIndex = ranking.indexOf(image);
+    if (startIndex === -1) return [];
+
+    const result: GalleryImage[] = [];
+    for (let i = startIndex + 1; i < ranking.length && result.length < limit; i++) {
+      const candidate = ranking[i];
+      if (beatenImages.has(candidate)) result.push(candidate);
+    }
+
+    return result;
+  }
+
   public undo(): [GalleryImage, GalleryImage] {
     if (ArrayUtils.isEmpty(this.comparisons)) return null;
     const comparison = this.comparisons.pop();

@@ -105,6 +105,11 @@ export class ImageComparisonComponent implements OnInit, OnDestroy {
     return this.sanitizer.bypassSecurityTrustStyle('url(' + image.thumbnailLink + ')');
   }
 
+  protected getNextBestBeatenImages(image: GalleryImage): GalleryImage[] {
+    if (!this.tournament || !image) return [];
+    return this.tournament.getNextBestBeatenImages(image, 5);
+  }
+
   protected undo(): void {
     this.comparison = this.tournament.undo();
     this.updateProgress();

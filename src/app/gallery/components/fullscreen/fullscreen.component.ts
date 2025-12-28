@@ -34,6 +34,8 @@ export class FullscreenComponent implements KeyboardShortcutTarget, OnInit, OnDe
   protected currentGroup: GalleryGroup;
   protected groupTracker = 0;
 
+  protected hideSidebarButtons: boolean = false;
+
   constructor(
     // private sanitizer: DomSanitizer,
     private applicationService: ApplicationService,
@@ -141,6 +143,7 @@ export class FullscreenComponent implements KeyboardShortcutTarget, OnInit, OnDe
   }
 
   protected onImageClick(image: GalleryImage): void {
+    this.hideSidebarButtons = !this.hideSidebarButtons;
     if (this.applicationService.reduceDataUsage) {
       image.thumbnailLink = image.thumbnailLink.replace('=s220', '=s440');
     }
