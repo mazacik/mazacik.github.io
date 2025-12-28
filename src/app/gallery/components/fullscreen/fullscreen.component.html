@@ -1,7 +1,7 @@
 @if (stateService.fullscreenImage(); as target) {
   <img style="display: none" [src]="target.thumbnailLink" (load)="loadingT = false" />
   <img style="display: none" [src]="target.contentLink" (load)="loadingC = false" />
-  <div class="fullscreen-container anim-fade-in" animate.leave="anim-fade-out">
+  <div class="fullscreen-container anim-fade-in" [class.hide-sidebar-buttons]="hideSidebarButtons" animate.leave="anim-fade-out">
     <div class="sidebar-left">
       <div class="sidebar-start">
         <i class="icon-button fa-solid fa-arrow-left" title="Back" tpPlacement="right" (click)="stateService.fullscreenImage.set(null)"></i>
@@ -53,7 +53,7 @@
           </div>
         </div>
       } @else {
-        <app-image class="margins-1-v anim-fade-in" [src]="target.contentLink" [placeholderSrc]="target.thumbnailLink" (click)="onImageClick(target)" animate.leave="anim-fade-out"></app-image>
+        <app-image class="anim-fade-in" [src]="target.contentLink" [placeholderSrc]="target.thumbnailLink" (click)="onImageClick(target)" animate.leave="anim-fade-out"></app-image>
       }
     </div>
 

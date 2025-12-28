@@ -33,6 +33,20 @@
     display: flex;
     justify-content: space-between;
     position: relative;
+
+    &.hide-sidebar-buttons {
+      .sidebar-left {
+        margin-left: -42px;
+      }
+
+      .sidebar-right {
+        margin-right: -42px;
+      }
+
+      .file-information {
+        opacity: 0;
+      }
+    }
   }
 
   .no-group-container {
@@ -53,7 +67,6 @@
     display: flex;
     flex-direction: column;
     gap: variables.$gap-1;
-    padding: variables.$gap-1 0;
     justify-content: flex-end;
 
     .group-images-container {
@@ -100,14 +113,15 @@
 
   .sidebar-left,
   .sidebar-right {
-    width: 42px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: variables.$gap-1;
+    margin: variables.$gap-1;
     z-index: 1;
-    position: relative;
-    overflow: visible;
+    transition: margin variables.$transition-duration ease;
+    position: absolute;
+    top: 0;
+    bottom: 0;
 
     .sidebar-start,
     .sidebar-center,
@@ -118,25 +132,25 @@
     }
   }
 
-  .sidebar-right {
-    align-items: flex-end;
+  .sidebar-left {
+    left: 0;
+  }
 
-    .sidebar-start,
-    .sidebar-center,
-    .sidebar-end {
-      gap: variables.$gap-1;
-      align-items: flex-end;
-    }
+  .sidebar-right {
+    right: 0;
   }
 
   .file-information {
-    width: fit-content;
     display: grid;
     padding: variables.$gap-3;
     border-radius: 6px;
     border: 1px solid var(--color-border);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
     gap: variables.$gap-2;
+    transition: opacity variables.$transition-duration ease;
+    position: absolute;
+    bottom: 0;
+    left: 0;
 
     .file-name {
       font-weight: 600;
