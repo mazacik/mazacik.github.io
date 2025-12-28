@@ -149,14 +149,8 @@ export class Tournament {
   public getNextBestBeatenImages(image: GalleryImage, limit: number = 3): GalleryImage[] {
     if (!image || limit <= 0) return [];
 
-    const directLosers = new Set<GalleryImage>();
-    for (const [winner, loser] of this.comparisons) {
-      if (winner === image) {
-        directLosers.add(loser);
-      }
-    }
-
-    if (directLosers.size === 0) return [];
+    const beatenImages = this.graph.get(image);
+    if (!beatenImages || beatenImages.size === 0) return [];
 
     const ranking = this.getRanking();
     const startIndex = ranking.indexOf(image);
@@ -165,7 +159,7 @@ export class Tournament {
     const result: GalleryImage[] = [];
     for (let i = startIndex + 1; i < ranking.length && result.length < limit; i++) {
       const candidate = ranking[i];
-      if (directLosers.has(candidate)) result.push(candidate);
+      if (beatenImages.has(candidate)) result.push(candidate);
     }
 
     return result;

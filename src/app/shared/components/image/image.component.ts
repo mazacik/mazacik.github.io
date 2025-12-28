@@ -16,7 +16,6 @@ export class ImageComponent {
   protected images: { trackBy: number; src: string; }[] = [];
 
   constructor() {
-    console.log('ImageComponent');
     effect(() => this.next(this.src(), this.placeholderSrc()));
   }
 
