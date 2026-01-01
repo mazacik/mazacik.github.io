@@ -105,9 +105,14 @@ export class ImageComparisonComponent implements OnInit, OnDestroy {
     return this.sanitizer.bypassSecurityTrustStyle('url(' + image.thumbnailLink + ')');
   }
 
-  protected getNextBestBeatenImages(image: GalleryImage): GalleryImage[] {
+  protected getNearestWinners(image: GalleryImage): GalleryImage[] {
     if (!this.tournament || !image) return [];
-    return this.tournament.getNextBestBeatenImages(image, 5);
+    return this.tournament.getNearestWinners(image);
+  }
+
+  protected getNearestLosers(image: GalleryImage): GalleryImage[] {
+    if (!this.tournament || !image) return [];
+    return this.tournament.getNearestLosers(image);
   }
 
   protected undo(): void {

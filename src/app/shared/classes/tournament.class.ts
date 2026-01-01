@@ -146,8 +146,24 @@ export class Tournament {
     return order;
   }
 
-  public getNextBestBeatenImages(image: GalleryImage, limit: number = 3): GalleryImage[] {
-    if (!image || limit <= 0) return [];
+  public getNearestWinners(image: GalleryImage): GalleryImage[] {
+    if (!image) return [];
+
+    const ranking = this.getRanking();
+    const startIndex = ranking.indexOf(image);
+    if (startIndex === -1) return [];
+
+    const result: GalleryImage[] = [];
+    for (let i = startIndex - 1; i >= 0; i--) {
+      const candidate = ranking[i];
+      if (this.graph.get(candidate)?.has(image)) result.push(candidate);
+    }
+
+    return result;
+  }
+
+  public getNearestLosers(image: GalleryImage): GalleryImage[] {
+    if (!image) return [];
 
     const beatenImages = this.graph.get(image);
     if (!beatenImages || beatenImages.size === 0) return [];
@@ -157,7 +173,7 @@ export class Tournament {
     if (startIndex === -1) return [];
 
     const result: GalleryImage[] = [];
-    for (let i = startIndex + 1; i < ranking.length && result.length < limit; i++) {
+    for (let i = startIndex + 1; i < ranking.length; i++) {
       const candidate = ranking[i];
       if (beatenImages.has(candidate)) result.push(candidate);
     }
