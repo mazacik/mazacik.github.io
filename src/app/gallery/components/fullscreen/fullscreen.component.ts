@@ -133,7 +133,10 @@ export class FullscreenComponent implements KeyboardShortcutTarget, OnInit, OnDe
   protected openGroupComparison(): void {
     const target: GalleryImage = this.stateService.fullscreenImage();
     if (target?.group) {
-      this.stateService.comparisonImages = target.group.images;
+      this.stateService.viewMode = 'tournament';
+      const images: GalleryImage[] = this.stateService.images.filter(image => GoogleFileUtils.isImage(image));
+      const imagesToCompare: GalleryImage[] = target.group.images.filter(image => GoogleFileUtils.isImage(image));
+      this.stateService.tournament.start(images, imagesToCompare, this.stateService.tournamentState);
     }
   }
 

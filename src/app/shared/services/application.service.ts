@@ -2,7 +2,7 @@ import { Injectable, Signal, signal, WritableSignal } from "@angular/core";
 import { AppConstants } from "../constants/app.constants";
 
 export type HeaderClasses = string | string[] | Set<string> | { [key: string]: boolean | number | string };
-export type HeaderSection = 'start' | 'middle' | 'end';
+export type HeaderSection = 'start' | 'center' | 'end';
 
 export interface HeaderAction {
   id: string;
@@ -56,7 +56,7 @@ export interface ApplicationSettingsState {
 })
 export class ApplicationService {
 
-  private readonly headerSections: HeaderSection[] = ['start', 'middle', 'end'];
+  private readonly headerSections: HeaderSection[] = ['start', 'center', 'end'];
   private headerState: HeaderConfig = this.createEmptyHeader();
   private readonly headerCollector: WritableSignal<HeaderConfig> = signal(this.createEmptyHeader());
   public readonly header: Signal<HeaderConfig> = this.headerCollector.asReadonly();

@@ -17,9 +17,17 @@ export class Tournament {
   private availableKeyToIndex: Map<string, number>;
 
   public comparisons: [GalleryImage, GalleryImage][];
+  public comparison: [GalleryImage, GalleryImage];
   private availableComparisonsCount: number | null = null;
 
+  public totalComparisons: number = 0;
+  public remainingComparisons: number = 0;
+  public completeComparisons: number = 0;
+  public estimateComparisons: number = 0;
+
   public start(images: GalleryImage[], imagesToCompare: GalleryImage[], state: TournamentState): void {
+    this.estimateComparisons = this.calculateEstimateComparisons(imagesToCompare.length);
+
     this.comparisons = [];
     this.availableComparisons = [];
     this.availableKeyToIndex = new Map<string, number>();
@@ -42,11 +50,33 @@ export class Tournament {
     }
 
     this.rebuildAvailableComparisons();
+
+    this.comparison = this.getNextComparison();
+  }
+
+  public get progressPercent(): number {
+    return this.totalComparisons === 0 ? 0 : (this.completeComparisons / this.totalComparisons) * 100;
+  }
+
+  public get estimateProgressPercent(): number {
+    return this.estimateComparisons === 0 ? 0 : Math.min(100, (this.completeComparisons / this.estimateComparisons) * 100);
+  }
+
+  private calculateEstimateComparisons(imageCount: number): number {
+    if (imageCount <= 1) return 0;
+    const factor = 0.52; // tuned so k * N * log2(N) matches observed workloads
+    return Math.round(factor * imageCount * Math.log2(imageCount));
+  }
+
+  private updateProgress(): void {
+    const progress = this.getComparisonProgress();
+    this.completeComparisons = progress.completed;
+    this.remainingComparisons = progress.remaining;
+    this.totalComparisons = progress.total;
   }
 
   public getNextComparison(): [GalleryImage, GalleryImage] {
     const available: [GalleryImage, GalleryImage][] = this.collectAvailableComparisons();
-
     if (available.length === 0) return null;
     const [x, y] = available[Math.floor(Math.random() * available.length)];
     return RandomUtils.boolean() ? [x, y] : [y, x];
@@ -79,13 +109,22 @@ export class Tournament {
     return this.graph.get(from)?.has(to) ?? false;
   }
 
-  public handleUserInput(winner: GalleryImage, loser: GalleryImage): void {
-    if (winner === loser) return;
+  public handleUserInput(winner: GalleryImage, loser?: GalleryImage): void {
+    if (!loser) {
+      if (!this.comparison) {
+        return;
+      }
+      loser = this.comparison[0] === winner ? this.comparison[1] : this.comparison[0];
+    }
 
     this.graph.get(winner).add(loser);
     this.comparisons.push([winner, loser]);
 
     this.updateTransitiveRelations(winner, loser);
+
+    this.comparison = this.getNextComparison();
+
+    this.updateProgress();
   }
 
   private updateTransitiveRelations(winner: GalleryImage, loser: GalleryImage): void {
@@ -181,9 +220,13 @@ export class Tournament {
     return result;
   }
 
+  public skip(): void {
+    this.comparison = this.getNextComparison();
+  }
+
   public undo(): [GalleryImage, GalleryImage] {
     if (ArrayUtils.isEmpty(this.comparisons)) return null;
-    const comparison = this.comparisons.pop();
+    this.comparison = this.comparisons.pop();
 
     this.graph = new Map<GalleryImage, Set<GalleryImage>>();
     this.images.forEach(image => this.graph.set(image, new Set<GalleryImage>()));
@@ -196,7 +239,8 @@ export class Tournament {
     }
 
     this.rebuildAvailableComparisons();
-    return comparison;
+
+    this.updateProgress();
   }
 
   public getState(): TournamentState {
@@ -216,8 +260,6 @@ export class Tournament {
         if (!this.hasPath(a, b) && !this.hasPath(b, a)) this.addAvailablePair(a, b);
       }
     }
-
-    console.log(this.availableComparisons);
 
     this.availableComparisonsCount = this.availableComparisons.length;
   }

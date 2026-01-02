@@ -1,23 +1,26 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ApplicationService } from '../shared/services/application.service';
 import { DialogService } from '../shared/services/dialog.service';
+import { GoogleFileUtils } from '../shared/utils/google-file.utils';
+import { ScreenUtils } from '../shared/utils/screen.utils';
 import { FilterComponent } from './components/filter/filter.component';
 import { FullscreenComponent } from './components/fullscreen/fullscreen.component';
 import { MasonryComponent } from './components/masonry/masonry.component';
 import { TaggerComponent } from './components/tagger/tagger.component';
-import { ImageComparisonComponent } from './dialogs/image-comparison/image-comparison.component';
+import { ComparisonPathComponent } from './dialogs/comparison-path/comparison-path.component';
+import { ImageTournamentComponent } from './dialogs/image-comparison/image-tournament.component';
 import { FilterService } from './services/filter.service';
 import { GalleryGoogleDriveService } from './services/gallery-google-drive.service';
 import { GallerySerializationService } from './services/gallery-serialization.service';
-import { GalleryStateService } from './services/gallery-state.service';
-import { ScreenUtils } from '../shared/utils/screen.utils';
+import { GalleryStateService, GalleryViewMode } from './services/gallery-state.service';
 
 @Component({
   selector: 'app-gallery',
   imports: [
     FilterComponent,
     MasonryComponent,
-    ImageComparisonComponent,
+    ImageTournamentComponent,
+    ComparisonPathComponent,
     FullscreenComponent,
     TaggerComponent
   ],
@@ -27,6 +30,13 @@ import { ScreenUtils } from '../shared/utils/screen.utils';
 export class GalleryComponent implements OnInit, OnDestroy {
 
   protected loading: boolean = true;
+  protected get viewMode(): GalleryViewMode {
+    return this.stateService.viewMode;
+  }
+
+  protected set viewMode(value: GalleryViewMode) {
+    this.stateService.viewMode = value;
+  }
 
   constructor(
     private serializationService: GallerySerializationService,
@@ -46,16 +56,32 @@ export class GalleryComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.applicationService.removeHeaderButtons('end', ['open-comparison', 'google-drive']);
+    this.applicationService.removeHeaderButtons('center', ['show-masonry', 'show-comparison', 'show-comparison-path']);
+    this.applicationService.removeHeaderButtons('end', ['google-drive']);
   }
 
   private configureHeader(): void {
-    this.applicationService.addHeaderButtons('end', [{
-      id: 'open-comparison',
-      tooltip: () => !!this.stateService.comparisonImages ? 'Masonry' : 'Comparison',
-      classes: () => !!this.stateService.comparisonImages ? ['fa-solid', 'fa-images'] : ['fa-solid', 'fa-code-compare'],
-      onClick: () => this.stateService.comparisonImages = (!!this.stateService.comparisonImages ? null : this.filterService.images())
+    this.applicationService.addHeaderButtons('center', [{
+      id: 'show-masonry',
+      tooltip: 'Masonry',
+      classes: ['fa-solid', 'fa-images'],
+      onClick: () => this.viewMode = 'masonry',
+      disabled: () => this.viewMode === 'masonry'
     }, {
+      id: 'show-comparison',
+      tooltip: 'Comparison',
+      classes: ['fa-solid', 'fa-code-compare'],
+      onClick: () => this.viewMode = 'tournament',
+      disabled: () => this.viewMode === 'tournament'
+    }, {
+      id: 'show-comparison-path',
+      tooltip: 'Comparison Path',
+      classes: ['fa-solid', 'fa-sitemap'],
+      onClick: () => this.viewMode = 'path',
+      disabled: () => this.viewMode === 'path'
+    }], 'first');
+
+    this.applicationService.addHeaderButtons('end', [{
       id: 'google-drive',
       tooltip: 'Google Drive',
       classes: ['fa-brands', 'fa-google-drive'],
@@ -119,6 +145,22 @@ export class GalleryComponent implements OnInit, OnDestroy {
         type: 'action',
         label: 'Reset Dialog Positions',
         onClick: () => this.resetDialogPositions()
+      }, {
+        id: 'reset-comparison',
+        type: 'action',
+        label: 'Reset Comparison',
+        onClick: () => {
+          this.dialogService.createConfirmation({ title: 'Reset Comparison', messages: ['Are you sure?'] }).then(success => {
+            if (success) {
+              this.stateService.tournamentState = null;
+              this.serializationService.save();
+
+              const images = this.stateService.images.filter(image => GoogleFileUtils.isImage(image));
+              const imagesToCompare = this.filterService.images().filter(image => GoogleFileUtils.isImage(image));
+              this.stateService.tournament.start(images, imagesToCompare, this.stateService.tournamentState);
+            }
+          });
+        }
       }]
     });
   }

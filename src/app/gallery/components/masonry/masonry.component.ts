@@ -50,6 +50,7 @@ export class MasonryComponent implements OnInit, OnDestroy {
       id: 'toggle-filter',
       tooltip: 'Open Filter Configuration',
       classes: ['fa-solid', 'fa-filter'],
+      hidden: () => this.stateService.viewMode !== 'masonry',
       containerClasses: () => ({
         'drawer-container': true,
         'drawer-hidden': !this.stateService.filterVisible
@@ -59,6 +60,7 @@ export class MasonryComponent implements OnInit, OnDestroy {
       id: 'create-group',
       tooltip: 'Create Image Group',
       classes: ['fa-solid', 'fa-folder-plus'],
+      hidden: () => this.stateService.viewMode !== 'masonry',
       onClick: () => this.galleryService.openImageGroupEditor()
     }]);
   }

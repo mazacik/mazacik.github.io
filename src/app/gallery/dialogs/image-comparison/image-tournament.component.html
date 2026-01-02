@@ -1,10 +1,10 @@
 <div class="comparison-wrapper">
-  @if (comparison) {
+  @if (tournament.comparison; as comparison) {
     <div class="comparison">
       <div class="comparison-column">
         <app-image class="image-container" [src]="comparison[0].contentLink" [placeholderSrc]="comparison[0].thumbnailLink" (click)="onImageClick(comparison[0])"></app-image>
         @if (progressBarVisible) {
-          @let winnersLeft = getNearestWinners(comparison[0]);
+          @let winnersLeft = tournament.getNearestWinners(comparison[0]);
           @if (winnersLeft.length) {
             <div class="side-column winners-column">
               @for (image of winnersLeft; track image.id) {
@@ -12,7 +12,7 @@
               }
             </div>
           }
-          @let losersLeft = getNearestLosers(comparison[0]);
+          @let losersLeft = tournament.getNearestLosers(comparison[0]);
           @if (losersLeft.length) {
             <div class="side-column losers-column">
               @for (image of losersLeft; track image.id) {
@@ -26,7 +26,7 @@
       <div class="comparison-column">
         <app-image class="image-container" [src]="comparison[1].contentLink" [placeholderSrc]="comparison[1].thumbnailLink" (click)="onImageClick(comparison[1])"></app-image>
         @if (progressBarVisible) {
-          @let winnersRight = getNearestWinners(comparison[1]);
+          @let winnersRight = tournament.getNearestWinners(comparison[1]);
           @if (winnersRight.length) {
             <div class="side-column winners-column">
               @for (image of winnersRight; track image.id) {
@@ -34,7 +34,7 @@
               }
             </div>
           }
-          @let losersRight = getNearestLosers(comparison[1]);
+          @let losersRight = tournament.getNearestLosers(comparison[1]);
           @if (losersRight.length) {
             <div class="side-column losers-column">
               @for (image of losersRight; track image.id) {
@@ -56,12 +56,14 @@
   @if (progressBarVisible) {
     <div class="h-separator"></div>
     <div class="progress-bar">
-      @if (comparison) {
-        <div class="progress-bar-fill" [style.width.%]="estimateProgressPercent"></div>
-        <div class="progress-bar-label">{{ completeComparisons }}/~{{ estimateTotalComparisons }}/{{ totalComparisons }} ({{ estimateProgressPercent | number: '1.0-0' }}%)</div>
+      @if (tournament.comparison) {
+        <div class="progress-bar-fill" [style.width.%]="tournament.estimateProgressPercent"></div>
+        <div class="progress-bar-label">
+          {{ tournament.completeComparisons }}/~{{ tournament.estimateComparisons }}/{{ tournament.totalComparisons }} ({{ tournament.estimateProgressPercent | number: '1.0-0' }}%)
+        </div>
       } @else {
         <div class="progress-bar-fill" [style.width.%]="100"></div>
-        <div class="progress-bar-label">{{ completeComparisons }}/{{ completeComparisons }} ({{ 100 | number: '1.0-0' }}%)</div>
+        <div class="progress-bar-label">{{ tournament.completeComparisons }}/{{ tournament.completeComparisons }} ({{ 100 | number: '1.0-0' }}%)</div>
       }
     </div>
   }
