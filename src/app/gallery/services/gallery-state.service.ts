@@ -5,7 +5,7 @@ import { Tournament, TournamentState } from "src/app/shared/classes/tournament.c
 import { ScreenUtils } from "src/app/shared/utils/screen.utils";
 import { GallerySettings } from "../models/gallery-settings.interface";
 
-export type GalleryViewMode = 'masonry' | 'tournament' | 'path';
+export type GalleryViewMode = 'masonry' | 'tournament';
 
 @Injectable({
   providedIn: 'root',
@@ -28,7 +28,7 @@ export class GalleryStateService {
 
   public groupEditorGroup: GalleryGroup;
 
-  public tournament: Tournament;
+  public tournament: Tournament = new Tournament();
   public tournamentState: TournamentState;
 
   constructor() { }

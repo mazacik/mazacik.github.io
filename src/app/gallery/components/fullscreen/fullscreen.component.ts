@@ -15,6 +15,8 @@ import { GalleryGoogleDriveService } from '../../services/gallery-google-drive.s
 import { GalleryStateService } from '../../services/gallery-state.service';
 import { GalleryService } from '../../services/gallery.service';
 import { TagService } from '../../services/tag.service';
+import { DialogService } from 'src/app/shared/services/dialog.service';
+import { ComparisonPathComponent } from '../../dialogs/comparison-path/comparison-path.component';
 
 @Component({
   selector: 'app-fullscreen',
@@ -29,7 +31,6 @@ export class FullscreenComponent implements KeyboardShortcutTarget, OnInit, OnDe
   protected loadingT: boolean = true;
   protected loadingC: boolean = true;
   protected video: boolean = false;
-  protected flip: boolean = false;
 
   protected currentGroup: GalleryGroup;
   protected groupTracker = 0;
@@ -40,6 +41,7 @@ export class FullscreenComponent implements KeyboardShortcutTarget, OnInit, OnDe
     // private sanitizer: DomSanitizer,
     private applicationService: ApplicationService,
     private keyboardShortcutService: KeyboardShortcutService,
+    private dialogService: DialogService,
     protected googleService: GalleryGoogleDriveService,
     protected stateService: GalleryStateService,
     protected galleryService: GalleryService,
@@ -71,8 +73,6 @@ export class FullscreenComponent implements KeyboardShortcutTarget, OnInit, OnDe
         //     image.contentLink = this.sanitizer.bypassSecurityTrustResourceUrl(base64) as string;
         //   });
         // }
-      } else {
-        this.flip = false;
       }
     });
   }
@@ -140,6 +140,11 @@ export class FullscreenComponent implements KeyboardShortcutTarget, OnInit, OnDe
     }
   }
 
+  protected openComparisonPath(start: GalleryImage, end: GalleryImage): void {
+    if (!start || !end) return;
+    this.dialogService.create(ComparisonPathComponent, { start, end });
+  }
+
   protected getSrc(image: GalleryImage): SafeUrl {
     if (!this.loadingC) return image.contentLink;
     if (!this.loadingT) return image.thumbnailLink;
@@ -150,25 +155,6 @@ export class FullscreenComponent implements KeyboardShortcutTarget, OnInit, OnDe
     if (this.applicationService.reduceDataUsage) {
       image.thumbnailLink = image.thumbnailLink.replace('=s220', '=s440');
     }
-  }
-
-  protected getFileSize(image: GalleryImage): string | null {
-    const size: number = Number(image?.size);
-    if (!image || Number.isNaN(size)) return null;
-    const kilobytes: number = size / 1024;
-    return kilobytes.toLocaleString(undefined, { maximumFractionDigits: 1 }) + ' KB';
-  }
-
-  protected getResolution(image: GalleryImage): string | null {
-    if (image?.imageMediaMetadata?.width && image?.imageMediaMetadata?.height) {
-      return image.imageMediaMetadata.width + ' x ' + image.imageMediaMetadata.height;
-    }
-
-    if (image?.videoMediaMetadata?.width && image?.videoMediaMetadata?.height) {
-      return image.videoMediaMetadata.width + ' x ' + image.videoMediaMetadata.height;
-    }
-
-    return null;
   }
 
   protected snapshot(): void {

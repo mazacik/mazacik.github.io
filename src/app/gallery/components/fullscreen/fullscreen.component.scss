@@ -35,16 +35,12 @@
     position: relative;
 
     &.hide-sidebar-buttons {
-      .sidebar-left {
-        margin-left: -42px;
+      .left-rail {
+        transform: translateX(-100%);
       }
 
-      .sidebar-right {
-        margin-right: -42px;
-      }
-
-      .file-information {
-        opacity: 0;
+      .right-rail {
+        transform: translateX(100%);
       }
     }
   }
@@ -111,17 +107,50 @@
     }
   }
 
+  .side-rail {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    gap: variables.$gap-1;
+    padding: variables.$gap-1;
+    z-index: 1;
+    transform: translateX(0);
+    transition: transform variables.$transition-duration ease;
+  }
+
+  .side-rail.left-rail {
+    left: 0;
+  }
+
+  .side-rail.right-rail {
+    right: 0;
+  }
+
+  .comparison-column {
+    display: flex;
+    flex-direction: column;
+    gap: variables.$gap-1;
+    overflow: auto;
+    max-height: 100%;
+  }
+
+  .comparison-thumb {
+    display: block;
+    width: 64px;
+    border-radius: variables.$gap-1;
+    border: 1px solid var(--color-border);
+    cursor: pointer;
+  }
+
   .sidebar-left,
   .sidebar-right {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    margin: variables.$gap-1;
     z-index: 1;
     transition: margin variables.$transition-duration ease;
-    position: absolute;
-    top: 0;
-    bottom: 0;
+    height: 100%;
 
     .sidebar-start,
     .sidebar-center,
@@ -129,60 +158,6 @@
       display: flex;
       flex-direction: column;
       gap: variables.$gap-1;
-    }
-  }
-
-  .sidebar-left {
-    left: 0;
-  }
-
-  .sidebar-right {
-    right: 0;
-  }
-
-  .file-information {
-    display: grid;
-    padding: variables.$gap-3;
-    border-radius: 6px;
-    border: 1px solid var(--color-border);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-    gap: variables.$gap-2;
-    transition: opacity variables.$transition-duration ease;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-
-    .file-name {
-      font-weight: 600;
-      white-space: nowrap;
-    }
-
-    .file-row {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      align-items: baseline;
-      column-gap: variables.$gap-2;
-      row-gap: variables.$gap-2;
-      font-size: 0.95rem;
-    }
-
-    .label {
-      text-transform: uppercase;
-      letter-spacing: 0.02em;
-      font-size: 0.75rem;
-      opacity: 0.8;
-      white-space: nowrap;
-    }
-
-    .value {
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-  }
-
-  @media screen and (max-width:1280px) {
-    .file-information {
-      max-width: none;
     }
   }
 

@@ -18,6 +18,7 @@ import { TaggerRowComponent } from './tagger-row/tagger-row.component';
 export class TaggerComponent {
 
   protected ScreenUtils = ScreenUtils;
+  protected fileInfoOpen: boolean = false;
 
   @HostBinding('class.visible')
   public get classVisible(): boolean {
@@ -37,6 +38,25 @@ export class TaggerComponent {
         this.groupMode = false;
       }
     });
+  }
+
+  protected getFileSize(image: GalleryImage): string | null {
+    const size: number = Number(image?.size);
+    if (!image || Number.isNaN(size)) return null;
+    const kilobytes: number = size / 1024;
+    return kilobytes.toLocaleString(undefined, { maximumFractionDigits: 1 }) + ' KB';
+  }
+
+  protected getResolution(image: GalleryImage): string | null {
+    if (image?.imageMediaMetadata?.width && image?.imageMediaMetadata?.height) {
+      return image.imageMediaMetadata.width + ' x ' + image.imageMediaMetadata.height;
+    }
+
+    if (image?.videoMediaMetadata?.width && image?.videoMediaMetadata?.height) {
+      return image.videoMediaMetadata.width + ' x ' + image.videoMediaMetadata.height;
+    }
+
+    return null;
   }
 
 }

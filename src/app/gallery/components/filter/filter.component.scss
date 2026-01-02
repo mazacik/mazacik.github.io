@@ -18,7 +18,7 @@
     position: absolute;
     z-index: 1;
     backdrop-filter: blur(5px);
-    background-color: var(--color-surface-300);
+    background-color: color-mix(in srgb, var(--color-surface-0) 65%, transparent);
   }
 
   @media screen and (min-width:1280px) {

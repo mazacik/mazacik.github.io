@@ -1,43 +1,17 @@
 <div class="comparison-path">
-  <div class="image-column">
-    @for (image of stateService.images; track image.id) {
-      <div class="image-entry" [class.selected]="image === leftSelection" (click)="selectLeft(image)">
-        <img [src]="image.thumbnailLink" loading="lazy" />
-      </div>
-    }
-  </div>
-  <div class="v-separator"></div>
-  <div class="path-column">
-    @if (leftSelection && rightSelection && leftSelection !== rightSelection) {
-      @if (!comparisonPath.length) {
-        <div class="path-placeholder">No comparison path found.</div>
-      } @else {
-        @for (pair of comparisonPath; track pair[0].id + '-' + pair[1].id) {
-          <div class="comparison-row">
-            <img class="comparison-thumb" [src]="pair[0].thumbnailLink" loading="lazy" />
+  @if (path.length) {
+    <div class="path-row">
+      @for (image of path; track image.id; let last = $last; let i = $index) {
+        <img class="path-thumb" [src]="image.thumbnailLink" loading="lazy" />
+        @if (!last) {
+          <span class="path-separator" [class.pending]="isRemovalPending(i)" (click)="toggleRemoval(i)">
             <i class="fa-solid fa-angle-right"></i>
-            <img class="comparison-thumb" [src]="pair[1].thumbnailLink" loading="lazy" />
-          </div>
+            <i class="fa-solid fa-trash"></i>
+          </span>
         }
       }
-    } @else if (allComparisons.length) {
-      @for (pair of allComparisons; track pair[0].id + '-' + pair[1].id) {
-        <div class="comparison-row">
-          <img class="comparison-thumb" [src]="pair[0].thumbnailLink" loading="lazy" />
-          <i class="fa-solid fa-angle-right"></i>
-          <img class="comparison-thumb" [src]="pair[1].thumbnailLink" loading="lazy" />
-        </div>
-      }
-    } @else {
-      <div class="path-placeholder">No comparisons yet.</div>
-    }
-  </div>
-  <div class="v-separator"></div>
-  <div class="image-column">
-    @for (image of stateService.images; track image.id) {
-      <div class="image-entry" [class.selected]="image === rightSelection" (click)="selectRight(image)">
-        <img [src]="image.thumbnailLink" loading="lazy" />
-      </div>
-    }
-  </div>
+    </div>
+  } @else {
+    <div class="path-placeholder">No path found.</div>
+  }
 </div>

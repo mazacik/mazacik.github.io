@@ -7,7 +7,6 @@ import { FilterComponent } from './components/filter/filter.component';
 import { FullscreenComponent } from './components/fullscreen/fullscreen.component';
 import { MasonryComponent } from './components/masonry/masonry.component';
 import { TaggerComponent } from './components/tagger/tagger.component';
-import { ComparisonPathComponent } from './dialogs/comparison-path/comparison-path.component';
 import { ImageTournamentComponent } from './dialogs/image-comparison/image-tournament.component';
 import { FilterService } from './services/filter.service';
 import { GalleryGoogleDriveService } from './services/gallery-google-drive.service';
@@ -20,7 +19,6 @@ import { GalleryStateService, GalleryViewMode } from './services/gallery-state.s
     FilterComponent,
     MasonryComponent,
     ImageTournamentComponent,
-    ComparisonPathComponent,
     FullscreenComponent,
     TaggerComponent
   ],
@@ -56,30 +54,17 @@ export class GalleryComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.applicationService.removeHeaderButtons('center', ['show-masonry', 'show-comparison', 'show-comparison-path']);
+    this.applicationService.removeHeaderButtons('start', ['toggle-view']);
     this.applicationService.removeHeaderButtons('end', ['google-drive']);
   }
 
   private configureHeader(): void {
-    this.applicationService.addHeaderButtons('center', [{
-      id: 'show-masonry',
-      tooltip: 'Masonry',
-      classes: ['fa-solid', 'fa-images'],
-      onClick: () => this.viewMode = 'masonry',
-      disabled: () => this.viewMode === 'masonry'
-    }, {
-      id: 'show-comparison',
-      tooltip: 'Comparison',
-      classes: ['fa-solid', 'fa-code-compare'],
-      onClick: () => this.viewMode = 'tournament',
-      disabled: () => this.viewMode === 'tournament'
-    }, {
-      id: 'show-comparison-path',
-      tooltip: 'Comparison Path',
-      classes: ['fa-solid', 'fa-sitemap'],
-      onClick: () => this.viewMode = 'path',
-      disabled: () => this.viewMode === 'path'
-    }], 'first');
+    this.applicationService.addHeaderButtons('start', [{
+      id: 'toggle-view',
+      tooltip: () => this.viewMode === 'masonry' ? 'Comparison' : 'Masonry',
+      classes: () => this.viewMode === 'masonry' ? ['fa-solid', 'fa-code-compare'] : ['fa-solid', 'fa-images'],
+      onClick: () => this.viewMode = this.viewMode === 'masonry' ? 'tournament' : 'masonry'
+    }]);
 
     this.applicationService.addHeaderButtons('end', [{
       id: 'google-drive',
@@ -87,7 +72,7 @@ export class GalleryComponent implements OnInit, OnDestroy {
       classes: ['fa-brands', 'fa-google-drive'],
       onClick: () => this.googleService.openFolderById(this.stateService.dataFolderId),
       hidden: () => !ScreenUtils.isLargeScreen()
-    }], 'first');
+    }]);
   }
 
   private registerModuleSettings(): void {

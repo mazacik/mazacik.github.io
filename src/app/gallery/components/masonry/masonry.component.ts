@@ -50,23 +50,26 @@ export class MasonryComponent implements OnInit, OnDestroy {
       id: 'toggle-filter',
       tooltip: 'Open Filter Configuration',
       classes: ['fa-solid', 'fa-filter'],
-      hidden: () => this.stateService.viewMode !== 'masonry',
+      hidden: () => this.stateService.viewMode !== 'masonry' || !!this.stateService.fullscreenImage(),
       containerClasses: () => ({
         'drawer-container': true,
         'drawer-hidden': !this.stateService.filterVisible
       }),
       onClick: () => this.stateService.filterVisible = !this.stateService.filterVisible
-    }, {
+    }]);
+
+    this.applicationService.addHeaderButtons('center', [{
       id: 'create-group',
       tooltip: 'Create Image Group',
       classes: ['fa-solid', 'fa-folder-plus'],
-      hidden: () => this.stateService.viewMode !== 'masonry',
+      hidden: () => this.stateService.viewMode !== 'masonry' || !!this.stateService.fullscreenImage(),
       onClick: () => this.galleryService.openImageGroupEditor()
     }]);
   }
 
   ngOnDestroy(): void {
-    this.applicationService.removeHeaderButtons('start', ['toggle-filter', 'create-group']);
+    this.applicationService.removeHeaderButtons('start', ['toggle-filter']);
+    this.applicationService.removeHeaderButtons('center', ['create-group']);
   }
 
   private layoutUpdateDelay: Delay = new Delay(100);

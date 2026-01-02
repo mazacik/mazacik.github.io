@@ -5,7 +5,6 @@
       <app-masonry></app-masonry>
     </div>
     <app-image-tournament [class.transparent]="viewMode != 'tournament'"></app-image-tournament>
-    <app-comparison-path [class.transparent]="viewMode != 'path'"></app-comparison-path>
     <div class="fullscreen-container glass-effect height-100" [class.transparent]="!stateService.fullscreenImage()">
       <app-fullscreen></app-fullscreen>
       <app-tagger></app-tagger>
