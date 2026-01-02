@@ -25,56 +25,45 @@
     .comparison-column {
       display: flex;
       flex: 1;
-      flex-direction: column;
       min-width: 0;
       position: relative;
     }
 
     .image-container {
-      // margin: variables.$gap-1;
       display: flex;
       justify-content: center;
       cursor: pointer;
-      flex: 1;
-      min-height: 0;
 
       &:hover {
         background-color: var(--color-border);
       }
+    }
 
-      img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        border-radius: variables.$gap-1;
-        flex: 1;
-        outline: none;
-        user-select: none;
+    .side-column {
+      display: flex;
+      flex-direction: column;
+      gap: variables.$gap-1;
+      position: absolute;
+      align-items: center;
+      top: 0;
+      bottom: 0;
+      padding: variables.$gap-1;
+      overflow: auto;
+
+      &.winners-column {
+        left: 0;
+      }
+
+      &.losers-column {
+        right: 0;
       }
     }
 
-    .beaten-row {
-      display: flex;
-      gap: variables.$gap-1;
-      margin: 0 variables.$gap-1 variables.$gap-1;
-      justify-content: center;
-      position: absolute;
-      right: 0;
-      bottom: 0;
-      left: 0;
-    }
-
-    .beaten-image {
+    .side-image {
+      width: 64px;
       border: 1px solid var(--color-border);
       border-radius: variables.$gap-1;
-
-      @media screen and (max-width:1280px) {
-        height: 64px;
-      }
-
-      @media screen and (min-width:1280px) {
-        height: 128px;
-      }
+      cursor: pointer;
     }
   }
 

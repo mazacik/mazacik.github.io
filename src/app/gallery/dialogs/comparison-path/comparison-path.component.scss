@@ -1,0 +1,74 @@
+@use 'src/styles/variables.scss';
+
+:host {
+  display: flex;
+}
+
+.comparison-path {
+  display: flex;
+  padding: variables.$gap-1;
+  min-width: 0;
+}
+
+.path-row {
+  display: flex;
+  align-items: center;
+  gap: variables.$gap-1;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.path-thumb {
+  height: 128px;
+  border-radius: variables.$gap-1;
+  border: 1px solid var(--color-border);
+}
+
+.path-separator {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+
+  i {
+    grid-area: 1 / 1;
+    color: var(--color-text-secondary);
+    transition: opacity variables.$transition-duration-fast ease, color variables.$transition-duration-fast ease;
+  }
+
+  .fa-trash {
+    opacity: 0;
+  }
+
+  &.pending {
+    .fa-trash {
+      opacity: 1;
+      color: var(--color-negative);
+    }
+
+    .fa-angle-right {
+      opacity: 0;
+    }
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .path-separator:hover {
+    .fa-trash {
+      opacity: 1;
+    }
+
+    .fa-angle-right {
+      opacity: 0;
+    }
+  }
+}
+
+.path-placeholder {
+  border: 1px dashed var(--color-border);
+  border-radius: variables.$gap-1;
+  color: var(--color-text-secondary);
+  padding: variables.$gap-2;
+  text-align: center;
+}

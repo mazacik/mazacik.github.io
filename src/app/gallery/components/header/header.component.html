@@ -1,5 +1,6 @@
+@let header = applicationService.header();
 <div class="header-start">
-  @for (action of headerConfig().start; track trackById($index, action)) {
+  @for (action of header.start; track action.id) {
     @if (!isHidden(action)) {
       <div [ngClass]="resolveClasses(action.containerClasses)" [title]="getTooltip(action)">
         <i class="icon-button" [ngClass]="resolveClasses(action.classes)" [class.disabled]="isDisabled(action)" (click)="onClick(action)"></i>
@@ -8,7 +9,7 @@
   }
 </div>
 <div class="header-center">
-  @for (action of headerConfig().center; track trackById($index, action)) {
+  @for (action of header.center; track action.id) {
     @if (!isHidden(action)) {
       <div [ngClass]="resolveClasses(action.containerClasses)" [title]="getTooltip(action)">
         <i class="icon-button" [ngClass]="resolveClasses(action.classes)" [class.disabled]="isDisabled(action)" (click)="onClick(action)"></i>
@@ -17,7 +18,7 @@
   }
 </div>
 <div class="header-end">
-  @for (action of headerConfig().end; track trackById($index, action)) {
+  @for (action of header.end; track action.id) {
     @if (!isHidden(action)) {
       <div [ngClass]="resolveClasses(action.containerClasses)" [title]="getTooltip(action)">
         <i class="icon-button" [ngClass]="resolveClasses(action.classes)" [class.disabled]="isDisabled(action)" (click)="onClick(action)"></i>

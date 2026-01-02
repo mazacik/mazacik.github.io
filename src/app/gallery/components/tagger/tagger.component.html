@@ -1,9 +1,33 @@
 <div class="v-separator desktop-only"></div>
 <div class="tag-manager-container">
+  @if (stateService.settings.showFileInformation) {
+    <div class="overflow-hidden">
+      @if (target) {
+        <div class="file-information">
+          <div class="file-name" [title]="target.name">{{ target.name }}</div>
+          @if (getFileSize(target); as fileSize) {
+            <div class="file-row">
+              <span class="label">Size</span>
+              <span class="value">{{ fileSize }}</span>
+            </div>
+          }
+          @if (getResolution(target); as resolution) {
+            <div class="file-row">
+              <span class="label">Resolution</span>
+              <span class="value">{{ resolution }}</span>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="file-placeholder">No file selected.</div>
+      }
+    </div>
+  }
+  <div class="h-separator margins"></div>
   <div class="header">
     <div class="flex gap">
-      @if (!ScreenUtils.isLargeScreen()) {
-        <i class="icon-button fa-solid hover-brighten" [ngClass]="groupMode ? 'fa-images' : 'fa-image'" [class.disabled]="target?.group == null" [class.positive]="groupMode" (click)="groupMode = !groupMode"></i>
+      @if (target?.group) {
+        <i class="icon-button fa-solid hover-brighten" [ngClass]="groupMode ? 'fa-images' : 'fa-image'" [class.positive]="groupMode" (click)="groupMode = !groupMode"></i>
       }
     </div>
     <span class="margins-3-h">Tag Manager</span>
@@ -11,22 +35,10 @@
       <i class="icon-button fa-solid" [ngClass]="ScreenUtils.isLargeScreen() ? 'fa-caret-right' : 'fa-times'" title="Collapse" tpPlacement="left" (click)="stateService.taggerVisible = false"></i>
     </div>
   </div>
-  @if (ScreenUtils.isLargeScreen()) {
-    <div class="h-separator margins"></div>
-    <div class="flex center gap-3 margins-3-v">
-      <div class="flex center gap cursor-pointer hover-brighten" [class.disabled]="target?.group == null" [class.positive]="groupMode" (click)="groupMode = !groupMode">
-        <i class="fa-solid" [ngClass]="groupMode ? 'fa-images' : 'fa-image'" style="margin-top: 1px;"></i>
-        <span>Group Mode</span>
-      </div>
-    </div>
-  }
   <div class="h-separator margins"></div>
   <div class="filters-container y-scrollbar-container">
     <div class="flex column margins-1-h">
-      @for (tag of tagService.getRootTags(); track tag.id; let i = $index) {
-        @if (i != 0) {
-          <div class="h-separator subtle"></div>
-        }
+      @for (tag of tagService.getRootTags(); track tag.id) {
         <app-tagger-row [tag]="tag" [target]="target" [groupMode]="groupMode"></app-tagger-row>
       }
     </div>

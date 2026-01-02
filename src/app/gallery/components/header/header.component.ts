@@ -12,8 +12,6 @@ import { ApplicationService, HeaderAction, HeaderClasses } from 'src/app/shared/
 })
 export class HeaderComponent {
 
-  protected headerConfig = this.applicationService.header;
-
   constructor(
     protected applicationService: ApplicationService
   ) { }
@@ -42,10 +40,6 @@ export class HeaderComponent {
 
   protected onClick(action: HeaderAction): void {
     if (action.onClick && !this.isDisabled(action) && !this.isHidden(action)) action.onClick();
-  }
-
-  protected trackById(_index: number, action: HeaderAction): string {
-    return action.id;
   }
 
 }
