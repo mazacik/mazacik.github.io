@@ -1,41 +1,51 @@
 <div class="v-separator desktop-only"></div>
 <div class="tagger-container">
-  @if (stateService.settings.showFileInformation) {
-    <div class="overflow-hidden">
-      @if (target) {
-        <div class="file-information">
-          <div class="file-name" [title]="target.name">{{ target.name }}</div>
-          @if (getFileSize(target); as fileSize) {
-            <div class="file-row">
-              <span class="label">Size</span>
-              <span class="value">{{ fileSize }}</span>
-            </div>
-          }
-          @if (getResolution(target); as resolution) {
-            <div class="file-row">
-              <span class="label">Resolution</span>
-              <span class="value">{{ resolution }}</span>
+  @if (target?.group) {
+    <div class="group-images-container x-scrollbar-container height-auto">
+      @for (group of [target.group]; track groupTracker) {
+        <div class="group-images-scroll-container anim-fade-in" animate.leave="anim-fade-out">
+          @for (groupImage of group.images; track groupImage.id) {
+            <div class="group-image-container" (click)="stateService.fullscreenImage.set(groupImage)">
+              <app-image [src]="groupImage.thumbnailLink" [class.grayscale]="!groupImage.passesFilters" [style.width.px]="120 * groupImage.aspectRatio"></app-image>
+              <div class="target-border" [class.target]="groupImage == target"></div>
             </div>
           }
         </div>
       }
     </div>
+    <div class="h-separator margins"></div>
   }
+  <div class="overflow-hidden">
+    @if (target) {
+      <div class="file-information">
+        <div class="file-name" [title]="target.name">{{ target.name }}</div>
+        @if (getFileSize(target); as fileSize) {
+          <div class="file-row">
+            <span class="label">Size</span>
+            <span class="value">{{ fileSize }}</span>
+          </div>
+        }
+        @if (getResolution(target); as resolution) {
+          <div class="file-row">
+            <span class="label">Resolution</span>
+            <span class="value">{{ resolution }}</span>
+          </div>
+        }
+      </div>
+    }
+  </div>
   <div class="h-separator margins"></div>
   <div class="flex gap center padding-1">
     <div class="flex gap desktop-only">
-      <i class="icon-button fa-solid fa-download" title="Download" tpPlacement="right" (click)="googleService.download(target)"></i>
+      <i class="icon-button fa-solid fa-download" title="Download" (click)="googleService.download(target)"></i>
+      <i class="icon-button fa-brands fa-google-drive" title="Google Drive" (click)="$event.stopPropagation(); googleService.openSearch(target.name)"></i>
       <div class="v-separator"></div>
-      <i class="icon-button fa-brands fa-google-drive" title="Google Drive" tpPlacement="right" (click)="$event.stopPropagation(); googleService.openSearch(target.name)"></i>
-      <i
-        class="icon-button fa-brands fa-yandex-international"
-        title="Yandex RIS"
-        tpPlacement="right"
-        (click)="$event.stopPropagation(); galleryService.openYandexReverseImageSearch($event, target)"></i>
+      <i class="icon-button fa-brands fa-google" title="Google Lens" (click)="$event.stopPropagation(); galleryService.openGoogleRIS($event, target)"></i>
+      <i class="icon-button fa-brands fa-yandex-international" title="Yandex RIS" (click)="$event.stopPropagation(); galleryService.openYandexRIS($event, target)"></i>
       <div class="v-separator"></div>
     </div>
-    <i class="icon-button fa-solid fa-box" title="Archive" tpPlacement="right" (click)="galleryService.delete(target, true)"></i>
-    <i class="icon-button fa-solid fa-trash" title="Delete" tpPlacement="right" (click)="galleryService.delete(target, false)"></i>
+    <i class="icon-button fa-solid fa-box" title="Archive" (click)="galleryService.delete(target, true)"></i>
+    <i class="icon-button fa-solid fa-trash" title="Delete" (click)="galleryService.delete(target, false)"></i>
   </div>
   <div class="h-separator margins"></div>
   <div class="flex center gap-3 margins-3-v">
@@ -51,14 +61,15 @@
   <div class="h-separator margins"></div>
   <div class="header desktop-only">
     <div class="flex gap">
-      @if (target?.group) {
-        <i class="icon-button fa-solid hover-brighten" [ngClass]="groupMode ? 'fa-images' : 'fa-image'" [class.positive]="groupMode" (click)="groupMode = !groupMode"></i>
-      }
+      <i
+        class="icon-button fa-solid hover-brighten"
+        [class.transparent]="!target?.group"
+        [ngClass]="groupMode ? 'fa-images' : 'fa-image'"
+        [class.positive]="groupMode"
+        (click)="groupMode = !groupMode"></i>
     </div>
     <span class="margins-3-h">Tag Manager</span>
-    <div class="flex gap flex-end-h">
-      <i class="icon-button fa-solid fa-caret-right" title="Collapse" (click)="stateService.taggerVisible = false"></i>
-    </div>
+    <div class="flex gap flex-end-h"></div>
   </div>
   <div class="h-separator margins desktop-only"></div>
   <div class="filters-container y-scrollbar-container">

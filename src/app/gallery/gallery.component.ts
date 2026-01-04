@@ -87,10 +87,9 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
   }
 
   private configureHeader(): void {
-    const isMasonry = () => this.stateService.viewMode === 'masonry' && !isFullscreen() && !isFilter() && !isTagger();
-    const isFullscreen = () => !!this.stateService.fullscreenImage() && !isTagger();
+    const isMasonry = () => this.stateService.viewMode === 'masonry' && !isFullscreen() && !isFilter();
+    const isFullscreen = () => !!this.stateService.fullscreenImage();
     const isFilter = () => this.stateService.viewMode === 'masonry' && !ScreenUtils.isLargeScreen() && this.stateService.filterVisible;
-    const isTagger = () => !ScreenUtils.isLargeScreen() && this.stateService.taggerVisible;
     const isTournament = () => this.stateService.viewMode === 'tournament' && !isFullscreen();
 
     this.applicationService.addHeaderButtons('start', [{
@@ -153,12 +152,6 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
     }]);
 
     this.applicationService.addHeaderButtons('end', [{
-      id: 'open-tagger',
-      tooltip: 'Open Tagger',
-      classes: ['fa-solid', 'fa-tags'],
-      onClick: () => this.stateService.taggerVisible = true,
-      hidden: () => !isFullscreen() || this.stateService.taggerVisible
-    }, {
       id: 'close-fullscreen',
       tooltip: 'Close Fullscreen',
       classes: ['fa-solid', 'fa-times'],
@@ -170,12 +163,6 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
       classes: ['fa-solid', 'fa-times'],
       onClick: () => this.stateService.filterVisible = false,
       hidden: () => !isFilter()
-    }, {
-      id: 'close-tagger',
-      tooltip: 'Close Tagger',
-      classes: ['fa-solid', 'fa-times'],
-      onClick: () => this.stateService.taggerVisible = false,
-      hidden: () => !isTagger()
     }, {
       id: 'toggle-view',
       tooltip: () => this.viewMode === 'masonry' ? 'Open Comparison' : 'Open Masonry',
@@ -219,15 +206,6 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
           this.serializationService.save();
         }
       }, {
-        id: 'show-file-information',
-        type: 'toggle',
-        label: 'Show File Information',
-        getValue: () => this.stateService.settings?.showFileInformation ?? true,
-        onChange: value => {
-          this.stateService.settings.showFileInformation = value;
-          this.serializationService.save();
-        }
-      }, {
         id: 'auto-bookmark',
         type: 'toggle',
         label: 'Auto Bookmark',
@@ -261,6 +239,21 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
               this.stateService.tournament.start(images, imagesToCompare, this.stateService.tournamentState);
             }
           });
+        }
+      }]
+    });
+
+    this.applicationService.registerModuleSettings({
+      id: 'fullscreen-settings',
+      label: 'Fullscreen',
+      items: [{
+        id: 'show-fullscreen-comparison-relations',
+        type: 'toggle',
+        label: 'Show Comparison Relations',
+        getValue: () => this.stateService.settings?.showFullscreenComparisonRelations ?? true,
+        onChange: value => {
+          this.stateService.settings.showFullscreenComparisonRelations = value;
+          this.serializationService.save();
         }
       }]
     });

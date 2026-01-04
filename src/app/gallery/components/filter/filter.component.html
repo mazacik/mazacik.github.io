@@ -1,11 +1,4 @@
 <div class="filter-container">
-  <div class="header desktop-only">
-    <div class="flex gap button-height">
-      <i class="icon-button fa-solid fa-caret-left" title="Collapse" (click)="stateService.filterVisible = false"></i>
-    </div>
-    <span class="margins-3-h">Filter Configuration</span>
-  </div>
-  <div class="h-separator margins desktop-only"></div>
   <div class="flex center gap-3 margins-3-v">
     <div class="flex center gap cursor-pointer hover-brighten" (click)="toggleFilter(filterService.favoritesFilter)">
       <i class="fa-heart" [ngClass]="getFilterIconClass(filterService.favoritesFilter)" style="margin-top: 1px"></i>

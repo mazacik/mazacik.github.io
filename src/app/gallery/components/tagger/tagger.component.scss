@@ -6,27 +6,17 @@
   transition: variables.$transition-duration;
   overflow: hidden;
   height: 100%;
-
-  &.hidden {
-    opacity: 0;
-    pointer-events: none;
-  }
+  background-color: color-mix(in srgb, var(--color-surface-0) 65%, transparent);
 
   @media screen and (max-width:1280px) {
-    position: absolute;
-    z-index: 1;
     backdrop-filter: blur(5px);
-    background-color: color-mix(in srgb, var(--color-surface-0) 65%, transparent);
+    z-index: 1;
+    position: relative;
   }
 
   @media screen and (min-width:1280px) {
     width: 300.8px;
     min-width: 300.8px;
-
-    &.hidden {
-      width: 0;
-      min-width: 0;
-    }
   }
 
   .file-information {
@@ -78,6 +68,61 @@
     @media screen and (min-width:1280px) {
       width: 300px;
       min-width: 300px;
+    }
+
+    .group-images-container {
+      height: 120px;
+      display: flex;
+      align-items: center;
+      overflow-x: auto;
+      overflow-y: hidden;
+      margin: variables.$gap-1;
+      scrollbar-gutter: stable;
+
+      .group-images-scroll-container {
+        display: flex;
+        gap: variables.$gap-1;
+        height: 100%;
+        flex: 0 0 auto;
+        width: max-content;
+        margin: 0 auto;
+
+        .group-image-container {
+          display: flex;
+          align-items: center;
+          flex: 0 0 auto;
+          height: 100%;
+          position: relative;
+          border-radius: variables.$gap-1;
+          cursor: pointer;
+          overflow: hidden;
+
+          app-image {
+            flex: 0 0 auto;
+            height: 100%;
+          }
+
+          app-image.grayscale {
+            opacity: 0.5 !important;
+            filter: grayscale(1);
+          }
+
+          .target-border {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            border-radius: inherit;
+            pointer-events: none;
+
+            &.target {
+              box-sizing: border-box;
+              border: 2px solid var(--color-positive);
+            }
+          }
+        }
+      }
     }
 
     .header {

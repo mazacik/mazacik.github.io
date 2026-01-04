@@ -10,5 +10,21 @@
     overflow: hidden;
     transition: variables.$transition-duration;
     z-index: 1;
+
+    .tagger-container {
+      @media screen and (max-width:1280px) {
+        height: 100%;
+        position: absolute;
+        overflow: auto;
+
+        .tagger-scroll-offset-helper {
+          height: 100%;
+        }
+      }
+
+      @media screen and (min-width:1280px) {
+        display: contents;
+      }
+    }
   }
 }
