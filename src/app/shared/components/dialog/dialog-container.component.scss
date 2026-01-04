@@ -24,7 +24,6 @@
   @media screen and (max-width:1280px) {
     max-width: calc(100% - variables.$gap-1 * 2);
     max-height: calc(100% - variables.$gap-1 * 2);
-    margin: variables.$gap-1;
     top: 50% !important;
     left: 50% !important;
     transform: translate(-50%, -50%);

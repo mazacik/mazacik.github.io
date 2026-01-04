@@ -40,7 +40,7 @@ export class GalleryService {
   }
 
   public async delete(image: GalleryImage, archive: boolean, askForConfirmation: boolean = true): Promise<void> {
-    if (askForConfirmation && !await this.dialogService.createConfirmation({ title: 'Confirmation', messages: ['Are you sure you want to ' + (archive ? 'archive' : 'delete') + ' this image?'] })) {
+    if (askForConfirmation && !await this.dialogService.createConfirmation({ title: 'Confirmation', messages: ['Are you sure you want to ' + (archive ? 'archive' : 'delete') + ' this image?'], positiveButtonText: 'Delete', negativeButtonText: 'Cancel' })) {
       return;
     }
 

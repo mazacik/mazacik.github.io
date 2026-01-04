@@ -15,6 +15,12 @@ export class Tournament {
   private graph = new Map<GalleryImage, Set<GalleryImage>>();
   private availableComparisons: [GalleryImage, GalleryImage][];
   private availableKeyToIndex: Map<string, number>;
+  private imageById = new Map<string, GalleryImage>();
+  private imageByIdSize = 0;
+  private imageByIdSource: GalleryImage[] | null = null;
+  private comparisonAdjacency: Map<string, string[]> | null = null;
+  private comparisonAdjacencySource: [string, string][] | null = null;
+  private comparisonAdjacencyCount = 0;
 
   public comparisons: [GalleryImage, GalleryImage][];
   public comparison: [GalleryImage, GalleryImage];
@@ -292,6 +298,39 @@ export class Tournament {
   private makePairKey(a: GalleryImage, b: GalleryImage): string {
     const [first, second] = [a.id, b.id].sort();
     return `${first}|${second}`;
+  }
+
+  public getImageByIdMap(images: GalleryImage[]): Map<string, GalleryImage> {
+    if (this.imageByIdSource !== images || this.imageByIdSize !== images.length) {
+      this.imageById.clear();
+      for (const image of images) {
+        this.imageById.set(image.id, image);
+      }
+      this.imageByIdSource = images;
+      this.imageByIdSize = images.length;
+    }
+    return this.imageById;
+  }
+
+  public getComparisonAdjacency(comparisons: [string, string][]): Map<string, string[]> {
+    if (this.comparisonAdjacency && this.comparisonAdjacencySource === comparisons && this.comparisonAdjacencyCount === comparisons.length) {
+      return this.comparisonAdjacency;
+    }
+
+    const adjacency = new Map<string, string[]>();
+    for (const [winnerId, loserId] of comparisons) {
+      const targets = adjacency.get(winnerId);
+      if (targets) {
+        targets.push(loserId);
+      } else {
+        adjacency.set(winnerId, [loserId]);
+      }
+    }
+
+    this.comparisonAdjacency = adjacency;
+    this.comparisonAdjacencySource = comparisons;
+    this.comparisonAdjacencyCount = comparisons.length;
+    return adjacency;
   }
 
 }

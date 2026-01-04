@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ComponentRef, ElementRef, HostListener, Type, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, Component, ComponentRef, ElementRef, HostListener, NgZone, OnDestroy, Type, ViewChild, ViewContainerRef } from '@angular/core';
 import { DialogService } from '../../services/dialog.service';
 import { KeyboardShortcutService } from '../../services/keyboard-shortcut.service';
 import { ScreenUtils } from '../../utils/screen.utils';
@@ -15,7 +15,7 @@ import { DialogContentBase } from './dialog-content-base.class';
     '[class.display-none]': 'hidden'
   }
 })
-export class DialogContainerComponent<ResultType, InputsType> implements AfterViewInit {
+export class DialogContainerComponent<ResultType, InputsType> implements AfterViewInit, OnDestroy {
 
   protected ScreenUtils = ScreenUtils;
 
@@ -23,6 +23,7 @@ export class DialogContainerComponent<ResultType, InputsType> implements AfterVi
   public left: number;
   protected hidden: boolean = true;
   protected borderWarning: boolean = false;
+  private dialogElement: HTMLElement;
 
   public contentComponentType: Type<DialogContentBase<ResultType, InputsType>>;
   public inputs: InputsType;
@@ -36,12 +37,14 @@ export class DialogContainerComponent<ResultType, InputsType> implements AfterVi
   constructor(
     private elementRef: ElementRef<HTMLElement>,
     private dialogService: DialogService,
-    private keyboardShortcutService: KeyboardShortcutService
+    private keyboardShortcutService: KeyboardShortcutService,
+    private ngZone: NgZone
   ) {
     this.result = new Promise(resolve => this.resolve = resolve);
   }
 
   ngAfterViewInit(): void {
+    this.dialogElement = this.elementRef.nativeElement.querySelector('.dialog-container') as HTMLElement;
     if (ScreenUtils.isLargeScreen()) {
       if (!this.top) {
         this.top = Number.parseInt(window.localStorage.getItem(this.contentComponentType.name + '.top'));
@@ -74,6 +77,10 @@ export class DialogContainerComponent<ResultType, InputsType> implements AfterVi
     contentRef.changeDetectorRef.detectChanges();
   }
 
+  ngOnDestroy(): void {
+    this.detachDragListeners();
+  }
+
   protected isHidden(button: DialogButton): boolean {
     return button.hidden && button.hidden();
   }
@@ -104,46 +111,72 @@ export class DialogContainerComponent<ResultType, InputsType> implements AfterVi
       this.isMouseDown = true;
       this.mouseDownOffsetX = event.offsetX;
       this.mouseDownOffsetY = event.offsetY;
-      if ((this.top || this.top === 0) && (this.left || this.left === 0)) return;
-      const hostRect: DOMRect = (this.elementRef.nativeElement.firstChild as HTMLElement).getBoundingClientRect();
-      this.top = hostRect.top;
-      this.left = hostRect.left;
-      localStorage.setItem(this.contentComponentType.name + '.top', this.top.toString());
-      localStorage.setItem(this.contentComponentType.name + '.left', this.left.toString());
+      if (!((this.top || this.top === 0) && (this.left || this.left === 0))) {
+        const hostRect: DOMRect = (this.dialogElement ?? this.elementRef.nativeElement.firstChild as HTMLElement).getBoundingClientRect();
+        this.top = hostRect.top;
+        this.left = hostRect.left;
+        localStorage.setItem(this.contentComponentType.name + '.top', this.top.toString());
+        localStorage.setItem(this.contentComponentType.name + '.left', this.left.toString());
+        this.applyPosition();
+      }
+      this.attachDragListeners();
     }
   }
 
-  @HostListener('document:mouseup')
-  protected onHeaderMouseUp(): void {
+  private readonly onDocumentMouseMove = (event: MouseEvent): void => {
+    event.preventDefault();
+    if (!this.isMouseDown) return;
+    const hostRect: DOMRect = (this.dialogElement ?? this.elementRef.nativeElement.firstChild as HTMLElement).getBoundingClientRect();
+
+    if (this.left === undefined || this.left === null) this.left = hostRect.left;
+    if (this.top === undefined || this.top === null) this.top = hostRect.top;
+
+    const offsetX: number = event.clientX - hostRect.left;
+    if (event.movementX < 0 && offsetX < this.mouseDownOffsetX) {
+      this.left = this.left + event.movementX;
+      if (this.left < 0) this.left = 0;
+    } else if (event.movementX > 0 && offsetX > this.mouseDownOffsetX) {
+      this.left = this.left + event.movementX;
+      if (this.left + hostRect.width > window.innerWidth + 1) this.left = window.innerWidth - hostRect.width;
+    }
+
+    const offsetY: number = event.clientY - hostRect.top;
+    if (event.movementY < 0 && offsetY < this.mouseDownOffsetY) {
+      this.top = this.top + event.movementY;
+      if (this.top < 0) this.top = 0;
+    } else if (event.movementY > 0 && offsetY > this.mouseDownOffsetY) {
+      this.top = this.top + event.movementY;
+      if (this.top + hostRect.height > window.innerHeight + 2) this.top = window.innerHeight - hostRect.height + 2;
+    }
+
+    this.applyPosition();
+  };
+
+  private readonly onDocumentMouseUp = (): void => {
     this.isMouseDown = false;
     if (this.top !== undefined) localStorage.setItem(this.contentComponentType.name + '.top', this.top?.toString());
     if (this.left !== undefined) localStorage.setItem(this.contentComponentType.name + '.left', this.left?.toString());
+    this.detachDragListeners();
+  };
+
+  private attachDragListeners(): void {
+    this.ngZone.runOutsideAngular(() => {
+      const doc = this.elementRef.nativeElement.ownerDocument;
+      doc.addEventListener('mousemove', this.onDocumentMouseMove);
+      doc.addEventListener('mouseup', this.onDocumentMouseUp);
+    });
   }
 
-  @HostListener('document:mousemove', ['$event'])
-  protected onHeaderMouseMove(event: MouseEvent): void {
-    event.preventDefault();
-    if (this.isMouseDown) {
-      const hostRect: DOMRect = (this.elementRef.nativeElement.firstChild as HTMLElement).getBoundingClientRect();
+  private detachDragListeners(): void {
+    const doc = this.elementRef.nativeElement.ownerDocument;
+    doc.removeEventListener('mousemove', this.onDocumentMouseMove);
+    doc.removeEventListener('mouseup', this.onDocumentMouseUp);
+  }
 
-      const offsetX: number = event.clientX - hostRect.left;
-      if (event.movementX < 0 && offsetX < this.mouseDownOffsetX) {
-        this.left = this.left + event.movementX;
-        if (this.left < 0) this.left = 0;
-      } else if (event.movementX > 0 && offsetX > this.mouseDownOffsetX) {
-        this.left = this.left + event.movementX;
-        if (this.left + hostRect.width > window.innerWidth + 1) this.left = window.innerWidth - hostRect.width;
-      }
-
-      const offsetY: number = event.clientY - hostRect.top;
-      if (event.movementY < 0 && offsetY < this.mouseDownOffsetY) {
-        this.top = this.top + event.movementY;
-        if (this.top < 0) this.top = 0;
-      } else if (event.movementY > 0 && offsetY > this.mouseDownOffsetY) {
-        this.top = this.top + event.movementY;
-        if (this.top + hostRect.height > window.innerHeight + 2) this.top = window.innerHeight - hostRect.height + 2;
-      }
-    }
+  private applyPosition(): void {
+    if (!this.dialogElement) return;
+    if (this.top !== undefined) this.dialogElement.style.top = `${this.top}px`;
+    if (this.left !== undefined) this.dialogElement.style.left = `${this.left}px`;
   }
 
   protected overlayClick(): void {

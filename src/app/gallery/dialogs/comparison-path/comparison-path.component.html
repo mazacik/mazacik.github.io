@@ -1,17 +1,13 @@
-<div class="comparison-path">
-  @if (path.length) {
-    <div class="path-row">
-      @for (image of path; track image.id; let last = $last; let i = $index) {
-        <img class="path-thumb" [src]="image.thumbnailLink" loading="lazy" />
-        @if (!last) {
-          <span class="path-separator" [class.pending]="isRemovalPending(i)" (click)="toggleRemoval(i)">
-            <i class="fa-solid fa-angle-right"></i>
-            <i class="fa-solid fa-trash"></i>
-          </span>
-        }
+@if (path.length) {
+  <div class="path-row">
+    @for (image of path; track image.id; let last = $last; let i = $index) {
+      <img class="path-thumb" [src]="image.thumbnailLink" loading="lazy" (click)="openFullscreen(image)" />
+      @if (!last) {
+        <span class="path-separator" [class.pending]="isRemovalPending(i)" (click)="toggleRemoval(i)">
+          <i class="fa-solid fa-angle-right"></i>
+          <i class="fa-solid fa-trash"></i>
+        </span>
       }
-    </div>
-  } @else {
-    <div class="path-placeholder">No path found.</div>
-  }
-</div>
+    }
+  </div>
+}

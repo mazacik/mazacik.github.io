@@ -2,18 +2,14 @@
 
 :host {
   display: flex;
-}
-
-.comparison-path {
-  display: flex;
-  padding: variables.$gap-1;
-  min-width: 0;
+  overflow: auto;
 }
 
 .path-row {
   display: flex;
   align-items: center;
   gap: variables.$gap-1;
+  padding: variables.$gap-1;
   overflow-x: auto;
   overflow-y: hidden;
 }
@@ -63,12 +59,4 @@
       opacity: 0;
     }
   }
-}
-
-.path-placeholder {
-  border: 1px dashed var(--color-border);
-  border-radius: variables.$gap-1;
-  color: var(--color-text-secondary);
-  padding: variables.$gap-2;
-  text-align: center;
 }

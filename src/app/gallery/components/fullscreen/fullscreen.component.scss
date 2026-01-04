@@ -34,12 +34,12 @@
     justify-content: space-between;
     position: relative;
 
-    &.hide-sidebar-buttons {
-      .left-rail {
+    &.hide-comparison-relations {
+      .comparison-winners {
         transform: translateX(-100%);
       }
 
-      .right-rail {
+      .comparison-losers {
         transform: translateX(100%);
       }
     }
@@ -107,58 +107,36 @@
     }
   }
 
-  .side-rail {
+  .comparison-winners,
+  .comparison-losers {
     position: absolute;
     top: 0;
     bottom: 0;
     display: flex;
+    flex-direction: column;
     gap: variables.$gap-1;
     padding: variables.$gap-1;
     z-index: 1;
     transform: translateX(0);
     transition: transform variables.$transition-duration ease;
+    overflow: auto;
+    max-height: 100%;
+
+    img {
+      display: block;
+      width: 64px;
+      border-radius: variables.$gap-1;
+      border: 1px solid var(--color-border);
+      cursor: pointer;
+    }
   }
 
-  .side-rail.left-rail {
+  .comparison-winners {
     left: 0;
   }
 
-  .side-rail.right-rail {
+  .comparison-losers {
     right: 0;
-  }
-
-  .comparison-column {
-    display: flex;
-    flex-direction: column;
-    gap: variables.$gap-1;
-    overflow: auto;
-    max-height: 100%;
-  }
-
-  .comparison-thumb {
-    display: block;
-    width: 64px;
-    border-radius: variables.$gap-1;
-    border: 1px solid var(--color-border);
-    cursor: pointer;
-  }
-
-  .sidebar-left,
-  .sidebar-right {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    z-index: 1;
-    transition: margin variables.$transition-duration ease;
-    height: 100%;
-
-    .sidebar-start,
-    .sidebar-center,
-    .sidebar-end {
-      display: flex;
-      flex-direction: column;
-      gap: variables.$gap-1;
-    }
   }
 
 }

@@ -9,7 +9,6 @@ export interface HeaderAction {
   classes: HeaderClasses | (() => HeaderClasses);
   tooltip?: string | (() => string);
   onClick?: () => void;
-  containerClasses?: HeaderClasses | (() => HeaderClasses);
   disabled?: boolean | (() => boolean);
   hidden?: boolean | (() => boolean);
 }
@@ -115,7 +114,7 @@ export class ApplicationService {
     this.addHeaderButtons(section, [action], position);
   }
 
-  public addHeaderButtons(section: HeaderSection, actions: HeaderAction[], position: 'first' | 'last' = 'last'): void {
+  public addHeaderButtons(section: HeaderSection, actions: HeaderAction[], position: 'first' | 'last' = section === 'end' ? 'first' : 'last'): void {
     const existing = this.headerState[section] ?? [];
     const filteredExisting = existing.filter(action => !actions.some(newAction => newAction.id === action.id));
 
@@ -128,15 +127,10 @@ export class ApplicationService {
     this.updateHeader();
   }
 
-  public removeHeaderButton(section: HeaderSection, id: string): void {
-    this.removeHeaderButtons(section, [id]);
-  }
-
-  public removeHeaderButtons(section: HeaderSection, ids: string[]): void {
-    const sections: HeaderSection[] = section ? [section] : this.headerSections;
+  public removeHeaderButtons(ids: string[]): void {
     let headerChanged: boolean = false;
 
-    sections.forEach(currentSection => {
+    this.headerSections.forEach(currentSection => {
       const existing = this.headerState[currentSection] ?? [];
       const filtered = existing.filter(action => !ids.includes(action.id));
 

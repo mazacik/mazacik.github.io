@@ -40,9 +40,9 @@ export class GallerySerializationService {
     stateService.settings = data.settings ?? {} as GallerySettings;
 
     const filterService: FilterService = this.injector.get(FilterService);
-    filterService.filterFavorites.state = data.heartsFilter || 0;
-    filterService.filterBookmarks.state = data.bookmarksFilter || 0;
-    filterService.filterGroups.state = data.filterGroups || 0;
+    filterService.favoritesFilter.state = data.heartsFilter || 0;
+    filterService.bookmarksFilter.state = data.bookmarksFilter || 0;
+    filterService.groupsFilter.state = data.filterGroups || 0;
 
     if (!data.imageProperties) data.imageProperties = [];
     if (!data.groupProperties) data.groupProperties = [];
@@ -150,9 +150,9 @@ export class GallerySerializationService {
     const data: Data = {} as Data;
     data.dataFolderId = stateService.dataFolderId;
     data.archiveFolderId = stateService.archiveFolderId;
-    data.heartsFilter = filterService.filterFavorites.state;
-    data.bookmarksFilter = filterService.filterBookmarks.state;
-    data.filterGroups = filterService.filterGroups.state;
+    data.heartsFilter = filterService.favoritesFilter.state;
+    data.bookmarksFilter = filterService.bookmarksFilter.state;
+    data.filterGroups = filterService.groupsFilter.state;
     data.settings = stateService.settings;
     data.tournamentState = stateService.tournamentState;
     data.imageProperties = stateService.images.map(image => this.serializeImage(image));

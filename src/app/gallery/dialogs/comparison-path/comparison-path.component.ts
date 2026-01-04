@@ -12,7 +12,7 @@ import { GalleryStateService } from '../../services/gallery-state.service';
   templateUrl: './comparison-path.component.html',
   styleUrls: ['./comparison-path.component.scss']
 })
-export class ComparisonPathComponent extends DialogContentBase<void, { start: GalleryImage; end: GalleryImage; }> implements OnInit {
+export class ComparisonPathComponent extends DialogContentBase<void> implements OnInit {
 
   public override inputs: { start: GalleryImage; end: GalleryImage; };
 
@@ -25,8 +25,7 @@ export class ComparisonPathComponent extends DialogContentBase<void, { start: Ga
     footerButtons: [{
       text: () => this.hasPendingChanges ? 'Save' : 'Close',
       click: () => this.saveOrClose()
-    }],
-    allowMultiple: true
+    }]
   };
 
   protected path: GalleryImage[] = [];
@@ -70,6 +69,11 @@ export class ComparisonPathComponent extends DialogContentBase<void, { start: Ga
     return this.pendingRemovals.size > 0;
   }
 
+  protected openFullscreen(image: GalleryImage): void {
+    if (!image) return;
+    this.stateService.fullscreenImage.set(image);
+  }
+
   private saveOrClose(): void {
     if (!this.hasPendingChanges) {
       this.close();
@@ -90,10 +94,7 @@ export class ComparisonPathComponent extends DialogContentBase<void, { start: Ga
       this.stateService.tournament.start(images, imagesToCompare.length ? imagesToCompare : images, this.stateService.tournamentState);
 
       if (currentIds?.[0] && currentIds?.[1]) {
-        const imageById = new Map<string, GalleryImage>();
-        for (const image of images) {
-          imageById.set(image.id, image);
-        }
+        const imageById = this.stateService.tournament.getImageByIdMap(images);
         const left = imageById.get(currentIds[0]);
         const right = imageById.get(currentIds[1]);
         if (left && right) {
@@ -115,18 +116,8 @@ export class ComparisonPathComponent extends DialogContentBase<void, { start: Ga
       return;
     }
 
-    const comparisons = this.stateService.tournamentState?.comparisons ?? [];
-    if (comparisons.length === 0) return;
-
-    const adjacency = new Map<string, string[]>();
-    for (const [winnerId, loserId] of comparisons) {
-      const targets = adjacency.get(winnerId);
-      if (targets) {
-        targets.push(loserId);
-      } else {
-        adjacency.set(winnerId, [loserId]);
-      }
-    }
+    const adjacency = this.stateService.tournament.getComparisonAdjacency(this.stateService.tournamentState?.comparisons ?? []);
+    if (adjacency.size === 0) return;
 
     const queue: string[] = [start.id];
     const visited = new Set<string>([start.id]);
@@ -156,14 +147,8 @@ export class ComparisonPathComponent extends DialogContentBase<void, { start: Ga
 
     if (pathIds[0] !== start.id) return;
 
-    const imageById = new Map<string, GalleryImage>();
-    for (const image of this.stateService.images) {
-      imageById.set(image.id, image);
-    }
-    imageById.set(start.id, start);
-    imageById.set(end.id, end);
-
-    this.path = pathIds.map(id => imageById.get(id)).filter(Boolean);
+    const imageById = this.stateService.tournament.getImageByIdMap(this.stateService.images);
+    this.path = pathIds.map(id => imageById.get(id) ?? (id === start.id ? start : id === end.id ? end : undefined)).filter(Boolean);
   }
 
   private makeEdgeKey(winnerId: string, loserId: string): string {

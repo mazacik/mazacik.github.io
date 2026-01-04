@@ -2,9 +2,7 @@ import { Component, effect, HostListener } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './gallery/components/header/header.component';
 import { Delay } from './shared/classes/delay.class';
-import { ApplicationSettingsComponent } from './shared/dialogs/application-settings/application-settings.component';
 import { ApplicationService } from './shared/services/application.service';
-import { DialogService } from './shared/services/dialog.service';
 import { KeyboardShortcutService } from './shared/services/keyboard-shortcut.service';
 
 @Component({
@@ -22,26 +20,13 @@ export class AppComponent {
 
   constructor(
     private keyboardShortcutService: KeyboardShortcutService,
-    protected applicationService: ApplicationService,
-    protected dialogService: DialogService
+    protected applicationService: ApplicationService
   ) {
     effect(() => {
       if (this.applicationService.changes() !== undefined) {
         this.hideLoadingBarDelay.restart();
       }
     });
-
-    this.applicationService.addHeaderButtons('end', [{
-      id: 'toggle-theme',
-      tooltip: 'Toggle Theme',
-      classes: () => ['fa-solid', this.applicationService.isDarkTheme() ? 'fa-moon' : 'fa-sun'],
-      onClick: () => this.applicationService.toggleTheme()
-    }, {
-      id: 'open-settings',
-      tooltip: 'Settings',
-      classes: ['fa-solid', 'fa-gear'],
-      onClick: () => this.dialogService.create(ApplicationSettingsComponent)
-    }]);
   }
 
   protected getLoadingBarColor(): string {

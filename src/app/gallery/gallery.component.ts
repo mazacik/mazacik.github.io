@@ -1,6 +1,10 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { KeyboardShortcutTarget } from '../shared/classes/keyboard-shortcut-target.interface';
+import { ApplicationSettingsComponent } from '../shared/dialogs/application-settings/application-settings.component';
 import { ApplicationService } from '../shared/services/application.service';
 import { DialogService } from '../shared/services/dialog.service';
+import { KeyboardShortcutService } from '../shared/services/keyboard-shortcut.service';
+import { ArrayUtils } from '../shared/utils/array.utils';
 import { GoogleFileUtils } from '../shared/utils/google-file.utils';
 import { ScreenUtils } from '../shared/utils/screen.utils';
 import { FilterComponent } from './components/filter/filter.component';
@@ -8,10 +12,11 @@ import { FullscreenComponent } from './components/fullscreen/fullscreen.componen
 import { MasonryComponent } from './components/masonry/masonry.component';
 import { TaggerComponent } from './components/tagger/tagger.component';
 import { ImageTournamentComponent } from './dialogs/image-comparison/image-tournament.component';
+import { GalleryImage } from './models/gallery-image.class';
 import { FilterService } from './services/filter.service';
-import { GalleryGoogleDriveService } from './services/gallery-google-drive.service';
 import { GallerySerializationService } from './services/gallery-serialization.service';
 import { GalleryStateService, GalleryViewMode } from './services/gallery-state.service';
+import { GalleryService } from './services/gallery.service';
 
 @Component({
   selector: 'app-gallery',
@@ -25,9 +30,11 @@ import { GalleryStateService, GalleryViewMode } from './services/gallery-state.s
   templateUrl: './gallery.component.html',
   styleUrls: ['./gallery.component.scss']
 })
-export class GalleryComponent implements OnInit, OnDestroy {
+export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestroy {
 
-  protected loading: boolean = true;
+  @ViewChild(ImageTournamentComponent)
+  private imageTournamentComponent?: ImageTournamentComponent;
+
   protected get viewMode(): GalleryViewMode {
     return this.stateService.viewMode;
   }
@@ -36,13 +43,16 @@ export class GalleryComponent implements OnInit, OnDestroy {
     this.stateService.viewMode = value;
   }
 
+  protected loading: boolean = true;
+
   constructor(
     private serializationService: GallerySerializationService,
     private applicationService: ApplicationService,
-    protected stateService: GalleryStateService,
-    private googleService: GalleryGoogleDriveService,
+    private keyboardShortcutService: KeyboardShortcutService,
+    private galleryService: GalleryService,
     private filterService: FilterService,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    protected stateService: GalleryStateService
   ) {
     this.applicationService.loading.set(true);
   }
@@ -50,28 +60,134 @@ export class GalleryComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.configureHeader();
     this.registerModuleSettings();
-    this.serializationService.processData().then(() => this.loading = false);
+    this.serializationService.processData().then(() => {
+      this.keyboardShortcutService.register(this);
+      this.loading = false;
+    });
   }
 
   ngOnDestroy(): void {
-    this.applicationService.removeHeaderButtons('start', ['toggle-view']);
-    this.applicationService.removeHeaderButtons('end', ['google-drive']);
+    this.keyboardShortcutService.unregister(this);
+  }
+
+  processKeyboardShortcut(event: KeyboardEvent): void {
+    if (this.stateService.fullscreenImage()) {
+      switch (event.code) {
+        case 'Escape':
+          this.stateService.fullscreenImage.set(null);
+          break;
+        case 'KeyR':
+          this.setRandomTarget();
+          break;
+        case 'KeyG':
+          this.setRandomGroupTarget();
+          break;
+      }
+    }
   }
 
   private configureHeader(): void {
+    const isMasonry = () => this.stateService.viewMode === 'masonry' && !isFullscreen() && !isFilter() && !isTagger();
+    const isFullscreen = () => !!this.stateService.fullscreenImage() && !isTagger();
+    const isFilter = () => this.stateService.viewMode === 'masonry' && !ScreenUtils.isLargeScreen() && this.stateService.filterVisible;
+    const isTagger = () => !ScreenUtils.isLargeScreen() && this.stateService.taggerVisible;
+    const isTournament = () => this.stateService.viewMode === 'tournament' && !isFullscreen();
+
     this.applicationService.addHeaderButtons('start', [{
-      id: 'toggle-view',
-      tooltip: () => this.viewMode === 'masonry' ? 'Comparison' : 'Masonry',
-      classes: () => this.viewMode === 'masonry' ? ['fa-solid', 'fa-code-compare'] : ['fa-solid', 'fa-images'],
-      onClick: () => this.viewMode = this.viewMode === 'masonry' ? 'tournament' : 'masonry'
+      id: 'open-filter',
+      tooltip: 'Open Filter',
+      classes: ['fa-solid', 'fa-filter'],
+      hidden: () => !isMasonry() || this.stateService.filterVisible,
+      onClick: () => this.stateService.filterVisible = true
+    }, {
+      id: 'create-group',
+      tooltip: 'Create Image Group',
+      classes: ['fa-solid', 'fa-folder-plus'],
+      hidden: () => !isMasonry(),
+      onClick: () => this.galleryService.openImageGroupEditor()
+    }, {
+      id: 'random-image',
+      tooltip: 'Random Image',
+      classes: ['fa-solid', 'fa-shuffle'],
+      hidden: () => !isFullscreen(),
+      onClick: () => this.setRandomTarget()
+    }, {
+      id: 'random-group-image',
+      tooltip: 'Random Image from Group',
+      classes: ['fa-solid', 'fa-arrows-spin'],
+      hidden: () => !isFullscreen() || !this.stateService.fullscreenImage().group,
+      onClick: () => this.setRandomGroupTarget()
+    }, {
+      id: 'group-comparison',
+      tooltip: 'Open Group Comparison',
+      classes: ['fa-solid', 'fa-code-compare'],
+      hidden: () => !isFullscreen() || !this.stateService.fullscreenImage().group,
+      onClick: () => this.openGroupComparison()
+    }, {
+      id: 'group-manager',
+      tooltip: 'Open Image Group Manager',
+      classes: ['fa-solid', 'fa-object-group'],
+      hidden: () => !isFullscreen() || !this.stateService.fullscreenImage().group,
+      onClick: () => this.galleryService.openImageGroupEditor(this.stateService.fullscreenImage().group)
+    }]);
+
+    this.applicationService.addHeaderButtons('center', [{
+      id: 'comparison-undo',
+      tooltip: 'Undo Comparison',
+      classes: ['fa-solid', 'fa-delete-left'],
+      hidden: () => !isTournament(),
+      onClick: () => this.imageTournamentComponent?.undo(),
+      disabled: () => !this.stateService.tournament || this.stateService.tournament.comparisons.length == 0
+    }, {
+      id: 'comparison-skip',
+      tooltip: 'Skip Comparison',
+      classes: ['fa-solid', 'fa-forward'],
+      hidden: () => !isTournament(),
+      onClick: () => this.imageTournamentComponent?.skip()
+    }, {
+      id: 'comparison-progress-bar',
+      tooltip: 'Toggle Comparison Progress Bar',
+      classes: ['fa-solid', 'fa-list-check'],
+      hidden: () => !isTournament(),
+      onClick: () => this.imageTournamentComponent?.toggleProgressBar()
     }]);
 
     this.applicationService.addHeaderButtons('end', [{
-      id: 'google-drive',
-      tooltip: 'Google Drive',
-      classes: ['fa-brands', 'fa-google-drive'],
-      onClick: () => this.googleService.openFolderById(this.stateService.dataFolderId),
-      hidden: () => !ScreenUtils.isLargeScreen()
+      id: 'open-tagger',
+      tooltip: 'Open Tagger',
+      classes: ['fa-solid', 'fa-tags'],
+      onClick: () => this.stateService.taggerVisible = true,
+      hidden: () => !isFullscreen() || this.stateService.taggerVisible
+    }, {
+      id: 'close-fullscreen',
+      tooltip: 'Close Fullscreen',
+      classes: ['fa-solid', 'fa-times'],
+      onClick: () => this.stateService.fullscreenImage.set(null),
+      hidden: () => !isFullscreen()
+    }, {
+      id: 'close-filter',
+      tooltip: 'Close Filter',
+      classes: ['fa-solid', 'fa-times'],
+      onClick: () => this.stateService.filterVisible = false,
+      hidden: () => !isFilter()
+    }, {
+      id: 'close-tagger',
+      tooltip: 'Close Tagger',
+      classes: ['fa-solid', 'fa-times'],
+      onClick: () => this.stateService.taggerVisible = false,
+      hidden: () => !isTagger()
+    }, {
+      id: 'toggle-view',
+      tooltip: () => this.viewMode === 'masonry' ? 'Open Comparison' : 'Open Masonry',
+      classes: () => this.viewMode === 'masonry' ? ['fa-solid', 'fa-code-compare'] : ['fa-solid', 'fa-images'],
+      onClick: () => this.viewMode = this.viewMode === 'masonry' ? 'tournament' : 'masonry',
+      hidden: () => !isMasonry() && !isTournament()
+    }, {
+      id: 'open-settings',
+      tooltip: 'Open Settings',
+      classes: ['fa-solid', 'fa-gear'],
+      onClick: () => this.dialogService.create(ApplicationSettingsComponent),
+      hidden: () => !isMasonry() && !isTournament()
     }]);
   }
 
@@ -148,6 +264,45 @@ export class GalleryComponent implements OnInit, OnDestroy {
         }
       }]
     });
+  }
+
+  private setRandomTarget(): void {
+    const filter: GalleryImage[] = this.filterService.images();
+    if (!ArrayUtils.isEmpty(filter)) {
+      let nextTarget: GalleryImage;
+      const currentTarget: GalleryImage = this.stateService.fullscreenImage();
+
+      if (currentTarget) {
+        if (currentTarget.group) {
+          nextTarget = ArrayUtils.getRandom(filter, currentTarget.group.images);
+        } else {
+          nextTarget = ArrayUtils.getRandom(filter, [currentTarget]);
+        }
+      } else {
+        nextTarget = ArrayUtils.getRandom(filter);
+      }
+
+      if (nextTarget) {
+        this.stateService.fullscreenImage.set(nextTarget);
+      }
+    }
+  }
+
+  protected setRandomGroupTarget(): void {
+    const target: GalleryImage = this.stateService.fullscreenImage();
+    if (target?.group) {
+      this.stateService.fullscreenImage.set(ArrayUtils.getRandom(target.group.images, [target]));
+    }
+  }
+
+  protected openGroupComparison(): void {
+    const target: GalleryImage = this.stateService.fullscreenImage();
+    if (target?.group) {
+      this.stateService.viewMode = 'tournament';
+      const images: GalleryImage[] = this.stateService.images.filter(image => GoogleFileUtils.isImage(image));
+      const imagesToCompare: GalleryImage[] = target.group.images.filter(image => GoogleFileUtils.isImage(image));
+      this.stateService.tournament.start(images, imagesToCompare, this.stateService.tournamentState);
+    }
   }
 
   private bookmarkAllImages(): void {
