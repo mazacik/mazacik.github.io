@@ -1,7 +1,7 @@
 @if (stateService.fullscreenImage(); as target) {
   <img style="display: none" [src]="target.thumbnailLink" (load)="loadingT = false" />
   <img style="display: none" [src]="target.contentLink" (load)="loadingC = false" />
-  <div class="fullscreen-container anim-fade-in" [class.hide-comparison-relations]="hideComparisonRelations" animate.leave="anim-fade-out">
+  <div class="fullscreen-container anim-fade-in" [class.hide-comparison-relations]="!stateService.settings.showFullscreenComparisonRelations" animate.leave="anim-fade-out">
     <div class="comparison-winners">
       @if (comparisonWinners.length) {
         @for (image of comparisonWinners; track image.id) {

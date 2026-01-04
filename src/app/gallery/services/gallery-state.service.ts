@@ -24,7 +24,6 @@ export class GalleryStateService {
   public readonly fullscreenImage: WritableSignal<GalleryImage> = signal(null);
 
   public filterVisible: boolean = ScreenUtils.isLargeScreen();
-  public taggerVisible: boolean = ScreenUtils.isLargeScreen();
 
   public groupEditorGroup: GalleryGroup;
 

@@ -30,8 +30,6 @@ export class FullscreenComponent {
   protected currentGroup: GalleryGroup;
   protected groupTracker = 0;
 
-  protected hideComparisonRelations: boolean = false;
-
   protected comparisonWinners: GalleryImage[] = [];
   protected comparisonLosers: GalleryImage[] = [];
 
@@ -93,7 +91,6 @@ export class FullscreenComponent {
   }
 
   protected onImageClick(image: GalleryImage): void {
-    this.hideComparisonRelations = !this.hideComparisonRelations;
     if (this.applicationService.reduceDataUsage) {
       image.thumbnailLink = image.thumbnailLink.replace('=s220', '=s440');
     }

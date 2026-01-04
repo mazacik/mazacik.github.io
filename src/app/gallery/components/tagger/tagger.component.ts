@@ -11,10 +11,7 @@ import { TaggerRowComponent } from './tagger-row/tagger-row.component';
   selector: 'app-tagger',
   imports: [CommonModule, TaggerRowComponent],
   templateUrl: './tagger.component.html',
-  styleUrls: ['./tagger.component.scss'],
-  host: {
-    '[class.hidden]': '!stateService.taggerVisible'
-  }
+  styleUrls: ['./tagger.component.scss']
 })
 export class TaggerComponent {
 

@@ -7,7 +7,10 @@
     <app-image-tournament [class.transparent]="viewMode != 'tournament'"></app-image-tournament>
     <div class="fullscreen-container glass-effect height-100" [class.transparent]="!stateService.fullscreenImage()">
       <app-fullscreen></app-fullscreen>
-      <app-tagger></app-tagger>
+      <div class="tagger-container">
+        <div class="tagger-scroll-offset-helper"></div>
+        <app-tagger></app-tagger>
+      </div>
     </div>
   </div>
 }

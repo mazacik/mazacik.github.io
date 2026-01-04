@@ -6,27 +6,17 @@
   transition: variables.$transition-duration;
   overflow: hidden;
   height: 100%;
-
-  &.hidden {
-    opacity: 0;
-    pointer-events: none;
-  }
+  background-color: color-mix(in srgb, var(--color-surface-0) 65%, transparent);
 
   @media screen and (max-width:1280px) {
-    position: absolute;
-    z-index: 1;
     backdrop-filter: blur(5px);
-    background-color: color-mix(in srgb, var(--color-surface-0) 65%, transparent);
+    z-index: 1;
+    position: relative;
   }
 
   @media screen and (min-width:1280px) {
     width: 300.8px;
     min-width: 300.8px;
-
-    &.hidden {
-      width: 0;
-      min-width: 0;
-    }
   }
 
   .file-information {
