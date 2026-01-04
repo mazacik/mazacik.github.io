@@ -35,8 +35,12 @@ export class GalleryService {
     this.dialogService.create(TagManagerComponent, { tag: tag });
   }
 
-  public openYandexReverseImageSearch(event: MouseEvent, target: GalleryImage): void {
-    window.open('https://yandex.com/images/search?rpt=imageview&url=' + encodeURIComponent(target.thumbnailLink.replace(new RegExp('=s...'), '=s9999')), '_blank');
+  public openYandexRIS(event: MouseEvent, target: GalleryImage): void {
+    window.open('https://yandex.com/images/search?rpt=imageview&url=' + encodeURIComponent('https://drive.google.com/uc?export=view&id=' + target.id), '_blank');
+  }
+
+  public openGoogleRIS(event: MouseEvent, target: GalleryImage): void {
+    window.open('https://lens.google.com/uploadbyurl?url=' + encodeURIComponent('https://drive.google.com/uc?export=view&id=' + target.id), '_blank');
   }
 
   public async delete(image: GalleryImage, archive: boolean, askForConfirmation: boolean = true): Promise<void> {

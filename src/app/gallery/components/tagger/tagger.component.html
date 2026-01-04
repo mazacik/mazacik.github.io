@@ -37,18 +37,15 @@
   <div class="h-separator margins"></div>
   <div class="flex gap center padding-1">
     <div class="flex gap desktop-only">
-      <i class="icon-button fa-solid fa-download" title="Download" tpPlacement="right" (click)="googleService.download(target)"></i>
+      <i class="icon-button fa-solid fa-download" title="Download" (click)="googleService.download(target)"></i>
+      <i class="icon-button fa-brands fa-google-drive" title="Google Drive" (click)="$event.stopPropagation(); googleService.openSearch(target.name)"></i>
       <div class="v-separator"></div>
-      <i class="icon-button fa-brands fa-google-drive" title="Google Drive" tpPlacement="right" (click)="$event.stopPropagation(); googleService.openSearch(target.name)"></i>
-      <i
-        class="icon-button fa-brands fa-yandex-international"
-        title="Yandex RIS"
-        tpPlacement="right"
-        (click)="$event.stopPropagation(); galleryService.openYandexReverseImageSearch($event, target)"></i>
+      <i class="icon-button fa-brands fa-google" title="Google Lens" (click)="$event.stopPropagation(); galleryService.openGoogleRIS($event, target)"></i>
+      <i class="icon-button fa-brands fa-yandex-international" title="Yandex RIS" (click)="$event.stopPropagation(); galleryService.openYandexRIS($event, target)"></i>
       <div class="v-separator"></div>
     </div>
-    <i class="icon-button fa-solid fa-box" title="Archive" tpPlacement="right" (click)="galleryService.delete(target, true)"></i>
-    <i class="icon-button fa-solid fa-trash" title="Delete" tpPlacement="right" (click)="galleryService.delete(target, false)"></i>
+    <i class="icon-button fa-solid fa-box" title="Archive" (click)="galleryService.delete(target, true)"></i>
+    <i class="icon-button fa-solid fa-trash" title="Delete" (click)="galleryService.delete(target, false)"></i>
   </div>
   <div class="h-separator margins"></div>
   <div class="flex center gap-3 margins-3-v">
