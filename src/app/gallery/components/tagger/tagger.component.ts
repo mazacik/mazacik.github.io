@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, effect } from '@angular/core';
+import { GalleryGroup } from '../../models/gallery-group.class';
 import { GalleryImage } from '../../models/gallery-image.class';
+import { ImageComponent } from 'src/app/shared/components/image/image.component';
 import { GalleryGoogleDriveService } from '../../services/gallery-google-drive.service';
 import { GalleryStateService } from '../../services/gallery-state.service';
 import { GalleryService } from '../../services/gallery.service';
@@ -9,7 +11,7 @@ import { TaggerRowComponent } from './tagger-row/tagger-row.component';
 
 @Component({
   selector: 'app-tagger',
-  imports: [CommonModule, TaggerRowComponent],
+  imports: [CommonModule, TaggerRowComponent, ImageComponent],
   templateUrl: './tagger.component.html',
   styleUrls: ['./tagger.component.scss']
 })
@@ -17,6 +19,8 @@ export class TaggerComponent {
 
   protected target: GalleryImage;
   protected groupMode: boolean = false;
+  protected currentGroup: GalleryGroup;
+  protected groupTracker = 0;
 
   constructor(
     protected tagService: TagService,
@@ -28,6 +32,12 @@ export class TaggerComponent {
       this.target = this.stateService.fullscreenImage();
       if (this.target == null) {
         this.groupMode = false;
+        return;
+      }
+
+      if (this.currentGroup != this.target.group) {
+        this.currentGroup = this.target.group;
+        this.groupTracker++;
       }
     });
   }

@@ -1,5 +1,20 @@
 <div class="v-separator desktop-only"></div>
 <div class="tagger-container">
+  @if (target?.group) {
+    <div class="group-images-container x-scrollbar-container height-auto">
+      @for (group of [target.group]; track groupTracker) {
+        <div class="group-images-scroll-container anim-fade-in" animate.leave="anim-fade-out">
+          @for (groupImage of group.images; track groupImage.id) {
+            <div class="group-image-container" (click)="stateService.fullscreenImage.set(groupImage)">
+              <app-image [src]="groupImage.thumbnailLink" [class.grayscale]="!groupImage.passesFilters" [style.width.px]="120 * groupImage.aspectRatio"></app-image>
+              <div class="target-border" [class.target]="groupImage == target"></div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+    <div class="h-separator margins"></div>
+  }
   <div class="overflow-hidden">
     @if (target) {
       <div class="file-information">

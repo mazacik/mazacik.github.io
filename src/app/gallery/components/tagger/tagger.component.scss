@@ -70,6 +70,61 @@
       min-width: 300px;
     }
 
+    .group-images-container {
+      height: 120px;
+      display: flex;
+      align-items: center;
+      overflow-x: auto;
+      overflow-y: hidden;
+      margin: variables.$gap-1;
+      scrollbar-gutter: stable;
+
+      .group-images-scroll-container {
+        display: flex;
+        gap: variables.$gap-1;
+        height: 100%;
+        flex: 0 0 auto;
+        width: max-content;
+        margin: 0 auto;
+
+        .group-image-container {
+          display: flex;
+          align-items: center;
+          flex: 0 0 auto;
+          height: 100%;
+          position: relative;
+          border-radius: variables.$gap-1;
+          cursor: pointer;
+          overflow: hidden;
+
+          app-image {
+            flex: 0 0 auto;
+            height: 100%;
+          }
+
+          app-image.grayscale {
+            opacity: 0.5 !important;
+            filter: grayscale(1);
+          }
+
+          .target-border {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            border-radius: inherit;
+            pointer-events: none;
+
+            &.target {
+              box-sizing: border-box;
+              border: 2px solid var(--color-positive);
+            }
+          }
+        }
+      }
+    }
+
     .header {
       display: grid;
       grid-template-columns: 1fr auto 1fr;

@@ -4,10 +4,8 @@ import { SafeUrl } from '@angular/platform-browser';
 import { ImageComponent } from 'src/app/shared/components/image/image.component';
 import { ApplicationService } from 'src/app/shared/services/application.service';
 import { DialogService } from 'src/app/shared/services/dialog.service';
-import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 import { GoogleFileUtils } from 'src/app/shared/utils/google-file.utils';
 import { ComparisonPathComponent } from '../../dialogs/comparison-path/comparison-path.component';
-import { GalleryGroup } from '../../models/gallery-group.class';
 import { GalleryImage } from '../../models/gallery-image.class';
 import { FilterService } from '../../services/filter.service';
 import { GalleryGoogleDriveService } from '../../services/gallery-google-drive.service';
@@ -26,9 +24,6 @@ export class FullscreenComponent {
   protected loadingT: boolean = true;
   protected loadingC: boolean = true;
   protected video: boolean = false;
-
-  protected currentGroup: GalleryGroup;
-  protected groupTracker = 0;
 
   protected comparisonWinners: GalleryImage[] = [];
   protected comparisonLosers: GalleryImage[] = [];
@@ -55,11 +50,6 @@ export class FullscreenComponent {
         }
 
         this.refreshComparisonRelations(target);
-
-        if (this.currentGroup != target.group) {
-          this.currentGroup = target.group;
-          this.groupTracker++;
-        }
 
         // used in <video> display method
         // if (GoogleFileUtils.isVideo(image) && !this.applicationService.reduceBandwidth && !image.contentLink) {
@@ -106,22 +96,6 @@ export class FullscreenComponent {
       const newTab: Window = window.open('about:blank', 'Video Snapshot');
       newTab.document.write("<img src='" + canvas.toDataURL('image/png') + "' alt='from canvas'/>");
     }
-  }
-
-  protected isFirstGroupImage(image: GalleryImage): boolean {
-    return ArrayUtils.isFirst(image.group.images.filter(groupImage => groupImage.passesFilters), image);
-  }
-
-  protected isLastGroupImage(image: GalleryImage): boolean {
-    return ArrayUtils.isLast(image.group.images.filter(groupImage => groupImage.passesFilters), image);
-  }
-
-  protected moveTargetGroupLeft(image: GalleryImage): void {
-    this.stateService.fullscreenImage.set(ArrayUtils.getPrevious(image.group.images.filter(groupImage => groupImage.passesFilters), image, true));
-  }
-
-  protected moveTargetGroupRight(image: GalleryImage): void {
-    this.stateService.fullscreenImage.set(ArrayUtils.getNext(image.group.images.filter(groupImage => groupImage.passesFilters), image, true));
   }
 
 }
