@@ -501,6 +501,10 @@ hr {
   height: 100%;
 }
 
+.button-height {
+  height: variables.$button-height;
+}
+
 .button {
   width: fit-content;
   min-width: variables.$button-height;
@@ -520,12 +524,6 @@ hr {
   transition-property: background-color, opacity;
   transition-duration: variables.$transition-duration;
 
-  &:hover {
-    color: var(--color-text-secondary-hover);
-    background-color: var(--color-button-background-secondary-hover);
-  }
-
-  &:active,
   &.active {
     color: var(--color-text-secondary-active);
     background-color: var(--color-button-background-secondary-active);
@@ -535,6 +533,18 @@ hr {
     min-width: variables.$button-height-smaller;
     min-height: variables.$button-height-smaller;
     padding: 0 variables.$gap-1;
+  }
+
+  @media screen and (min-width:1280px) {
+    &:hover {
+      color: var(--color-text-secondary-hover);
+      background-color: var(--color-button-background-secondary-hover);
+    }
+
+    &:active {
+      color: var(--color-text-secondary-active);
+      background-color: var(--color-button-background-secondary-active);
+    }
   }
 }
 
@@ -553,12 +563,6 @@ hr {
   border: 1px solid var(--color-border);
   background-color: var(--color-button-background-secondary);
 
-  &:hover {
-    color: var(--color-text-secondary-hover);
-    background-color: var(--color-button-background-secondary-hover);
-  }
-
-  &:active,
   &.active {
     color: var(--color-text-secondary-active);
     background-color: var(--color-button-background-secondary-active);
@@ -581,6 +585,16 @@ hr {
 
     transition-property: background-color;
     transition-duration: variables.$transition-duration * 0.5;
+
+    &:hover {
+      color: var(--color-text-secondary-hover);
+      background-color: var(--color-button-background-secondary-hover);
+    }
+
+    &:active {
+      color: var(--color-text-secondary-active);
+      background-color: var(--color-button-background-secondary-active);
+    }
   }
 }
 

@@ -1,35 +1,30 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect, HostBinding } from '@angular/core';
-import { ScreenUtils } from 'src/app/shared/utils/screen.utils';
+import { Component, effect } from '@angular/core';
 import { GalleryImage } from '../../models/gallery-image.class';
+import { GalleryGoogleDriveService } from '../../services/gallery-google-drive.service';
 import { GalleryStateService } from '../../services/gallery-state.service';
+import { GalleryService } from '../../services/gallery.service';
 import { TagService } from '../../services/tag.service';
 import { TaggerRowComponent } from './tagger-row/tagger-row.component';
 
 @Component({
-    selector: 'app-tagger',
-    imports: [
-        CommonModule,
-        TaggerRowComponent
-    ],
-    templateUrl: './tagger.component.html',
-    styleUrls: ['./tagger.component.scss']
+  selector: 'app-tagger',
+  imports: [CommonModule, TaggerRowComponent],
+  templateUrl: './tagger.component.html',
+  styleUrls: ['./tagger.component.scss'],
+  host: {
+    '[class.hidden]': '!stateService.taggerVisible'
+  }
 })
 export class TaggerComponent {
-
-  protected ScreenUtils = ScreenUtils;
-  protected fileInfoOpen: boolean = false;
-
-  @HostBinding('class.visible')
-  public get classVisible(): boolean {
-    return this.stateService.taggerVisible;
-  }
 
   protected target: GalleryImage;
   protected groupMode: boolean = false;
 
   constructor(
     protected tagService: TagService,
+    protected galleryService: GalleryService,
+    protected googleService: GalleryGoogleDriveService,
     protected stateService: GalleryStateService
   ) {
     effect(() => {

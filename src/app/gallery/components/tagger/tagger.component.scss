@@ -7,7 +7,7 @@
   overflow: hidden;
   height: 100%;
 
-  &:not(.visible) {
+  &.hidden {
     opacity: 0;
     pointer-events: none;
   }
@@ -23,7 +23,7 @@
     width: 300.8px;
     min-width: 300.8px;
 
-    &:not(.visible) {
+    &.hidden {
       width: 0;
       min-width: 0;
     }
@@ -65,15 +65,7 @@
     }
   }
 
-  .file-placeholder {
-    border: 1px dashed var(--color-border);
-    border-radius: variables.$gap-1;
-    color: var(--color-text-secondary);
-    padding: variables.$gap-1;
-    text-align: center;
-  }
-
-  .tag-manager-container {
+  .tagger-container {
     display: flex;
     flex-direction: column;
     box-sizing: border-box;

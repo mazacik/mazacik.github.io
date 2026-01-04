@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { ScreenUtils } from 'src/app/shared/utils/screen.utils';
-import { Filter } from '../../models/filter.interface';
+import { Filter } from '../../models/filter.class';
 import { FilterService } from '../../services/filter.service';
 import { GallerySerializationService } from '../../services/gallery-serialization.service';
 import { GalleryStateService } from '../../services/gallery-state.service';
@@ -18,8 +17,6 @@ import { FilterRowComponent } from './filter-row/filter-row.component';
   }
 })
 export class FilterComponent {
-
-  protected ScreenUtils = ScreenUtils;
 
   constructor(
     private serializationService: GallerySerializationService,
@@ -63,4 +60,5 @@ export class FilterComponent {
   protected canClear(): boolean {
     return this.tagService.tags.some(tag => tag.state != 0);
   }
+
 }

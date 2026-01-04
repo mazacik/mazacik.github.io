@@ -26,7 +26,7 @@ export class ConfirmationDialogComponent extends DialogContentBase<boolean> impl
         text: () => this.inputs.positiveButtonText || 'Yes',
         click: () => this.resolve(true)
       }, {
-        text: () => this.inputs.negativeButtonText || 'No',
+        text: () => this.inputs.negativeButtonText || 'Cancel',
         click: () => this.resolve(false)
       }]
     };

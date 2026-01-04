@@ -1,5 +1,5 @@
 <div class="v-separator desktop-only"></div>
-<div class="tag-manager-container">
+<div class="tagger-container">
   @if (stateService.settings.showFileInformation) {
     <div class="overflow-hidden">
       @if (target) {
@@ -18,13 +18,38 @@
             </div>
           }
         </div>
-      } @else {
-        <div class="file-placeholder">No file selected.</div>
       }
     </div>
   }
   <div class="h-separator margins"></div>
-  <div class="header">
+  <div class="flex gap center padding-1">
+    <div class="flex gap desktop-only">
+      <i class="icon-button fa-solid fa-download" title="Download" tpPlacement="right" (click)="googleService.download(target)"></i>
+      <div class="v-separator"></div>
+      <i class="icon-button fa-brands fa-google-drive" title="Google Drive" tpPlacement="right" (click)="$event.stopPropagation(); googleService.openSearch(target.name)"></i>
+      <i
+        class="icon-button fa-brands fa-yandex-international"
+        title="Yandex RIS"
+        tpPlacement="right"
+        (click)="$event.stopPropagation(); galleryService.openYandexReverseImageSearch($event, target)"></i>
+      <div class="v-separator"></div>
+    </div>
+    <i class="icon-button fa-solid fa-box" title="Archive" tpPlacement="right" (click)="galleryService.delete(target, true)"></i>
+    <i class="icon-button fa-solid fa-trash" title="Delete" tpPlacement="right" (click)="galleryService.delete(target, false)"></i>
+  </div>
+  <div class="h-separator margins"></div>
+  <div class="flex center gap-3 margins-3-v">
+    <div class="flex center gap cursor-pointer hover-brighten" [class.positive]="target?.heart" (click)="galleryService.toggleFavorite(target)">
+      <i class="fa-heart" [ngClass]="target?.heart ? 'fa-solid' : 'fa-regular'" style="margin-top: 1px"></i>
+      <span>Favorite</span>
+    </div>
+    <div class="flex center gap cursor-pointer hover-brighten" [class.positive]="target?.bookmark" (click)="galleryService.toggleBookmark(target)">
+      <i class="fa-bookmark" [ngClass]="target?.bookmark ? 'fa-solid' : 'fa-regular'" style="margin-top: 1px"></i>
+      <span>Bookmark</span>
+    </div>
+  </div>
+  <div class="h-separator margins"></div>
+  <div class="header desktop-only">
     <div class="flex gap">
       @if (target?.group) {
         <i class="icon-button fa-solid hover-brighten" [ngClass]="groupMode ? 'fa-images' : 'fa-image'" [class.positive]="groupMode" (click)="groupMode = !groupMode"></i>
@@ -32,10 +57,10 @@
     </div>
     <span class="margins-3-h">Tag Manager</span>
     <div class="flex gap flex-end-h">
-      <i class="icon-button fa-solid" [ngClass]="ScreenUtils.isLargeScreen() ? 'fa-caret-right' : 'fa-times'" title="Collapse" tpPlacement="left" (click)="stateService.taggerVisible = false"></i>
+      <i class="icon-button fa-solid fa-caret-right" title="Collapse" (click)="stateService.taggerVisible = false"></i>
     </div>
   </div>
-  <div class="h-separator margins"></div>
+  <div class="h-separator margins desktop-only"></div>
   <div class="filters-container y-scrollbar-container">
     <div class="flex column margins-1-h">
       @for (tag of tagService.getRootTags(); track tag.id) {

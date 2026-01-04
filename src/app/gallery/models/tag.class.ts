@@ -1,13 +1,12 @@
 import { ArrayUtils } from "src/app/shared/utils/array.utils";
-import { Filter } from "./filter.interface";
+import { Filter } from "./filter.class";
 import { GalleryImage } from "./gallery-image.class";
 
-export class Tag implements Filter {
+export class Tag extends Filter {
 
   id: string;
   name: string;
   group: boolean;
-  state: number;
   parent: Tag;
   children: Tag[];
   open: boolean;

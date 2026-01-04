@@ -24,7 +24,7 @@ export class GroupManagerComponent extends DialogContentBase<void, {}> implement
   public override inputs: { sourceGroup: GalleryGroup };
 
   public override configuration: DialogContainerConfiguration = {
-    title: 'Group Manager',
+    title: 'Image Group Manager',
     headerButtons: [{
       iconClass: 'fa-solid fa-times',
       click: () => this.close()

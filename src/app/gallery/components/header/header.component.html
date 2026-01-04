@@ -2,27 +2,21 @@
 <div class="header-start">
   @for (action of header.start; track action.id) {
     @if (!isHidden(action)) {
-      <div [ngClass]="resolveClasses(action.containerClasses)" [title]="getTooltip(action)">
-        <i class="icon-button" [ngClass]="resolveClasses(action.classes)" [class.disabled]="isDisabled(action)" (click)="onClick(action)"></i>
-      </div>
+      <i class="icon-button" [ngClass]="resolveClasses(action.classes)" [class.disabled]="isDisabled(action)" [title]="getTooltip(action)" (click)="onClick(action)"></i>
     }
   }
 </div>
 <div class="header-center">
   @for (action of header.center; track action.id) {
     @if (!isHidden(action)) {
-      <div [ngClass]="resolveClasses(action.containerClasses)" [title]="getTooltip(action)">
-        <i class="icon-button" [ngClass]="resolveClasses(action.classes)" [class.disabled]="isDisabled(action)" (click)="onClick(action)"></i>
-      </div>
+      <i class="icon-button" [ngClass]="resolveClasses(action.classes)" [class.disabled]="isDisabled(action)" [title]="getTooltip(action)" (click)="onClick(action)"></i>
     }
   }
 </div>
 <div class="header-end">
   @for (action of header.end; track action.id) {
     @if (!isHidden(action)) {
-      <div [ngClass]="resolveClasses(action.containerClasses)" [title]="getTooltip(action)">
-        <i class="icon-button" [ngClass]="resolveClasses(action.classes)" [class.disabled]="isDisabled(action)" (click)="onClick(action)"></i>
-      </div>
+      <i class="icon-button" [ngClass]="resolveClasses(action.classes)" [class.disabled]="isDisabled(action)" [title]="getTooltip(action)" (click)="onClick(action)"></i>
     }
   }
 </div>

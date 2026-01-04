@@ -1,13 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, effect, OnDestroy, OnInit } from '@angular/core';
+import { Component, effect } from '@angular/core';
 import { SafeUrl } from '@angular/platform-browser';
-import { KeyboardShortcutTarget } from 'src/app/shared/classes/keyboard-shortcut-target.interface';
 import { ImageComponent } from 'src/app/shared/components/image/image.component';
 import { ApplicationService } from 'src/app/shared/services/application.service';
-import { KeyboardShortcutService } from 'src/app/shared/services/keyboard-shortcut.service';
+import { DialogService } from 'src/app/shared/services/dialog.service';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 import { GoogleFileUtils } from 'src/app/shared/utils/google-file.utils';
-import { ScreenUtils } from 'src/app/shared/utils/screen.utils';
+import { ComparisonPathComponent } from '../../dialogs/comparison-path/comparison-path.component';
 import { GalleryGroup } from '../../models/gallery-group.class';
 import { GalleryImage } from '../../models/gallery-image.class';
 import { FilterService } from '../../services/filter.service';
@@ -15,8 +14,6 @@ import { GalleryGoogleDriveService } from '../../services/gallery-google-drive.s
 import { GalleryStateService } from '../../services/gallery-state.service';
 import { GalleryService } from '../../services/gallery.service';
 import { TagService } from '../../services/tag.service';
-import { DialogService } from 'src/app/shared/services/dialog.service';
-import { ComparisonPathComponent } from '../../dialogs/comparison-path/comparison-path.component';
 
 @Component({
   selector: 'app-fullscreen',
@@ -24,9 +21,7 @@ import { ComparisonPathComponent } from '../../dialogs/comparison-path/compariso
   templateUrl: './fullscreen.component.html',
   styleUrls: ['./fullscreen.component.scss']
 })
-export class FullscreenComponent implements KeyboardShortcutTarget, OnInit, OnDestroy {
-
-  protected ScreenUtils = ScreenUtils;
+export class FullscreenComponent {
 
   protected loadingT: boolean = true;
   protected loadingC: boolean = true;
@@ -35,12 +30,14 @@ export class FullscreenComponent implements KeyboardShortcutTarget, OnInit, OnDe
   protected currentGroup: GalleryGroup;
   protected groupTracker = 0;
 
-  protected hideSidebarButtons: boolean = false;
+  protected hideComparisonRelations: boolean = false;
+
+  protected comparisonWinners: GalleryImage[] = [];
+  protected comparisonLosers: GalleryImage[] = [];
 
   constructor(
     // private sanitizer: DomSanitizer,
     private applicationService: ApplicationService,
-    private keyboardShortcutService: KeyboardShortcutService,
     private dialogService: DialogService,
     protected googleService: GalleryGoogleDriveService,
     protected stateService: GalleryStateService,
@@ -59,7 +56,7 @@ export class FullscreenComponent implements KeyboardShortcutTarget, OnInit, OnDe
           this.loadingC = true;
         }
 
-        this.keyboardShortcutService.requestFocus(this);
+        this.refreshComparisonRelations(target);
 
         if (this.currentGroup != target.group) {
           this.currentGroup = target.group;
@@ -73,76 +70,21 @@ export class FullscreenComponent implements KeyboardShortcutTarget, OnInit, OnDe
         //     image.contentLink = this.sanitizer.bypassSecurityTrustResourceUrl(base64) as string;
         //   });
         // }
+      } else {
+        this.comparisonWinners = [];
+        this.comparisonLosers = [];
       }
     });
-  }
-
-  ngOnInit(): void {
-    this.keyboardShortcutService.register(this);
-  }
-
-  ngOnDestroy(): void {
-    this.keyboardShortcutService.unregister(this);
-  }
-
-  processKeyboardShortcut(event: KeyboardEvent): void {
-    if (this.stateService.fullscreenImage()) {
-      switch (event.code) {
-        case 'Escape':
-          this.stateService.fullscreenImage.set(null);
-          break;
-        case 'KeyR':
-          this.setRandomTarget();
-          break;
-        case 'KeyG':
-          this.setRandomGroupTarget();
-          break;
-      }
-    }
-  }
-
-  protected setRandomTarget(): void {
-    const filter: GalleryImage[] = this.filterService.images();
-    if (!ArrayUtils.isEmpty(filter)) {
-      let nextTarget: GalleryImage;
-      const currentTarget: GalleryImage = this.stateService.fullscreenImage();
-
-      if (currentTarget) {
-        if (currentTarget.group) {
-          nextTarget = ArrayUtils.getRandom(filter, currentTarget.group.images);
-        } else {
-          nextTarget = ArrayUtils.getRandom(filter, [currentTarget]);
-        }
-      } else {
-        nextTarget = ArrayUtils.getRandom(filter);
-      }
-
-      if (nextTarget) {
-        this.stateService.fullscreenImage.set(nextTarget);
-      }
-    }
-  }
-
-  protected setRandomGroupTarget(): void {
-    const target: GalleryImage = this.stateService.fullscreenImage();
-    if (target?.group) {
-      this.stateService.fullscreenImage.set(ArrayUtils.getRandom(target.group.images, [target]));
-    }
-  }
-
-  protected openGroupComparison(): void {
-    const target: GalleryImage = this.stateService.fullscreenImage();
-    if (target?.group) {
-      this.stateService.viewMode = 'tournament';
-      const images: GalleryImage[] = this.stateService.images.filter(image => GoogleFileUtils.isImage(image));
-      const imagesToCompare: GalleryImage[] = target.group.images.filter(image => GoogleFileUtils.isImage(image));
-      this.stateService.tournament.start(images, imagesToCompare, this.stateService.tournamentState);
-    }
   }
 
   protected openComparisonPath(start: GalleryImage, end: GalleryImage): void {
     if (!start || !end) return;
     this.dialogService.create(ComparisonPathComponent, { start, end });
+  }
+
+  private refreshComparisonRelations(target: GalleryImage): void {
+    this.comparisonWinners = this.stateService.tournament.getNearestWinners(target);
+    this.comparisonLosers = this.stateService.tournament.getNearestLosers(target);
   }
 
   protected getSrc(image: GalleryImage): SafeUrl {
@@ -151,7 +93,7 @@ export class FullscreenComponent implements KeyboardShortcutTarget, OnInit, OnDe
   }
 
   protected onImageClick(image: GalleryImage): void {
-    this.hideSidebarButtons = !this.hideSidebarButtons;
+    this.hideComparisonRelations = !this.hideComparisonRelations;
     if (this.applicationService.reduceDataUsage) {
       image.thumbnailLink = image.thumbnailLink.replace('=s220', '=s440');
     }
