@@ -20,23 +20,19 @@
       <div class="file-information">
         <div class="file-name" [title]="target.name">{{ target.name }}</div>
         @if (getFileSize(target); as fileSize) {
-          <div class="file-row">
-            <span class="label">Size</span>
-            <span class="value">{{ fileSize }}</span>
-          </div>
+          <span class="label">Size</span>
+          <span class="value">{{ fileSize }}</span>
         }
         @if (getResolution(target); as resolution) {
-          <div class="file-row">
-            <span class="label">Resolution</span>
-            <span class="value">{{ resolution }}</span>
-          </div>
+          <span class="label">Resolution</span>
+          <span class="value">{{ resolution }}</span>
         }
       </div>
     }
   </div>
   <div class="h-separator margins"></div>
   <div class="flex gap center padding-1">
-    <div class="flex gap desktop-only">
+    <div class="flex gap">
       <i class="icon-button fa-solid fa-download" title="Download" (click)="googleService.download(target)"></i>
       <i class="icon-button fa-brands fa-google-drive" title="Google Drive" (click)="$event.stopPropagation(); googleService.openSearch(target.name)"></i>
       <div class="v-separator"></div>
@@ -48,30 +44,17 @@
     <i class="icon-button fa-solid fa-trash" title="Delete" (click)="galleryService.delete(target, false)"></i>
   </div>
   <div class="h-separator margins"></div>
-  <div class="flex center gap-3 margins-3-v">
-    <div class="flex center gap cursor-pointer hover-brighten" [class.positive]="target?.heart" (click)="galleryService.toggleFavorite(target)">
+  <div class="flex" style="justify-content: space-evenly">
+    <div class="flex center gap cursor-pointer hover-brighten padding-2" [class.positive]="target?.heart" (click)="galleryService.toggleFavorite(target)">
       <i class="fa-heart" [ngClass]="target?.heart ? 'fa-solid' : 'fa-regular'" style="margin-top: 1px"></i>
       <span>Favorite</span>
     </div>
-    <div class="flex center gap cursor-pointer hover-brighten" [class.positive]="target?.bookmark" (click)="galleryService.toggleBookmark(target)">
+    <div class="flex center gap cursor-pointer hover-brighten padding-2" [class.positive]="target?.bookmark" (click)="galleryService.toggleBookmark(target)">
       <i class="fa-bookmark" [ngClass]="target?.bookmark ? 'fa-solid' : 'fa-regular'" style="margin-top: 1px"></i>
       <span>Bookmark</span>
     </div>
   </div>
   <div class="h-separator margins"></div>
-  <div class="header desktop-only">
-    <div class="flex gap">
-      <i
-        class="icon-button fa-solid hover-brighten"
-        [class.transparent]="!target?.group"
-        [ngClass]="groupMode ? 'fa-images' : 'fa-image'"
-        [class.positive]="groupMode"
-        (click)="groupMode = !groupMode"></i>
-    </div>
-    <span class="margins-3-h">Tag Manager</span>
-    <div class="flex gap flex-end-h"></div>
-  </div>
-  <div class="h-separator margins desktop-only"></div>
   <div class="filters-container y-scrollbar-container">
     <div class="flex column margins-1-h">
       @for (tag of tagService.getRootTags(); track tag.id) {
@@ -79,7 +62,9 @@
       }
     </div>
   </div>
+  <div class="h-separator gap-bottom margins"></div>
   <div class="buttons-container">
-    <div class="button" (click)="tagService.openTagGroupCreate()"><i class="fa-solid fa-plus"></i>Create</div>
+    <div class="button" (click)="tagService.openTagGroupCreate()">Create Tag</div>
+    <div class="button" [class.positive]="groupMode" (click)="groupMode = !groupMode">Group Mode</div>
   </div>
 </div>

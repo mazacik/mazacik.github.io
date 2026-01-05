@@ -17,6 +17,8 @@ import { GalleryStateService } from "./gallery-state.service";
 })
 export class GalleryService {
 
+  private readonly googleLensProxyUrl: string = 'https://image-proxy.mazak-miso.workers.dev/img';
+
   public constructor(
     private serializationService: GallerySerializationService,
     private dialogService: DialogService,
@@ -36,11 +38,14 @@ export class GalleryService {
   }
 
   public openYandexRIS(event: MouseEvent, target: GalleryImage): void {
-    window.open('https://yandex.com/images/search?rpt=imageview&url=' + encodeURIComponent('https://drive.google.com/uc?export=view&id=' + target.id), '_blank');
+    window.open('https://yandex.com/images/search?rpt=imageview&url=' + encodeURIComponent(target.thumbnailLink.replace(/=s\d+/u, '=s9999')), '_blank');
   }
 
   public openGoogleRIS(event: MouseEvent, target: GalleryImage): void {
-    window.open('https://lens.google.com/uploadbyurl?url=' + encodeURIComponent('https://drive.google.com/uc?export=view&id=' + target.id), '_blank');
+    const imageUrl: string = target.contentLink.replace(/=s\d+/u, '=s9999');
+    console.log(imageUrl);
+    const proxyUrl: string = this.googleLensProxyUrl + '?url=' + encodeURIComponent(imageUrl);
+    window.open('https://lens.google.com/uploadbyurl?url=' + encodeURIComponent(proxyUrl), '_blank');
   }
 
   public async delete(image: GalleryImage, archive: boolean, askForConfirmation: boolean = true): Promise<void> {

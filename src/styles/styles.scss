@@ -412,27 +412,27 @@ hr {
 }
 
 .highlight {
-  color: var(--color-highlight);
+  color: var(--color-highlight) !important;
 }
 
 .hover-highlight:hover {
-  color: var(--color-highlight);
+  color: var(--color-highlight) !important;
 }
 
 .positive {
-  color: var(--color-positive);
+  color: var(--color-positive) !important;
 }
 
 .hover-positive:hover {
-  color: var(--color-positive);
+  color: var(--color-positive) !important;
 }
 
 .negative {
-  color: var(--color-negative);
+  color: var(--color-negative) !important;
 }
 
 .hover-negative:hover {
-  color: var(--color-negative);
+  color: var(--color-negative) !important;
 }
 
 .grayscale {
@@ -552,8 +552,7 @@ hr {
   text-shadow: -1px 0 var(--color-text-shadow), 0 1px var(--color-text-shadow), 1px 0 var(--color-text-shadow), 0 -1px var(--color-text-shadow);
 }
 
-.icon-button,
-.icon-button-small {
+.icon-button {
   display: flex;
   align-items: center;
   justify-content: center;
