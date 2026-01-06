@@ -12,7 +12,7 @@
     </div>
 
     <div class="flex-1 stack-container">
-      <app-image class="anim-fade-in" [src]="target.contentLink" [placeholderSrc]="target.thumbnailLink" (click)="onImageClick(target)" animate.leave="anim-fade-out"></app-image>
+      <app-image class="anim-fade-in" [src]="target.contentLink" [placeholderSrc]="galleryUtils.getPlaceholderSrc(target)" (click)="onImageClick(target)" animate.leave="anim-fade-out"></app-image>
     </div>
 
     <div class="comparison-losers">

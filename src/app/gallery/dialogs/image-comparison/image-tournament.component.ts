@@ -8,6 +8,7 @@ import { ComparisonPathComponent } from '../comparison-path/comparison-path.comp
 import { FilterService } from '../../services/filter.service';
 import { GallerySerializationService } from '../../services/gallery-serialization.service';
 import { GalleryStateService } from '../../services/gallery-state.service';
+import { GalleryUtils } from '../../../shared/utils/gallery.utils';
 
 @Component({
   selector: 'app-image-tournament',
@@ -16,6 +17,7 @@ import { GalleryStateService } from '../../services/gallery-state.service';
   styleUrls: ['./image-tournament.component.scss']
 })
 export class ImageTournamentComponent implements OnInit {
+  protected readonly galleryUtils = GalleryUtils;
 
   protected progressBarVisible: boolean = true;
   protected comparison: [GalleryImage, GalleryImage] = null;
@@ -65,7 +67,14 @@ export class ImageTournamentComponent implements OnInit {
 
   protected openComparisonPath(start: GalleryImage, end: GalleryImage): void {
     if (!start || !end) return;
-    this.dialogService.create(ComparisonPathComponent, { start, end });
+    const dialogResult = this.dialogService.create(ComparisonPathComponent, { start, end });
+    if (dialogResult) {
+      dialogResult.then(changed => {
+        if (changed) {
+          this.refreshComparisonRelations();
+        }
+      });
+    }
   }
 
   private refreshComparisonRelations(): void {
