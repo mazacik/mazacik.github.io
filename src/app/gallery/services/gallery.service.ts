@@ -43,7 +43,6 @@ export class GalleryService {
 
   public openGoogleRIS(event: MouseEvent, target: GalleryImage): void {
     const imageUrl: string = target.contentLink.replace(/=s\d+/u, '=s9999');
-    console.log(imageUrl);
     const proxyUrl: string = this.googleLensProxyUrl + '?url=' + encodeURIComponent(imageUrl);
     window.open('https://lens.google.com/uploadbyurl?url=' + encodeURIComponent(proxyUrl), '_blank');
   }
