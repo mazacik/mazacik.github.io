@@ -2,7 +2,7 @@
   @if (comparison) {
     <div class="comparison">
       <div class="comparison-column">
-        <app-image class="image-container" [src]="comparison[0].contentLink" [placeholderSrc]="comparison[0].thumbnailLink" (click)="onImageClick(comparison[0])"></app-image>
+        <app-image class="image-container" [src]="comparison[0].contentLink" [placeholderSrc]="galleryUtils.getPlaceholderSrc(comparison[0])" (click)="onImageClick(comparison[0])"></app-image>
         @if (progressBarVisible) {
           @if (winnersLeft.length) {
             <div class="side-column winners-column">
@@ -22,7 +22,7 @@
       </div>
       <div class="h-separator v-separator"></div>
       <div class="comparison-column">
-        <app-image class="image-container" [src]="comparison[1].contentLink" [placeholderSrc]="comparison[1].thumbnailLink" (click)="onImageClick(comparison[1])"></app-image>
+        <app-image class="image-container" [src]="comparison[1].contentLink" [placeholderSrc]="galleryUtils.getPlaceholderSrc(comparison[1])" (click)="onImageClick(comparison[1])"></app-image>
         @if (progressBarVisible) {
           @if (winnersRight.length) {
             <div class="side-column winners-column">

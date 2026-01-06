@@ -12,6 +12,7 @@ import { GalleryGoogleDriveService } from '../../services/gallery-google-drive.s
 import { GalleryStateService } from '../../services/gallery-state.service';
 import { GalleryService } from '../../services/gallery.service';
 import { TagService } from '../../services/tag.service';
+import { GalleryUtils } from '../../../shared/utils/gallery.utils';
 
 @Component({
   selector: 'app-fullscreen',
@@ -20,6 +21,7 @@ import { TagService } from '../../services/tag.service';
   styleUrls: ['./fullscreen.component.scss']
 })
 export class FullscreenComponent {
+  protected readonly galleryUtils = GalleryUtils;
 
   protected loadingT: boolean = true;
   protected loadingC: boolean = true;
@@ -67,7 +69,20 @@ export class FullscreenComponent {
 
   protected openComparisonPath(start: GalleryImage, end: GalleryImage): void {
     if (!start || !end) return;
-    this.dialogService.create(ComparisonPathComponent, { start, end });
+    const dialogResult = this.dialogService.create(ComparisonPathComponent, { start, end });
+    if (dialogResult) {
+      dialogResult.then(changed => {
+        if (changed) {
+          const target: GalleryImage = this.stateService.fullscreenImage();
+          if (target) {
+            this.refreshComparisonRelations(target);
+          } else {
+            this.comparisonWinners = [];
+            this.comparisonLosers = [];
+          }
+        }
+      });
+    }
   }
 
   private refreshComparisonRelations(target: GalleryImage): void {

@@ -12,7 +12,7 @@ import { GalleryStateService } from '../../services/gallery-state.service';
   templateUrl: './comparison-path.component.html',
   styleUrls: ['./comparison-path.component.scss']
 })
-export class ComparisonPathComponent extends DialogContentBase<void> implements OnInit {
+export class ComparisonPathComponent extends DialogContentBase<boolean> implements OnInit {
 
   public override inputs: { start: GalleryImage; end: GalleryImage; };
 
@@ -43,7 +43,7 @@ export class ComparisonPathComponent extends DialogContentBase<void> implements 
   }
 
   public close(): void {
-    this.resolve();
+    this.resolve(false);
   }
 
   protected toggleRemoval(index: number): void {
@@ -84,26 +84,30 @@ export class ComparisonPathComponent extends DialogContentBase<void> implements 
     const currentIds = currentComparison ? [currentComparison[0]?.id, currentComparison[1]?.id] : null;
 
     const comparisons = this.stateService.tournamentState?.comparisons ?? [];
+    let removed = false;
     if (comparisons.length) {
       const updatedComparisons = comparisons.filter(([winnerId, loserId]) => !this.pendingRemovals.has(this.makeEdgeKey(winnerId, loserId)));
-      this.stateService.tournamentState = { comparisons: updatedComparisons };
-      this.serializationService.save();
+      removed = updatedComparisons.length !== comparisons.length;
+      if (removed) {
+        this.stateService.tournamentState = { comparisons: updatedComparisons };
+        this.serializationService.save();
 
-      const images = this.stateService.images.filter(image => GoogleFileUtils.isImage(image));
-      const imagesToCompare = this.stateService.tournament?.getRanking?.() ?? [];
-      this.stateService.tournament.start(images, imagesToCompare.length ? imagesToCompare : images, this.stateService.tournamentState);
+        const images = this.stateService.images.filter(image => GoogleFileUtils.isImage(image));
+        const imagesToCompare = this.stateService.tournament?.getRanking?.() ?? [];
+        this.stateService.tournament.start(images, imagesToCompare.length ? imagesToCompare : images, this.stateService.tournamentState);
 
-      if (currentIds?.[0] && currentIds?.[1]) {
-        const imageById = this.stateService.tournament.getImageByIdMap(images);
-        const left = imageById.get(currentIds[0]);
-        const right = imageById.get(currentIds[1]);
-        if (left && right) {
-          this.stateService.tournament.comparison = [left, right];
+        if (currentIds?.[0] && currentIds?.[1]) {
+          const imageById = this.stateService.tournament.getImageByIdMap(images);
+          const left = imageById.get(currentIds[0]);
+          const right = imageById.get(currentIds[1]);
+          if (left && right) {
+            this.stateService.tournament.comparison = [left, right];
+          }
         }
       }
     }
 
-    this.close();
+    this.resolve(removed);
   }
 
   private buildPath(): void {
