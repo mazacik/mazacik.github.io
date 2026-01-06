@@ -16,9 +16,11 @@
         height: 100%;
         position: absolute;
         overflow: auto;
+        scroll-snap-type: y mandatory;
 
         .tagger-scroll-offset-helper {
           height: 100%;
+          scroll-snap-align: center;
         }
       }
 
