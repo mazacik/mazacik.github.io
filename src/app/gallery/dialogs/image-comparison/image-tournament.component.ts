@@ -78,6 +78,7 @@ export class ImageTournamentComponent implements OnInit {
   }
 
   private refreshComparisonRelations(): void {
+    this.stateService.tournament.updateProgress();
     this.comparison = this.stateService.tournament?.comparison ?? null;
     if (this.comparison) {
       if (this.progressBarVisible) {
