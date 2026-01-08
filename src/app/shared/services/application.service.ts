@@ -46,7 +46,7 @@ export interface ApplicationSettings extends ModuleSettingsProvider {
 }
 
 export interface ApplicationSettingsState {
-  darkMode: boolean;
+  darkTheme: boolean;
   reduceDataUsage: boolean;
 }
 
@@ -65,11 +65,11 @@ export class ApplicationService {
     id: 'app',
     label: 'Application',
     items: [{
-      id: 'dark-mode',
+      id: 'dark-theme',
       type: 'toggle',
-      label: 'Dark Mode',
-      getValue: () => this.isDarkTheme(),
-      onChange: value => this.setDarkMode(value)
+      label: 'Dark Theme',
+      getValue: () => this.darkTheme,
+      onChange: value => this.darkTheme = value
     }, {
       id: 'reduce-data-usage',
       type: 'toggle',
@@ -85,21 +85,21 @@ export class ApplicationService {
   public errors: WritableSignal<boolean> = signal(undefined);
 
   constructor() {
-    this.applyTheme(this.appSettings().darkMode);
+    this.applyTheme(this.appSettings().darkTheme);
     this.persistSettings(this.appSettings());
     this.updateHeader();
   }
 
-  public isDarkTheme(): boolean {
-    return this.appSettings().darkMode;
+  public get darkTheme(): boolean {
+    return this.appSettings().darkTheme;
   }
 
-  public setDarkMode(darkMode: boolean): void {
-    this.setAppSettings({ darkMode });
+  public set darkTheme(darkTheme: boolean) {
+    this.setAppSettings({ darkTheme: darkTheme });
   }
 
   public toggleTheme(): void {
-    this.setAppSettings({ darkMode: !this.appSettings().darkMode });
+    this.setAppSettings({ darkTheme: !this.appSettings().darkTheme });
   }
 
   public get reduceDataUsage(): boolean {
@@ -186,7 +186,7 @@ export class ApplicationService {
     const merged: ApplicationSettingsState = { ...this.appSettings(), ...settings };
     this.appSettings.set(merged);
     this.persistSettings(merged);
-    this.applyTheme(merged.darkMode);
+    this.applyTheme(merged.darkTheme);
   }
 
   private loadAppSettings(): ApplicationSettingsState {
@@ -194,23 +194,23 @@ export class ApplicationService {
     if (stored) {
       try {
         const parsed: ApplicationSettingsState = JSON.parse(stored);
-        if (parsed && typeof parsed.darkMode === 'boolean' && typeof parsed.reduceDataUsage === 'boolean') {
+        if (parsed && typeof parsed.darkTheme === 'boolean' && typeof parsed.reduceDataUsage === 'boolean') {
           return parsed;
         }
       } catch { /* ignore */ }
     }
 
-    return { darkMode: true, reduceDataUsage: false };
+    return { darkTheme: false, reduceDataUsage: false };
   }
 
   private persistSettings(settings: ApplicationSettingsState): void {
     localStorage.setItem(AppConstants.KEY_SETTINGS, JSON.stringify(settings));
   }
 
-  private applyTheme(darkMode: boolean): void {
-    document.body.classList.toggle('dark-theme', darkMode);
-    document.body.classList.toggle('light-theme', !darkMode);
-    document.body.style.colorScheme = darkMode ? 'dark' : 'light';
+  private applyTheme(darkTheme: boolean): void {
+    document.body.classList.toggle('dark-theme', darkTheme);
+    document.body.classList.toggle('light-theme', !darkTheme);
+    document.body.style.colorScheme = darkTheme ? 'dark' : 'light';
   }
 
 }

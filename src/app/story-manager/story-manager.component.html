@@ -1,7 +1,7 @@
-<div class="flex height-100 overflow-hidden">
-  <app-sidebar></app-sidebar>
-  <div class="v-separator"></div>
-  <div class="content">
+<div class="story-manager-container">
+  <app-sidebar [class.display-none]="isMobileView() && stateService.current"></app-sidebar>
+  <div class="v-separator desktop-only"></div>
+  <div class="content" [class.display-none]="isMobileView() && !stateService.current">
     @if (stateService.current) {
       <textarea class="note-content" spellcheck="false" placeholder="Text" [(ngModel)]="stateService.current.text" (ngModelChange)="stateService.save()"></textarea>
     }
