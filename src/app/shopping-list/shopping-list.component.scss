@@ -1,0 +1,94 @@
+@use 'src/styles/variables.scss';
+
+:host {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+.shopping-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+  height: fit-content;
+  padding: 0 variables.$gap-1;
+
+  @media screen and (min-width:1280px) {
+    margin: 0 auto;
+    max-width: 400px;
+  }
+}
+
+.input-row {
+  display: flex;
+  gap: variables.$gap-1;
+
+  input {
+    flex: 1;
+    height: variables.$button-height;
+    padding: 0 variables.$gap-3;
+  }
+
+  .button,
+  .icon-button {
+    height: variables.$button-height;
+  }
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: var(--color-surface-100);
+  gap: variables.$gap-1;
+  overflow-y: auto;
+  max-height: 100%;
+  padding: variables.$gap-1 0;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: variables.$gap-3;
+  align-items: center;
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+}
+
+.check-button {
+  i {
+    opacity: 0;
+  }
+
+  &.checked {
+    background-color: var(--color-surface-200);
+    border-color: var(--color-border-darker);
+
+    i {
+      opacity: 1;
+    }
+  }
+}
+
+.item.checked .label {
+  text-decoration: line-through;
+  color: var(--color-text-secondary);
+}
+
+.label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.empty {
+  border: 1px dashed var(--color-border);
+  border-radius: variables.$gap-1;
+  padding: variables.$gap-2;
+  text-align: center;
+  color: var(--color-text-secondary);
+}

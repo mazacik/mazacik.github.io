@@ -74,7 +74,13 @@ export class Tournament {
     return Math.round(factor * imageCount * Math.log2(imageCount));
   }
 
-  private updateProgress(): void {
+  public updateProgress(): void {
+    if (!this.comparisons) {
+      this.completeComparisons = 0;
+      this.remainingComparisons = 0;
+      this.totalComparisons = 0;
+      return;
+    }
     const progress = this.getComparisonProgress();
     this.completeComparisons = progress.completed;
     this.remainingComparisons = progress.remaining;

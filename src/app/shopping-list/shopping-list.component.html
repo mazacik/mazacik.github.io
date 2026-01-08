@@ -1,0 +1,32 @@
+<div class="shopping-list">
+  <div class="flex column gap-1 margins-1-v">
+    <div class="input-row">
+      <input type="text" placeholder="..." [(ngModel)]="draft" (keydown.enter)="addItem()" />
+      <button class="icon-button" (click)="addItem()" aria-label="Add item">
+        <i class="fa-solid fa-plus"></i>
+      </button>
+    </div>
+  </div>
+
+  @if (items().length) {
+    <div class="h-separator subtle"></div>
+    <div class="list">
+      @for (item of items(); track item.text; let last = $last) {
+        <div class="item" [class.checked]="item.check">
+          <button class="icon-button check-button" (click)="toggleItem(item)" [class.checked]="item.check" aria-label="Mark item">
+            <i class="fa-solid fa-check"></i>
+          </button>
+          <span class="label">{{ item.text }}</span>
+          <button class="icon-button" (click)="removeItem(item)" [class.transparent]="!item.check" aria-label="Remove item">
+            <i class="fa-solid fa-times"></i>
+          </button>
+        </div>
+        @if (!last) {
+          <div class="h-separator subtle"></div>
+        }
+      }
+    </div>
+  } @else {
+    <div class="empty">List is empty.</div>
+  }
+</div>

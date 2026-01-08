@@ -4,6 +4,7 @@ import { FolderPickerComponent } from './gallery/folder-picker/folder-picker.com
 import { GalleryComponent } from './gallery/gallery.component';
 import { LandingComponent } from './landing/landing.component';
 import { LoginComponent } from './login/login.component';
+import { ShoppingListComponent } from './shopping-list/shopping-list.component';
 import { authGuard } from './router/google-auth.guard';
 import { AppConstants } from './shared/constants/app.constants';
 import { DialogService } from './shared/services/dialog.service';
@@ -44,6 +45,9 @@ export const routes: Routes = [{
   path: 'story-manager',
   canActivate: [authGuard],
   component: StoryManagerComponent
+}, {
+  path: 'shopping-list',
+  component: ShoppingListComponent
 }, {
   path: '',
   component: LandingComponent
