@@ -2,7 +2,16 @@
   @if (comparison) {
     <div class="comparison">
       <div class="comparison-column">
-        <app-image class="image-container" [src]="comparison[0].contentLink" [placeholderSrc]="galleryUtils.getPlaceholderSrc(comparison[0])" (click)="onImageClick(comparison[0])"></app-image>
+        <app-image
+          class="image-container"
+          [src]="comparison[0].contentLink"
+          [placeholderSrc]="galleryUtils.getPlaceholderSrc(comparison[0])"
+          (click)="onImageClick(comparison[0])"
+          (contextmenu)="onImageContextMenu(comparison[0], $event)"
+          (touchstart)="onImageTouchStart(comparison[0])"
+          (touchend)="onImageTouchEnd()"
+          (touchcancel)="onImageTouchEnd()"
+          (touchmove)="onImageTouchMove()"></app-image>
         @if (progressBarVisible) {
           @if (winnersLeft.length) {
             <div class="side-column winners-column">
@@ -22,7 +31,16 @@
       </div>
       <div class="h-separator v-separator"></div>
       <div class="comparison-column">
-        <app-image class="image-container" [src]="comparison[1].contentLink" [placeholderSrc]="galleryUtils.getPlaceholderSrc(comparison[1])" (click)="onImageClick(comparison[1])"></app-image>
+        <app-image
+          class="image-container"
+          [src]="comparison[1].contentLink"
+          [placeholderSrc]="galleryUtils.getPlaceholderSrc(comparison[1])"
+          (click)="onImageClick(comparison[1])"
+          (contextmenu)="onImageContextMenu(comparison[1], $event)"
+          (touchstart)="onImageTouchStart(comparison[1])"
+          (touchend)="onImageTouchEnd()"
+          (touchcancel)="onImageTouchEnd()"
+          (touchmove)="onImageTouchMove()"></app-image>
         @if (progressBarVisible) {
           @if (winnersRight.length) {
             <div class="side-column winners-column">
