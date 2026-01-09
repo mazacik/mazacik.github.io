@@ -26,6 +26,9 @@ export class ImageTournamentComponent implements OnInit {
   protected winnersRight: GalleryImage[] = [];
   protected losersRight: GalleryImage[] = [];
   protected ranking: GalleryImage[] = [];
+  private longPressTimer: number | null = null;
+  private suppressNextClick: boolean = false;
+  private readonly longPressDelayMs: number = 500;
 
   constructor(
     private filterService: FilterService,
@@ -42,6 +45,10 @@ export class ImageTournamentComponent implements OnInit {
   }
 
   protected onImageClick(winner: GalleryImage): void {
+    if (this.suppressNextClick) {
+      this.suppressNextClick = false;
+      return;
+    }
     this.stateService.tournament.handleUserInput(winner);
     this.stateService.tournamentState = this.stateService.tournament.getState();
     this.serializationService.save();
@@ -65,6 +72,29 @@ export class ImageTournamentComponent implements OnInit {
     this.refreshComparisonRelations();
   }
 
+  protected onImageContextMenu(image: GalleryImage, event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.openFullscreen(image);
+  }
+
+  protected onImageTouchStart(image: GalleryImage): void {
+    if (!image) return;
+    this.clearLongPressTimer();
+    this.longPressTimer = window.setTimeout(() => {
+      this.suppressNextClick = true;
+      this.openFullscreen(image);
+    }, this.longPressDelayMs);
+  }
+
+  protected onImageTouchEnd(): void {
+    this.clearLongPressTimer();
+  }
+
+  protected onImageTouchMove(): void {
+    this.clearLongPressTimer();
+  }
+
   protected openComparisonPath(start: GalleryImage, end: GalleryImage): void {
     if (!start || !end) return;
     const dialogResult = this.dialogService.create(ComparisonPathComponent, { start, end });
@@ -75,6 +105,17 @@ export class ImageTournamentComponent implements OnInit {
         }
       });
     }
+  }
+
+  protected openFullscreen(image: GalleryImage): void {
+    if (!image) return;
+    this.stateService.fullscreenImage.set(image);
+  }
+
+  private clearLongPressTimer(): void {
+    if (this.longPressTimer === null) return;
+    window.clearTimeout(this.longPressTimer);
+    this.longPressTimer = null;
   }
 
   private refreshComparisonRelations(): void {
