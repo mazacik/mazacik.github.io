@@ -40,7 +40,11 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
   }
 
   protected set viewMode(value: GalleryViewMode) {
+    const previousValue = this.stateService.viewMode;
     this.stateService.viewMode = value;
+    if (value === 'tournament' && previousValue !== 'tournament') {
+      this.imageTournamentComponent?.onEnterTournament();
+    }
   }
 
   protected loading: boolean = true;
@@ -219,11 +223,24 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
         type: 'action',
         label: 'Bookmark All Images',
         onClick: () => this.bookmarkAllImages()
-      }, {
-        id: 'reset-dialog-positions',
-        type: 'action',
-        label: 'Reset Dialog Positions',
-        onClick: () => this.resetDialogPositions()
+      }]
+    });
+
+    this.applicationService.registerModuleSettings({
+      id: 'comparison-settings',
+      label: 'Comparison',
+      items: [{
+        id: 'hide-shared-comparison-relations',
+        type: 'toggle',
+        label: 'Hide Shared Relations',
+        getValue: () => !!this.stateService.settings?.hideSharedComparisonRelations,
+        onChange: value => {
+          this.stateService.settings.hideSharedComparisonRelations = value;
+          this.serializationService.save();
+          if (this.stateService.viewMode === 'tournament') {
+            this.imageTournamentComponent?.refreshComparisonRelations();
+          }
+        }
       }, {
         id: 'reset-comparison',
         type: 'action',
@@ -306,20 +323,6 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
         this.serializationService.save();
       }
     });
-  }
-
-  private resetDialogPositions(): void {
-    this.dialogService.containerComponentInstances.forEach(instance => {
-      instance.top = null;
-      instance.left = null;
-    });
-
-    for (let i = 0; i < localStorage.length; i++) {
-      const key: string = localStorage.key(i);
-      if (key.endsWith('.top') || key.endsWith('.left')) {
-        localStorage.removeItem(key);
-      }
-    }
   }
 
 }

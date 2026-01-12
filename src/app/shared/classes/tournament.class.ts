@@ -1,3 +1,4 @@
+import { signal, WritableSignal } from '@angular/core';
 import { GalleryImage } from 'src/app/gallery/models/gallery-image.class';
 import { ArrayUtils } from '../utils/array.utils';
 import { RandomUtils } from '../utils/random.utils';
@@ -10,8 +11,8 @@ export class Tournament {
 
   // TODO performance improvement: consider bitset-based sets to reduce memory/GC pressure
 
-  private images: GalleryImage[];
-  private imagesToCompare: GalleryImage[];
+  private images: GalleryImage[] = [];
+  private imagesToCompare: GalleryImage[] = [];
   private graph = new Map<GalleryImage, Set<GalleryImage>>();
   private availableComparisons: [GalleryImage, GalleryImage][];
   private availableKeyToIndex: Map<string, number>;
@@ -23,7 +24,7 @@ export class Tournament {
   private comparisonAdjacencyCount = 0;
 
   public comparisons: [GalleryImage, GalleryImage][];
-  public comparison: [GalleryImage, GalleryImage];
+  public readonly comparison: WritableSignal<[GalleryImage, GalleryImage]> = signal(null);
   private availableComparisonsCount: number | null = null;
 
   public totalComparisons: number = 0;
@@ -57,7 +58,17 @@ export class Tournament {
 
     this.rebuildAvailableComparisons();
 
-    this.comparison = this.getNextComparison();
+    this.comparison.set(this.getNextComparison());
+  }
+
+  public matchesImagesToCompare(images: GalleryImage[]): boolean {
+    if (!images) return this.imagesToCompare.length === 0;
+    if (images.length !== this.imagesToCompare.length) return false;
+    const ids = new Set(this.imagesToCompare.map(image => image.id));
+    for (const image of images) {
+      if (!ids.delete(image.id)) return false;
+    }
+    return ids.size === 0;
   }
 
   public get progressPercent(): number {
@@ -123,10 +134,11 @@ export class Tournament {
 
   public handleUserInput(winner: GalleryImage, loser?: GalleryImage): void {
     if (!loser) {
-      if (!this.comparison) {
+      const currentComparison = this.comparison();
+      if (!currentComparison) {
         return;
       }
-      loser = this.comparison[0] === winner ? this.comparison[1] : this.comparison[0];
+      loser = currentComparison[0] === winner ? currentComparison[1] : currentComparison[0];
     }
 
     this.graph.get(winner).add(loser);
@@ -134,7 +146,7 @@ export class Tournament {
 
     this.updateTransitiveRelations(winner, loser);
 
-    this.comparison = this.getNextComparison();
+    this.comparison.set(this.getNextComparison());
 
     this.updateProgress();
   }
@@ -197,6 +209,10 @@ export class Tournament {
     return order;
   }
 
+  public getImagesToCompare(): GalleryImage[] {
+    return this.imagesToCompare ?? [];
+  }
+
   public getNearestWinners(image: GalleryImage): GalleryImage[] {
     if (!image) return [];
 
@@ -233,12 +249,12 @@ export class Tournament {
   }
 
   public skip(): void {
-    this.comparison = this.getNextComparison();
+    this.comparison.set(this.getNextComparison());
   }
 
   public undo(): [GalleryImage, GalleryImage] {
     if (ArrayUtils.isEmpty(this.comparisons)) return null;
-    this.comparison = this.comparisons.pop();
+    this.comparison.set(this.comparisons.pop() ?? null);
 
     this.graph = new Map<GalleryImage, Set<GalleryImage>>();
     this.images.forEach(image => this.graph.set(image, new Set<GalleryImage>()));

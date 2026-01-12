@@ -1,5 +1,6 @@
 import { Injectable, Signal, signal, WritableSignal } from "@angular/core";
 import { AppConstants } from "../constants/app.constants";
+import { DialogService } from "./dialog.service";
 
 export type HeaderClasses = string | string[] | Set<string> | { [key: string]: boolean | number | string };
 export type HeaderSection = 'start' | 'center' | 'end';
@@ -76,6 +77,11 @@ export class ApplicationService {
       label: 'Reduce Data Usage',
       getValue: () => this.reduceDataUsage,
       onChange: value => this.reduceDataUsage = value
+    }, {
+      id: 'reset-dialog-positions',
+      type: 'action',
+      label: 'Reset Dialog Positions',
+      onClick: () => this.resetDialogPositions()
     }]
   };
   private readonly moduleSettingsProviders: ModuleSettingsProvider[] = [];
@@ -84,7 +90,9 @@ export class ApplicationService {
   public changes: WritableSignal<boolean> = signal(undefined);
   public errors: WritableSignal<boolean> = signal(undefined);
 
-  constructor() {
+  constructor(
+    private dialogService: DialogService
+  ) {
     this.applyTheme(this.appSettings().darkTheme);
     this.persistSettings(this.appSettings());
     this.updateHeader();
@@ -211,6 +219,20 @@ export class ApplicationService {
     document.body.classList.toggle('dark-theme', darkTheme);
     document.body.classList.toggle('light-theme', !darkTheme);
     document.body.style.colorScheme = darkTheme ? 'dark' : 'light';
+  }
+
+  private resetDialogPositions(): void {
+    this.dialogService.containerComponentInstances.forEach(instance => {
+      instance.top = null;
+      instance.left = null;
+    });
+
+    for (let i = 0; i < localStorage.length; i++) {
+      const key: string = localStorage.key(i);
+      if (key.endsWith('.top') || key.endsWith('.left')) {
+        localStorage.removeItem(key);
+      }
+    }
   }
 
 }

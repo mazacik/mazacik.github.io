@@ -4,5 +4,6 @@ export interface GallerySettings {
   showVideos: boolean;
   autoBookmark: boolean;
   showFullscreenComparisonRelations: boolean;
+  hideSharedComparisonRelations: boolean;
 
 }

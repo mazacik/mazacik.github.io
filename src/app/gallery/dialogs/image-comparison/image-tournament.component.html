@@ -70,7 +70,7 @@
   @if (progressBarVisible) {
     <div class="h-separator"></div>
     <div class="progress-bar">
-      @if (stateService.tournament.comparison) {
+      @if (stateService.tournament.comparison()) {
         <div class="progress-bar-fill" [style.width.%]="stateService.tournament.estimateProgressPercent"></div>
         <div class="progress-bar-label">
           {{ stateService.tournament.completeComparisons }}/~{{ stateService.tournament.estimateComparisons }}/{{ stateService.tournament.totalComparisons }} ({{ stateService.tournament.estimateProgressPercent | number: '1.0-0' }}%)
