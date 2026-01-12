@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, effect } from '@angular/core';
 import { GalleryImage } from 'src/app/gallery/models/gallery-image.class';
 import { ImageComponent } from 'src/app/shared/components/image/image.component';
 import { DialogService } from 'src/app/shared/services/dialog.service';
@@ -16,7 +16,7 @@ import { GalleryUtils } from '../../../shared/utils/gallery.utils';
   templateUrl: './image-tournament.component.html',
   styleUrls: ['./image-tournament.component.scss']
 })
-export class ImageTournamentComponent implements OnInit {
+export class ImageTournamentComponent {
   protected readonly galleryUtils = GalleryUtils;
 
   protected progressBarVisible: boolean = true;
@@ -35,13 +35,11 @@ export class ImageTournamentComponent implements OnInit {
     private serializationService: GallerySerializationService,
     private dialogService: DialogService,
     protected stateService: GalleryStateService
-  ) { }
-
-  ngOnInit(): void {
-    const images = this.stateService.images.filter(image => GoogleFileUtils.isImage(image));
-    const imagesToCompare = this.filterService.images().filter(image => GoogleFileUtils.isImage(image));
-    this.stateService.tournament.start(images, imagesToCompare, this.stateService.tournamentState);
-    this.refreshComparisonRelations();
+  ) {
+    effect(() => {
+      this.stateService.tournament.comparison();
+      this.refreshComparisonRelations();
+    });
   }
 
   protected onImageClick(winner: GalleryImage): void {
@@ -52,6 +50,17 @@ export class ImageTournamentComponent implements OnInit {
     this.stateService.tournament.handleUserInput(winner);
     this.stateService.tournamentState = this.stateService.tournament.getState();
     this.serializationService.save();
+    this.refreshComparisonRelations();
+  }
+
+  public onEnterTournament(): void {
+    const images = this.stateService.images.filter(image => GoogleFileUtils.isImage(image));
+    const imagesToCompare = this.filterService.images().filter(image => GoogleFileUtils.isImage(image));
+    const tournament = this.stateService.tournament;
+    if (!tournament.comparisons || !tournament.matchesImagesToCompare(imagesToCompare)) {
+      this.restartTournament(images, imagesToCompare);
+      return;
+    }
     this.refreshComparisonRelations();
   }
 
@@ -118,9 +127,14 @@ export class ImageTournamentComponent implements OnInit {
     this.longPressTimer = null;
   }
 
-  private refreshComparisonRelations(): void {
+  private restartTournament(images: GalleryImage[], imagesToCompare: GalleryImage[]): void {
+    this.stateService.tournament.start(images, imagesToCompare, this.stateService.tournamentState);
+    this.refreshComparisonRelations();
+  }
+
+  public refreshComparisonRelations(): void {
     this.stateService.tournament.updateProgress();
-    this.comparison = this.stateService.tournament?.comparison ?? null;
+    this.comparison = this.stateService.tournament.comparison() ?? null;
     if (this.comparison) {
       if (this.progressBarVisible) {
         this.winnersLeft = this.stateService.tournament.getNearestWinners(this.comparison[0]);
@@ -133,14 +147,46 @@ export class ImageTournamentComponent implements OnInit {
         this.winnersRight = [];
         this.losersRight = [];
       }
+      this.filterSharedComparisonRelations();
       this.ranking = [];
     } else {
       this.winnersLeft = [];
       this.losersLeft = [];
       this.winnersRight = [];
       this.losersRight = [];
-      this.ranking = this.stateService.tournament?.getRanking?.() ?? [];
+      const hasTournamentState = this.stateService.tournament.comparisons != null;
+      this.ranking = hasTournamentState ? this.stateService.tournament.getRanking() : [];
     }
+  }
+
+  private filterSharedComparisonRelations(): void {
+    if (!this.stateService.settings?.hideSharedComparisonRelations) {
+      return;
+    }
+
+    const sharedWinnerIds = this.collectSharedIds(this.winnersLeft, this.winnersRight);
+    if (sharedWinnerIds.size) {
+      this.winnersLeft = this.winnersLeft.filter(image => !sharedWinnerIds.has(image.id));
+      this.winnersRight = this.winnersRight.filter(image => !sharedWinnerIds.has(image.id));
+    }
+
+    const sharedLoserIds = this.collectSharedIds(this.losersLeft, this.losersRight);
+    if (sharedLoserIds.size) {
+      this.losersLeft = this.losersLeft.filter(image => !sharedLoserIds.has(image.id));
+      this.losersRight = this.losersRight.filter(image => !sharedLoserIds.has(image.id));
+    }
+  }
+
+  private collectSharedIds(left: GalleryImage[], right: GalleryImage[]): Set<string> {
+    if (!left.length || !right.length) return new Set();
+    const leftIds = new Set(left.map(image => image.id));
+    const shared = new Set<string>();
+    right.forEach(image => {
+      if (leftIds.has(image.id)) {
+        shared.add(image.id);
+      }
+    });
+    return shared;
   }
 
 }
