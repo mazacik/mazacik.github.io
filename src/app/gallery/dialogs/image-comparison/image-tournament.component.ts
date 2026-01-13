@@ -3,6 +3,7 @@ import { Component, effect } from '@angular/core';
 import { GalleryImage } from 'src/app/gallery/models/gallery-image.class';
 import { ImageComponent } from 'src/app/shared/components/image/image.component';
 import { DialogService } from 'src/app/shared/services/dialog.service';
+import { Tournament } from 'src/app/shared/classes/tournament.class';
 import { GoogleFileUtils } from 'src/app/shared/utils/google-file.utils';
 import { ComparisonPathComponent } from '../comparison-path/comparison-path.component';
 import { FilterService } from '../../services/filter.service';
@@ -29,6 +30,7 @@ export class ImageTournamentComponent {
   private longPressTimer: number | null = null;
   private suppressNextClick: boolean = false;
   private readonly longPressDelayMs: number = 500;
+  private readonly autoPickDebugEnabled: boolean = false;
 
   constructor(
     private filterService: FilterService,
@@ -59,9 +61,10 @@ export class ImageTournamentComponent {
     const tournament = this.stateService.tournament;
     if (!tournament.comparisons || !tournament.matchesImagesToCompare(imagesToCompare)) {
       this.restartTournament(images, imagesToCompare);
-      return;
+    } else {
+      this.refreshComparisonRelations();
     }
-    this.refreshComparisonRelations();
+    this.logTournamentSimulationComparisonCount(images, imagesToCompare);
   }
 
   public undo(): void {
@@ -187,6 +190,58 @@ export class ImageTournamentComponent {
       }
     });
     return shared;
+  }
+
+  private logTournamentSimulationComparisonCount(images: GalleryImage[], imagesToCompare: GalleryImage[]): void {
+    if (!this.autoPickDebugEnabled) return;
+    const simulation = new Tournament();
+    const startingState = this.stateService.tournament.getState();
+    simulation.start(images, imagesToCompare, startingState);
+
+    let comparison = simulation.comparison();
+    let iterations = 0;
+    const maxIterations = imagesToCompare.length * imagesToCompare.length + 1000;
+    while (comparison) {
+      const winner = this.pickSimulatedWinner(comparison, simulation.comparisons);
+      simulation.handleUserInput(winner);
+      comparison = simulation.comparison();
+      iterations++;
+      if (iterations > maxIterations) {
+        break;
+      }
+    }
+
+    console.log('[ImageTournament] simulated comparisons', simulation.comparisons.length);
+  }
+
+  private pickSimulatedWinner(
+    comparison: [GalleryImage, GalleryImage],
+    comparisons: [GalleryImage, GalleryImage][]
+  ): GalleryImage {
+    const [left, right] = comparison;
+    const leftStats = this.getWinLossCounts(left, comparisons);
+    const rightStats = this.getWinLossCounts(right, comparisons);
+
+    if (leftStats.wins !== rightStats.wins) {
+      return leftStats.wins > rightStats.wins ? left : right;
+    }
+    if (leftStats.losses !== rightStats.losses) {
+      return leftStats.losses < rightStats.losses ? left : right;
+    }
+    return Math.random() < 0.5 ? left : right;
+  }
+
+  private getWinLossCounts(
+    image: GalleryImage,
+    comparisons: [GalleryImage, GalleryImage][]
+  ): { wins: number; losses: number } {
+    let wins = 0;
+    let losses = 0;
+    for (const [winner, loser] of comparisons) {
+      if (winner?.id === image.id) wins++;
+      if (loser?.id === image.id) losses++;
+    }
+    return { wins, losses };
   }
 
 }
