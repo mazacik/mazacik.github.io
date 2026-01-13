@@ -222,17 +222,14 @@ export class ApplicationService {
   }
 
   private resetDialogPositions(): void {
-    this.dialogService.containerComponentInstances.forEach(instance => {
-      instance.top = null;
-      instance.left = null;
-    });
-
     for (let i = 0; i < localStorage.length; i++) {
       const key: string = localStorage.key(i);
-      if (key.endsWith('.top') || key.endsWith('.left')) {
+      if (key.endsWith('.centerX') || key.endsWith('.centerY')) {
         localStorage.removeItem(key);
       }
     }
+
+    this.dialogService.containerComponentInstances.forEach(instance => instance.resetPosition());
   }
 
 }

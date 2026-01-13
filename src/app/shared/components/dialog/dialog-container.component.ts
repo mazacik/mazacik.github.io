@@ -45,14 +45,6 @@ export class DialogContainerComponent<ResultType, InputsType> implements AfterVi
 
   ngAfterViewInit(): void {
     this.dialogElement = this.elementRef.nativeElement.querySelector('.dialog-container') as HTMLElement;
-    if (ScreenUtils.isLargeScreen()) {
-      if (!this.top) {
-        this.top = Number.parseInt(window.localStorage.getItem(this.contentComponentType.name + '.top'));
-      }
-      if (!this.left) {
-        this.left = Number.parseInt(window.localStorage.getItem(this.contentComponentType.name + '.left'));
-      }
-    }
 
     const contentRef: ComponentRef<DialogContentBase<ResultType, InputsType>> = this.containerRef.createComponent(this.contentComponentType);
     this.contentComponentInstance = contentRef.instance;
@@ -62,7 +54,10 @@ export class DialogContainerComponent<ResultType, InputsType> implements AfterVi
     const waitForContent: Promise<void> = contentRef.instance.configuration?.waitForContent;
     if (waitForContent) {
       this.hidden = true;
-      waitForContent.finally(() => this.hidden = false);
+      waitForContent.finally(() => {
+        this.hidden = false;
+        this.schedulePositionRestore();
+      });
     } else {
       this.hidden = false;
     }
@@ -75,6 +70,9 @@ export class DialogContainerComponent<ResultType, InputsType> implements AfterVi
     });
 
     contentRef.changeDetectorRef.detectChanges();
+    if (!waitForContent) {
+      this.schedulePositionRestore();
+    }
   }
 
   ngOnDestroy(): void {
@@ -112,13 +110,12 @@ export class DialogContainerComponent<ResultType, InputsType> implements AfterVi
         this.isMouseDown = true;
         this.mouseDownOffsetX = event.offsetX;
         this.mouseDownOffsetY = event.offsetY;
-        if (!((this.top || this.top === 0) && (this.left || this.left === 0))) {
+        if (!this.hasPosition()) {
           const hostRect: DOMRect = (this.dialogElement ?? this.elementRef.nativeElement.firstChild as HTMLElement).getBoundingClientRect();
           this.top = hostRect.top;
           this.left = hostRect.left;
-          localStorage.setItem(this.contentComponentType.name + '.top', this.top.toString());
-          localStorage.setItem(this.contentComponentType.name + '.left', this.left.toString());
           this.applyPosition();
+          this.persistCenterFromRect(hostRect);
         }
         this.attachDragListeners();
       }
@@ -159,8 +156,10 @@ export class DialogContainerComponent<ResultType, InputsType> implements AfterVi
   private readonly onDocumentMouseUp = (): void => {
     if (ScreenUtils.isLargeScreen()) {
       this.isMouseDown = false;
-      if (this.top !== undefined) localStorage.setItem(this.contentComponentType.name + '.top', this.top?.toString());
-      if (this.left !== undefined) localStorage.setItem(this.contentComponentType.name + '.left', this.left?.toString());
+      if (this.hasPosition()) {
+        const hostRect: DOMRect = (this.dialogElement ?? this.elementRef.nativeElement.firstChild as HTMLElement).getBoundingClientRect();
+        this.persistCenterFromRect(hostRect);
+      }
       this.detachDragListeners();
     }
   };
@@ -184,6 +183,70 @@ export class DialogContainerComponent<ResultType, InputsType> implements AfterVi
     if (!this.dialogElement) return;
     if (this.top !== undefined) this.dialogElement.style.top = `${this.top}px`;
     if (this.left !== undefined) this.dialogElement.style.left = `${this.left}px`;
+  }
+
+  private hasPosition(): boolean {
+    return Number.isFinite(this.top) && Number.isFinite(this.left);
+  }
+
+  private schedulePositionRestore(): void {
+    if (!ScreenUtils.isLargeScreen()) return;
+    requestAnimationFrame(() => this.restorePositionFromStorage());
+  }
+
+  public resetPosition(): void {
+    this.top = null;
+    this.left = null;
+    this.schedulePositionRestore();
+  }
+
+  private restorePositionFromStorage(): void {
+    if (!this.dialogElement || this.hasPosition()) return;
+    const hostRect: DOMRect = (this.dialogElement ?? this.elementRef.nativeElement.firstChild as HTMLElement).getBoundingClientRect();
+    if (!hostRect.width || !hostRect.height) return;
+
+    const storedCenter = this.getStoredCenter();
+    if (storedCenter) {
+      this.left = storedCenter.x - hostRect.width / 2;
+      this.top = storedCenter.y - hostRect.height / 2;
+      this.applyPosition();
+      return;
+    }
+
+    this.centerInViewport(hostRect);
+  }
+
+  private getStoredCenter(): { x: number; y: number } | null {
+    const centerX = this.getStoredNumber(this.getStorageKey('.centerX'));
+    const centerY = this.getStoredNumber(this.getStorageKey('.centerY'));
+    if (centerX === null || centerY === null) return null;
+    return { x: centerX, y: centerY };
+  }
+
+  private getStorageKey(suffix: string): string {
+    return `${this.contentComponentType.name}${suffix}`;
+  }
+
+  private getStoredNumber(key: string): number | null {
+    const rawValue = window.localStorage.getItem(key);
+    if (rawValue === null) return null;
+    const parsed = Number.parseFloat(rawValue);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  private persistCenterFromRect(rect: DOMRect): void {
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    window.localStorage.setItem(this.getStorageKey('.centerX'), centerX.toString());
+    window.localStorage.setItem(this.getStorageKey('.centerY'), centerY.toString());
+  }
+
+  private centerInViewport(rect: DOMRect): void {
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+    this.left = Math.max(0, centerX - rect.width / 2);
+    this.top = Math.max(0, centerY - rect.height / 2);
+    this.applyPosition();
   }
 
   protected overlayClick(): void {
