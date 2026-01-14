@@ -51,6 +51,7 @@ export class FullscreenComponent {
           this.loadingC = true;
         }
 
+        this.ensureTournamentInitialized();
         this.refreshComparisonRelations(target);
 
         // used in <video> display method
@@ -88,6 +89,15 @@ export class FullscreenComponent {
   private refreshComparisonRelations(target: GalleryImage): void {
     this.comparisonWinners = this.stateService.tournament.getNearestWinners(target);
     this.comparisonLosers = this.stateService.tournament.getNearestLosers(target);
+  }
+
+  private ensureTournamentInitialized(): void {
+    if (this.stateService.tournament.comparisons != null) return;
+
+    const images = this.stateService.images.filter(image => GoogleFileUtils.isImage(image));
+    const filteredImages = this.filterService.images().filter(image => GoogleFileUtils.isImage(image));
+    const imagesToCompare = filteredImages.length ? filteredImages : images;
+    this.stateService.tournament.start(images, imagesToCompare, this.stateService.tournamentState);
   }
 
   protected getSrc(image: GalleryImage): SafeUrl {

@@ -183,31 +183,7 @@ export class Tournament {
   }
 
   public getRanking(): GalleryImage[] {
-    const indegree = new Map<GalleryImage, number>();
-    this.imagesToCompare.forEach(image => indegree.set(image, 0));
-
-    // Count incoming edges
-    for (const [, losers] of this.graph.entries()) {
-      for (const loser of losers) {
-        if (!indegree.has(loser)) continue;
-        indegree.set(loser, (indegree.get(loser) ?? 0) + 1);
-      }
-    }
-
-    // Kahn's algorithm
-    const queue: GalleryImage[] = this.imagesToCompare.filter(image => (indegree.get(image) ?? 0) === 0);
-    const order: GalleryImage[] = [];
-
-    while (queue.length) {
-      const current = queue.shift();
-      order.push(current);
-      for (const neighbor of this.graph.get(current)) {
-        indegree.set(neighbor, indegree.get(neighbor) - 1);
-        if (indegree.get(neighbor) === 0) queue.push(neighbor);
-      }
-    }
-
-    return order;
+    return this.getRankingFor(this.imagesToCompare);
   }
 
   public getImagesToCompare(): GalleryImage[] {
@@ -217,7 +193,7 @@ export class Tournament {
   public getNearestWinners(image: GalleryImage): GalleryImage[] {
     if (!image) return [];
 
-    const ranking = this.getRanking();
+    const ranking = this.getRankingFor(this.images);
     const startIndex = ranking.indexOf(image);
     if (startIndex === -1) return [];
 
@@ -236,7 +212,7 @@ export class Tournament {
     const beatenImages = this.graph.get(image);
     if (!beatenImages || beatenImages.size === 0) return [];
 
-    const ranking = this.getRanking();
+    const ranking = this.getRankingFor(this.images);
     const startIndex = ranking.indexOf(image);
     if (startIndex === -1) return [];
 
@@ -247,6 +223,35 @@ export class Tournament {
     }
 
     return result;
+  }
+
+  private getRankingFor(images: GalleryImage[]): GalleryImage[] {
+    const source = images ?? [];
+    const indegree = new Map<GalleryImage, number>();
+    source.forEach(image => indegree.set(image, 0));
+
+    // Count incoming edges
+    for (const [, losers] of this.graph.entries()) {
+      for (const loser of losers) {
+        if (!indegree.has(loser)) continue;
+        indegree.set(loser, (indegree.get(loser) ?? 0) + 1);
+      }
+    }
+
+    // Kahn's algorithm
+    const queue: GalleryImage[] = source.filter(image => (indegree.get(image) ?? 0) === 0);
+    const order: GalleryImage[] = [];
+
+    while (queue.length) {
+      const current = queue.shift();
+      order.push(current);
+      for (const neighbor of this.graph.get(current)) {
+        indegree.set(neighbor, indegree.get(neighbor) - 1);
+        if (indegree.get(neighbor) === 0) queue.push(neighbor);
+      }
+    }
+
+    return order;
   }
 
   public skip(): void {
