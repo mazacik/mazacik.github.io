@@ -534,8 +534,8 @@ hr {
   }
 
   &.smaller {
-    min-width: variables.$button-height-smaller;
-    min-height: variables.$button-height-smaller;
+    min-width: variables.$button-height-small;
+    min-height: variables.$button-height-small;
     padding: 0 variables.$gap-1;
   }
 
@@ -581,10 +581,10 @@ hr {
   min-height: variables.$button-height;
 
   &.smaller {
-    width: variables.$button-height-smaller;
-    height: variables.$button-height-smaller;
-    min-width: variables.$button-height-smaller;
-    min-height: variables.$button-height-smaller;
+    width: variables.$button-height-small;
+    height: variables.$button-height-small;
+    min-width: variables.$button-height-small;
+    min-height: variables.$button-height-small;
   }
 
   @media screen and (min-width:1280px) {

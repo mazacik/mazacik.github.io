@@ -81,8 +81,9 @@ export class Tournament {
 
   private calculateEstimateComparisons(imageCount: number): number {
     if (imageCount <= 1) return 0;
-    const factor = 0.52; // tuned so k * N * log2(N) matches observed workloads
-    return Math.round(factor * imageCount * Math.log2(imageCount));
+    const logFactor = 0.914; // retuned to align closer to observed simulation counts
+    const linearFactor = 0.734; // compensates for smaller image sets
+    return Math.round(imageCount * (logFactor * Math.log2(imageCount) + linearFactor));
   }
 
   public updateProgress(): void {
