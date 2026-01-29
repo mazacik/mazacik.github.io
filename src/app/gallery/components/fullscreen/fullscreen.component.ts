@@ -21,6 +21,7 @@ import { GalleryUtils } from '../../../shared/utils/gallery.utils';
   styleUrls: ['./fullscreen.component.scss']
 })
 export class FullscreenComponent {
+
   protected readonly galleryUtils = GalleryUtils;
 
   protected loadingT: boolean = true;

@@ -45,6 +45,7 @@ export class LandingComponent implements OnInit {
   protected navigate(app: ApplicationConfig): void {
     sessionStorage.setItem(AppConstants.KEY_ACTIVE_APP_ID, app.id);
     sessionStorage.removeItem(AppConstants.KEY_GOOGLE_DATA_FILE_ID);
+    this.applicationService.loading.set(true);
     this.router.navigate([app.id]);
   }
 

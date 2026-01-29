@@ -6,19 +6,17 @@
     <div class="comparison-winners">
       @if (comparisonWinners.length) {
         @for (image of comparisonWinners; track image.id) {
-          <img [src]="image.thumbnailLink" loading="lazy" (click)="openComparisonPath(image, target)" />
+          <img [src]="image.thumbnailLink" [style.aspect-ratio]="image.aspectRatio" loading="lazy" (click)="openComparisonPath(image, target)" />
         }
       }
     </div>
 
-    <div class="flex-1 stack-container">
-      <app-image class="anim-fade-in" [src]="target.contentLink" [placeholderSrc]="galleryUtils.getPlaceholderSrc(target)" (click)="onImageClick(target)" animate.leave="anim-fade-out"></app-image>
-    </div>
+    <app-image [src]="target.contentLink" [placeholderSrc]="galleryUtils.getPlaceholderSrc(target)" (click)="onImageClick(target)"></app-image>
 
     <div class="comparison-losers">
       @if (comparisonLosers.length) {
         @for (image of comparisonLosers; track image.id) {
-          <img [src]="image.thumbnailLink" loading="lazy" (click)="openComparisonPath(target, image)" />
+          <img [src]="image.thumbnailLink" [style.aspect-ratio]="image.aspectRatio" loading="lazy" (click)="openComparisonPath(target, image)" />
         }
       }
     </div>
