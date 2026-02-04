@@ -2,7 +2,7 @@ import { Injectable, Signal, signal, WritableSignal } from "@angular/core";
 import { AppConstants } from "../constants/app.constants";
 import { DialogService } from "./dialog.service";
 
-export type HeaderClasses = string | string[] | Set<string> | { [key: string]: boolean | number | string };
+export type HeaderClasses = string | string[];
 export type HeaderSection = 'start' | 'center' | 'end';
 
 export interface HeaderAction {

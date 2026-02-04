@@ -20,7 +20,6 @@ import { GalleryUtils } from '../../../shared/utils/gallery.utils';
 export class ImageTournamentComponent {
   protected readonly galleryUtils = GalleryUtils;
 
-  protected progressBarVisible: boolean = true;
   protected comparison: [GalleryImage, GalleryImage] = null;
   protected winnersLeft: GalleryImage[] = [];
   protected losersLeft: GalleryImage[] = [];
@@ -79,8 +78,9 @@ export class ImageTournamentComponent {
     this.refreshComparisonRelations();
   }
 
-  public toggleProgressBar(): void {
-    this.progressBarVisible = !this.progressBarVisible;
+  public toggleRelations(): void {
+    this.stateService.settings.showComparisonRelations = !this.stateService.settings.showComparisonRelations;
+    this.serializationService.save();
     this.refreshComparisonRelations();
   }
 
@@ -139,7 +139,7 @@ export class ImageTournamentComponent {
     this.stateService.tournament.updateProgress();
     this.comparison = this.stateService.tournament.comparison() ?? null;
     if (this.comparison) {
-      if (this.progressBarVisible) {
+      if (this.stateService.settings?.showComparisonRelations) {
         this.winnersLeft = this.stateService.tournament.getNearestWinners(this.comparison[0]);
         this.losersLeft = this.stateService.tournament.getNearestLosers(this.comparison[0]);
         this.winnersRight = this.stateService.tournament.getNearestWinners(this.comparison[1]);
@@ -163,7 +163,7 @@ export class ImageTournamentComponent {
   }
 
   private filterSharedComparisonRelations(): void {
-    if (!this.stateService.settings?.hideSharedComparisonRelations) {
+    if (!this.stateService.settings?.hideComparisonSharedRelations) {
       return;
     }
 

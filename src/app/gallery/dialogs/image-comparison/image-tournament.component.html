@@ -12,18 +12,18 @@
           (touchend)="onImageTouchEnd()"
           (touchcancel)="onImageTouchEnd()"
           (touchmove)="onImageTouchMove()"></app-image>
-        @if (progressBarVisible) {
+        @if (stateService.settings?.showComparisonRelations) {
           @if (winnersLeft.length) {
             <div class="side-column winners-column">
               @for (image of winnersLeft; track image.id) {
-                <img class="side-image" [src]="image.thumbnailLink" loading="lazy" (click)="openComparisonPath(image, comparison[0])" />
+                <img class="side-image" [src]="image.thumbnailLink" [style.aspect-ratio]="image.aspectRatio" loading="lazy" (click)="openComparisonPath(image, comparison[0])" />
               }
             </div>
           }
           @if (losersLeft.length) {
             <div class="side-column losers-column">
               @for (image of losersLeft; track image.id) {
-                <img class="side-image" [src]="image.thumbnailLink" loading="lazy" (click)="openComparisonPath(comparison[0], image)" />
+                <img class="side-image" [src]="image.thumbnailLink" [style.aspect-ratio]="image.aspectRatio" loading="lazy" (click)="openComparisonPath(comparison[0], image)" />
               }
             </div>
           }
@@ -41,18 +41,18 @@
           (touchend)="onImageTouchEnd()"
           (touchcancel)="onImageTouchEnd()"
           (touchmove)="onImageTouchMove()"></app-image>
-        @if (progressBarVisible) {
+        @if (stateService.settings?.showComparisonRelations) {
           @if (winnersRight.length) {
             <div class="side-column winners-column">
               @for (image of winnersRight; track image.id) {
-                <img class="side-image" [src]="image.thumbnailLink" loading="lazy" (click)="openComparisonPath(image, comparison[1])" />
+                <img class="side-image" [src]="image.thumbnailLink" [style.aspect-ratio]="image.aspectRatio" loading="lazy" (click)="openComparisonPath(image, comparison[1])" />
               }
             </div>
           }
           @if (losersRight.length) {
             <div class="side-column losers-column">
               @for (image of losersRight; track image.id) {
-                <img class="side-image" [src]="image.thumbnailLink" loading="lazy" (click)="openComparisonPath(comparison[1], image)" />
+                <img class="side-image" [src]="image.thumbnailLink" [style.aspect-ratio]="image.aspectRatio" loading="lazy" (click)="openComparisonPath(comparison[1], image)" />
               }
             </div>
           }
@@ -67,7 +67,7 @@
     </div>
   }
 
-  @if (progressBarVisible) {
+  @if (stateService.settings?.showComparisonRelations) {
     <div class="h-separator"></div>
     <div class="progress-bar">
       @if (stateService.tournament.comparison()) {

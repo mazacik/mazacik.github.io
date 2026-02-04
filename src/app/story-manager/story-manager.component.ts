@@ -34,7 +34,7 @@ export class StoryManagerComponent implements OnInit {
     this.applicationService.addHeaderButtons('start', [{
       id: 'show-sidebar',
       tooltip: 'Show Notes',
-      classes: ['fa-solid', 'fa-angle-left', 'mobile-only'],
+      classes: 'fa-solid fa-angle-left mobile-only',
       onClick: () => this.stateService.current = null,
       hidden: () => !this.stateService.current
     }], 'first');
@@ -42,7 +42,7 @@ export class StoryManagerComponent implements OnInit {
     this.applicationService.addHeaderButtons('end', [{
       id: 'open-settings',
       tooltip: 'Settings',
-      classes: ['fa-solid', 'fa-gear'],
+      classes: 'fa-solid fa-gear',
       onClick: () => this.dialogService.create(ApplicationSettingsComponent)
     }], 'last');
   }

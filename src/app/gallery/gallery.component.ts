@@ -99,37 +99,37 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
     this.applicationService.addHeaderButtons('start', [{
       id: 'open-filter',
       tooltip: 'Open Filter',
-      classes: ['fa-solid', 'fa-filter'],
+      classes: 'fa-solid fa-filter',
       hidden: () => !isMasonry() || this.stateService.filterVisible,
       onClick: () => this.stateService.filterVisible = true
     }, {
       id: 'create-group',
       tooltip: 'Create Image Group',
-      classes: ['fa-solid', 'fa-folder-plus'],
+      classes: 'fa-solid fa-folder-plus',
       hidden: () => !isMasonry(),
       onClick: () => this.galleryService.openImageGroupEditor()
     }, {
       id: 'random-image',
       tooltip: 'Random Image',
-      classes: ['fa-solid', 'fa-shuffle'],
+      classes: 'fa-solid fa-shuffle',
       hidden: () => !isFullscreen(),
       onClick: () => this.setRandomTarget()
     }, {
       id: 'random-group-image',
       tooltip: 'Random Image from Group',
-      classes: ['fa-solid', 'fa-arrows-spin'],
+      classes: 'fa-solid fa-arrows-spin',
       hidden: () => !isFullscreen() || !this.stateService.fullscreenImage().group,
       onClick: () => this.setRandomGroupTarget()
     }, {
       id: 'group-comparison',
       tooltip: 'Open Group Comparison',
-      classes: ['fa-solid', 'fa-code-compare'],
+      classes: 'fa-solid fa-code-compare',
       hidden: () => !isFullscreen() || !this.stateService.fullscreenImage().group,
       onClick: () => this.openGroupComparison()
     }, {
       id: 'group-manager',
       tooltip: 'Open Image Group Manager',
-      classes: ['fa-solid', 'fa-object-group'],
+      classes: 'fa-solid fa-object-group',
       hidden: () => !isFullscreen() || !this.stateService.fullscreenImage().group,
       onClick: () => this.galleryService.openImageGroupEditor(this.stateService.fullscreenImage().group)
     }]);
@@ -137,46 +137,65 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
     this.applicationService.addHeaderButtons('center', [{
       id: 'comparison-undo',
       tooltip: 'Undo Comparison',
-      classes: ['fa-solid', 'fa-delete-left'],
+      classes: 'fa-solid fa-delete-left',
       hidden: () => !isTournament(),
       onClick: () => this.imageTournamentComponent?.undo(),
       disabled: () => !this.stateService.tournament || this.stateService.tournament.comparisons.length == 0
     }, {
       id: 'comparison-skip',
       tooltip: 'Skip Comparison',
-      classes: ['fa-solid', 'fa-forward'],
+      classes: 'fa-solid fa-forward',
       hidden: () => !isTournament(),
       onClick: () => this.imageTournamentComponent?.skip()
     }, {
-      id: 'comparison-progress-bar',
-      tooltip: 'Toggle Comparison Progress Bar',
-      classes: ['fa-solid', 'fa-list-check'],
+      id: 'comparison-relations',
+      tooltip: 'Toggle Comparison Relations and Progress Bar',
+      classes: () => {
+        if (this.stateService.settings?.showComparisonRelations) {
+          return ['fa-solid fa-code-compare', 'fa-solid fa-slash'];
+        }
+        return ['fa-solid fa-code-compare'];
+      },
       hidden: () => !isTournament(),
-      onClick: () => this.imageTournamentComponent?.toggleProgressBar()
+      onClick: () => this.imageTournamentComponent?.toggleRelations()
+    }, {
+      id: 'fullscreen-comparison-relations',
+      tooltip: 'Toggle Comparison Relations',
+      classes: () => {
+        if (this.stateService.settings?.showFullscreenComparisonRelations) {
+          return ['fa-solid fa-code-compare', 'fa-solid fa-slash'];
+        }
+        return ['fa-solid fa-code-compare'];
+      },
+      hidden: () => !isFullscreen(),
+      onClick: () => {
+        this.stateService.settings.showFullscreenComparisonRelations = !this.stateService.settings.showFullscreenComparisonRelations;
+        this.serializationService.save();
+      }
     }]);
 
     this.applicationService.addHeaderButtons('end', [{
       id: 'close-fullscreen',
       tooltip: 'Close Fullscreen',
-      classes: ['fa-solid', 'fa-times'],
+      classes: 'fa-solid fa-times',
       onClick: () => this.stateService.fullscreenImage.set(null),
       hidden: () => !isFullscreen()
     }, {
       id: 'close-filter',
       tooltip: 'Close Filter',
-      classes: ['fa-solid', 'fa-times'],
+      classes: 'fa-solid fa-times',
       onClick: () => this.stateService.filterVisible = false,
       hidden: () => !isFilter()
     }, {
       id: 'toggle-view',
       tooltip: () => this.viewMode === 'masonry' ? 'Open Comparison' : 'Open Masonry',
-      classes: () => this.viewMode === 'masonry' ? ['fa-solid', 'fa-code-compare'] : ['fa-solid', 'fa-images'],
+      classes: () => this.viewMode === 'masonry' ? 'fa-solid fa-code-compare' : 'fa-solid fa-images',
       onClick: () => this.viewMode = this.viewMode === 'masonry' ? 'tournament' : 'masonry',
       hidden: () => !isMasonry() && !isTournament()
     }, {
       id: 'open-settings',
       tooltip: 'Open Settings',
-      classes: ['fa-solid', 'fa-gear'],
+      classes: 'fa-solid fa-gear',
       onClick: () => this.dialogService.create(ApplicationSettingsComponent),
       hidden: () => !isMasonry() && !isTournament()
     }]);
@@ -233,9 +252,9 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
         id: 'hide-shared-comparison-relations',
         type: 'toggle',
         label: 'Hide Shared Relations',
-        getValue: () => !!this.stateService.settings?.hideSharedComparisonRelations,
+        getValue: () => !!this.stateService.settings?.hideComparisonSharedRelations,
         onChange: value => {
-          this.stateService.settings.hideSharedComparisonRelations = value;
+          this.stateService.settings.hideComparisonSharedRelations = value;
           this.serializationService.save();
           if (this.stateService.viewMode === 'tournament') {
             this.imageTournamentComponent?.refreshComparisonRelations();
@@ -267,7 +286,7 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
         id: 'show-fullscreen-comparison-relations',
         type: 'toggle',
         label: 'Show Comparison Relations',
-        getValue: () => this.stateService.settings?.showFullscreenComparisonRelations ?? true,
+        getValue: () => this.stateService.settings?.showFullscreenComparisonRelations,
         onChange: value => {
           this.stateService.settings.showFullscreenComparisonRelations = value;
           this.serializationService.save();
