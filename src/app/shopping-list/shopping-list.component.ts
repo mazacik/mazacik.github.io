@@ -85,19 +85,19 @@ export class ShoppingListComponent implements OnInit, OnDestroy {
     this.applicationService.addHeaderButtons('center', [{
       id: 'shopping-status',
       tooltip: () => this.getConnectionLabel(),
-      classes: () => ['fa-solid', 'fa-circle', 'fa-sm', 'border-transparent', 'pointer-events-none', this.getConnectionClass()]
+      classes: () => `fa-solid fa-circle fa-sm border-transparent pointer-events-none ${this.getConnectionClass()}`
     }]);
 
     this.applicationService.addHeaderButtons('end', [{
       id: 'shopping-reset',
       tooltip: 'Reset',
-      classes: ['fa-solid', 'fa-trash'],
+      classes: 'fa-solid fa-trash',
       onClick: () => this.clearCompleted(),
       disabled: () => this.completedCount() === 0
     }, {
       id: 'open-settings',
       tooltip: 'Settings',
-      classes: ['fa-solid', 'fa-gear'],
+      classes: 'fa-solid fa-gear',
       onClick: () => this.dialogService.create(ApplicationSettingsComponent)
     }]);
   }

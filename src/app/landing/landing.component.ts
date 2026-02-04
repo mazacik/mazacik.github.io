@@ -53,7 +53,7 @@ export class LandingComponent implements OnInit {
     this.applicationService.addHeaderButtons('end', [{
       id: 'open-settings',
       tooltip: 'Settings',
-      classes: ['fa-solid', 'fa-gear'],
+      classes: 'fa-solid fa-gear',
       onClick: () => this.dialogService.create(ApplicationSettingsComponent)
     }], 'last');
   }

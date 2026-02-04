@@ -23,6 +23,10 @@ export class HeaderComponent {
     return typeof classes === 'function' ? classes() : classes;
   }
 
+  protected isStackedClasses(classes?: HeaderClasses): classes is string[] {
+    return Array.isArray(classes) && classes.length > 1;
+  }
+
   protected isDisabled(action: HeaderAction): boolean {
     const disabled = action.disabled;
     return typeof disabled === 'function' ? disabled() : !!disabled;
