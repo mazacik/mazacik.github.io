@@ -25,7 +25,6 @@ export class ImageTournamentComponent {
   protected losersLeft: GalleryImage[] = [];
   protected winnersRight: GalleryImage[] = [];
   protected losersRight: GalleryImage[] = [];
-  protected ranking: GalleryImage[] = [];
   private longPressTimer: number | null = null;
   private suppressNextClick: boolean = false;
   private readonly longPressDelayMs: number = 500;
@@ -151,14 +150,11 @@ export class ImageTournamentComponent {
         this.losersRight = [];
       }
       this.filterSharedComparisonRelations();
-      this.ranking = [];
     } else {
       this.winnersLeft = [];
       this.losersLeft = [];
       this.winnersRight = [];
       this.losersRight = [];
-      const hasTournamentState = this.stateService.tournament.comparisons != null;
-      this.ranking = hasTournamentState ? this.stateService.tournament.getRanking() : [];
     }
   }
 

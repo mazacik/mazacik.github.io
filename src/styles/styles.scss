@@ -590,12 +590,18 @@ hr {
   @media screen and (min-width:1280px) {
     cursor: pointer;
 
-    transition-property: background-color;
+    transition-property: background-color, filter;
     transition-duration: variables.$transition-duration * 0.5;
 
     &:hover {
       color: var(--color-text-secondary-hover);
       background-color: var(--color-button-background-secondary-hover);
+    }
+
+    &.active:hover {
+      color: var(--color-text-secondary-active);
+      background-color: var(--color-button-background-secondary-active);
+      filter: brightness(1.1);
     }
 
     &:active {

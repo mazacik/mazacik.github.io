@@ -107,16 +107,4 @@
       mix-blend-mode: difference; // invert against the fill so text stays readable on light and dark backgrounds
     }
   }
-
-  .results {
-    display: flex;
-    overflow: auto;
-    gap: variables.$gap-1;
-    padding: variables.$gap-1;
-    margin: auto 0;
-
-    img {
-      height: 330px;
-    }
-  }
 }
