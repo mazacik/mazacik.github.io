@@ -60,10 +60,8 @@
       </div>
     </div>
   } @else {
-    <div class="results">
-      @for (image of ranking; track image.id) {
-        <img [src]="image.thumbnailLink" loading="lazy" />
-      }
+    <div class="comparison comparison-empty">
+      No comparisons remaining.
     </div>
   }
 

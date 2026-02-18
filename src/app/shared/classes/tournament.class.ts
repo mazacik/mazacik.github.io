@@ -7,9 +7,38 @@ export interface TournamentState {
   comparisons: [string, string][];
 }
 
+interface TournamentImageSelectionStats {
+  knownWins: number;
+  knownLosses: number;
+  strength: number;
+  predCount: number;
+  succCount: number;
+  certainty: number;
+  relations: number;
+}
+
+interface TournamentPairSelectionStats {
+  pair: [GalleryImage, GalleryImage];
+  gainIfLeftWins: number;
+  gainIfRightWins: number;
+  guaranteedGain: number;
+  expectedGain: number;
+  strengthGap: number;
+  isStrictBridge: boolean;
+  score: number;
+}
+
+// TODO performance improvement: consider bitset-based sets to reduce memory/GC pressure
+
 export class Tournament {
 
-  // TODO performance improvement: consider bitset-based sets to reduce memory/GC pressure
+  private static readonly OBVIOUS_GAP_THRESHOLD: number = 0.28;
+  private static readonly HIGH_VALUE_RATIO: number = 0.75;
+  private static readonly RELAXED_HIGH_VALUE_RATIO: number = 0.60;
+  private static readonly BRIDGE_MIN_RATIO: number = 0.40;
+  private static readonly EXPECTED_GAIN_WEIGHT_FACTOR: number = 0.25;
+  private static readonly BRIDGE_BONUS_WEIGHT: number = 0.20;
+  private static readonly MIN_PAIR_WEIGHT: number = 0.001;
 
   private images: GalleryImage[] = [];
   private imagesToCompare: GalleryImage[] = [];
@@ -102,8 +131,16 @@ export class Tournament {
   public getNextComparison(): [GalleryImage, GalleryImage] {
     const available: [GalleryImage, GalleryImage][] = this.collectAvailableComparisons();
     if (available.length === 0) return null;
-    const [x, y] = available[Math.floor(Math.random() * available.length)];
-    return RandomUtils.boolean() ? [x, y] : [y, x];
+
+    const selectionStats = this.getImageSelectionStats();
+    const filteredPairs = this.filterHighValueComparisons(available, selectionStats);
+    const selectedPair = this.pickWeightedRandomComparison(filteredPairs);
+
+    if (!selectedPair) {
+      return this.withRandomOrder(this.getRandomAvailableComparison(available));
+    }
+
+    return this.withRandomOrder(selectedPair);
   }
 
   public getComparisonProgress(): { total: number; remaining: number; completed: number } {
@@ -127,6 +164,192 @@ export class Tournament {
     }
 
     return this.availableComparisons;
+  }
+
+  private getRandomAvailableComparison(available: [GalleryImage, GalleryImage][]): [GalleryImage, GalleryImage] {
+    if (ArrayUtils.isEmpty(available)) return null;
+    return RandomUtils.from(available);
+  }
+
+  private withRandomOrder(pair: [GalleryImage, GalleryImage]): [GalleryImage, GalleryImage] {
+    if (!pair) return null;
+    return RandomUtils.boolean() ? [pair[0], pair[1]] : [pair[1], pair[0]];
+  }
+
+  private getImageSelectionStats(): Map<string, TournamentImageSelectionStats> {
+    const imageIds = new Set(this.imagesToCompare.map(image => image.id));
+    const imageCount = this.imagesToCompare.length;
+    const statsById = new Map<string, TournamentImageSelectionStats>();
+    const maxKnownRelations = Math.max(1, imageCount - 1);
+
+    for (const image of this.imagesToCompare) {
+      const knownWins = this.countKnownWins(image, imageIds);
+      const knownLosses = this.countKnownLosses(image);
+      const relations = knownWins + knownLosses;
+      const strength = (knownWins + 1) / (knownWins + knownLosses + 2);
+      const certainty = relations / maxKnownRelations;
+
+      statsById.set(image.id, {
+        knownWins,
+        knownLosses,
+        strength,
+        predCount: knownLosses + 1,
+        succCount: knownWins + 1,
+        certainty,
+        relations
+      });
+    }
+
+    return statsById;
+  }
+
+  private countKnownWins(image: GalleryImage, imageIds: Set<string>): number {
+    let knownWins = 0;
+    for (const target of this.graph.get(image) ?? []) {
+      if (target.id !== image.id && imageIds.has(target.id)) {
+        knownWins++;
+      }
+    }
+    return knownWins;
+  }
+
+  private countKnownLosses(image: GalleryImage): number {
+    let knownLosses = 0;
+    for (const candidate of this.imagesToCompare) {
+      if (candidate !== image && this.graph.get(candidate)?.has(image)) {
+        knownLosses++;
+      }
+    }
+    return knownLosses;
+  }
+
+  private getPairSelectionStats(
+    pair: [GalleryImage, GalleryImage],
+    statsById: Map<string, TournamentImageSelectionStats>
+  ): TournamentPairSelectionStats {
+    const left = statsById.get(pair[0].id);
+    const right = statsById.get(pair[1].id);
+    const imageCount = this.imagesToCompare.length;
+
+    if (!left || !right) {
+      return {
+        pair,
+        gainIfLeftWins: 0,
+        gainIfRightWins: 0,
+        guaranteedGain: 0,
+        expectedGain: 0,
+        strengthGap: 0,
+        isStrictBridge: false,
+        score: 0
+      };
+    }
+
+    const gainIfLeftWins = left.predCount * right.succCount;
+    const gainIfRightWins = right.predCount * left.succCount;
+    const guaranteedGain = Math.min(gainIfLeftWins, gainIfRightWins);
+    const expectedGain = 0.5 * (gainIfLeftWins + gainIfRightWins);
+    const strengthGap = Math.abs(left.strength - right.strength);
+    const isStrictBridge =
+      (this.isLowRelationImage(left, imageCount) && this.isStrictHubImage(right, imageCount)) ||
+      (this.isLowRelationImage(right, imageCount) && this.isStrictHubImage(left, imageCount));
+
+    return {
+      pair,
+      gainIfLeftWins,
+      gainIfRightWins,
+      guaranteedGain,
+      expectedGain,
+      strengthGap,
+      isStrictBridge,
+      score: 0
+    };
+  }
+
+  private isLowRelationImage(stats: TournamentImageSelectionStats, imageCount: number): boolean {
+    const lowRelationsThreshold = Math.max(1, Math.floor(0.08 * Math.max(0, imageCount - 1)));
+    return stats.relations <= lowRelationsThreshold;
+  }
+
+  private isStrictHubImage(stats: TournamentImageSelectionStats, imageCount: number): boolean {
+    const strictHubRelationThreshold = Math.max(4, Math.floor(0.30 * Math.max(0, imageCount - 1)));
+    return stats.knownWins >= 2 && stats.knownLosses >= 2 && stats.relations >= strictHubRelationThreshold;
+  }
+
+  private filterHighValueComparisons(
+    selectable: [GalleryImage, GalleryImage][],
+    statsById: Map<string, TournamentImageSelectionStats>
+  ): TournamentPairSelectionStats[] {
+    const pairStats = selectable.map(pair => this.getPairSelectionStats(pair, statsById));
+    if (!pairStats.length) return [];
+
+    const richMinRelations = Math.max(2, Math.floor(0.15 * Math.max(0, this.imagesToCompare.length - 1)));
+    const postMismatchFilter = pairStats.filter(stats => {
+      const left = statsById.get(stats.pair[0].id);
+      const right = statsById.get(stats.pair[1].id);
+      if (!left || !right) return true;
+      const obviousMismatch = left.relations >= richMinRelations &&
+        right.relations >= richMinRelations &&
+        stats.strengthGap >= Tournament.OBVIOUS_GAP_THRESHOLD;
+      return !obviousMismatch;
+    });
+
+    const baseline = postMismatchFilter.length ? postMismatchFilter : pairStats;
+    const maxGuaranteedGain = baseline.reduce((max, stats) => Math.max(max, stats.guaranteedGain), 0);
+    const primaryThreshold = maxGuaranteedGain * Tournament.HIGH_VALUE_RATIO;
+    const relaxedThreshold = maxGuaranteedGain * Tournament.RELAXED_HIGH_VALUE_RATIO;
+    const bridgeThreshold = maxGuaranteedGain * Tournament.BRIDGE_MIN_RATIO;
+
+    let filtered = baseline.filter(stats => stats.guaranteedGain >= primaryThreshold);
+    if (!filtered.length) {
+      filtered = baseline.filter(stats => stats.guaranteedGain >= relaxedThreshold);
+    }
+
+    if (!filtered.length) {
+      filtered = baseline.slice();
+    }
+
+    const seen = new Set(filtered.map(stats => this.makePairKey(stats.pair[0], stats.pair[1])));
+    for (const stats of baseline) {
+      if (!stats.isStrictBridge || stats.guaranteedGain < bridgeThreshold) continue;
+      const key = this.makePairKey(stats.pair[0], stats.pair[1]);
+      if (seen.has(key)) continue;
+      filtered.push(stats);
+      seen.add(key);
+    }
+
+    return filtered.length ? filtered : pairStats;
+  }
+
+  private getPairWeight(stats: TournamentPairSelectionStats): number {
+    const bridgeBonus = stats.isStrictBridge ? 1 : 0;
+    const rawWeight = stats.guaranteedGain +
+      Tournament.EXPECTED_GAIN_WEIGHT_FACTOR * stats.expectedGain +
+      Tournament.BRIDGE_BONUS_WEIGHT * bridgeBonus;
+    return Math.max(Tournament.MIN_PAIR_WEIGHT, rawWeight);
+  }
+
+  private pickWeightedRandomComparison(candidates: TournamentPairSelectionStats[]): [GalleryImage, GalleryImage] {
+    if (!candidates.length) return null;
+
+    const weightedCandidates = candidates.map(stats => ({
+      pair: stats.pair,
+      weight: this.getPairWeight(stats)
+    }));
+
+    const totalWeight = weightedCandidates.reduce((sum, candidate) => sum + candidate.weight, 0);
+    if (totalWeight <= 0) {
+      return RandomUtils.from(weightedCandidates).pair;
+    }
+
+    let remaining = RandomUtils.number(totalWeight);
+    for (const candidate of weightedCandidates) {
+      remaining -= candidate.weight;
+      if (remaining <= 0) {
+        return candidate.pair;
+      }
+    }
+
+    return weightedCandidates[weightedCandidates.length - 1].pair;
   }
 
   private hasPath(from: GalleryImage, to: GalleryImage): boolean {

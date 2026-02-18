@@ -1,0 +1,16 @@
+<div class="longest-chain-wrapper">
+  @if (longestChain.length) {
+    <div class="longest-chain">
+      @for (image of longestChain; track image.id; let last = $last) {
+        <div class="chain-segment">
+          <img class="chain-image" [src]="image.thumbnailLink" [style.aspect-ratio]="image.aspectRatio" loading="lazy" (click)="openFullscreen(image)" />
+          @if (!last) {
+            <i class="fa-solid fa-chevron-right chain-arrow"></i>
+          }
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="chain-empty">No comparison chain available yet.</div>
+  }
+</div>

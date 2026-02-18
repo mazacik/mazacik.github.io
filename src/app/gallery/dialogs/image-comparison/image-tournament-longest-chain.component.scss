@@ -1,0 +1,45 @@
+@use 'src/styles/variables.scss';
+
+:host {
+  width: 100%;
+  height: 100%;
+  display: flex;
+
+  .longest-chain-wrapper {
+    width: 100%;
+    display: flex;
+    overflow: auto;
+    padding: variables.$gap-2;
+  }
+
+  .longest-chain {
+    display: flex;
+    flex-wrap: wrap;
+    gap: variables.$gap-1;
+    margin: auto 0;
+    max-width: 100%;
+    justify-content: space-between;
+  }
+
+  .chain-segment {
+    display: flex;
+    align-items: center;
+    gap: variables.$gap-1;
+  }
+
+  .chain-image {
+    height: 330px;
+    border-radius: variables.$gap-1;
+    border: 1px solid var(--color-border);
+    cursor: pointer;
+  }
+
+  .chain-arrow {
+    color: var(--color-text-secondary);
+  }
+
+  .chain-empty {
+    margin: auto;
+    color: var(--color-text-secondary);
+  }
+}

@@ -11,6 +11,7 @@ import { FilterComponent } from './components/filter/filter.component';
 import { FullscreenComponent } from './components/fullscreen/fullscreen.component';
 import { MasonryComponent } from './components/masonry/masonry.component';
 import { TaggerComponent } from './components/tagger/tagger.component';
+import { ImageTournamentLongestChainComponent } from './dialogs/image-comparison/image-tournament-longest-chain.component';
 import { ImageTournamentComponent } from './dialogs/image-comparison/image-tournament.component';
 import { GalleryImage } from './models/gallery-image.class';
 import { FilterService } from './services/filter.service';
@@ -24,6 +25,7 @@ import { GalleryService } from './services/gallery.service';
     FilterComponent,
     MasonryComponent,
     ImageTournamentComponent,
+    ImageTournamentLongestChainComponent,
     FullscreenComponent,
     TaggerComponent
   ],
@@ -34,6 +36,8 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
 
   @ViewChild(ImageTournamentComponent)
   private imageTournamentComponent?: ImageTournamentComponent;
+
+  protected tournamentSubview: 'comparison' | 'chain' = 'comparison';
 
   protected get viewMode(): GalleryViewMode {
     return this.stateService.viewMode;
@@ -95,6 +99,7 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
     const isFullscreen = () => !!this.stateService.fullscreenImage();
     const isFilter = () => this.stateService.viewMode === 'masonry' && !ScreenUtils.isLargeScreen() && this.stateService.filterVisible;
     const isTournament = () => this.stateService.viewMode === 'tournament' && !isFullscreen();
+    const isTournamentComparison = () => isTournament() && this.tournamentSubview === 'comparison';
 
     this.applicationService.addHeaderButtons('start', [{
       id: 'open-filter',
@@ -132,20 +137,26 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
       classes: 'fa-solid fa-object-group',
       hidden: () => !isFullscreen() || !this.stateService.fullscreenImage().group,
       onClick: () => this.galleryService.openImageGroupEditor(this.stateService.fullscreenImage().group)
+    }, {
+      id: 'comparison-chain-toggle',
+      tooltip: () => this.tournamentSubview === 'comparison' ? 'Open Longest Comparison Chain' : 'Open Tournament Comparisons',
+      classes: () => this.tournamentSubview === 'chain' ? 'fa-solid fa-link active' : 'fa-solid fa-link',
+      hidden: () => !isTournament(),
+      onClick: () => this.toggleTournamentSubview()
     }]);
 
     this.applicationService.addHeaderButtons('center', [{
       id: 'comparison-undo',
       tooltip: 'Undo Comparison',
       classes: 'fa-solid fa-delete-left',
-      hidden: () => !isTournament(),
+      hidden: () => !isTournamentComparison(),
       onClick: () => this.imageTournamentComponent?.undo(),
       disabled: () => !this.stateService.tournament || this.stateService.tournament.comparisons.length == 0
     }, {
       id: 'comparison-skip',
       tooltip: 'Skip Comparison',
       classes: 'fa-solid fa-forward',
-      hidden: () => !isTournament(),
+      hidden: () => !isTournamentComparison(),
       onClick: () => this.imageTournamentComponent?.skip()
     }, {
       id: 'comparison-relations',
@@ -156,7 +167,7 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
         }
         return ['fa-solid fa-code-compare'];
       },
-      hidden: () => !isTournament(),
+      hidden: () => !isTournamentComparison(),
       onClick: () => this.imageTournamentComponent?.toggleRelations()
     }, {
       id: 'fullscreen-comparison-relations',
@@ -187,10 +198,19 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
       onClick: () => this.stateService.filterVisible = false,
       hidden: () => !isFilter()
     }, {
-      id: 'toggle-view',
-      tooltip: () => this.viewMode === 'masonry' ? 'Open Comparison' : 'Open Masonry',
-      classes: () => this.viewMode === 'masonry' ? 'fa-solid fa-code-compare' : 'fa-solid fa-images',
-      onClick: () => this.viewMode = this.viewMode === 'masonry' ? 'tournament' : 'masonry',
+      id: 'open-masonry',
+      tooltip: 'Open Masonry',
+      classes: () => this.viewMode === 'masonry' ? 'fa-solid fa-images active' : 'fa-solid fa-images',
+      onClick: () => this.viewMode = 'masonry',
+      hidden: () => !isMasonry() && !isTournament()
+    }, {
+      id: 'open-comparison',
+      tooltip: 'Open Comparison',
+      classes: () => this.viewMode === 'tournament' ? 'fa-solid fa-code-compare active' : 'fa-solid fa-code-compare',
+      onClick: () => {
+        this.tournamentSubview = 'comparison';
+        this.viewMode = 'tournament';
+      },
       hidden: () => !isMasonry() && !isTournament()
     }, {
       id: 'open-settings',
@@ -249,10 +269,22 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
       id: 'comparison-settings',
       label: 'Comparison',
       items: [{
+        id: 'show-comparison-relations',
+        type: 'toggle',
+        label: 'Show Comparison Relations',
+        getValue: () => this.stateService.settings?.showComparisonRelations,
+        onChange: value => {
+          this.stateService.settings.showComparisonRelations = value;
+          this.serializationService.save();
+          if (this.stateService.viewMode === 'tournament') {
+            this.imageTournamentComponent?.refreshComparisonRelations();
+          }
+        }
+      }, {
         id: 'hide-shared-comparison-relations',
         type: 'toggle',
         label: 'Hide Shared Relations',
-        getValue: () => !!this.stateService.settings?.hideComparisonSharedRelations,
+        getValue: () => this.stateService.settings?.hideComparisonSharedRelations,
         onChange: value => {
           this.stateService.settings.hideComparisonSharedRelations = value;
           this.serializationService.save();
@@ -327,11 +359,16 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
   protected openGroupComparison(): void {
     const target: GalleryImage = this.stateService.fullscreenImage();
     if (target?.group) {
+      this.tournamentSubview = 'comparison';
       this.stateService.viewMode = 'tournament';
       const images: GalleryImage[] = this.stateService.images.filter(image => GoogleFileUtils.isImage(image));
       const imagesToCompare: GalleryImage[] = target.group.images.filter(image => GoogleFileUtils.isImage(image));
       this.stateService.tournament.start(images, imagesToCompare, this.stateService.tournamentState);
     }
+  }
+
+  protected toggleTournamentSubview(): void {
+    this.tournamentSubview = this.tournamentSubview === 'comparison' ? 'chain' : 'comparison';
   }
 
   private bookmarkAllImages(): void {
