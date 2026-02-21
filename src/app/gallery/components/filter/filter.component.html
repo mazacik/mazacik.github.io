@@ -1,4 +1,8 @@
 <div class="filter-container">
+  <div class="flex center gap-3 margins-2-v">
+    <span>Filter: {{ filterService.images().length }} images</span>
+  </div>
+  <div class="h-separator margins"></div>
   <div class="flex center gap-3 margins-3-v">
     <div class="flex center gap cursor-pointer hover-brighten" (click)="toggleFilter(filterService.favoritesFilter)">
       <i class="fa-heart" [ngClass]="getFilterIconClass(filterService.favoritesFilter)" style="margin-top: 1px"></i>
@@ -20,7 +24,6 @@
         <app-filter-row [tag]="tag"></app-filter-row>
       }
     </div>
-    <div class="test"></div>
   </div>
   <div class="h-separator gap-1-bottom margins"></div>
   <div class="buttons-container">
