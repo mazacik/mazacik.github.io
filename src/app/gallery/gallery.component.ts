@@ -198,18 +198,16 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
       onClick: () => this.stateService.filterVisible = false,
       hidden: () => !isFilter()
     }, {
-      id: 'open-masonry',
-      tooltip: 'Open Masonry',
-      classes: () => this.viewMode === 'masonry' ? 'fa-solid fa-images active' : 'fa-solid fa-images',
-      onClick: () => this.viewMode = 'masonry',
-      hidden: () => !isMasonry() && !isTournament()
-    }, {
-      id: 'open-comparison',
-      tooltip: 'Open Comparison',
-      classes: () => this.viewMode === 'tournament' ? 'fa-solid fa-code-compare active' : 'fa-solid fa-code-compare',
+      id: 'toggle-view-mode',
+      tooltip: () => this.viewMode === 'masonry' ? 'Open Comparison' : 'Open Masonry',
+      classes: () => this.viewMode === 'tournament' ? 'fa-solid fa-images' : 'fa-solid fa-code-compare',
       onClick: () => {
-        this.tournamentSubview = 'comparison';
-        this.viewMode = 'tournament';
+        if (this.viewMode === 'masonry') {
+          this.tournamentSubview = 'comparison';
+          this.viewMode = 'tournament';
+          return;
+        }
+        this.viewMode = 'masonry';
       },
       hidden: () => !isMasonry() && !isTournament()
     }, {
