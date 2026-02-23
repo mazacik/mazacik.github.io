@@ -83,28 +83,13 @@
     color: var(--color-text-secondary);
   }
 
-  .progress-bar {
-    position: relative;
-    overflow: hidden;
+  .progress-remaining {
     height: variables.$button-height-smaller;
-
-    .progress-bar-fill {
-      height: 100%;
-      width: 0;
-      background-color: var(--color-positive);
-      transition: width variables.$transition-duration-fast ease;
-    }
-
-    .progress-bar-label {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      color: var(--color-text-secondary);
-      font-weight: 600;
-      font-size: small;
-      pointer-events: none;
-      mix-blend-mode: difference; // invert against the fill so text stays readable on light and dark backgrounds
-    }
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-secondary);
+    font-weight: 500;
+    font-size: small;
   }
 }

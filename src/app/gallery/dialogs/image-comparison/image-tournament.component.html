@@ -67,16 +67,8 @@
 
   @if (stateService.settings?.showComparisonRelations) {
     <div class="h-separator"></div>
-    <div class="progress-bar">
-      @if (stateService.tournament.comparison()) {
-        <div class="progress-bar-fill" [style.width.%]="stateService.tournament.estimateProgressPercent"></div>
-        <div class="progress-bar-label">
-          {{ stateService.tournament.completeComparisons }}/~{{ stateService.tournament.estimateComparisons }}/{{ stateService.tournament.remainingComparisons }} ({{ stateService.tournament.estimateProgressPercent | number: '1.0-0' }}%)
-        </div>
-      } @else {
-        <div class="progress-bar-fill" [style.width.%]="100"></div>
-        <div class="progress-bar-label">{{ stateService.tournament.completeComparisons }}/{{ stateService.tournament.completeComparisons }} ({{ 100 | number: '1.0-0' }}%)</div>
-      }
+    <div class="progress-remaining">
+      {{ stateService.tournament.remainingComparisons }} relations to resolve
     </div>
   }
 </div>
