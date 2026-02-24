@@ -118,4 +118,9 @@ export class GalleryService {
     this.serializationService.save();
   }
 
+  public updateNote(image: GalleryImage, note: string): void {
+    image.note = note;
+    this.serializationService.save();
+  }
+
 }

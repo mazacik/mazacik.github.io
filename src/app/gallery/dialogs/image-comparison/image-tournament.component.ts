@@ -1,19 +1,18 @@
-import { DecimalPipe } from '@angular/common';
 import { Component, effect } from '@angular/core';
 import { GalleryImage } from 'src/app/gallery/models/gallery-image.class';
+import { Tournament } from 'src/app/shared/classes/tournament.class';
 import { ImageComponent } from 'src/app/shared/components/image/image.component';
 import { DialogService } from 'src/app/shared/services/dialog.service';
-import { Tournament } from 'src/app/shared/classes/tournament.class';
 import { GoogleFileUtils } from 'src/app/shared/utils/google-file.utils';
-import { ComparisonPathComponent } from '../comparison-path/comparison-path.component';
+import { GalleryUtils } from '../../../shared/utils/gallery.utils';
 import { FilterService } from '../../services/filter.service';
 import { GallerySerializationService } from '../../services/gallery-serialization.service';
 import { GalleryStateService } from '../../services/gallery-state.service';
-import { GalleryUtils } from '../../../shared/utils/gallery.utils';
+import { ComparisonPathComponent } from '../comparison-path/comparison-path.component';
 
 @Component({
   selector: 'app-image-tournament',
-  imports: [ImageComponent, DecimalPipe],
+  imports: [ImageComponent],
   templateUrl: './image-tournament.component.html',
   styleUrls: ['./image-tournament.component.scss']
 })
@@ -69,11 +68,6 @@ export class ImageTournamentComponent {
     this.stateService.tournament.undo();
     this.stateService.tournamentState = this.stateService.tournament.getState();
     this.serializationService.save();
-    this.refreshComparisonRelations();
-  }
-
-  public skip(): void {
-    this.stateService.tournament.skip();
     this.refreshComparisonRelations();
   }
 

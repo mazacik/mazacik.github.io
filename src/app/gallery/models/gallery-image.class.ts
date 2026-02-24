@@ -7,6 +7,7 @@ export class GalleryImage extends GoogleMetadata {
   public heart: boolean;
   public bookmark: boolean;
   public tags: Tag[];
+  public note: string;
 
   // transient
   public aspectRatio: number;
