@@ -405,10 +405,6 @@ export class Tournament {
     return order;
   }
 
-  public skip(): void {
-    this.comparison.set(this.getNextComparison());
-  }
-
   public undo(): [GalleryImage, GalleryImage] {
     if (ArrayUtils.isEmpty(this.comparisons)) return null;
     this.comparison.set(this.comparisons.pop() ?? null);

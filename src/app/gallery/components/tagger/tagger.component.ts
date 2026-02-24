@@ -61,4 +61,17 @@ export class TaggerComponent {
     return null;
   }
 
+  protected onNoteInput(event: Event): void {
+    if (!this.target) {
+      return;
+    }
+
+    const note: string = (event.target as HTMLInputElement)?.value ?? '';
+    if (this.target.note === note) {
+      return;
+    }
+
+    this.galleryService.updateNote(this.target, note);
+  }
+
 }

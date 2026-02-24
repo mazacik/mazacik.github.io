@@ -3,4 +3,5 @@ export interface ImageData {
   heart: boolean;
   bookmark: boolean;
   tagIds: string[];
+  note?: string;
 }

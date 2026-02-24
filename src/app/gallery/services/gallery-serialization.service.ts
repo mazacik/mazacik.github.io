@@ -116,10 +116,12 @@ export class GallerySerializationService {
       image.heart = properties.heart;
       image.bookmark = properties.bookmark;
       image.tags = properties.tagIds.map(tagId => tags.find(tag => tag.id == tagId));
+      image.note = properties.note ?? '';
     } else {
       image.heart = false;
       image.bookmark = true;
       image.tags = [];
+      image.note = '';
     }
 
     return image;
@@ -174,6 +176,7 @@ export class GallerySerializationService {
     _image.heart = image.heart;
     _image.bookmark = image.bookmark;
     _image.tagIds = image.tags.map(tag => tag.id);
+    _image.note = image.note ?? '';
     return _image;
   }
 

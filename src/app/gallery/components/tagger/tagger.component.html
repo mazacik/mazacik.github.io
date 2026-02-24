@@ -31,6 +31,10 @@
     }
   </div>
   <div class="h-separator margins"></div>
+  @if (target) {
+    <input type="text" class="note-input" [value]="target.note" placeholder="Note" (input)="onNoteInput($event)" />
+    <div class="h-separator margins"></div>
+  }
   <div class="flex gap center padding-1">
     <div class="flex gap">
       <i class="icon-button fa-solid fa-download" title="Download" (click)="googleService.download(target)"></i>

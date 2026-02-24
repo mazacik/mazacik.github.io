@@ -153,12 +153,6 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
       onClick: () => this.imageTournamentComponent?.undo(),
       disabled: () => !this.stateService.tournament || this.stateService.tournament.comparisons.length == 0
     }, {
-      id: 'comparison-skip',
-      tooltip: 'Skip Comparison',
-      classes: 'fa-solid fa-forward',
-      hidden: () => !isTournamentComparison(),
-      onClick: () => this.imageTournamentComponent?.skip()
-    }, {
       id: 'comparison-relations',
       tooltip: 'Toggle Comparison Relations and Progress Bar',
       classes: () => {
