@@ -19,6 +19,7 @@ import { StoryManagerStateService } from './services/story-manager-state.service
   styleUrls: ['./story-manager.component.scss']
 })
 export class StoryManagerComponent implements OnInit {
+  private static readonly HYPERLINK_PATTERN: RegExp = /\b(?:https?:\/\/|www\.)[^\s<>()]+/gi;
 
   constructor(
     protected stateService: StoryManagerStateService,
@@ -40,11 +41,46 @@ export class StoryManagerComponent implements OnInit {
     }], 'first');
 
     this.applicationService.addHeaderButtons('end', [{
+      id: 'open-note-links',
+      tooltip: 'Open Note Links',
+      classes: 'fa-solid fa-arrow-up-right-from-square',
+      onClick: () => this.openCurrentNoteLinks(),
+      hidden: () => !this.stateService.current
+    }, {
       id: 'open-settings',
       tooltip: 'Settings',
       classes: 'fa-solid fa-gear',
       onClick: () => this.dialogService.create(ApplicationSettingsComponent)
     }], 'last');
+  }
+
+  private openCurrentNoteLinks(): void {
+    const links: string[] = this.extractLinks(this.stateService.current?.text);
+
+    links.slice().reverse().forEach(link => window.open(this.normalizeLink(link), '_blank', 'noopener'));
+  }
+
+  private extractLinks(text?: string): string[] {
+    if (!text) {
+      return [];
+    }
+
+    const hyperlinkPattern: RegExp = new RegExp(StoryManagerComponent.HYPERLINK_PATTERN);
+
+    return [...new Set(
+      Array.from(
+        text.matchAll(hyperlinkPattern),
+        match => this.trimTrailingPunctuation(match[0])
+      ).filter(Boolean)
+    )];
+  }
+
+  private trimTrailingPunctuation(link: string): string {
+    return link.replace(/[.,!?;:)\]}]+$/g, '');
+  }
+
+  private normalizeLink(link: string): string {
+    return /^https?:\/\//i.test(link) ? link : `https://${link}`;
   }
 
   protected isMobileView(): boolean {
