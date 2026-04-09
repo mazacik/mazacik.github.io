@@ -14,15 +14,18 @@
   }
   <div class="y-scrollbar-container options-container">
     @for (option of inputs.options; track option) {
-      <div
-        class="flex-1 flex gap align-items-center cursor-pointer hover-brighten"
-        [class.disabled]="inputs.disableFn && inputs.disableFn(option, selection)"
-        [class.unavailable]="!isAvailable(option)"
-        (click)="toggle(option)">
-        <i class="fa-solid fa-check opacity-0"></i>
-        <span>{{ getText(option) }}</span>
-        <i class="fa-solid fa-check opacity-0"></i>
-      </div>
+      @if (isAvailable(option)) {
+        <div
+          class="flex-1 flex gap align-items-center"
+          [class.cursor-pointer]="!isDisabled(option)"
+          [class.hover-brighten]="!isDisabled(option)"
+          [class.disabled]="isDisabled(option)"
+          (click)="toggleAvailable(option)">
+          <i class="fa-solid fa-check opacity-0"></i>
+          <span>{{ getText(option) }}</span>
+          <i class="fa-solid fa-check opacity-0"></i>
+        </div>
+      }
     }
   </div>
 </div>

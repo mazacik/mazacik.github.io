@@ -62,8 +62,12 @@ export class MultiSelectDialogComponent<T> extends DialogContentBase<T[]> implem
   }
 
   protected isAvailable(option: T): boolean {
-    // if (this.selection.includes(option)) return false; // TODO maybe also leave option visible in bottom container?
     return this.getText(option).toLocaleLowerCase().includes(this.query.toLocaleLowerCase());
+  }
+
+  protected isDisabled(option: T): boolean {
+    if (this.selection.includes(option)) return true;
+    return this.inputs.disableFn ? this.inputs.disableFn(option, this.selection) : false;
   }
 
   protected getText(option: T): string {
@@ -73,6 +77,11 @@ export class MultiSelectDialogComponent<T> extends DialogContentBase<T[]> implem
   protected toggle(option: T): void {
     ArrayUtils.toggle(this.selection, option, true);
     this.inputs.onSelectionChange && this.inputs.onSelectionChange(this.selection, option);
+  }
+
+  protected toggleAvailable(option: T): void {
+    if (this.isDisabled(option)) return;
+    this.toggle(option);
   }
 
   protected canSubmit(): boolean {
