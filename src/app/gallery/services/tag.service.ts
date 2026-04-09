@@ -212,7 +212,7 @@ export class TagService {
       options: availableParents,
       nullOption: tag.parent ? 'Root' : null,
       defaultValue: tag.parent,
-      getText: option => option.getCompleteName()
+      getText: option => option.getNameWithParents()
     });
 
     this.changeParent(tag, parent);
