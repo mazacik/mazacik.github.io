@@ -16,6 +16,28 @@
     padding: variables.$gap-1 variables.$gap-2;
   }
 
+  .search-input-container {
+    position: relative;
+
+    .search-input {
+      width: 100%;
+      padding-right: calc(#{variables.$gap-2} * 2 + 1rem);
+    }
+
+    .clear-search-button {
+      position: absolute;
+      top: 50%;
+      right: variables.$gap-2;
+      transform: translateY(-50%);
+      border: 0;
+      background: transparent;
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      padding: 0;
+      font-size: 0.85rem;
+    }
+  }
+
   @media screen and (max-width:1280px) {
     backdrop-filter: blur(5px);
     z-index: 1;

@@ -19,6 +19,21 @@ export class Tag extends Filter {
     return this.collectParents().concat(this).map(t => t.name).join(separator);
   }
 
+  public matchesSearchQuery(query: string): boolean {
+    const terms: string[] = query
+      ?.trim()
+      .toLocaleLowerCase()
+      .split(/\s+/u)
+      .filter(Boolean) ?? [];
+
+    if (terms.length === 0) {
+      return true;
+    }
+
+    const fullName: string = this.getNameWithParents(' ').toLocaleLowerCase();
+    return terms.every(term => fullName.includes(term));
+  }
+
   public getCount(images: GalleryImage[]): number {
     if (this.group) return null;
     if (this.pseudo) return images.filter(image => ArrayUtils.intersection(image.tags, this.children).length).length;

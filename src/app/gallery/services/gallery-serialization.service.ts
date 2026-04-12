@@ -50,8 +50,7 @@ export class GallerySerializationService {
 
     const tagService: TagService = this.injector.get(TagService);
     ArrayUtils.push(tagService.tags, data.tagProperties.map(data => this.parseTag(data)));
-    tagService.tags.forEach(tag => tag.children = data.tagProperties.find(t => t.id == tag.id).childIds.map(childId => tagService.tags.find(t => t.id == childId)));
-    tagService.tags.forEach(tag => tag.parent = tagService.tags.find(t => t.children.includes(tag)));
+    this.hydrateTagHierarchy(tagService.tags, data.tagProperties);
 
     const recursionTracker: Set<Promise<void>> = new Set<Promise<void>>();
     await this.processImages(data, stateService.dataFolderId, stateService.images, tagService.tags, recursionTracker);
@@ -135,6 +134,18 @@ export class GallerySerializationService {
     tag.state = data.state;
     tag.open = false;
     return tag;
+  }
+
+  private hydrateTagHierarchy(tags: Tag[], tagProperties: TagData[]): void {
+    tags.forEach(tag => {
+      const tagData: TagData | undefined = tagProperties.find(property => property.id == tag.id);
+      tag.children = tagData?.childIds.map(childId => tags.find(child => child.id == childId)).filter(Boolean) ?? [];
+    });
+
+    tags.forEach(tag => {
+      // Pseudo tags reuse children for membership, but only groups define the structural parent chain.
+      tag.parent = tags.find(candidate => candidate.group && candidate.children.includes(tag));
+    });
   }
 
   private readonly saveDelay: Delay = new Delay(5000);

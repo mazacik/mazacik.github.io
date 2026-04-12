@@ -20,6 +20,8 @@ export class TaggerRowComponent {
   @Input() tag: Tag;
   @Input() target: GalleryImage;
   @Input() groupMode: boolean;
+  @Input() showFullName: boolean = false;
+  @Input() flatMode: boolean = false;
 
   constructor(
     private tagService: TagService,
@@ -31,7 +33,9 @@ export class TaggerRowComponent {
 
   protected onTagClick(): void {
     if (this.tag.group) {
-      this.tag.open = !this.tag.open;
+      if (!this.flatMode) {
+        this.tag.open = !this.tag.open;
+      }
     } else if (!this.tag.pseudo) {
       if (this.groupMode && this.target.group) {
         if (this.target.group.images.every(groupImage => groupImage.tags.includes(this.tag))) {
@@ -108,6 +112,10 @@ export class TaggerRowComponent {
     }
 
     return classes.join(' ');
+  }
+
+  protected getDisplayName(): string {
+    return this.showFullName ? this.tag.getNameWithParents() : this.tag.name;
   }
 
   protected getTagGroups(): Tag[] {

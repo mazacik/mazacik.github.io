@@ -8,12 +8,11 @@ import { GalleryGoogleDriveService } from '../../services/gallery-google-drive.s
 import { GalleryStateService } from '../../services/gallery-state.service';
 import { GalleryService } from '../../services/gallery.service';
 import { TagService } from '../../services/tag.service';
-import { TaggerSearchRowComponent } from './tagger-search-row/tagger-search-row.component';
 import { TaggerRowComponent } from './tagger-row/tagger-row.component';
 
 @Component({
   selector: 'app-tagger',
-  imports: [CommonModule, TaggerRowComponent, TaggerSearchRowComponent, ImageComponent],
+  imports: [CommonModule, TaggerRowComponent, ImageComponent],
   templateUrl: './tagger.component.html',
   styleUrls: ['./tagger.component.scss']
 })
@@ -21,7 +20,7 @@ export class TaggerComponent {
 
   protected target: GalleryImage;
   protected groupMode: boolean = false;
-  protected query: string = '';
+  protected searchQuery: string = '';
   protected currentGroup: GalleryGroup;
   protected groupTracker = 0;
 
@@ -93,28 +92,22 @@ export class TaggerComponent {
     this.galleryService.updateNote(this.target, note);
   }
 
-  protected onQueryInput(event: Event): void {
-    this.query = ((event.target as HTMLInputElement)?.value ?? '').trim();
+  protected onSearchQueryInput(event: Event): void {
+    this.searchQuery = ((event.target as HTMLInputElement)?.value ?? '').trim();
   }
 
-  protected hasQuery(): boolean {
-    return this.query.length > 0;
+  protected clearSearchQuery(input: HTMLInputElement): void {
+    this.searchQuery = '';
+    input.value = '';
+    input.focus();
   }
 
-  protected getFilteredTags(): Tag[] {
-    const query: string = this.query.toLocaleLowerCase();
+  protected hasSearchQuery(): boolean {
+    return this.searchQuery.length > 0;
+  }
 
-    return [...this.tagService.tags]
-      .filter(tag => !tag.group)
-      .filter(tag => tag.getNameWithParents().toLocaleLowerCase().includes(query))
-      .sort((tag1, tag2) => {
-        const nameDiff: number = tag1.name.localeCompare(tag2.name);
-        if (nameDiff !== 0) {
-          return nameDiff;
-        }
-
-        return tag1.getNameWithParents().localeCompare(tag2.getNameWithParents());
-      });
+  protected getSearchResultTags(): Tag[] {
+    return this.tagService.searchTags(this.searchQuery);
   }
 
 }
