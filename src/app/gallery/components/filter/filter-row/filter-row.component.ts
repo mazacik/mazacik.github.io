@@ -16,8 +16,8 @@ import { TagService } from 'src/app/gallery/services/tag.service';
 export class FilterRowComponent {
 
   @Input() tag: Tag;
-  @Input() showNameWithParents: boolean = false;
-  @Input() flat: boolean = false;
+  @Input() showFullName: boolean = false;
+  @Input() flatMode: boolean = false;
 
   constructor(
     private tagService: TagService,
@@ -29,7 +29,9 @@ export class FilterRowComponent {
 
   protected onTagClick(): void {
     if (this.tag.group) {
-      this.tag.open = !this.tag.open;
+      if (!this.flatMode) {
+        this.tag.open = !this.tag.open;
+      }
     } else {
       this.toggleTagState();
     }
@@ -57,8 +59,8 @@ export class FilterRowComponent {
     return classes.join(' ');
   }
 
-  protected getText(): string {
-    return this.showNameWithParents ? this.tag.getNameWithParents() : this.tag.name;
+  protected getDisplayName(): string {
+    return this.showFullName ? this.tag.getNameWithParents() : this.tag.name;
   }
 
   protected getTagGroups(): Tag[] {

@@ -1,13 +1,17 @@
 @if (tag) {
   <div class="flex gap hover-brighten hover-container" style="line-height: 24px" (contextmenu)="openOptions($event)" (drop)="drop($event, tag)" ondragover="event.preventDefault()">
-    <div class="flex gap flex-1 width-100 min-width-0 align-items-center" [class.disabled]="tag.pseudo" [class.cursor-pointer]="!tag.pseudo" (click)="onTagClick()">
-      @for (_ of [].constructor(tag.collectParents().length); track $index) {
-        <i class="fa-solid fa-angle-down opacity-0"></i>
+    <div class="flex gap flex-1 width-100 min-width-0 align-items-center" [class.padding-1-h]="flatMode" [class.disabled]="tag.pseudo" [class.cursor-pointer]="!tag.pseudo" (click)="onTagClick()">
+      @if (!flatMode) {
+        @for (_ of [].constructor(tag.collectParents().length); track $index) {
+          <i class="fa-solid fa-angle-down opacity-0"></i>
+        }
       }
-      @if (tag.group) {
-        <i class="fa-solid" [ngClass]="tag.open ? 'fa-angle-down' : 'fa-angle-right'" style="margin-top: 1px"></i>
-      } @else {
-        <i class="fa-solid fa-angle-down opacity-0"></i>
+      @if (!flatMode) {
+        @if (tag.group) {
+          <i class="fa-solid" [ngClass]="tag.open ? 'fa-angle-down' : 'fa-angle-right'" style="margin-top: 1px"></i>
+        } @else {
+          <i class="fa-solid fa-angle-down opacity-0"></i>
+        }
       }
       <div
         class="flex-1 overflow-hidden"
@@ -19,7 +23,7 @@
         (dragend)="end($event, tag)"
         ondragover="event.preventDefault()">
         <div class="flex pointer-events-none">
-          <span class="ellipsis">{{ tag.name }}</span>
+          <span [dir]="flatMode ? 'rtl' : 'ltr'" class="ellipsis">{{ getDisplayName() }}</span>
           @if (stateService.settings.showTagCount && tag.getCount(stateService.images); as count) {
             <span class="pointer-events-none" style="white-space: pre"> {{ tag.pseudo ? '➝' : '•' }} {{ count }}</span>
           }
@@ -27,7 +31,7 @@
       </div>
     </div>
   </div>
-  @if (tag.group) {
+  @if (tag.group && !flatMode) {
     <div class="flex column overflow-hidden anim-drawer" [class.open]="tag.open">
       @for (child of getTagGroups(); track child.id) {
         <app-tagger-row [tag]="child" [target]="target" [groupMode]="groupMode"></app-tagger-row>

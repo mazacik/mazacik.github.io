@@ -40,6 +40,12 @@ export class TagService {
     }
   }
 
+  public searchTags(query: string): Tag[] {
+    const result: Tag[] = this.tags.filter(tag => !tag.group && tag.matchesSearchQuery(query));
+    this.sort(result, true);
+    return result;
+  }
+
   public async openTagCreate(parent?: Tag): Promise<void> {
     if (parent) {
       const name: string = await this.dialogService.createInput({

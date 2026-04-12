@@ -18,13 +18,18 @@
     </div>
   </div>
   <div class="h-separator margins"></div>
-  <input type="text" class="search-input" [value]="query" placeholder="Search" (input)="onQueryInput($event)" />
+  <div class="search-input-container">
+    <input #searchInput type="text" class="search-input" [value]="searchQuery" placeholder="Search" (input)="onSearchQueryInput($event)" />
+    @if (hasSearchQuery()) {
+      <button type="button" class="clear-search-button fa-solid fa-times" title="Clear search" (click)="clearSearchQuery(searchInput)"></button>
+    }
+  </div>
   <div class="h-separator margins"></div>
   <div class="filters-container y-scrollbar-container">
     <div class="flex column margins-1-h">
-      @if (hasQuery()) {
-        @for (tag of getFilteredTags(); track tag.id) {
-          <app-filter-search-row [tag]="tag"></app-filter-search-row>
+      @if (hasSearchQuery()) {
+        @for (tag of getSearchResultTags(); track tag.id) {
+          <app-filter-row [tag]="tag" [showFullName]="true" [flatMode]="true"></app-filter-row>
         }
       } @else {
         @for (tag of tagService.getRootTags(); track tag.id) {

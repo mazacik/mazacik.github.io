@@ -518,9 +518,11 @@ hr {
   justify-content: center;
   border-radius: variables.$gap-1;
   cursor: pointer;
+  padding: 0 variables.$gap-3;
   user-select: none;
   box-sizing: border-box;
   border: 1px solid var(--color-border);
+  text-wrap: nowrap;
 
   background-color: var(--color-button-background-secondary);
 
