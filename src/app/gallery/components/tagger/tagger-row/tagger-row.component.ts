@@ -118,6 +118,12 @@ export class TaggerRowComponent {
     return this.tag.children.filter(t => !t.group);
   }
 
+  protected openOptions(event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.galleryService.openTagOptions(this.tag);
+  }
+
   // 
 
   private static startObject: Tag;

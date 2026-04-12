@@ -18,17 +18,30 @@
     </div>
   </div>
   <div class="h-separator margins"></div>
+  <input type="text" class="search-input" [value]="query" placeholder="Search" (input)="onQueryInput($event)" />
+  <div class="h-separator margins"></div>
   <div class="filters-container y-scrollbar-container">
     <div class="flex column margins-1-h">
-      @for (tag of tagService.getRootTags(); track tag.id) {
-        <app-filter-row [tag]="tag"></app-filter-row>
+      @if (hasQuery()) {
+        @for (tag of getFilteredTags(); track tag.id) {
+          <app-filter-search-row [tag]="tag"></app-filter-search-row>
+        }
+      } @else {
+        @for (tag of tagService.getRootTags(); track tag.id) {
+          <app-filter-row [tag]="tag"></app-filter-row>
+        }
       }
     </div>
   </div>
   <div class="h-separator gap-1-bottom margins"></div>
   <div class="buttons-container">
-    <div class="button" (click)="tagService.openTagGroupCreate()">Create Tag</div>
-    <div class="button" [class.disabled]="!canClear()" (click)="clearFilters()">Clear Filter</div>
+    <div class="button-row">
+      <div class="button" [class.disabled]="!canClear()" (click)="clearFilters()">Clear Filter</div>
+    </div>
+    <div class="button-row">
+      <div class="button" (click)="tagService.openTagCreate()">Create Tag</div>
+      <div class="button" (click)="tagService.openTagGroupCreate()">Create Tag Group</div>
+    </div>
   </div>
 </div>
 <div class="v-separator desktop-only"></div>

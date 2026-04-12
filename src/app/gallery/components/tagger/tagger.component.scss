@@ -144,12 +144,18 @@
 
   .buttons-container {
     display: flex;
+    flex-direction: column;
     gap: variables.$gap-1;
     margin: 0 variables.$gap-1 variables.$gap-1 variables.$gap-1;
 
-    .button {
-      flex: 1;
+    .button-row {
+      display: flex;
       gap: variables.$gap-1;
+
+      .button {
+        flex: 1;
+        gap: variables.$gap-1;
+      }
     }
   }
 

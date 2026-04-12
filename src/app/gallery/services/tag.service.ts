@@ -40,7 +40,7 @@ export class TagService {
     }
   }
 
-  public async openTagCreate(parent: Tag): Promise<void> {
+  public async openTagCreate(parent?: Tag): Promise<void> {
     if (parent) {
       const name: string = await this.dialogService.createInput({
         title: 'Create Tag: ' + parent.getNameWithParents(),
@@ -59,6 +59,27 @@ export class TagService {
 
         parent.children.push(tag);
         this.sort(parent.children);
+
+        this.tags.push(tag);
+        this.sort(this.tags);
+
+        this.serializationService.save();
+      }
+    } else {
+      const name: string = await this.dialogService.createInput({
+        title: 'Create Tag: Root',
+        placeholder: 'Name',
+        validationFn: value => !this.tags.filter(t => !t.parent).map(t => t.name).includes(value)
+      });
+
+      if (!StringUtils.isEmpty(name)) {
+        const tag: Tag = new Tag();
+        tag.id = nanoid();
+        tag.name = name;
+        tag.group = false;
+        tag.state = 0;
+        tag.parent = parent;
+        tag.children = [];
 
         this.tags.push(tag);
         this.sort(this.tags);
@@ -201,7 +222,7 @@ export class TagService {
     const availableParents: Tag[] = this.tags.filter(t => {
       if (!t.group) return false;
       if (t == tag) return false;
-      if (t == tag.parent) return false;
+      if (t == tag.parent) return true;
       if (children.includes(t)) return false;
       if (t.children.map(c => c.name).includes(tag.name)) return false;
       return true;
@@ -210,8 +231,8 @@ export class TagService {
     const parent: Tag = await this.dialogService.createSelect({
       title: 'Change Parent: ' + tag.getNameWithParents(),
       options: availableParents,
-      nullOption: tag.parent ? 'Root' : null,
-      defaultValue: tag.parent,
+      nullOption: 'Root',
+      defaultValue: tag.parent ?? null,
       getText: option => option.getNameWithParents()
     });
 
@@ -219,7 +240,14 @@ export class TagService {
   }
 
   public changeParent(tag: Tag, parent: Tag): void {
-    if (tag.group && parent === null) {
+    const currentParent: Tag | null = tag.parent ?? null;
+    const nextParent: Tag | null = parent ?? null;
+
+    if (currentParent === nextParent) {
+      return;
+    }
+
+    if (tag.group && nextParent === null) {
       // move group to root
       ArrayUtils.remove(tag.parent?.children, tag);
 
@@ -227,10 +255,10 @@ export class TagService {
 
       this.injector.get(FilterService).updateFilters(...this.stateService.images.filter(image => image.tags.includes(tag)));
       this.serializationService.save();
-    } else if (parent) {
+    } else if (nextParent) {
       ArrayUtils.remove(tag.parent?.children, tag);
 
-      tag.parent = parent;
+      tag.parent = nextParent;
       tag.parent.open = true;
       tag.parent.children.push(tag);
       this.sort(tag.parent.children);

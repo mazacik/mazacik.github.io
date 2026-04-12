@@ -74,16 +74,7 @@ export class FilterService {
           }
         }
       } else {
-        if (tag.group) {
-          const intersection: Tag[] = ArrayUtils.intersection(image.tags, tag.collectChildren().concat(tag));
-          if (tag.state == -1 && intersection.length != 0) {
-            return false;
-          }
-
-          if (tag.state == 1 && intersection.length == 0) {
-            return false;
-          }
-        } else if (tag.pseudo) {
+        if (tag.pseudo) {
           const intersection: Tag[] = ArrayUtils.intersection(image.tags, tag.children);
           if (tag.state == -1 && intersection.length != 0) {
             return false;
