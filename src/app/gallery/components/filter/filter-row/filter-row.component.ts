@@ -16,6 +16,8 @@ import { TagService } from 'src/app/gallery/services/tag.service';
 export class FilterRowComponent {
 
   @Input() tag: Tag;
+  @Input() showNameWithParents: boolean = false;
+  @Input() flat: boolean = false;
 
   constructor(
     private tagService: TagService,
@@ -55,12 +57,22 @@ export class FilterRowComponent {
     return classes.join(' ');
   }
 
+  protected getText(): string {
+    return this.showNameWithParents ? this.tag.getNameWithParents() : this.tag.name;
+  }
+
   protected getTagGroups(): Tag[] {
     return this.tag.children.filter(t => t.group);
   }
 
   protected getTags(): Tag[] {
     return this.tag.children.filter(t => !t.group);
+  }
+
+  protected openOptions(event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.galleryService.openTagOptions(this.tag);
   }
 
   // 

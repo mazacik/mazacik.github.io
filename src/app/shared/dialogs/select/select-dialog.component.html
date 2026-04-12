@@ -1,8 +1,8 @@
-<select [(ngModel)]="value">
+<select [(ngModel)]="value" [compareWith]="compareValues">
   @if (inputs.nullOption !== undefined) {
-    <option [ngValue]="null" [selected]="!value">{{ inputs.nullOption }}</option>
+    <option [ngValue]="null">{{ inputs.nullOption }}</option>
   }
   @for (option of inputs.options; track option) {
-    <option [ngValue]="option" [selected]="value === option">{{ getText(option) }}</option>
+    <option [ngValue]="option">{{ getText(option) }}</option>
   }
 </select>

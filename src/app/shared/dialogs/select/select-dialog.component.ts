@@ -14,13 +14,15 @@ import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-conte
 })
 export class SelectDialogComponent<T> extends DialogContentBase<T> implements OnInit {
 
-  public override inputs: { title: string, options: T[], nullOption?: string, defaultValue?: T, getText?: (option: T) => string, positiveButtonText?: string };
+  public override inputs: { title: string, options: T[], nullOption?: string, defaultValue?: T | null, getText?: (option: T) => string, positiveButtonText?: string };
 
   public configuration: DialogContainerConfiguration;
 
-  protected value: T;
+  protected value: T | null | undefined;
 
   ngOnInit(): void {
+    console.log(this.inputs);
+
     this.value = this.inputs.defaultValue;
     this.configuration = {
       title: this.inputs.title,
@@ -41,6 +43,10 @@ export class SelectDialogComponent<T> extends DialogContentBase<T> implements On
 
   protected getText(option: T): string {
     return this.inputs.getText ? this.inputs.getText(option) : option as string;
+  }
+
+  protected compareValues(value1: T | null, value2: T | null): boolean {
+    return value1 === value2;
   }
 
   protected canSubmit(): boolean {

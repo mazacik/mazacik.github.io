@@ -1,0 +1,14 @@
+@if (tag) {
+  <div class="flex gap hover-brighten hover-container" style="line-height: 24px" (contextmenu)="openOptions($event)">
+    <div class="flex gap flex-1 width-100 min-width-0 align-items-center" [class.disabled]="tag.pseudo" [class.cursor-pointer]="!tag.pseudo" (click)="onTagClick()">
+      <div class="flex-1 overflow-hidden" [ngClass]="getTextClass()">
+        <div class="flex pointer-events-none">
+          <span dir="rtl" class="ellipsis">{{ tag.getNameWithParents() }}</span>
+          @if (stateService.settings.showTagCount && tag.getCount(stateService.images); as count) {
+            <span class="pointer-events-none" style="white-space: pre"> {{ tag.pseudo ? '➝' : '•' }} {{ count }}</span>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}

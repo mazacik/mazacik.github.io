@@ -2,16 +2,18 @@ import { CommonModule } from '@angular/common';
 import { Component, effect } from '@angular/core';
 import { GalleryGroup } from '../../models/gallery-group.class';
 import { GalleryImage } from '../../models/gallery-image.class';
+import { Tag } from '../../models/tag.class';
 import { ImageComponent } from 'src/app/shared/components/image/image.component';
 import { GalleryGoogleDriveService } from '../../services/gallery-google-drive.service';
 import { GalleryStateService } from '../../services/gallery-state.service';
 import { GalleryService } from '../../services/gallery.service';
 import { TagService } from '../../services/tag.service';
+import { TaggerSearchRowComponent } from './tagger-search-row/tagger-search-row.component';
 import { TaggerRowComponent } from './tagger-row/tagger-row.component';
 
 @Component({
   selector: 'app-tagger',
-  imports: [CommonModule, TaggerRowComponent, ImageComponent],
+  imports: [CommonModule, TaggerRowComponent, TaggerSearchRowComponent, ImageComponent],
   templateUrl: './tagger.component.html',
   styleUrls: ['./tagger.component.scss']
 })
@@ -19,6 +21,7 @@ export class TaggerComponent {
 
   protected target: GalleryImage;
   protected groupMode: boolean = false;
+  protected query: string = '';
   protected currentGroup: GalleryGroup;
   protected groupTracker = 0;
 
@@ -30,9 +33,11 @@ export class TaggerComponent {
   ) {
     effect(() => {
       this.target = this.stateService.fullscreenImage();
-      if (this.target == null) {
+      if (this.target == null || !this.target.group) {
         this.groupMode = false;
-        return;
+        if (this.target == null) {
+          return;
+        }
       }
 
       if (this.currentGroup != this.target.group) {
@@ -47,6 +52,20 @@ export class TaggerComponent {
     if (!image || Number.isNaN(size)) return null;
     const kilobytes: number = size / 1024;
     return kilobytes.toLocaleString(undefined, { maximumFractionDigits: 1 }) + ' KB';
+  }
+
+  protected getFileType(image: GalleryImage): string | null {
+    if (!image) {
+      return null;
+    }
+
+    const extension: string | undefined = image.name?.split('.').pop()?.trim().toLowerCase();
+    if (extension && extension !== image.name?.trim().toLowerCase()) {
+      return extension.toUpperCase();
+    }
+
+    const mimeTypePart: string | undefined = image.mimeType?.split('/').pop()?.trim().toLowerCase();
+    return mimeTypePart?.toUpperCase() || null;
   }
 
   protected getResolution(image: GalleryImage): string | null {
@@ -72,6 +91,30 @@ export class TaggerComponent {
     }
 
     this.galleryService.updateNote(this.target, note);
+  }
+
+  protected onQueryInput(event: Event): void {
+    this.query = ((event.target as HTMLInputElement)?.value ?? '').trim();
+  }
+
+  protected hasQuery(): boolean {
+    return this.query.length > 0;
+  }
+
+  protected getFilteredTags(): Tag[] {
+    const query: string = this.query.toLocaleLowerCase();
+
+    return [...this.tagService.tags]
+      .filter(tag => !tag.group)
+      .filter(tag => tag.getNameWithParents().toLocaleLowerCase().includes(query))
+      .sort((tag1, tag2) => {
+        const nameDiff: number = tag1.name.localeCompare(tag2.name);
+        if (nameDiff !== 0) {
+          return nameDiff;
+        }
+
+        return tag1.getNameWithParents().localeCompare(tag2.getNameWithParents());
+      });
   }
 
 }

@@ -1,5 +1,5 @@
 @if (tag) {
-  <div class="flex gap cursor-pointer hover-brighten hover-container" style="line-height: 24px" (drop)="drop($event, tag)" ondragover="event.preventDefault()">
+  <div class="flex gap cursor-pointer hover-brighten hover-container" style="line-height: 24px" (contextmenu)="openOptions($event)" (drop)="drop($event, tag)" ondragover="event.preventDefault()">
     <div class="flex gap flex-1 width-100 min-width-0 align-items-center" (click)="onTagClick()">
       @for (_ of [].constructor(tag.collectParents().length); track $index) {
         <i class="fa-solid fa-angle-down opacity-0"></i>
@@ -25,12 +25,6 @@
           }
         </div>
       </div>
-    </div>
-    <div class="flex gap align-items-center hover-visible">
-      @if (tag.group) {
-        <i class="hover-positive fa-solid fa-check-double" (click)="toggleTagState()"></i>
-      }
-      <i class="hover-positive fa-solid fa-ellipsis-vertical" (click)="galleryService.openTagOptions(tag)"></i>
     </div>
   </div>
   @if (tag.group) {
