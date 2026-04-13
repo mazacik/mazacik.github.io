@@ -3,7 +3,7 @@
     <span>Filter: {{ filterService.images().length }} images</span>
   </div>
   <div class="h-separator margins"></div>
-  <div class="flex center gap-3 margins-3-v">
+  <div class="flex center gap-3 margins-2-v">
     <div class="flex center gap cursor-pointer hover-brighten" (click)="toggleFilter(filterService.favoritesFilter)">
       <i class="fa-heart" [ngClass]="getFilterIconClass(filterService.favoritesFilter)" style="margin-top: 1px"></i>
       <span [ngClass]="getFilterClass(filterService.favoritesFilter)">Favorites</span>
@@ -26,7 +26,7 @@
   </div>
   <div class="h-separator margins"></div>
   <div class="filters-container y-scrollbar-container">
-    <div class="flex column margins-1-h">
+    <div class="flex column margins-1-l margins-2-r">
       @if (hasSearchQuery()) {
         @for (tag of getSearchResultTags(); track tag.id) {
           <app-filter-row [tag]="tag" [showFullName]="true" [flatMode]="true"></app-filter-row>

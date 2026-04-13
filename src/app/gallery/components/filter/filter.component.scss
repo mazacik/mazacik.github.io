@@ -35,19 +35,17 @@
     flex-direction: column;
     box-sizing: border-box;
 
-    .search-input {
-      height: auto;
-      border: 0;
-      border-radius: 0;
-      padding: variables.$gap-1 variables.$gap-2;
-    }
-
     .search-input-container {
       position: relative;
 
       .search-input {
         width: 100%;
+        min-height: 0;
         padding-right: calc(#{variables.$gap-2} * 2 + 1rem);
+        height: auto;
+        border: 0;
+        border-radius: 0;
+        padding: variables.$gap-2;
       }
 
       .clear-search-button {
