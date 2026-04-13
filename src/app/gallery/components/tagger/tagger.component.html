@@ -71,7 +71,7 @@
   </div>
   <div class="h-separator margins"></div>
   <div class="filters-container y-scrollbar-container">
-    <div class="flex column margins-1-h">
+    <div class="flex column margins-1-l margins-2-r">
       @if (hasSearchQuery()) {
         @for (tag of getSearchResultTags(); track tag.id) {
           <app-tagger-row [tag]="tag" [target]="target" [groupMode]="groupMode" [showFullName]="true" [flatMode]="true"></app-tagger-row>
