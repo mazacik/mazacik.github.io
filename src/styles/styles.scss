@@ -7,7 +7,7 @@
 @import '@fortawesome/fontawesome-free/css/solid.css';
 @import '@fortawesome/fontawesome-free/css/brands.css';
 
-body.light-theme {
+html.light-theme {
   --color-primary-0: #09090b;
   --color-primary-50: #18181b;
   --color-primary-100: #27272a;
@@ -39,7 +39,7 @@ body.light-theme {
   --color-highlight: deepskyblue;
 }
 
-body.dark-theme {
+html.dark-theme {
   --color-primary-0: #ffffff;
   --color-primary-50: #fafafa;
   --color-primary-100: #f4f4f5;

@@ -199,16 +199,21 @@ export class ApplicationService {
 
   private loadAppSettings(): ApplicationSettingsState {
     const stored: string = localStorage.getItem(AppConstants.KEY_SETTINGS);
+    const fallbackDarkTheme: boolean = window.matchMedia?.('(prefers-color-scheme: dark)').matches === true;
+
     if (stored) {
       try {
-        const parsed: ApplicationSettingsState = JSON.parse(stored);
-        if (parsed && typeof parsed.darkTheme === 'boolean' && typeof parsed.reduceDataUsage === 'boolean') {
-          return parsed;
+        const parsed: Partial<ApplicationSettingsState> = JSON.parse(stored);
+        if (parsed) {
+          return {
+            darkTheme: typeof parsed.darkTheme === 'boolean' ? parsed.darkTheme : fallbackDarkTheme,
+            reduceDataUsage: typeof parsed.reduceDataUsage === 'boolean' ? parsed.reduceDataUsage : false
+          };
         }
       } catch { /* ignore */ }
     }
 
-    return { darkTheme: false, reduceDataUsage: false };
+    return { darkTheme: fallbackDarkTheme, reduceDataUsage: false };
   }
 
   private persistSettings(settings: ApplicationSettingsState): void {
@@ -216,9 +221,9 @@ export class ApplicationService {
   }
 
   private applyTheme(darkTheme: boolean): void {
-    document.body.classList.toggle('dark-theme', darkTheme);
-    document.body.classList.toggle('light-theme', !darkTheme);
-    document.body.style.colorScheme = darkTheme ? 'dark' : 'light';
+    document.documentElement.classList.toggle('dark-theme', darkTheme);
+    document.documentElement.classList.toggle('light-theme', !darkTheme);
+    document.documentElement.style.colorScheme = darkTheme ? 'dark' : 'light';
   }
 
   private resetDialogPositions(): void {
