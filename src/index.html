@@ -1,19 +1,52 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Mazacik</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      html,
+      body {
+        background-color: #f4f4f5;
+        color-scheme: light;
+      }
 
-<head>
-  <meta charset="utf-8">
-  <title>Mazacik</title>
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link id="favicon" rel="icon" type="image/x-icon" href="favicon.ico">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-</head>
+      html.dark-theme,
+      html.dark-theme body {
+        background-color: #27272a;
+        color-scheme: dark;
+      }
+    </style>
+    <script>
+      (() => {
+        const getBrowserPreferredDarkTheme = () => {
+          return window.matchMedia?.('(prefers-color-scheme: dark)').matches === true;
+        };
 
-<body>
-  <app-root></app-root>
-</body>
+        try {
+          const settings = JSON.parse(localStorage.getItem('KEY_SETTINGS') ?? '{}');
+          const darkTheme = typeof settings.darkTheme === 'boolean' ? settings.darkTheme : getBrowserPreferredDarkTheme();
 
+          document.documentElement.classList.toggle('dark-theme', darkTheme);
+          document.documentElement.classList.toggle('light-theme', !darkTheme);
+          document.documentElement.style.colorScheme = darkTheme ? 'dark' : 'light';
+        } catch {
+          const darkTheme = getBrowserPreferredDarkTheme();
+
+          document.documentElement.classList.toggle('dark-theme', darkTheme);
+          document.documentElement.classList.toggle('light-theme', !darkTheme);
+          document.documentElement.style.colorScheme = darkTheme ? 'dark' : 'light';
+        }
+      })();
+    </script>
+    <link id="favicon" rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet" />
+  </head>
+
+  <body>
+    <app-root></app-root>
+  </body>
 </html>
