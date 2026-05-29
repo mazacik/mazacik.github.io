@@ -1,7 +1,7 @@
 import { Injectable, WritableSignal, signal } from "@angular/core";
 import { GalleryGroup } from "src/app/gallery/models/gallery-group.class";
 import { GalleryImage } from "src/app/gallery/models/gallery-image.class";
-import { Tournament, TournamentState } from "src/app/shared/classes/tournament.class";
+import { BinaryInsertionSort, SortState } from "src/app/shared/classes/binary-insertion-sort.class";
 import { ScreenUtils } from "src/app/shared/utils/screen.utils";
 import { GallerySettings } from "../models/gallery-settings.interface";
 
@@ -27,8 +27,8 @@ export class GalleryStateService {
 
   public groupEditorGroup: GalleryGroup;
 
-  public tournament: Tournament = new Tournament();
-  public tournamentState: TournamentState;
+  public imageSort: BinaryInsertionSort = new BinaryInsertionSort();
+  public sortState: SortState;
 
   constructor() { }
 

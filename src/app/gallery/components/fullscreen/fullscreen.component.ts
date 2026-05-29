@@ -7,7 +7,6 @@ import { DialogService } from 'src/app/shared/services/dialog.service';
 import { GoogleFileUtils } from 'src/app/shared/utils/google-file.utils';
 import { ComparisonPathComponent } from '../../dialogs/comparison-path/comparison-path.component';
 import { GalleryImage } from '../../models/gallery-image.class';
-import { FilterService } from '../../services/filter.service';
 import { GalleryGoogleDriveService } from '../../services/gallery-google-drive.service';
 import { GalleryStateService } from '../../services/gallery-state.service';
 import { GalleryService } from '../../services/gallery.service';
@@ -38,8 +37,7 @@ export class FullscreenComponent {
     protected googleService: GalleryGoogleDriveService,
     protected stateService: GalleryStateService,
     protected galleryService: GalleryService,
-    protected tagService: TagService,
-    protected filterService: FilterService
+    protected tagService: TagService
   ) {
     effect(() => {
       const target: GalleryImage = this.stateService.fullscreenImage();
@@ -52,7 +50,7 @@ export class FullscreenComponent {
           this.loadingC = true;
         }
 
-        this.ensureTournamentInitialized();
+        this.stateService.imageSort.stateVersion();
         this.refreshComparisonRelations(target);
 
         // used in <video> display method
@@ -71,34 +69,14 @@ export class FullscreenComponent {
 
   protected openComparisonPath(start: GalleryImage, end: GalleryImage): void {
     if (!start || !end) return;
-    const dialogResult = this.dialogService.create(ComparisonPathComponent, { start, end });
-    if (dialogResult) {
-      dialogResult.then(changed => {
-        if (changed) {
-          const target: GalleryImage = this.stateService.fullscreenImage();
-          if (target) {
-            this.refreshComparisonRelations(target);
-          } else {
-            this.comparisonWinners = [];
-            this.comparisonLosers = [];
-          }
-        }
-      });
-    }
+    this.dialogService.create(ComparisonPathComponent, { start, end });
   }
 
   private refreshComparisonRelations(target: GalleryImage): void {
-    this.comparisonWinners = this.stateService.tournament.getNearestWinners(target);
-    this.comparisonLosers = this.stateService.tournament.getNearestLosers(target);
-  }
-
-  private ensureTournamentInitialized(): void {
-    if (this.stateService.tournament.comparisons != null) return;
-
-    const images = this.stateService.images.filter(image => GoogleFileUtils.isImage(image));
-    const filteredImages = this.filterService.images().filter(image => GoogleFileUtils.isImage(image));
-    const imagesToCompare = filteredImages.length ? filteredImages : images;
-    this.stateService.tournament.start(images, imagesToCompare, this.stateService.tournamentState);
+    const imageById = new Map(this.stateService.images.map(image => [image.id, image]));
+    const overlay = this.stateService.imageSort.getOverlayIds(target.id);
+    this.comparisonWinners = overlay.winners.map(id => imageById.get(id)).filter(Boolean);
+    this.comparisonLosers = overlay.losers.map(id => imageById.get(id)).filter(Boolean);
   }
 
   protected getSrc(image: GalleryImage): SafeUrl {

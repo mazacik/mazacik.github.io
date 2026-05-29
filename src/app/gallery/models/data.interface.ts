@@ -1,4 +1,4 @@
-import { TournamentState } from "src/app/shared/classes/tournament.class";
+import { SortState } from "src/app/shared/classes/binary-insertion-sort.class";
 import { GallerySettings } from "./gallery-settings.interface";
 import { GroupData } from "./group-data.interface";
 import { ImageData } from "./image-data.interface";
@@ -18,6 +18,6 @@ export interface Data {
   bookmarksFilter: number;
   filterGroups: number;
 
-  tournamentState: TournamentState;
+  sortState: SortState;
 
 }

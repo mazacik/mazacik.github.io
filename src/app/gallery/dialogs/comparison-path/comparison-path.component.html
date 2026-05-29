@@ -3,9 +3,8 @@
     @for (image of path; track image.id; let last = $last; let i = $index) {
       <img class="path-thumb" [src]="image.thumbnailLink" loading="lazy" (click)="openFullscreen(image)" />
       @if (!last) {
-        <span class="path-separator" [class.pending]="isRemovalPending(i)" (click)="toggleRemoval(i)">
+        <span class="path-separator">
           <i class="fa-solid fa-angle-right"></i>
-          <i class="fa-solid fa-trash"></i>
         </span>
       }
     }
