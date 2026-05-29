@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
 import { ApplicationService } from "src/app/shared/services/application.service";
 import { ArrayUtils } from "src/app/shared/utils/array.utils";
-import { GoogleFileUtils } from "src/app/shared/utils/google-file.utils";
 import { DialogService } from "../../shared/services/dialog.service";
 import { GroupManagerComponent } from "../dialogs/group-manager/group-manager.component";
 import { TagManagerComponent } from "../dialogs/tag-manager/tag-manager.component";
@@ -79,26 +78,10 @@ export class GalleryService {
       }
     }
 
-    if (this.stateService.tournamentState != null) {
-      for (const imageIds of Object.values(this.stateService.tournamentState)) {
-        if (imageIds.includes(image.id)) {
-          ArrayUtils.remove(imageIds, image.id);
-        }
-      }
-    }
+    this.stateService.imageSort.removeImageId(image.id);
+    this.stateService.sortState = this.stateService.imageSort.getState();
 
     this.filterService.images.set(this.stateService.images.filter(image => image.passesFilters));
-
-    if (this.stateService.viewMode === 'tournament') {
-      const images = this.stateService.images.filter(image => GoogleFileUtils.isImage(image));
-      const imagesToCompare = this.stateService.tournament.getImagesToCompare() ?? [];
-      const fallbackImagesToCompare = this.filterService.images().filter(image => GoogleFileUtils.isImage(image));
-      this.stateService.tournament.start(images, imagesToCompare.length ? imagesToCompare : fallbackImagesToCompare, this.stateService.tournamentState);
-      this.stateService.tournament.updateProgress();
-      if (this.stateService.tournamentState != null) {
-        this.stateService.tournamentState = this.stateService.tournament.getState();
-      }
-    }
 
     this.stateService.fullscreenImage.set(nextTarget);
 

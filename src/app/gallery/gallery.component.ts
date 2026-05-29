@@ -5,7 +5,6 @@ import { ApplicationService } from '../shared/services/application.service';
 import { DialogService } from '../shared/services/dialog.service';
 import { KeyboardShortcutService } from '../shared/services/keyboard-shortcut.service';
 import { ArrayUtils } from '../shared/utils/array.utils';
-import { GoogleFileUtils } from '../shared/utils/google-file.utils';
 import { ScreenUtils } from '../shared/utils/screen.utils';
 import { FilterComponent } from './components/filter/filter.component';
 import { FullscreenComponent } from './components/fullscreen/fullscreen.component';
@@ -126,12 +125,6 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
       hidden: () => !isFullscreen() || !this.stateService.fullscreenImage().group,
       onClick: () => this.setRandomGroupTarget()
     }, {
-      id: 'group-comparison',
-      tooltip: 'Open Group Comparison',
-      classes: 'fa-solid fa-code-compare',
-      hidden: () => !isFullscreen() || !this.stateService.fullscreenImage().group,
-      onClick: () => this.openGroupComparison()
-    }, {
       id: 'group-manager',
       tooltip: 'Open Image Group Manager',
       classes: 'fa-solid fa-object-group',
@@ -139,19 +132,25 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
       onClick: () => this.galleryService.openImageGroupEditor(this.stateService.fullscreenImage().group)
     }, {
       id: 'comparison-chain-toggle',
-      tooltip: () => this.tournamentSubview === 'comparison' ? 'Open Longest Comparison Chain' : 'Open Tournament Comparisons',
+      tooltip: () => this.tournamentSubview === 'comparison' ? 'Open Ranked List' : 'Open Ranking Comparison',
       classes: () => this.tournamentSubview === 'chain' ? 'fa-solid fa-link active' : 'fa-solid fa-link',
       hidden: () => !isTournament(),
       onClick: () => this.toggleTournamentSubview()
+    }, {
+      id: 'rank-image-again',
+      tooltip: 'Rank Image Again',
+      classes: 'fa-solid fa-rotate-left',
+      hidden: () => !isFullscreen() || !this.isFullscreenImageRanked(),
+      onClick: () => this.moveFullscreenImageToPending()
     }]);
 
     this.applicationService.addHeaderButtons('center', [{
-      id: 'comparison-undo',
-      tooltip: 'Undo Comparison',
-      classes: 'fa-solid fa-delete-left',
+      id: 'comparison-reset-active',
+      tooltip: 'Restart This Image',
+      classes: 'fa-solid fa-rotate-left',
       hidden: () => !isTournamentComparison(),
-      onClick: () => this.imageTournamentComponent?.undo(),
-      disabled: () => !this.stateService.tournament || this.stateService.tournament.comparisons.length == 0
+      onClick: () => this.imageTournamentComponent?.resetActiveImage(),
+      disabled: () => !this.stateService.imageSort.activeInsertion
     }, {
       id: 'comparison-relations',
       tooltip: 'Toggle Comparison Relations and Progress Bar',
@@ -287,16 +286,11 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
       }, {
         id: 'reset-comparison',
         type: 'action',
-        label: 'Reset Comparison',
+        label: 'Reset Ranking',
         onClick: () => {
-          this.dialogService.createConfirmation({ title: 'Reset Comparison', messages: ['Are you sure?'] }).then(success => {
+          this.dialogService.createConfirmation({ title: 'Reset Ranking', messages: ['Are you sure?'] }).then(success => {
             if (success) {
-              this.stateService.tournamentState = null;
-              this.serializationService.save();
-
-              const images = this.stateService.images.filter(image => GoogleFileUtils.isImage(image));
-              const imagesToCompare = this.filterService.images().filter(image => GoogleFileUtils.isImage(image));
-              this.stateService.tournament.start(images, imagesToCompare, this.stateService.tournamentState);
+              this.imageTournamentComponent?.resetSort();
             }
           });
         }
@@ -348,19 +342,21 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
     }
   }
 
-  protected openGroupComparison(): void {
-    const target: GalleryImage = this.stateService.fullscreenImage();
-    if (target?.group) {
-      this.tournamentSubview = 'comparison';
-      this.stateService.viewMode = 'tournament';
-      const images: GalleryImage[] = this.stateService.images.filter(image => GoogleFileUtils.isImage(image));
-      const imagesToCompare: GalleryImage[] = target.group.images.filter(image => GoogleFileUtils.isImage(image));
-      this.stateService.tournament.start(images, imagesToCompare, this.stateService.tournamentState);
-    }
-  }
-
   protected toggleTournamentSubview(): void {
     this.tournamentSubview = this.tournamentSubview === 'comparison' ? 'chain' : 'comparison';
+  }
+
+  private isFullscreenImageRanked(): boolean {
+    const target = this.stateService.fullscreenImage();
+    return !!target && this.stateService.imageSort.rankedImageIds.includes(target.id);
+  }
+
+  private moveFullscreenImageToPending(): void {
+    const target = this.stateService.fullscreenImage();
+    if (!target) return;
+    this.stateService.imageSort.moveRankedImageToPending(target.id);
+    this.stateService.sortState = this.stateService.imageSort.getState();
+    this.serializationService.save(true);
   }
 
   private bookmarkAllImages(): void {

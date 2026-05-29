@@ -1,7 +1,7 @@
 <div class="longest-chain-wrapper">
-  @if (longestChain.length) {
+  @if (rankedImages.length) {
     <div class="longest-chain">
-      @for (image of longestChain; track image.id; let last = $last) {
+      @for (image of rankedImages; track image.id; let last = $last) {
         <div class="chain-segment">
           <img class="chain-image" [src]="image.thumbnailLink" [style.aspect-ratio]="image.aspectRatio" loading="lazy" (click)="openFullscreen(image)" />
           @if (!last) {
@@ -11,6 +11,6 @@
       }
     </div>
   } @else {
-    <div class="chain-empty">No comparison chain available yet.</div>
+    <div class="chain-empty">No ranked images yet.</div>
   }
 </div>

@@ -36,7 +36,7 @@ export class GallerySerializationService {
     const data: Data = await this.googleService.getData();
     stateService.dataFolderId = data.dataFolderId;
     stateService.archiveFolderId = data.archiveFolderId;
-    stateService.tournamentState = data.tournamentState;
+    stateService.sortState = data.sortState;
     stateService.settings = data.settings ?? {} as GallerySettings;
 
     const filterService: FilterService = this.injector.get(FilterService);
@@ -71,6 +71,15 @@ export class GallerySerializationService {
     }));
 
     filterService.updateFilters();
+    const loadedSortState = stateService.sortState ? JSON.stringify(stateService.sortState) : null;
+    stateService.imageSort.start(
+      stateService.images.filter(image => GoogleFileUtils.isImage(image)).map(image => image.id),
+      stateService.sortState
+    );
+    stateService.sortState = stateService.imageSort.getState();
+    if (JSON.stringify(stateService.sortState) !== loadedSortState) {
+      this.save(true);
+    }
     this.applicationService.loading.set(false);
   }
 
@@ -167,7 +176,7 @@ export class GallerySerializationService {
     data.bookmarksFilter = filterService.bookmarksFilter.state;
     data.filterGroups = filterService.groupsFilter.state;
     data.settings = stateService.settings;
-    data.tournamentState = stateService.tournamentState;
+    data.sortState = stateService.sortState;
     data.imageProperties = stateService.images.map(image => this.serializeImage(image));
     data.groupProperties = stateService.imageGroups.filter(group => !ArrayUtils.isEmpty(group.images)).map(group => this.serializeGroup(group));
     data.tagProperties = tagService.tags.map(tag => this.serializeTag(tag));

@@ -1,11 +1,9 @@
 import { Component, effect } from '@angular/core';
 import { GalleryImage } from 'src/app/gallery/models/gallery-image.class';
-import { Tournament } from 'src/app/shared/classes/tournament.class';
 import { ImageComponent } from 'src/app/shared/components/image/image.component';
 import { DialogService } from 'src/app/shared/services/dialog.service';
 import { GoogleFileUtils } from 'src/app/shared/utils/google-file.utils';
 import { GalleryUtils } from '../../../shared/utils/gallery.utils';
-import { FilterService } from '../../services/filter.service';
 import { GallerySerializationService } from '../../services/gallery-serialization.service';
 import { GalleryStateService } from '../../services/gallery-state.service';
 import { ComparisonPathComponent } from '../comparison-path/comparison-path.component';
@@ -27,18 +25,27 @@ export class ImageTournamentComponent {
   private longPressTimer: number | null = null;
   private suppressNextClick: boolean = false;
   private readonly longPressDelayMs: number = 500;
-  private readonly autoPickDebugEnabled: boolean = false;
 
   constructor(
-    private filterService: FilterService,
     private serializationService: GallerySerializationService,
     private dialogService: DialogService,
     protected stateService: GalleryStateService
   ) {
     effect(() => {
-      this.stateService.tournament.comparison();
+      this.stateService.imageSort.stateVersion();
       this.refreshComparisonRelations();
     });
+  }
+
+  protected get sortStatus(): string {
+    const ranked = this.stateService.imageSort.rankedImageIds.length;
+    const pending = this.stateService.imageSort.pendingCountIncludingActive;
+    const interval = this.stateService.imageSort.currentIntervalSize;
+    if (interval > 0) {
+      return `ranked: ${ranked}, pending: ${pending}, placement window: ${interval}`;
+    }
+
+    return `ranked: ${ranked}, pending: ${pending}, placement window: ${interval}`;
   }
 
   protected onImageClick(winner: GalleryImage): void {
@@ -46,34 +53,38 @@ export class ImageTournamentComponent {
       this.suppressNextClick = false;
       return;
     }
-    this.stateService.tournament.handleUserInput(winner);
-    this.stateService.tournamentState = this.stateService.tournament.getState();
-    this.serializationService.save();
+
+    this.stateService.imageSort.answer(winner.id);
+    this.persistSortState();
     this.refreshComparisonRelations();
   }
 
   public onEnterTournament(): void {
-    const images = this.stateService.images.filter(image => GoogleFileUtils.isImage(image));
-    const imagesToCompare = this.filterService.images().filter(image => GoogleFileUtils.isImage(image));
-    const tournament = this.stateService.tournament;
-    if (!tournament.comparisons || !tournament.matchesImagesToCompare(imagesToCompare)) {
-      this.restartTournament(images, imagesToCompare);
-    } else {
-      this.refreshComparisonRelations();
+    const before = JSON.stringify(this.stateService.sortState ?? null);
+    this.stateService.imageSort.start(this.getSortableImageIds(), this.stateService.sortState);
+    this.stateService.sortState = this.stateService.imageSort.getState();
+    if (JSON.stringify(this.stateService.sortState) !== before) {
+      this.serializationService.save(true);
     }
-    this.logTournamentSimulationComparisonCount(images, imagesToCompare);
+    this.refreshComparisonRelations();
   }
 
-  public undo(): void {
-    this.stateService.tournament.undo();
-    this.stateService.tournamentState = this.stateService.tournament.getState();
-    this.serializationService.save();
+  public resetActiveImage(): void {
+    this.stateService.imageSort.resetActiveInsertion();
+    this.persistSortState();
     this.refreshComparisonRelations();
   }
 
   public toggleRelations(): void {
     this.stateService.settings.showComparisonRelations = !this.stateService.settings.showComparisonRelations;
     this.serializationService.save();
+    this.refreshComparisonRelations();
+  }
+
+  public resetSort(): void {
+    this.stateService.sortState = null;
+    this.stateService.imageSort.start(this.getSortableImageIds(), null);
+    this.persistSortState();
     this.refreshComparisonRelations();
   }
 
@@ -102,14 +113,7 @@ export class ImageTournamentComponent {
 
   protected openComparisonPath(start: GalleryImage, end: GalleryImage): void {
     if (!start || !end) return;
-    const dialogResult = this.dialogService.create(ComparisonPathComponent, { start, end });
-    if (dialogResult) {
-      dialogResult.then(changed => {
-        if (changed) {
-          this.refreshComparisonRelations();
-        }
-      });
-    }
+    this.dialogService.create(ComparisonPathComponent, { start, end });
   }
 
   protected openFullscreen(image: GalleryImage): void {
@@ -117,39 +121,35 @@ export class ImageTournamentComponent {
     this.stateService.fullscreenImage.set(image);
   }
 
-  private clearLongPressTimer(): void {
-    if (this.longPressTimer === null) return;
-    window.clearTimeout(this.longPressTimer);
-    this.longPressTimer = null;
-  }
-
-  private restartTournament(images: GalleryImage[], imagesToCompare: GalleryImage[]): void {
-    this.stateService.tournament.start(images, imagesToCompare, this.stateService.tournamentState);
-    this.refreshComparisonRelations();
-  }
-
   public refreshComparisonRelations(): void {
-    this.stateService.tournament.updateProgress();
-    this.comparison = this.stateService.tournament.comparison() ?? null;
-    if (this.comparison) {
-      if (this.stateService.settings?.showComparisonRelations) {
-        this.winnersLeft = this.stateService.tournament.getNearestWinners(this.comparison[0]);
-        this.losersLeft = this.stateService.tournament.getNearestLosers(this.comparison[0]);
-        this.winnersRight = this.stateService.tournament.getNearestWinners(this.comparison[1]);
-        this.losersRight = this.stateService.tournament.getNearestLosers(this.comparison[1]);
-      } else {
-        this.winnersLeft = [];
-        this.losersLeft = [];
-        this.winnersRight = [];
-        this.losersRight = [];
-      }
+    this.comparison = this.getCurrentComparison();
+    if (this.comparison && this.stateService.settings?.showComparisonRelations) {
+      const leftOverlay = this.stateService.imageSort.getOverlayIds(this.comparison[0].id);
+      const rightOverlay = this.stateService.imageSort.getOverlayIds(this.comparison[1].id);
+      this.winnersLeft = this.resolveImages(leftOverlay.winners);
+      this.losersLeft = this.resolveImages(leftOverlay.losers);
+      this.winnersRight = this.resolveImages(rightOverlay.winners);
+      this.losersRight = this.resolveImages(rightOverlay.losers);
       this.filterSharedComparisonRelations();
-    } else {
-      this.winnersLeft = [];
-      this.losersLeft = [];
-      this.winnersRight = [];
-      this.losersRight = [];
+      return;
     }
+
+    this.winnersLeft = [];
+    this.losersLeft = [];
+    this.winnersRight = [];
+    this.losersRight = [];
+  }
+
+  private getCurrentComparison(): [GalleryImage, GalleryImage] {
+    const comparisonIds = this.stateService.imageSort.currentComparisonIds;
+    if (!comparisonIds) {
+      return null;
+    }
+
+    const imageById = this.getImageByIdMap();
+    const activeImage = imageById.get(comparisonIds[0]);
+    const opponentImage = imageById.get(comparisonIds[1]);
+    return activeImage && opponentImage ? [activeImage, opponentImage] : null;
   }
 
   private filterSharedComparisonRelations(): void {
@@ -182,56 +182,27 @@ export class ImageTournamentComponent {
     return shared;
   }
 
-  private logTournamentSimulationComparisonCount(images: GalleryImage[], imagesToCompare: GalleryImage[]): void {
-    if (!this.autoPickDebugEnabled) return;
-    const simulation = new Tournament();
-    const startingState = this.stateService.tournament.getState();
-    simulation.start(images, imagesToCompare, startingState);
-
-    let comparison = simulation.comparison();
-    let iterations = 0;
-    const maxIterations = imagesToCompare.length * imagesToCompare.length + 1000;
-    while (comparison) {
-      const winner = this.pickSimulatedWinner(comparison, simulation.comparisons);
-      simulation.handleUserInput(winner);
-      comparison = simulation.comparison();
-      iterations++;
-      if (iterations > maxIterations) {
-        break;
-      }
-    }
-
-    console.log('[ImageTournament] simulated comparisons', simulation.comparisons.length);
+  private resolveImages(imageIds: string[]): GalleryImage[] {
+    const imageById = this.getImageByIdMap();
+    return imageIds.map(id => imageById.get(id)).filter(Boolean);
   }
 
-  private pickSimulatedWinner(
-    comparison: [GalleryImage, GalleryImage],
-    comparisons: [GalleryImage, GalleryImage][]
-  ): GalleryImage {
-    const [left, right] = comparison;
-    const leftStats = this.getWinLossCounts(left, comparisons);
-    const rightStats = this.getWinLossCounts(right, comparisons);
-
-    if (leftStats.wins !== rightStats.wins) {
-      return leftStats.wins > rightStats.wins ? left : right;
-    }
-    if (leftStats.losses !== rightStats.losses) {
-      return leftStats.losses < rightStats.losses ? left : right;
-    }
-    return Math.random() < 0.5 ? left : right;
+  private getImageByIdMap(): Map<string, GalleryImage> {
+    return new Map(this.stateService.images.map(image => [image.id, image]));
   }
 
-  private getWinLossCounts(
-    image: GalleryImage,
-    comparisons: [GalleryImage, GalleryImage][]
-  ): { wins: number; losses: number } {
-    let wins = 0;
-    let losses = 0;
-    for (const [winner, loser] of comparisons) {
-      if (winner?.id === image.id) wins++;
-      if (loser?.id === image.id) losses++;
-    }
-    return { wins, losses };
+  private getSortableImageIds(): string[] {
+    return this.stateService.images.filter(image => GoogleFileUtils.isImage(image)).map(image => image.id);
   }
 
+  private persistSortState(): void {
+    this.stateService.sortState = this.stateService.imageSort.getState();
+    this.serializationService.save(true);
+  }
+
+  private clearLongPressTimer(): void {
+    if (this.longPressTimer === null) return;
+    window.clearTimeout(this.longPressTimer);
+    this.longPressTimer = null;
+  }
 }

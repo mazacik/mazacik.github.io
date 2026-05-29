@@ -61,14 +61,14 @@
     </div>
   } @else {
     <div class="comparison comparison-empty">
-      No comparisons remaining.
+      Ranking complete.
     </div>
   }
 
   @if (stateService.settings?.showComparisonRelations) {
     <div class="h-separator"></div>
     <div class="progress-remaining">
-      {{ stateService.tournament.remainingComparisons }} relations to resolve
+      {{ sortStatus }}
     </div>
   }
 </div>
