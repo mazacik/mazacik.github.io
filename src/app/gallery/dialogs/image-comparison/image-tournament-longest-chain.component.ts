@@ -1,6 +1,7 @@
 import { Component, effect } from '@angular/core';
 import { GalleryImage } from 'src/app/gallery/models/gallery-image.class';
 import { GalleryStateService } from '../../services/gallery-state.service';
+import { GallerySortUtils } from '../../utils/gallery-sort.utils';
 
 @Component({
   selector: 'app-image-tournament-longest-chain',
@@ -21,8 +22,7 @@ export class ImageTournamentLongestChainComponent {
   }
 
   private refresh(): void {
-    const imageById = new Map(this.stateService.images.map(image => [image.id, image]));
-    this.rankedImages = this.stateService.imageSort.rankedImageIds.map(id => imageById.get(id)).filter(Boolean);
+    this.rankedImages = this.stateService.imageSort.rankedImageIds.map(id => GallerySortUtils.resolveSubjectImage(id, this.stateService.images, this.stateService.imageGroups)).filter(Boolean);
   }
 
   protected openFullscreen(image: GalleryImage): void {

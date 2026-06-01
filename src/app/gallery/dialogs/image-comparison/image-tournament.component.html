@@ -6,6 +6,8 @@
           class="image-container"
           [src]="comparison[0].contentLink"
           [placeholderSrc]="galleryUtils.getPlaceholderSrc(comparison[0])"
+          [sourceWidth]="comparison[0].imageMediaMetadata?.width || comparison[0].videoMediaMetadata?.width"
+          [sourceHeight]="comparison[0].imageMediaMetadata?.height || comparison[0].videoMediaMetadata?.height"
           (click)="onImageClick(comparison[0])"
           (contextmenu)="onImageContextMenu(comparison[0], $event)"
           (touchstart)="onImageTouchStart(comparison[0])"
@@ -28,6 +30,12 @@
             </div>
           }
         }
+        @if (hasGroupNavigation(comparison[0])) {
+          <div class="group-navigation">
+            <i class="icon-button fa-solid fa-chevron-left" title="Previous Group Image" (click)="showPreviousGroupImage(0, $event)"></i>
+            <i class="icon-button fa-solid fa-chevron-right" title="Next Group Image" (click)="showNextGroupImage(0, $event)"></i>
+          </div>
+        }
       </div>
       <div class="h-separator v-separator"></div>
       <div class="comparison-column">
@@ -35,6 +43,8 @@
           class="image-container"
           [src]="comparison[1].contentLink"
           [placeholderSrc]="galleryUtils.getPlaceholderSrc(comparison[1])"
+          [sourceWidth]="comparison[1].imageMediaMetadata?.width || comparison[1].videoMediaMetadata?.width"
+          [sourceHeight]="comparison[1].imageMediaMetadata?.height || comparison[1].videoMediaMetadata?.height"
           (click)="onImageClick(comparison[1])"
           (contextmenu)="onImageContextMenu(comparison[1], $event)"
           (touchstart)="onImageTouchStart(comparison[1])"
@@ -56,6 +66,12 @@
               }
             </div>
           }
+        }
+        @if (hasGroupNavigation(comparison[1])) {
+          <div class="group-navigation">
+            <i class="icon-button fa-solid fa-chevron-left" title="Previous Group Image" (click)="showPreviousGroupImage(1, $event)"></i>
+            <i class="icon-button fa-solid fa-chevron-right" title="Next Group Image" (click)="showNextGroupImage(1, $event)"></i>
+          </div>
         }
       </div>
     </div>

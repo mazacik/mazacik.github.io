@@ -7,6 +7,7 @@ import { TagManagerComponent } from "../dialogs/tag-manager/tag-manager.componen
 import { GalleryGroup } from "../models/gallery-group.class";
 import { GalleryImage } from "../models/gallery-image.class";
 import { Tag } from "../models/tag.class";
+import { GallerySortUtils } from "../utils/gallery-sort.utils";
 import { FilterService } from "./filter.service";
 import { GalleryGoogleDriveService } from "./gallery-google-drive.service";
 import { GallerySerializationService } from "./gallery-serialization.service";
@@ -78,7 +79,7 @@ export class GalleryService {
       }
     }
 
-    this.stateService.imageSort.removeImageId(image.id);
+    this.stateService.imageSort.start(GallerySortUtils.getSortableSubjectIds(this.stateService.images, this.stateService.imageGroups), this.stateService.imageSort.getState());
     this.stateService.sortState = this.stateService.imageSort.getState();
 
     this.filterService.images.set(this.stateService.images.filter(image => image.passesFilters));

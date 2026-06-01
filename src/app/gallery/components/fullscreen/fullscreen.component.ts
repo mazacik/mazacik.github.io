@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, effect } from '@angular/core';
-import { SafeUrl } from '@angular/platform-browser';
 import { ImageComponent } from 'src/app/shared/components/image/image.component';
 import { ApplicationService } from 'src/app/shared/services/application.service';
 import { DialogService } from 'src/app/shared/services/dialog.service';
@@ -12,6 +11,7 @@ import { GalleryStateService } from '../../services/gallery-state.service';
 import { GalleryService } from '../../services/gallery.service';
 import { TagService } from '../../services/tag.service';
 import { GalleryUtils } from '../../../shared/utils/gallery.utils';
+import { GallerySortUtils } from '../../utils/gallery-sort.utils';
 
 @Component({
   selector: 'app-fullscreen',
@@ -23,8 +23,6 @@ export class FullscreenComponent {
 
   protected readonly galleryUtils = GalleryUtils;
 
-  protected loadingT: boolean = true;
-  protected loadingC: boolean = true;
   protected video: boolean = false;
 
   protected comparisonWinners: GalleryImage[] = [];
@@ -46,8 +44,6 @@ export class FullscreenComponent {
           this.video = true;
         } else {
           this.video = false;
-          this.loadingT = true;
-          this.loadingC = true;
         }
 
         this.stateService.imageSort.stateVersion();
@@ -73,21 +69,42 @@ export class FullscreenComponent {
   }
 
   private refreshComparisonRelations(target: GalleryImage): void {
-    const imageById = new Map(this.stateService.images.map(image => [image.id, image]));
-    const overlay = this.stateService.imageSort.getOverlayIds(target.id);
-    this.comparisonWinners = overlay.winners.map(id => imageById.get(id)).filter(Boolean);
-    this.comparisonLosers = overlay.losers.map(id => imageById.get(id)).filter(Boolean);
-  }
-
-  protected getSrc(image: GalleryImage): SafeUrl {
-    if (!this.loadingC) return image.contentLink;
-    if (!this.loadingT) return image.thumbnailLink;
+    const overlay = this.stateService.imageSort.getOverlayIds(GallerySortUtils.getSortSubjectId(target));
+    this.comparisonWinners = overlay.winners.map(id => GallerySortUtils.resolveSubjectImage(id, this.stateService.images, this.stateService.imageGroups)).filter(Boolean);
+    this.comparisonLosers = overlay.losers.map(id => GallerySortUtils.resolveSubjectImage(id, this.stateService.images, this.stateService.imageGroups)).filter(Boolean);
   }
 
   protected onImageClick(image: GalleryImage): void {
     if (this.applicationService.reduceDataUsage) {
       image.thumbnailLink = image.thumbnailLink.replace('=s220', '=s440');
     }
+  }
+
+  protected hasGroupNavigation(image: GalleryImage): boolean {
+    return (image?.group?.images.length ?? 0) > 1;
+  }
+
+  protected showPreviousGroupImage(image: GalleryImage, event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.stateService.fullscreenImage.set(this.getSiblingGroupImage(image, -1));
+  }
+
+  protected showNextGroupImage(image: GalleryImage, event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.stateService.fullscreenImage.set(this.getSiblingGroupImage(image, 1));
+  }
+
+  private getSiblingGroupImage(image: GalleryImage, offset: number): GalleryImage {
+    const groupImages = image?.group?.images ?? [];
+    if (groupImages.length <= 1) {
+      return image;
+    }
+
+    const currentIndex = Math.max(0, groupImages.indexOf(image));
+    const nextIndex = (currentIndex + offset + groupImages.length) % groupImages.length;
+    return groupImages[nextIndex];
   }
 
   protected snapshot(): void {
