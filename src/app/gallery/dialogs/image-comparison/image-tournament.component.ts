@@ -2,10 +2,10 @@ import { Component, effect } from '@angular/core';
 import { GalleryImage } from 'src/app/gallery/models/gallery-image.class';
 import { ImageComponent } from 'src/app/shared/components/image/image.component';
 import { DialogService } from 'src/app/shared/services/dialog.service';
-import { GoogleFileUtils } from 'src/app/shared/utils/google-file.utils';
 import { GalleryUtils } from '../../../shared/utils/gallery.utils';
 import { GallerySerializationService } from '../../services/gallery-serialization.service';
 import { GalleryStateService } from '../../services/gallery-state.service';
+import { GallerySortUtils } from '../../utils/gallery-sort.utils';
 import { ComparisonPathComponent } from '../comparison-path/comparison-path.component';
 
 @Component({
@@ -54,14 +54,14 @@ export class ImageTournamentComponent {
       return;
     }
 
-    this.stateService.imageSort.answer(winner.id);
+    this.stateService.imageSort.answer(GallerySortUtils.getSortSubjectId(winner));
     this.persistSortState();
     this.refreshComparisonRelations();
   }
 
   public onEnterTournament(): void {
     const before = JSON.stringify(this.stateService.sortState ?? null);
-    this.stateService.imageSort.start(this.getSortableImageIds(), this.stateService.sortState);
+    this.stateService.imageSort.start(this.getSortableSubjectIds(), this.stateService.sortState);
     this.stateService.sortState = this.stateService.imageSort.getState();
     if (JSON.stringify(this.stateService.sortState) !== before) {
       this.serializationService.save(true);
@@ -83,7 +83,7 @@ export class ImageTournamentComponent {
 
   public resetSort(): void {
     this.stateService.sortState = null;
-    this.stateService.imageSort.start(this.getSortableImageIds(), null);
+    this.stateService.imageSort.start(this.getSortableSubjectIds(), null);
     this.persistSortState();
     this.refreshComparisonRelations();
   }
@@ -121,11 +121,27 @@ export class ImageTournamentComponent {
     this.stateService.fullscreenImage.set(image);
   }
 
+  protected hasGroupNavigation(image: GalleryImage): boolean {
+    return (image?.group?.images.length ?? 0) > 1;
+  }
+
+  protected showPreviousGroupImage(index: 0 | 1, event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.setComparisonImage(index, this.getSiblingGroupImage(this.comparison[index], -1));
+  }
+
+  protected showNextGroupImage(index: 0 | 1, event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.setComparisonImage(index, this.getSiblingGroupImage(this.comparison[index], 1));
+  }
+
   public refreshComparisonRelations(): void {
     this.comparison = this.getCurrentComparison();
     if (this.comparison && this.stateService.settings?.showComparisonRelations) {
-      const leftOverlay = this.stateService.imageSort.getOverlayIds(this.comparison[0].id);
-      const rightOverlay = this.stateService.imageSort.getOverlayIds(this.comparison[1].id);
+      const leftOverlay = this.stateService.imageSort.getOverlayIds(GallerySortUtils.getSortSubjectId(this.comparison[0]));
+      const rightOverlay = this.stateService.imageSort.getOverlayIds(GallerySortUtils.getSortSubjectId(this.comparison[1]));
       this.winnersLeft = this.resolveImages(leftOverlay.winners);
       this.losersLeft = this.resolveImages(leftOverlay.losers);
       this.winnersRight = this.resolveImages(rightOverlay.winners);
@@ -146,9 +162,8 @@ export class ImageTournamentComponent {
       return null;
     }
 
-    const imageById = this.getImageByIdMap();
-    const activeImage = imageById.get(comparisonIds[0]);
-    const opponentImage = imageById.get(comparisonIds[1]);
+    const activeImage = GallerySortUtils.resolveSubjectImage(comparisonIds[0], this.stateService.images, this.stateService.imageGroups);
+    const opponentImage = GallerySortUtils.resolveSubjectImage(comparisonIds[1], this.stateService.images, this.stateService.imageGroups);
     return activeImage && opponentImage ? [activeImage, opponentImage] : null;
   }
 
@@ -183,16 +198,30 @@ export class ImageTournamentComponent {
   }
 
   private resolveImages(imageIds: string[]): GalleryImage[] {
-    const imageById = this.getImageByIdMap();
-    return imageIds.map(id => imageById.get(id)).filter(Boolean);
+    return imageIds.map(id => GallerySortUtils.resolveSubjectImage(id, this.stateService.images, this.stateService.imageGroups)).filter(Boolean);
   }
 
-  private getImageByIdMap(): Map<string, GalleryImage> {
-    return new Map(this.stateService.images.map(image => [image.id, image]));
+  private getSortableSubjectIds(): string[] {
+    return GallerySortUtils.getSortableSubjectIds(this.stateService.images, this.stateService.imageGroups);
   }
 
-  private getSortableImageIds(): string[] {
-    return this.stateService.images.filter(image => GoogleFileUtils.isImage(image)).map(image => image.id);
+  private getSiblingGroupImage(image: GalleryImage, offset: number): GalleryImage {
+    const groupImages = image?.group?.images ?? [];
+    if (groupImages.length <= 1) {
+      return image;
+    }
+
+    const currentIndex = Math.max(0, groupImages.indexOf(image));
+    const nextIndex = (currentIndex + offset + groupImages.length) % groupImages.length;
+    return groupImages[nextIndex];
+  }
+
+  private setComparisonImage(index: 0 | 1, image: GalleryImage): void {
+    if (!this.comparison || !image) {
+      return;
+    }
+
+    this.comparison = index === 0 ? [image, this.comparison[1]] : [this.comparison[0], image];
   }
 
   private persistSortState(): void {

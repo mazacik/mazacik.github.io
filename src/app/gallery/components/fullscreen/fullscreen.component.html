@@ -1,7 +1,4 @@
 @if (stateService.fullscreenImage(); as target) {
-  <img style="display: none" [src]="target.thumbnailLink" (load)="loadingT = false" />
-  <img style="display: none" [src]="target.contentLink" (load)="loadingC = false" />
-
   <div class="fullscreen-container anim-fade-in" [class.hide-comparison-relations]="!stateService.settings.showFullscreenComparisonRelations" animate.leave="anim-fade-out">
     <div class="comparison-winners">
       @if (comparisonWinners.length) {
@@ -11,7 +8,19 @@
       }
     </div>
 
-    <app-image [src]="target.contentLink" [placeholderSrc]="galleryUtils.getPlaceholderSrc(target)" (click)="onImageClick(target)"></app-image>
+    <app-image
+      [src]="target.contentLink"
+      [placeholderSrc]="galleryUtils.getPlaceholderSrc(target)"
+      [sourceWidth]="target.imageMediaMetadata?.width || target.videoMediaMetadata?.width"
+      [sourceHeight]="target.imageMediaMetadata?.height || target.videoMediaMetadata?.height"
+      (click)="onImageClick(target)"></app-image>
+
+    @if (hasGroupNavigation(target)) {
+      <div class="group-navigation">
+        <i class="icon-button fa-solid fa-chevron-left" title="Previous Group Image" (click)="showPreviousGroupImage(target, $event)"></i>
+        <i class="icon-button fa-solid fa-chevron-right" title="Next Group Image" (click)="showNextGroupImage(target, $event)"></i>
+      </div>
+    }
 
     <div class="comparison-losers">
       @if (comparisonLosers.length) {

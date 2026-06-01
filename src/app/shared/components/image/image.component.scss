@@ -1,5 +1,9 @@
+@use 'src/styles/variables.scss';
+
 :host {
   flex: 1;
+  position: relative;
+  z-index: 0;
 
   img {
     width: 100%;
@@ -7,5 +11,15 @@
     outline: none;
     user-select: none;
     object-fit: contain;
+  }
+
+  .image-layer {
+    position: absolute;
+    opacity: 0;
+    transition: opacity variables.$transition-duration ease;
+  }
+
+  .visible {
+    opacity: 1;
   }
 }

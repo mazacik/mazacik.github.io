@@ -1,5 +1,6 @@
 import { Injectable, Injector } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
+import { nanoid } from "nanoid";
 import { GalleryGroup } from "src/app/gallery/models/gallery-group.class";
 import { GalleryImage } from "src/app/gallery/models/gallery-image.class";
 import { Delay } from "src/app/shared/classes/delay.class";
@@ -13,6 +14,7 @@ import { ImageData } from "../models/image-data.interface";
 import { GallerySettings } from "../models/gallery-settings.interface";
 import { TagData } from "../models/tag-data.interface";
 import { Tag } from "../models/tag.class";
+import { GallerySortUtils } from "../utils/gallery-sort.utils";
 import { FilterService } from "./filter.service";
 import { GalleryGoogleDriveService } from "./gallery-google-drive.service";
 import { GalleryStateService } from "./gallery-state.service";
@@ -64,6 +66,7 @@ export class GallerySerializationService {
 
     ArrayUtils.push(stateService.imageGroups, data.groupProperties.map(groupProperties => {
       const group: GalleryGroup = new GalleryGroup();
+      group.id = groupProperties.id ?? this.createGroupId();
       group.images = stateService.images.filter(image => groupProperties.imageIds.includes(image.id));
       group.images.sort((a, b) => groupProperties.imageIds.indexOf(a.id) - groupProperties.imageIds.indexOf(b.id));
       group.images.forEach(image => image.group = group);
@@ -71,13 +74,10 @@ export class GallerySerializationService {
     }));
 
     filterService.updateFilters();
-    const loadedSortState = stateService.sortState ? JSON.stringify(stateService.sortState) : null;
-    stateService.imageSort.start(
-      stateService.images.filter(image => GoogleFileUtils.isImage(image)).map(image => image.id),
-      stateService.sortState
-    );
+    const subjectIds = GallerySortUtils.getSortableSubjectIds(stateService.images, stateService.imageGroups);
+    stateService.imageSort.start(subjectIds, data.sortState);
     stateService.sortState = stateService.imageSort.getState();
-    if (JSON.stringify(stateService.sortState) !== loadedSortState) {
+    if (JSON.stringify(stateService.sortState) !== JSON.stringify(data.sortState ?? null)) {
       this.save(true);
     }
     this.applicationService.loading.set(false);
@@ -202,8 +202,13 @@ export class GallerySerializationService {
 
   private serializeGroup(group: GalleryGroup): GroupData {
     const _group: GroupData = {} as GroupData;
+    _group.id = group.id;
     _group.imageIds = group.images.map(image => image.id);
     return _group;
+  }
+
+  public createGroupId(): string {
+    return nanoid();
   }
 
   public serializeTag(tag: Tag): TagData {

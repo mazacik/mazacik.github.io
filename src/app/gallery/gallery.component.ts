@@ -17,6 +17,7 @@ import { FilterService } from './services/filter.service';
 import { GallerySerializationService } from './services/gallery-serialization.service';
 import { GalleryStateService, GalleryViewMode } from './services/gallery-state.service';
 import { GalleryService } from './services/gallery.service';
+import { GallerySortUtils } from './utils/gallery-sort.utils';
 
 @Component({
   selector: 'app-gallery',
@@ -348,13 +349,13 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
 
   private isFullscreenImageRanked(): boolean {
     const target = this.stateService.fullscreenImage();
-    return !!target && this.stateService.imageSort.rankedImageIds.includes(target.id);
+    return !!target && this.stateService.imageSort.rankedImageIds.includes(GallerySortUtils.getSortSubjectId(target));
   }
 
   private moveFullscreenImageToPending(): void {
     const target = this.stateService.fullscreenImage();
     if (!target) return;
-    this.stateService.imageSort.moveRankedImageToPending(target.id);
+    this.stateService.imageSort.moveRankedImageToPending(GallerySortUtils.getSortSubjectId(target));
     this.stateService.sortState = this.stateService.imageSort.getState();
     this.serializationService.save(true);
   }

@@ -3,6 +3,7 @@ import { DialogContainerConfiguration } from 'src/app/shared/components/dialog/d
 import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-content-base.class';
 import { GalleryImage } from '../../models/gallery-image.class';
 import { GalleryStateService } from '../../services/gallery-state.service';
+import { GallerySortUtils } from '../../utils/gallery-sort.utils';
 
 @Component({
   selector: 'app-comparison-path',
@@ -55,8 +56,10 @@ export class ComparisonPathComponent extends DialogContentBase<boolean> implemen
       return;
     }
 
-    const pathIds = this.stateService.imageSort.getPathIds(start.id, end.id);
-    const imageById = new Map(this.stateService.images.map(image => [image.id, image]));
-    this.path = pathIds.map(id => imageById.get(id) ?? (id === start.id ? start : id === end.id ? end : undefined)).filter(Boolean);
+    const pathIds = this.stateService.imageSort.getPathIds(
+      GallerySortUtils.getSortSubjectId(start),
+      GallerySortUtils.getSortSubjectId(end)
+    );
+    this.path = pathIds.map(id => GallerySortUtils.resolveSubjectImage(id, this.stateService.images, this.stateService.imageGroups)).filter(Boolean);
   }
 }
