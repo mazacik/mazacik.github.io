@@ -42,4 +42,34 @@
     margin: auto;
     color: var(--color-text-secondary);
   }
+
+  @media screen and (max-width:1280px) {
+    .longest-chain-wrapper {
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    .longest-chain {
+      width: 100%;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .chain-segment {
+      width: 100%;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .chain-image {
+      width: 100%;
+      height: auto;
+    }
+
+    .chain-arrow {
+      transform: rotate(90deg);
+    }
+  }
 }

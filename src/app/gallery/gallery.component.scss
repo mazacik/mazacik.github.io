@@ -15,8 +15,13 @@
       @media screen and (max-width:1280px) {
         height: 100%;
         position: absolute;
+        z-index: 5;
         overflow: auto;
         scroll-snap-type: y mandatory;
+
+        &.tagger-overlay-visible {
+          z-index: 20;
+        }
 
         .tagger-scroll-offset-helper {
           height: 100%;

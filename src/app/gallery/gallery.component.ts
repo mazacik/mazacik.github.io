@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild, effect } from '@angular/core';
 import { KeyboardShortcutTarget } from '../shared/classes/keyboard-shortcut-target.interface';
 import { ApplicationSettingsComponent } from '../shared/dialogs/application-settings/application-settings.component';
 import { ApplicationService } from '../shared/services/application.service';
@@ -37,7 +37,12 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
   @ViewChild(ImageTournamentComponent)
   private imageTournamentComponent?: ImageTournamentComponent;
 
+  @ViewChild('taggerOverlay')
+  private taggerOverlay?: ElementRef<HTMLDivElement>;
+
   protected tournamentSubview: 'comparison' | 'chain' = 'comparison';
+  protected taggerOverlayVisible: boolean = false;
+  private fullscreenWasOpen: boolean = false;
 
   protected get viewMode(): GalleryViewMode {
     return this.stateService.viewMode;
@@ -63,6 +68,13 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
     protected stateService: GalleryStateService
   ) {
     this.applicationService.loading.set(true);
+    effect(() => {
+      const fullscreenOpen = !!this.stateService.fullscreenImage();
+      if (!this.fullscreenWasOpen && fullscreenOpen) {
+        this.resetTaggerOverlayScroll();
+      }
+      this.fullscreenWasOpen = fullscreenOpen;
+    });
   }
 
   ngOnInit(): void {
@@ -99,14 +111,47 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
     const isFullscreen = () => !!this.stateService.fullscreenImage();
     const isFilter = () => this.stateService.viewMode === 'masonry' && !ScreenUtils.isLargeScreen() && this.stateService.filterVisible;
     const isTournament = () => this.stateService.viewMode === 'tournament' && !isFullscreen();
-    const isTournamentComparison = () => isTournament() && this.tournamentSubview === 'comparison';
 
     this.applicationService.addHeaderButtons('start', [{
+      id: 'close-fullscreen',
+      tooltip: 'Close Fullscreen',
+      classes: 'fa-solid fa-arrow-left',
+      onClick: () => this.stateService.fullscreenImage.set(null),
+      hidden: () => !isFullscreen()
+    }, {
+      id: 'close-filter',
+      tooltip: 'Close Filter',
+      classes: 'fa-solid fa-arrow-left',
+      onClick: () => this.stateService.filterVisible = false,
+      hidden: () => !isFilter()
+    }, {
       id: 'open-filter',
       tooltip: 'Open Filter',
       classes: 'fa-solid fa-filter',
       hidden: () => !isMasonry() || this.stateService.filterVisible,
       onClick: () => this.stateService.filterVisible = true
+    }, {
+      id: 'toggle-view-mode',
+      tooltip: () => {
+        if (this.viewMode === 'masonry') {
+          return 'Open Comparison';
+        }
+        return this.tournamentSubview === 'chain' ? 'Back to Comparison' : 'Back to Gallery';
+      },
+      classes: () => this.viewMode === 'tournament' ? 'fa-solid fa-arrow-left' : 'fa-solid fa-code-compare',
+      onClick: () => {
+        if (this.viewMode === 'masonry') {
+          this.tournamentSubview = 'comparison';
+          this.viewMode = 'tournament';
+          return;
+        }
+        if (this.tournamentSubview === 'chain') {
+          this.tournamentSubview = 'comparison';
+          return;
+        }
+        this.viewMode = 'masonry';
+      },
+      hidden: () => !isMasonry() && !isTournament()
     }, {
       id: 'create-group',
       tooltip: 'Create Image Group',
@@ -114,6 +159,20 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
       hidden: () => !isMasonry(),
       onClick: () => this.galleryService.openImageGroupEditor()
     }, {
+      id: 'group-manager',
+      tooltip: 'Open Image Group Manager',
+      classes: 'fa-solid fa-object-group',
+      hidden: () => !isFullscreen() || !this.stateService.fullscreenImage().group,
+      onClick: () => this.galleryService.openImageGroupEditor(this.stateService.fullscreenImage().group)
+    }, {
+      id: 'comparison-chain-toggle',
+      tooltip: 'Open Ranking',
+      classes: 'fa-solid fa-crown',
+      hidden: () => !isTournament() || this.tournamentSubview !== 'comparison',
+      onClick: () => this.tournamentSubview = 'chain'
+    }]);
+
+    this.applicationService.addHeaderButtons('center', [{
       id: 'random-image',
       tooltip: 'Random Image',
       classes: 'fa-solid fa-shuffle',
@@ -125,91 +184,13 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
       classes: 'fa-solid fa-arrows-spin',
       hidden: () => !isFullscreen() || !this.stateService.fullscreenImage().group,
       onClick: () => this.setRandomGroupTarget()
-    }, {
-      id: 'group-manager',
-      tooltip: 'Open Image Group Manager',
-      classes: 'fa-solid fa-object-group',
-      hidden: () => !isFullscreen() || !this.stateService.fullscreenImage().group,
-      onClick: () => this.galleryService.openImageGroupEditor(this.stateService.fullscreenImage().group)
-    }, {
-      id: 'comparison-chain-toggle',
-      tooltip: () => this.tournamentSubview === 'comparison' ? 'Open Ranked List' : 'Open Ranking Comparison',
-      classes: () => this.tournamentSubview === 'chain' ? 'fa-solid fa-link active' : 'fa-solid fa-link',
-      hidden: () => !isTournament(),
-      onClick: () => this.toggleTournamentSubview()
-    }, {
-      id: 'rank-image-again',
-      tooltip: 'Rank Image Again',
-      classes: 'fa-solid fa-rotate-left',
-      hidden: () => !isFullscreen() || !this.isFullscreenImageRanked(),
-      onClick: () => this.moveFullscreenImageToPending()
-    }]);
-
-    this.applicationService.addHeaderButtons('center', [{
-      id: 'comparison-reset-active',
-      tooltip: 'Restart This Image',
-      classes: 'fa-solid fa-rotate-left',
-      hidden: () => !isTournamentComparison(),
-      onClick: () => this.imageTournamentComponent?.resetActiveImage(),
-      disabled: () => !this.stateService.imageSort.activeInsertion
-    }, {
-      id: 'comparison-relations',
-      tooltip: 'Toggle Comparison Relations and Progress Bar',
-      classes: () => {
-        if (this.stateService.settings?.showComparisonRelations) {
-          return ['fa-solid fa-code-compare', 'fa-solid fa-slash'];
-        }
-        return ['fa-solid fa-code-compare'];
-      },
-      hidden: () => !isTournamentComparison(),
-      onClick: () => this.imageTournamentComponent?.toggleRelations()
-    }, {
-      id: 'fullscreen-comparison-relations',
-      tooltip: 'Toggle Comparison Relations',
-      classes: () => {
-        if (this.stateService.settings?.showFullscreenComparisonRelations) {
-          return ['fa-solid fa-code-compare', 'fa-solid fa-slash'];
-        }
-        return ['fa-solid fa-code-compare'];
-      },
-      hidden: () => !isFullscreen(),
-      onClick: () => {
-        this.stateService.settings.showFullscreenComparisonRelations = !this.stateService.settings.showFullscreenComparisonRelations;
-        this.serializationService.save();
-      }
     }]);
 
     this.applicationService.addHeaderButtons('end', [{
-      id: 'close-fullscreen',
-      tooltip: 'Close Fullscreen',
-      classes: 'fa-solid fa-times',
-      onClick: () => this.stateService.fullscreenImage.set(null),
-      hidden: () => !isFullscreen()
-    }, {
-      id: 'close-filter',
-      tooltip: 'Close Filter',
-      classes: 'fa-solid fa-times',
-      onClick: () => this.stateService.filterVisible = false,
-      hidden: () => !isFilter()
-    }, {
-      id: 'toggle-view-mode',
-      tooltip: () => this.viewMode === 'masonry' ? 'Open Comparison' : 'Open Masonry',
-      classes: () => this.viewMode === 'tournament' ? 'fa-solid fa-images' : 'fa-solid fa-code-compare',
-      onClick: () => {
-        if (this.viewMode === 'masonry') {
-          this.tournamentSubview = 'comparison';
-          this.viewMode = 'tournament';
-          return;
-        }
-        this.viewMode = 'masonry';
-      },
-      hidden: () => !isMasonry() && !isTournament()
-    }, {
       id: 'open-settings',
       tooltip: 'Open Settings',
       classes: 'fa-solid fa-gear',
-      onClick: () => this.dialogService.create(ApplicationSettingsComponent),
-      hidden: () => !isMasonry() && !isTournament()
+      onClick: () => this.dialogService.create(ApplicationSettingsComponent)
     }]);
   }
 
@@ -258,6 +239,21 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
     });
 
     this.applicationService.registerModuleSettings({
+      id: 'fullscreen-settings',
+      label: 'Fullscreen',
+      items: [{
+        id: 'show-fullscreen-comparison-relations',
+        type: 'toggle',
+        label: 'Show Comparison Relations',
+        getValue: () => this.stateService.settings?.showFullscreenComparisonRelations,
+        onChange: value => {
+          this.stateService.settings.showFullscreenComparisonRelations = value;
+          this.serializationService.save();
+        }
+      }]
+    });
+
+    this.applicationService.registerModuleSettings({
       id: 'comparison-settings',
       label: 'Comparison',
       items: [{
@@ -297,21 +293,6 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
         }
       }]
     });
-
-    this.applicationService.registerModuleSettings({
-      id: 'fullscreen-settings',
-      label: 'Fullscreen',
-      items: [{
-        id: 'show-fullscreen-comparison-relations',
-        type: 'toggle',
-        label: 'Show Comparison Relations',
-        getValue: () => this.stateService.settings?.showFullscreenComparisonRelations,
-        onChange: value => {
-          this.stateService.settings.showFullscreenComparisonRelations = value;
-          this.serializationService.save();
-        }
-      }]
-    });
   }
 
   private setRandomTarget(): void {
@@ -343,8 +324,8 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
     }
   }
 
-  protected toggleTournamentSubview(): void {
-    this.tournamentSubview = this.tournamentSubview === 'comparison' ? 'chain' : 'comparison';
+  protected onTaggerOverlayScroll(element: HTMLDivElement): void {
+    this.taggerOverlayVisible = element.scrollTop > 1;
   }
 
   private isFullscreenImageRanked(): boolean {
@@ -368,6 +349,16 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
         this.serializationService.save();
       }
     });
+  }
+
+  private resetTaggerOverlayScroll(): void {
+    const element = this.taggerOverlay?.nativeElement;
+    if (!element) {
+      return;
+    }
+
+    element.scrollTop = 0;
+    this.taggerOverlayVisible = false;
   }
 
 }
