@@ -75,12 +75,6 @@ export class ImageTournamentComponent {
     this.refreshComparisonRelations();
   }
 
-  public toggleRelations(): void {
-    this.stateService.settings.showComparisonRelations = !this.stateService.settings.showComparisonRelations;
-    this.serializationService.save();
-    this.refreshComparisonRelations();
-  }
-
   public resetSort(): void {
     this.stateService.sortState = null;
     this.stateService.imageSort.start(this.getSortableSubjectIds(), null);
