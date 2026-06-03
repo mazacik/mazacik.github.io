@@ -1,4 +1,4 @@
-import { Component, effect } from '@angular/core';
+import { Component, OnDestroy, effect } from '@angular/core';
 import { GalleryImage } from 'src/app/gallery/models/gallery-image.class';
 import { ImageComponent } from 'src/app/shared/components/image/image.component';
 import { DialogService } from 'src/app/shared/services/dialog.service';
@@ -14,14 +14,14 @@ import { ComparisonPathComponent } from '../comparison-path/comparison-path.comp
   templateUrl: './image-tournament.component.html',
   styleUrls: ['./image-tournament.component.scss']
 })
-export class ImageTournamentComponent {
+export class ImageTournamentComponent implements OnDestroy {
   protected readonly galleryUtils = GalleryUtils;
 
   protected comparison: [GalleryImage, GalleryImage] = null;
-  protected winnersLeft: GalleryImage[] = [];
-  protected losersLeft: GalleryImage[] = [];
   protected winnersRight: GalleryImage[] = [];
   protected losersRight: GalleryImage[] = [];
+  protected comparisonImagesReady: [boolean, boolean] = [false, false];
+  private comparisonImageIds: [string, string] | null = null;
   private longPressTimer: number | null = null;
   private suppressNextClick: boolean = false;
   private readonly longPressDelayMs: number = 500;
@@ -37,6 +37,10 @@ export class ImageTournamentComponent {
     });
   }
 
+  ngOnDestroy(): void {
+    this.clearLongPressTimer();
+  }
+
   protected get sortStatus(): string {
     const ranked = this.stateService.imageSort.rankedImageIds.length;
     const pending = this.stateService.imageSort.pendingCountIncludingActive;
@@ -49,7 +53,7 @@ export class ImageTournamentComponent {
   }
 
   protected onImageClick(winner: GalleryImage): void {
-    if (this.suppressNextClick) {
+    if (this.suppressNextClick || !this.canChooseImages()) {
       this.suppressNextClick = false;
       return;
     }
@@ -71,6 +75,22 @@ export class ImageTournamentComponent {
 
   public resetActiveImage(): void {
     this.stateService.imageSort.resetActiveInsertion();
+    this.persistSortState();
+    this.refreshComparisonRelations();
+  }
+
+  protected restartActiveImageComparisons(event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.clearLongPressTimer();
+    this.resetActiveImage();
+  }
+
+  protected skipActiveImage(event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.clearLongPressTimer();
+    this.stateService.imageSort.skipActiveInsertion();
     this.persistSortState();
     this.refreshComparisonRelations();
   }
@@ -105,6 +125,18 @@ export class ImageTournamentComponent {
     this.clearLongPressTimer();
   }
 
+  protected onComparisonImageDisplayed(index: 0 | 1, image: GalleryImage, displayedSrc: string): void {
+    if (!this.comparisonImageIds || this.comparisonImageIds[index] !== GallerySortUtils.getSortSubjectId(image)) {
+      return;
+    }
+
+    if (displayedSrc !== image.contentLink && displayedSrc !== this.galleryUtils.getPlaceholderSrc(image)) {
+      return;
+    }
+
+    this.comparisonImagesReady[index] = true;
+  }
+
   protected openComparisonPath(start: GalleryImage, end: GalleryImage): void {
     if (!start || !end) return;
     this.dialogService.create(ComparisonPathComponent, { start, end });
@@ -133,19 +165,17 @@ export class ImageTournamentComponent {
 
   public refreshComparisonRelations(): void {
     this.comparison = this.getCurrentComparison();
+    this.updateComparisonImageReadiness();
     if (this.comparison && this.stateService.settings?.showComparisonRelations) {
       const leftOverlay = this.stateService.imageSort.getOverlayIds(GallerySortUtils.getSortSubjectId(this.comparison[0]));
       const rightOverlay = this.stateService.imageSort.getOverlayIds(GallerySortUtils.getSortSubjectId(this.comparison[1]));
-      this.winnersLeft = this.resolveImages(leftOverlay.winners);
-      this.losersLeft = this.resolveImages(leftOverlay.losers);
-      this.winnersRight = this.resolveImages(rightOverlay.winners);
-      this.losersRight = this.resolveImages(rightOverlay.losers);
-      this.filterSharedComparisonRelations();
+      const rightWinnerIds = this.filterSharedComparisonRelationIds(rightOverlay.winners, leftOverlay.winners);
+      const rightLoserIds = this.filterSharedComparisonRelationIds(rightOverlay.losers, leftOverlay.losers);
+      this.winnersRight = this.resolveImages(rightWinnerIds);
+      this.losersRight = this.resolveImages(rightLoserIds);
       return;
     }
 
-    this.winnersLeft = [];
-    this.losersLeft = [];
     this.winnersRight = [];
     this.losersRight = [];
   }
@@ -161,34 +191,47 @@ export class ImageTournamentComponent {
     return activeImage && opponentImage ? [activeImage, opponentImage] : null;
   }
 
-  private filterSharedComparisonRelations(): void {
-    if (!this.stateService.settings?.hideComparisonSharedRelations) {
+  protected canChooseImages(): boolean {
+    return this.comparisonImagesReady[0] && this.comparisonImagesReady[1];
+  }
+
+  private updateComparisonImageReadiness(): void {
+    const nextComparisonImageIds: [string, string] | null = this.comparison
+      ? [
+        GallerySortUtils.getSortSubjectId(this.comparison[0]),
+        GallerySortUtils.getSortSubjectId(this.comparison[1])
+      ]
+      : null;
+
+    if (
+      this.comparisonImageIds?.[0] === nextComparisonImageIds?.[0]
+      && this.comparisonImageIds?.[1] === nextComparisonImageIds?.[1]
+    ) {
       return;
     }
 
-    const sharedWinnerIds = this.collectSharedIds(this.winnersLeft, this.winnersRight);
-    if (sharedWinnerIds.size) {
-      this.winnersLeft = this.winnersLeft.filter(image => !sharedWinnerIds.has(image.id));
-      this.winnersRight = this.winnersRight.filter(image => !sharedWinnerIds.has(image.id));
-    }
-
-    const sharedLoserIds = this.collectSharedIds(this.losersLeft, this.losersRight);
-    if (sharedLoserIds.size) {
-      this.losersLeft = this.losersLeft.filter(image => !sharedLoserIds.has(image.id));
-      this.losersRight = this.losersRight.filter(image => !sharedLoserIds.has(image.id));
-    }
+    const previousComparisonImageIds = this.comparisonImageIds;
+    const previousComparisonImagesReady = this.comparisonImagesReady;
+    this.comparisonImageIds = nextComparisonImageIds;
+    this.comparisonImagesReady = nextComparisonImageIds
+      ? [
+        previousComparisonImageIds?.[0] === nextComparisonImageIds[0] && previousComparisonImagesReady[0],
+        previousComparisonImageIds?.[1] === nextComparisonImageIds[1] && previousComparisonImagesReady[1]
+      ]
+      : [false, false];
   }
 
-  private collectSharedIds(left: GalleryImage[], right: GalleryImage[]): Set<string> {
-    if (!left.length || !right.length) return new Set();
-    const leftIds = new Set(left.map(image => image.id));
-    const shared = new Set<string>();
-    right.forEach(image => {
-      if (leftIds.has(image.id)) {
-        shared.add(image.id);
-      }
-    });
-    return shared;
+  private filterSharedComparisonRelationIds(relationIds: string[], activeRelationIds: string[]): string[] {
+    if (!this.stateService.settings?.hideComparisonSharedRelations) {
+      return relationIds;
+    }
+
+    if (!relationIds.length || !activeRelationIds.length) {
+      return relationIds;
+    }
+
+    const activeRelationIdSet = new Set(activeRelationIds);
+    return relationIds.filter(id => !activeRelationIdSet.has(id));
   }
 
   private resolveImages(imageIds: string[]): GalleryImage[] {
@@ -228,4 +271,5 @@ export class ImageTournamentComponent {
     window.clearTimeout(this.longPressTimer);
     this.longPressTimer = null;
   }
+
 }

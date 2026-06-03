@@ -141,6 +141,18 @@ export class BinaryInsertionSort {
     this.notify();
   }
 
+  public skipActiveInsertion(): void {
+    const activeInsertion = this.state.activeInsertion;
+    if (!activeInsertion) {
+      return;
+    }
+
+    this.state.activeInsertion = null;
+    this.state.pendingImageIds.push(activeInsertion.imageId);
+    this.advance();
+    this.notify();
+  }
+
   public moveRankedImageToPending(imageId: string): void {
     if (!this.removeFromArray(this.state.rankedImageIds, imageId)) {
       return;

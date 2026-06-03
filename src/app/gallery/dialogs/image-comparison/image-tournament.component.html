@@ -9,27 +9,16 @@
           [sourceWidth]="comparison[0].imageMediaMetadata?.width || comparison[0].videoMediaMetadata?.width"
           [sourceHeight]="comparison[0].imageMediaMetadata?.height || comparison[0].videoMediaMetadata?.height"
           (click)="onImageClick(comparison[0])"
+          (imageDisplayed)="onComparisonImageDisplayed(0, comparison[0], $event)"
           (contextmenu)="onImageContextMenu(comparison[0], $event)"
           (touchstart)="onImageTouchStart(comparison[0])"
           (touchend)="onImageTouchEnd()"
           (touchcancel)="onImageTouchEnd()"
           (touchmove)="onImageTouchMove()"></app-image>
-        @if (stateService.settings?.showComparisonRelations) {
-          @if (winnersLeft.length) {
-            <div class="side-column winners-column">
-              @for (image of winnersLeft; track image.id) {
-                <img class="side-image" [src]="image.thumbnailLink" [style.aspect-ratio]="image.aspectRatio" loading="lazy" (click)="openComparisonPath(image, comparison[0])" />
-              }
-            </div>
-          }
-          @if (losersLeft.length) {
-            <div class="side-column losers-column">
-              @for (image of losersLeft; track image.id) {
-                <img class="side-image" [src]="image.thumbnailLink" [style.aspect-ratio]="image.aspectRatio" loading="lazy" (click)="openComparisonPath(comparison[0], image)" />
-              }
-            </div>
-          }
-        }
+        <div class="active-image-actions">
+          <i class="icon-button fa-solid fa-rotate-left" title="Restart Image Comparisons" (click)="restartActiveImageComparisons($event)"></i>
+          <i class="icon-button fa-solid fa-forward-step" title="Skip Image" (click)="skipActiveImage($event)"></i>
+        </div>
         @if (hasGroupNavigation(comparison[0])) {
           <div class="group-navigation">
             <i class="icon-button fa-solid fa-chevron-left" title="Previous Group Image" (click)="showPreviousGroupImage(0, $event)"></i>
@@ -46,6 +35,7 @@
           [sourceWidth]="comparison[1].imageMediaMetadata?.width || comparison[1].videoMediaMetadata?.width"
           [sourceHeight]="comparison[1].imageMediaMetadata?.height || comparison[1].videoMediaMetadata?.height"
           (click)="onImageClick(comparison[1])"
+          (imageDisplayed)="onComparisonImageDisplayed(1, comparison[1], $event)"
           (contextmenu)="onImageContextMenu(comparison[1], $event)"
           (touchstart)="onImageTouchStart(comparison[1])"
           (touchend)="onImageTouchEnd()"

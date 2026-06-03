@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, effect, ElementRef, input, InputSignal } from '@angular/core';
+import { Component, DestroyRef, effect, ElementRef, input, InputSignal, output, OutputEmitterRef } from '@angular/core';
 
 @Component({
   selector: 'app-image',
@@ -13,6 +13,7 @@ export class ImageComponent {
   public placeholderSrc: InputSignal<string> = input<string>();
   public sourceWidth: InputSignal<number> = input<number>();
   public sourceHeight: InputSignal<number> = input<number>();
+  public imageDisplayed: OutputEmitterRef<string> = output<string>();
 
   private requestTrackBy = 0;
   private displayTrackBy = 0;
@@ -38,6 +39,7 @@ export class ImageComponent {
 
     const requestTrackBy = ++this.requestTrackBy;
     let srcLoaded = false;
+    this.fadeOutCurrentImageForPendingRequest(src);
 
     const srcDecoder = new Image();
     srcDecoder.src = src;
@@ -149,6 +151,23 @@ export class ImageComponent {
     ++this.transitionTrackBy;
     this.images = [{ ...image, visible: true, fadingOut: false, fadeOutTrackBy: undefined, zIndex: 1 }];
     this.activeTrackBy = image.trackBy;
+    this.emitImageDisplayed(image.trackBy);
+  }
+
+  private fadeOutCurrentImageForPendingRequest(nextSrc: string): void {
+    const activeImage = this.getActiveImage();
+    if (!activeImage || activeImage.src === nextSrc) {
+      return;
+    }
+
+    this.clearScheduledCallbacks();
+    ++this.transitionTrackBy;
+    this.images = this.images.map(image => ({
+      ...image,
+      visible: false,
+      fadingOut: false,
+      fadeOutTrackBy: undefined
+    }));
   }
 
   private getTransitionSupportImages(nextImage: DisplayImage): DisplayImage[] {
@@ -189,7 +208,19 @@ export class ImageComponent {
             fadeOutTrackBy: visible ? undefined : image.fadeOutTrackBy
           }
           : image);
+        if (visible) {
+          this.emitImageDisplayed(trackBy);
+        }
       });
+    });
+  }
+
+  private emitImageDisplayed(trackBy: number): void {
+    window.setTimeout(() => {
+      const image = this.images.find(current => current.trackBy === trackBy);
+      if (image && image.trackBy === this.activeTrackBy && image.visible) {
+        this.imageDisplayed.emit(image.src);
+      }
     });
   }
 

@@ -73,6 +73,16 @@
       }
     }
 
+    .active-image-actions {
+      display: flex;
+      gap: variables.$gap-1;
+      position: absolute;
+      left: 50%;
+      top: variables.$gap-2;
+      transform: translateX(-50%);
+      z-index: 10;
+    }
+
     .group-navigation {
       display: flex;
       gap: variables.$gap-1;
