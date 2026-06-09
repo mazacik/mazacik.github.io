@@ -167,12 +167,9 @@ export class ImageTournamentComponent implements OnDestroy {
     this.comparison = this.getCurrentComparison();
     this.updateComparisonImageReadiness();
     if (this.comparison && this.stateService.settings?.showComparisonRelations) {
-      const leftOverlay = this.stateService.imageSort.getOverlayIds(GallerySortUtils.getSortSubjectId(this.comparison[0]));
       const rightOverlay = this.stateService.imageSort.getOverlayIds(GallerySortUtils.getSortSubjectId(this.comparison[1]));
-      const rightWinnerIds = this.filterSharedComparisonRelationIds(rightOverlay.winners, leftOverlay.winners);
-      const rightLoserIds = this.filterSharedComparisonRelationIds(rightOverlay.losers, leftOverlay.losers);
-      this.winnersRight = this.resolveImages(rightWinnerIds);
-      this.losersRight = this.resolveImages(rightLoserIds);
+      this.winnersRight = this.resolveImages(rightOverlay.winners);
+      this.losersRight = this.resolveImages(rightOverlay.losers);
       return;
     }
 
@@ -219,19 +216,6 @@ export class ImageTournamentComponent implements OnDestroy {
         previousComparisonImageIds?.[1] === nextComparisonImageIds[1] && previousComparisonImagesReady[1]
       ]
       : [false, false];
-  }
-
-  private filterSharedComparisonRelationIds(relationIds: string[], activeRelationIds: string[]): string[] {
-    if (!this.stateService.settings?.hideComparisonSharedRelations) {
-      return relationIds;
-    }
-
-    if (!relationIds.length || !activeRelationIds.length) {
-      return relationIds;
-    }
-
-    const activeRelationIdSet = new Set(activeRelationIds);
-    return relationIds.filter(id => !activeRelationIdSet.has(id));
   }
 
   private resolveImages(imageIds: string[]): GalleryImage[] {

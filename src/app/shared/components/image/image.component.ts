@@ -39,7 +39,7 @@ export class ImageComponent {
 
     const requestTrackBy = ++this.requestTrackBy;
     let srcLoaded = false;
-    this.fadeOutCurrentImageForPendingRequest(src);
+    this.schedulePendingRequestFadeOut(src);
 
     const srcDecoder = new Image();
     srcDecoder.src = src;
@@ -108,11 +108,6 @@ export class ImageComponent {
 
     this.clearScheduledCallbacks();
 
-    if (this.hasSameSourceDimensions(activeImage, nextImage)) {
-      this.transitionToNewImage(nextImage, false);
-      return;
-    }
-
     if (activeImage) {
       this.transitionToNewImage(nextImage, true);
       return;
@@ -168,6 +163,11 @@ export class ImageComponent {
       fadingOut: false,
       fadeOutTrackBy: undefined
     }));
+  }
+
+  private schedulePendingRequestFadeOut(nextSrc: string): void {
+    this.clearScheduledCallbacks();
+    this.scheduleAnimationFrame(() => this.fadeOutCurrentImageForPendingRequest(nextSrc));
   }
 
   private getTransitionSupportImages(nextImage: DisplayImage): DisplayImage[] {
@@ -387,12 +387,6 @@ export class ImageComponent {
 
   private getActiveImage(): DisplayImage | undefined {
     return this.images.find(image => image.trackBy === this.activeTrackBy);
-  }
-
-  private hasSameSourceDimensions(previousImage: DisplayImage | undefined, nextImage: DisplayImage): previousImage is DisplayImage {
-    return !!previousImage
-      && previousImage.sourceWidth === nextImage.sourceWidth
-      && previousImage.sourceHeight === nextImage.sourceHeight;
   }
 
 }
