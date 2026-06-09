@@ -1,12 +1,10 @@
 import { Component, OnDestroy, effect } from '@angular/core';
 import { GalleryImage } from 'src/app/gallery/models/gallery-image.class';
 import { ImageComponent } from 'src/app/shared/components/image/image.component';
-import { DialogService } from 'src/app/shared/services/dialog.service';
 import { GalleryUtils } from '../../../shared/utils/gallery.utils';
 import { GallerySerializationService } from '../../services/gallery-serialization.service';
 import { GalleryStateService } from '../../services/gallery-state.service';
 import { GallerySortUtils } from '../../utils/gallery-sort.utils';
-import { ComparisonPathComponent } from '../comparison-path/comparison-path.component';
 
 @Component({
   selector: 'app-image-tournament',
@@ -28,7 +26,6 @@ export class ImageTournamentComponent implements OnDestroy {
 
   constructor(
     private serializationService: GallerySerializationService,
-    private dialogService: DialogService,
     protected stateService: GalleryStateService
   ) {
     effect(() => {
@@ -137,9 +134,15 @@ export class ImageTournamentComponent implements OnDestroy {
     this.comparisonImagesReady[index] = true;
   }
 
-  protected openComparisonPath(start: GalleryImage, end: GalleryImage): void {
-    if (!start || !end) return;
-    this.dialogService.create(ComparisonPathComponent, { start, end });
+  protected openRelationFullscreen(image: GalleryImage, event?: Event): void {
+    event?.preventDefault();
+    event?.stopPropagation();
+    if (this.suppressNextClick) {
+      this.suppressNextClick = false;
+      return;
+    }
+
+    this.openFullscreen(image);
   }
 
   protected openFullscreen(image: GalleryImage): void {
@@ -163,12 +166,25 @@ export class ImageTournamentComponent implements OnDestroy {
     this.setComparisonImage(index, this.getSiblingGroupImage(this.comparison[index], 1));
   }
 
+  protected canCompareAgainst(image: GalleryImage): boolean {
+    return this.stateService.imageSort.canCompareAgainstRankedImage(GallerySortUtils.getSortSubjectId(image));
+  }
+
+  protected compareAgainst(image: GalleryImage, event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.clearLongPressTimer();
+    if (this.stateService.imageSort.setComparisonOpponent(GallerySortUtils.getSortSubjectId(image))) {
+      this.refreshComparisonRelations();
+    }
+  }
+
   public refreshComparisonRelations(): void {
     this.comparison = this.getCurrentComparison();
     this.updateComparisonImageReadiness();
     if (this.comparison && this.stateService.settings?.showComparisonRelations) {
       const rightOverlay = this.stateService.imageSort.getOverlayIds(GallerySortUtils.getSortSubjectId(this.comparison[1]));
-      this.winnersRight = this.resolveImages(rightOverlay.winners);
+      this.winnersRight = this.resolveImages([...rightOverlay.winners].reverse());
       this.losersRight = this.resolveImages(rightOverlay.losers);
       return;
     }

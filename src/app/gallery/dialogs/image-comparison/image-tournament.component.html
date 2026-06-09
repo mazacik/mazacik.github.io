@@ -45,14 +45,24 @@
           @if (winnersRight.length) {
             <div class="side-column winners-column">
               @for (image of winnersRight; track image.id) {
-                <img class="side-image" [src]="image.thumbnailLink" [style.aspect-ratio]="image.aspectRatio" loading="lazy" (click)="openComparisonPath(image, comparison[1])" />
+                <div class="side-image-container">
+                  <img class="side-image" [src]="image.thumbnailLink" [style.aspect-ratio]="image.aspectRatio" loading="lazy" (click)="openRelationFullscreen(image, $event)" (contextmenu)="onImageContextMenu(image, $event)" (touchstart)="onImageTouchStart(image)" (touchend)="onImageTouchEnd()" (touchcancel)="onImageTouchEnd()" (touchmove)="onImageTouchMove()" />
+                  @if (canCompareAgainst(image)) {
+                    <i class="side-image-action side-image-action-end icon-button smaller fa-solid fa-code-compare" title="Compare Against This Image" (click)="compareAgainst(image, $event)"></i>
+                  }
+                </div>
               }
             </div>
           }
           @if (losersRight.length) {
             <div class="side-column losers-column">
               @for (image of losersRight; track image.id) {
-                <img class="side-image" [src]="image.thumbnailLink" [style.aspect-ratio]="image.aspectRatio" loading="lazy" (click)="openComparisonPath(comparison[1], image)" />
+                <div class="side-image-container">
+                  <img class="side-image" [src]="image.thumbnailLink" [style.aspect-ratio]="image.aspectRatio" loading="lazy" (click)="openRelationFullscreen(image, $event)" (contextmenu)="onImageContextMenu(image, $event)" (touchstart)="onImageTouchStart(image)" (touchend)="onImageTouchEnd()" (touchcancel)="onImageTouchEnd()" (touchmove)="onImageTouchMove()" />
+                  @if (canCompareAgainst(image)) {
+                    <i class="side-image-action side-image-action-start icon-button smaller fa-solid fa-code-compare" title="Compare Against This Image" (click)="compareAgainst(image, $event)"></i>
+                  }
+                </div>
               }
             </div>
           }

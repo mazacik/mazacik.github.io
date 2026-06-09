@@ -60,6 +60,7 @@
     }
 
     .side-image {
+      display: block;
       border: 1px solid var(--color-border);
       border-radius: variables.$gap-1;
       cursor: pointer;
@@ -71,6 +72,23 @@
       @media screen and (min-width:1280px) {
         width: 96px;
       }
+    }
+
+    .side-image-container {
+      position: relative;
+    }
+
+    .side-image-action {
+      position: absolute;
+      top: variables.$gap-1;
+    }
+
+    .side-image-action-start {
+      left: variables.$gap-1;
+    }
+
+    .side-image-action-end {
+      right: variables.$gap-1;
     }
 
     .active-image-actions {
