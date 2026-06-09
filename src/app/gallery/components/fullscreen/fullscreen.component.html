@@ -3,7 +3,7 @@
     <div class="comparison-winners">
       @if (comparisonWinners.length) {
         @for (image of comparisonWinners; track image.id) {
-          <img [src]="image.thumbnailLink" [style.aspect-ratio]="image.aspectRatio" loading="lazy" (click)="openComparisonPath(image, target)" />
+          <img [src]="image.thumbnailLink" [style.aspect-ratio]="image.aspectRatio" loading="lazy" (click)="openFullscreen(image)" />
         }
       }
     </div>
@@ -25,7 +25,7 @@
     <div class="comparison-losers">
       @if (comparisonLosers.length) {
         @for (image of comparisonLosers; track image.id) {
-          <img [src]="image.thumbnailLink" [style.aspect-ratio]="image.aspectRatio" loading="lazy" (click)="openComparisonPath(target, image)" />
+          <img [src]="image.thumbnailLink" [style.aspect-ratio]="image.aspectRatio" loading="lazy" (click)="openFullscreen(image)" />
         }
       }
     </div>

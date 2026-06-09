@@ -269,18 +269,6 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
           }
         }
       }, {
-        id: 'hide-shared-comparison-relations',
-        type: 'toggle',
-        label: 'Hide Shared Relations',
-        getValue: () => this.stateService.settings?.hideComparisonSharedRelations,
-        onChange: value => {
-          this.stateService.settings.hideComparisonSharedRelations = value;
-          this.serializationService.save();
-          if (this.stateService.viewMode === 'tournament') {
-            this.imageTournamentComponent?.refreshComparisonRelations();
-          }
-        }
-      }, {
         id: 'reset-comparison',
         type: 'action',
         label: 'Reset Ranking',

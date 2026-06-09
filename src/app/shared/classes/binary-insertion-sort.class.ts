@@ -24,10 +24,12 @@ export class BinaryInsertionSort {
 
   private imageIds: string[] = [];
   private state: SortState = this.createEmptyState();
+  private comparisonOpponentIndexOverride: number | null = null;
 
   public start(imageIds: string[], state?: SortState | null): void {
     this.imageIds = this.uniqueIds(imageIds);
     this.state = this.normalizeState(state);
+    this.clearComparisonOpponentIndexOverride();
     this.advance();
     this.notify();
   }
@@ -54,8 +56,8 @@ export class BinaryInsertionSort {
       return null;
     }
 
-    const mid = this.getCurrentMid();
-    const opponentId = this.state.rankedImageIds[mid];
+    const opponentIndex = this.getCurrentComparisonIndex();
+    const opponentId = this.state.rankedImageIds[opponentIndex];
     return opponentId ? [activeInsertion.imageId, opponentId] : null;
   }
 
@@ -76,17 +78,37 @@ export class BinaryInsertionSort {
     }
 
     const [activeImageId, opponentId] = currentComparison;
-    const mid = this.getCurrentMid();
+    const opponentIndex = this.getCurrentComparisonIndex();
     if (winnerImageId === activeImageId) {
-      activeInsertion.high = mid;
+      activeInsertion.high = opponentIndex;
     } else if (winnerImageId === opponentId) {
-      activeInsertion.low = mid + 1;
+      activeInsertion.low = opponentIndex + 1;
     } else {
       return;
     }
 
+    this.clearComparisonOpponentIndexOverride();
     this.advance();
     this.notify();
+  }
+
+  public canCompareAgainstRankedImage(imageId: string): boolean {
+    return this.isValidComparisonOpponentIndex(this.state.rankedImageIds.indexOf(imageId));
+  }
+
+  public setComparisonOpponent(imageId: string): boolean {
+    const opponentIndex = this.state.rankedImageIds.indexOf(imageId);
+    if (!this.isValidComparisonOpponentIndex(opponentIndex)) {
+      return false;
+    }
+
+    if (this.comparisonOpponentIndexOverride === opponentIndex) {
+      return true;
+    }
+
+    this.comparisonOpponentIndexOverride = opponentIndex;
+    this.notify();
+    return true;
   }
 
   public addImageIds(imageIds: string[]): void {
@@ -127,6 +149,7 @@ export class BinaryInsertionSort {
       return;
     }
 
+    this.clearComparisonOpponentIndexOverride();
     this.advance();
     this.notify();
   }
@@ -137,6 +160,7 @@ export class BinaryInsertionSort {
     }
 
     this.restartActiveInsertion();
+    this.clearComparisonOpponentIndexOverride();
     this.advance();
     this.notify();
   }
@@ -149,6 +173,7 @@ export class BinaryInsertionSort {
 
     this.state.activeInsertion = null;
     this.state.pendingImageIds.push(activeInsertion.imageId);
+    this.clearComparisonOpponentIndexOverride();
     this.advance();
     this.notify();
   }
@@ -163,6 +188,7 @@ export class BinaryInsertionSort {
     }
 
     this.restartActiveInsertion();
+    this.clearComparisonOpponentIndexOverride();
     this.advance();
     this.notify();
   }
@@ -201,43 +227,13 @@ export class BinaryInsertionSort {
     };
   }
 
-  public getPathIds(startId: string, endId: string): string[] {
-    if (!startId || !endId) {
-      return [];
-    }
-
-    if (startId === endId) {
-      return [startId];
-    }
-
-    const rankedStartIndex = this.state.rankedImageIds.indexOf(startId);
-    const rankedEndIndex = this.state.rankedImageIds.indexOf(endId);
-    if (rankedStartIndex >= 0 && rankedEndIndex >= 0) {
-      return this.getRankedPathIds(rankedStartIndex, rankedEndIndex);
-    }
-
-    const activeInsertion = this.state.activeInsertion;
-    if (!activeInsertion) {
-      return [];
-    }
-
-    if (startId === activeInsertion.imageId && rankedEndIndex >= activeInsertion.high) {
-      return [startId, ...this.state.rankedImageIds.slice(activeInsertion.high, rankedEndIndex + 1)];
-    }
-
-    if (endId === activeInsertion.imageId && rankedStartIndex >= 0 && rankedStartIndex < activeInsertion.low) {
-      return [...this.state.rankedImageIds.slice(rankedStartIndex, activeInsertion.low), endId];
-    }
-
-    return [];
-  }
-
   private advance(): void {
     while (true) {
       const activeInsertion = this.state.activeInsertion;
       if (activeInsertion && activeInsertion.low === activeInsertion.high) {
         this.state.rankedImageIds.splice(activeInsertion.low, 0, activeInsertion.imageId);
         this.state.activeInsertion = null;
+        this.clearComparisonOpponentIndexOverride();
         continue;
       }
 
@@ -260,6 +256,7 @@ export class BinaryInsertionSort {
         low: 0,
         high: this.state.rankedImageIds.length
       };
+      this.clearComparisonOpponentIndexOverride();
     }
   }
 
@@ -311,17 +308,28 @@ export class BinaryInsertionSort {
     this.state.pendingImageIds.splice(index, 0, imageId);
   }
 
-  private getRankedPathIds(startIndex: number, endIndex: number): string[] {
-    if (startIndex <= endIndex) {
-      return this.state.rankedImageIds.slice(startIndex, endIndex + 1);
-    }
-
-    return this.state.rankedImageIds.slice(endIndex, startIndex + 1).reverse();
-  }
-
   private getCurrentMid(): number {
     const activeInsertion = this.state.activeInsertion;
     return Math.floor((activeInsertion.low + activeInsertion.high) / 2);
+  }
+
+  private getCurrentComparisonIndex(): number {
+    return this.isValidComparisonOpponentIndex(this.comparisonOpponentIndexOverride)
+      ? this.comparisonOpponentIndexOverride
+      : this.getCurrentMid();
+  }
+
+  private isValidComparisonOpponentIndex(index: number | null): boolean {
+    const activeInsertion = this.state.activeInsertion;
+    return !!activeInsertion
+      && index !== null
+      && index >= activeInsertion.low
+      && index < activeInsertion.high
+      && !!this.state.rankedImageIds[index];
+  }
+
+  private clearComparisonOpponentIndexOverride(): void {
+    this.comparisonOpponentIndexOverride = null;
   }
 
   private getKnownIdSet(): Set<string> {

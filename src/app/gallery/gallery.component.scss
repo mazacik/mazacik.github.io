@@ -9,7 +9,7 @@
     display: flex;
     overflow: hidden;
     transition: variables.$transition-duration;
-    z-index: 1;
+    z-index: 30;
 
     .tagger-container {
       @media screen and (max-width:1280px) {

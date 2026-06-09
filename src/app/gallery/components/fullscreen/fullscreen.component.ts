@@ -2,9 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, effect } from '@angular/core';
 import { ImageComponent } from 'src/app/shared/components/image/image.component';
 import { ApplicationService } from 'src/app/shared/services/application.service';
-import { DialogService } from 'src/app/shared/services/dialog.service';
 import { GoogleFileUtils } from 'src/app/shared/utils/google-file.utils';
-import { ComparisonPathComponent } from '../../dialogs/comparison-path/comparison-path.component';
 import { GalleryImage } from '../../models/gallery-image.class';
 import { GalleryGoogleDriveService } from '../../services/gallery-google-drive.service';
 import { GalleryStateService } from '../../services/gallery-state.service';
@@ -31,7 +29,6 @@ export class FullscreenComponent {
   constructor(
     // private sanitizer: DomSanitizer,
     private applicationService: ApplicationService,
-    private dialogService: DialogService,
     protected googleService: GalleryGoogleDriveService,
     protected stateService: GalleryStateService,
     protected galleryService: GalleryService,
@@ -63,14 +60,14 @@ export class FullscreenComponent {
     });
   }
 
-  protected openComparisonPath(start: GalleryImage, end: GalleryImage): void {
-    if (!start || !end) return;
-    this.dialogService.create(ComparisonPathComponent, { start, end });
+  protected openFullscreen(image: GalleryImage): void {
+    if (!image) return;
+    this.stateService.fullscreenImage.set(image);
   }
 
   private refreshComparisonRelations(target: GalleryImage): void {
     const overlay = this.stateService.imageSort.getOverlayIds(GallerySortUtils.getSortSubjectId(target));
-    this.comparisonWinners = overlay.winners.map(id => GallerySortUtils.resolveSubjectImage(id, this.stateService.images, this.stateService.imageGroups)).filter(Boolean);
+    this.comparisonWinners = [...overlay.winners].reverse().map(id => GallerySortUtils.resolveSubjectImage(id, this.stateService.images, this.stateService.imageGroups)).filter(Boolean);
     this.comparisonLosers = overlay.losers.map(id => GallerySortUtils.resolveSubjectImage(id, this.stateService.images, this.stateService.imageGroups)).filter(Boolean);
   }
 
