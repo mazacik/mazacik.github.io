@@ -49,6 +49,27 @@ export class ImageTournamentComponent implements OnDestroy {
     return `ranked: ${ranked}, pending: ${pending}, placement window: ${interval}`;
   }
 
+  protected get bestPlacementPercent(): number | null {
+    return this.getPlacementPercent(this.stateService.imageSort.activeInsertion?.low);
+  }
+
+  protected get worstPlacementPercent(): number | null {
+    return this.getPlacementPercent(this.stateService.imageSort.activeInsertion?.high);
+  }
+
+  protected get midPlacementPercent(): number | null {
+    const comparisonOpponentId = this.stateService.imageSort.currentComparisonIds?.[1];
+    if (!comparisonOpponentId) {
+      return null;
+    }
+
+    return this.getPlacementPercent(this.stateService.imageSort.rankedImageIds.indexOf(comparisonOpponentId));
+  }
+
+  protected get showPlacementBounds(): boolean {
+    return this.bestPlacementPercent !== null && this.worstPlacementPercent !== null && this.midPlacementPercent !== null;
+  }
+
   protected onImageClick(winner: GalleryImage): void {
     if (this.suppressNextClick || !this.canChooseImages()) {
       this.suppressNextClick = false;
@@ -236,6 +257,15 @@ export class ImageTournamentComponent implements OnDestroy {
 
   private resolveImages(imageIds: string[]): GalleryImage[] {
     return imageIds.map(id => GallerySortUtils.resolveSubjectImage(id, this.stateService.images, this.stateService.imageGroups)).filter(Boolean);
+  }
+
+  private getPlacementPercent(position: number | undefined): number | null {
+    const rankedCount = this.stateService.imageSort.rankedImageIds.length;
+    if (position === undefined || rankedCount <= 0) {
+      return null;
+    }
+
+    return Math.max(0, Math.min(100, (position / rankedCount) * 100));
   }
 
   private getSortableSubjectIds(): string[] {

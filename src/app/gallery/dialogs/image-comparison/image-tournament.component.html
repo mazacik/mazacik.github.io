@@ -83,8 +83,13 @@
 
   @if (stateService.settings?.showComparisonRelations) {
     <div class="h-separator"></div>
-    <div class="progress-remaining">
-      {{ sortStatus }}
+    <div class="progress-remaining" style="position: relative; overflow: hidden;">
+      @if (showPlacementBounds) {
+        <span [style.left.%]="bestPlacementPercent" style="position: absolute; top: 0; bottom: 0; width: 2px; pointer-events: none; opacity: 0.75; z-index: 0; background-color: var(--color-positive);"></span>
+        <span [style.left.%]="midPlacementPercent" style="position: absolute; top: 0; bottom: 0; width: 2px; transform: translateX(-50%); pointer-events: none; opacity: 0.75; z-index: 0; background-color: var(--color-highlight);"></span>
+        <span [style.left.%]="worstPlacementPercent" style="position: absolute; top: 0; bottom: 0; width: 2px; transform: translateX(-2px); pointer-events: none; opacity: 0.75; z-index: 0; background-color: var(--color-negative);"></span>
+      }
+      <span style="position: relative; z-index: 1;">{{ sortStatus }}</span>
     </div>
   }
 </div>
