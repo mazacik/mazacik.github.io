@@ -66,6 +66,16 @@ export class ImageTournamentComponent implements OnDestroy {
     return this.getPlacementPercent(this.stateService.imageSort.rankedImageIds.indexOf(comparisonOpponentId));
   }
 
+  protected get sortProgressPercent(): number {
+    const ranked = this.stateService.imageSort.rankedImageIds.length;
+    const total = ranked + this.stateService.imageSort.pendingCountIncludingActive;
+    if (total <= 0) {
+      return 0;
+    }
+
+    return Math.max(0, Math.min(100, (ranked / total) * 100));
+  }
+
   protected get showPlacementBounds(): boolean {
     return this.bestPlacementPercent !== null && this.worstPlacementPercent !== null && this.midPlacementPercent !== null;
   }
