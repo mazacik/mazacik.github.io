@@ -39,7 +39,7 @@ export class ImageComponent {
 
     const requestTrackBy = ++this.requestTrackBy;
     let srcLoaded = false;
-    this.schedulePendingRequestFadeOut(src);
+    this.schedulePendingRequestFadeOut(src, sourceWidth, sourceHeight);
 
     const srcDecoder = new Image();
     srcDecoder.src = src;
@@ -109,7 +109,7 @@ export class ImageComponent {
     this.clearScheduledCallbacks();
 
     if (activeImage) {
-      this.transitionToNewImage(nextImage, true);
+      this.transitionToNewImage(nextImage, !this.shouldPreserveActiveUntilNextVisible(activeImage, nextImage));
       return;
     }
 
@@ -149,9 +149,13 @@ export class ImageComponent {
     this.emitImageDisplayed(image.trackBy);
   }
 
-  private fadeOutCurrentImageForPendingRequest(nextSrc: string): void {
+  private fadeOutCurrentImageForPendingRequest(nextSrc: string, sourceWidth?: number, sourceHeight?: number): void {
     const activeImage = this.getActiveImage();
-    if (!activeImage || activeImage.src === nextSrc) {
+    if (
+      !activeImage
+      || activeImage.src === nextSrc
+      || this.hasSameSourceSize(activeImage, sourceWidth, sourceHeight)
+    ) {
       return;
     }
 
@@ -165,9 +169,21 @@ export class ImageComponent {
     }));
   }
 
-  private schedulePendingRequestFadeOut(nextSrc: string): void {
+  private schedulePendingRequestFadeOut(nextSrc: string, sourceWidth?: number, sourceHeight?: number): void {
     this.clearScheduledCallbacks();
-    this.scheduleAnimationFrame(() => this.fadeOutCurrentImageForPendingRequest(nextSrc));
+    this.scheduleAnimationFrame(() => this.fadeOutCurrentImageForPendingRequest(nextSrc, sourceWidth, sourceHeight));
+  }
+
+  private shouldPreserveActiveUntilNextVisible(activeImage: DisplayImage, nextImage: DisplayImage): boolean {
+    return activeImage.requestTrackBy === nextImage.requestTrackBy
+      || this.hasSameSourceSize(activeImage, nextImage.sourceWidth, nextImage.sourceHeight);
+  }
+
+  private hasSameSourceSize(image: DisplayImage, sourceWidth?: number, sourceHeight?: number): boolean {
+    return !!sourceWidth
+      && !!sourceHeight
+      && image.sourceWidth === sourceWidth
+      && image.sourceHeight === sourceHeight;
   }
 
   private getTransitionSupportImages(nextImage: DisplayImage): DisplayImage[] {

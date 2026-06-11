@@ -40,13 +40,38 @@ export class ImageTournamentComponent implements OnDestroy {
 
   protected get sortStatus(): string {
     const ranked = this.stateService.imageSort.rankedImageIds.length;
-    const pending = this.stateService.imageSort.pendingCountIncludingActive;
-    const interval = this.stateService.imageSort.currentIntervalSize;
-    if (interval > 0) {
-      return `ranked: ${ranked}, pending: ${pending}, placement window: ${interval}`;
+    const total = ranked + this.stateService.imageSort.pendingCountIncludingActive;
+    return `${ranked}/${total}`;
+  }
+
+  protected get rangeStartPlacementPercent(): number | null {
+    return this.getInsertionPlacementPercent(this.stateService.imageSort.activeInsertion?.low);
+  }
+
+  protected get rangeEndPlacementPercent(): number | null {
+    return this.getInsertionPlacementPercent(this.stateService.imageSort.activeInsertion?.high);
+  }
+
+  protected get sortProgressPercent(): number {
+    const ranked = this.stateService.imageSort.rankedImageIds.length;
+    const total = ranked + this.stateService.imageSort.pendingCountIncludingActive;
+    if (total <= 0) {
+      return 0;
     }
 
-    return `ranked: ${ranked}, pending: ${pending}, placement window: ${interval}`;
+    return Math.max(0, Math.min(100, (ranked / total) * 100));
+  }
+
+  protected get showPlacementRange(): boolean {
+    return this.rangeStartPlacementPercent !== null && this.rangeEndPlacementPercent !== null;
+  }
+
+  protected get rangeEndOffsetPercent(): number {
+    if (this.rangeStartPlacementPercent === null || this.rangeEndPlacementPercent === null) {
+      return 0;
+    }
+
+    return Math.max(0, 100 - this.rangeEndPlacementPercent);
   }
 
   protected onImageClick(winner: GalleryImage): void {
@@ -236,6 +261,15 @@ export class ImageTournamentComponent implements OnDestroy {
 
   private resolveImages(imageIds: string[]): GalleryImage[] {
     return imageIds.map(id => GallerySortUtils.resolveSubjectImage(id, this.stateService.images, this.stateService.imageGroups)).filter(Boolean);
+  }
+
+  private getInsertionPlacementPercent(position: number | undefined): number | null {
+    const rankedCount = this.stateService.imageSort.rankedImageIds.length;
+    if (position === undefined || rankedCount <= 0) {
+      return null;
+    }
+
+    return Math.max(0, Math.min(100, (position / rankedCount) * 100));
   }
 
   private getSortableSubjectIds(): string[] {

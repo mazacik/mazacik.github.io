@@ -4,6 +4,7 @@
       @for (image of rankedImages; track image.id) {
         <div class="chain-segment">
           <img class="chain-image" [src]="image.thumbnailLink" [style.aspect-ratio]="image.aspectRatio" loading="lazy" (click)="openFullscreen(image)" />
+          <i class="rank-again-button icon-button smaller fa-solid fa-rotate-left" title="Rank Image Again" (click)="moveImageToPending(image, $event)"></i>
         </div>
       }
     </div>

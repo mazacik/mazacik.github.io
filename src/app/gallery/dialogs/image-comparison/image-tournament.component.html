@@ -84,7 +84,11 @@
   @if (stateService.settings?.showComparisonRelations) {
     <div class="h-separator"></div>
     <div class="progress-remaining">
-      {{ sortStatus }}
+      <span class="progress-remaining-bar" [style.width.%]="sortProgressPercent"></span>
+      @if (showPlacementRange) {
+        <span class="placement-range" [style.left.%]="rangeStartPlacementPercent" [style.right.%]="rangeEndOffsetPercent"></span>
+      }
+      <span class="progress-remaining-text">{{ sortStatus }}</span>
     </div>
   }
 </div>
