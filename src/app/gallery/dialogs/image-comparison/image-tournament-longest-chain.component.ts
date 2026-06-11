@@ -1,5 +1,6 @@
 import { Component, effect } from '@angular/core';
 import { GalleryImage } from 'src/app/gallery/models/gallery-image.class';
+import { GallerySerializationService } from '../../services/gallery-serialization.service';
 import { GalleryStateService } from '../../services/gallery-state.service';
 import { GallerySortUtils } from '../../utils/gallery-sort.utils';
 
@@ -13,6 +14,7 @@ export class ImageTournamentLongestChainComponent {
   protected rankedImages: GalleryImage[] = [];
 
   constructor(
+    private serializationService: GallerySerializationService,
     protected stateService: GalleryStateService
   ) {
     effect(() => {
@@ -28,5 +30,15 @@ export class ImageTournamentLongestChainComponent {
   protected openFullscreen(image: GalleryImage): void {
     if (!image) return;
     this.stateService.fullscreenImage.set(image);
+  }
+
+  protected moveImageToPending(image: GalleryImage, event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!image) return;
+
+    this.stateService.imageSort.moveRankedImageToPending(GallerySortUtils.getSortSubjectId(image));
+    this.stateService.sortState = this.stateService.imageSort.getState();
+    this.serializationService.save(true);
   }
 }

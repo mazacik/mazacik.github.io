@@ -40,30 +40,16 @@ export class ImageTournamentComponent implements OnDestroy {
 
   protected get sortStatus(): string {
     const ranked = this.stateService.imageSort.rankedImageIds.length;
-    const pending = this.stateService.imageSort.pendingCountIncludingActive;
-    const interval = this.stateService.imageSort.currentIntervalSize;
-    if (interval > 0) {
-      return `ranked: ${ranked}, pending: ${pending}, placement window: ${interval}`;
-    }
-
-    return `ranked: ${ranked}, pending: ${pending}, placement window: ${interval}`;
+    const total = ranked + this.stateService.imageSort.pendingCountIncludingActive;
+    return `${ranked}/${total}`;
   }
 
-  protected get bestPlacementPercent(): number | null {
-    return this.getPlacementPercent(this.stateService.imageSort.activeInsertion?.low);
+  protected get rangeStartPlacementPercent(): number | null {
+    return this.getInsertionPlacementPercent(this.stateService.imageSort.activeInsertion?.low);
   }
 
-  protected get worstPlacementPercent(): number | null {
-    return this.getPlacementPercent(this.stateService.imageSort.activeInsertion?.high);
-  }
-
-  protected get midPlacementPercent(): number | null {
-    const comparisonOpponentId = this.stateService.imageSort.currentComparisonIds?.[1];
-    if (!comparisonOpponentId) {
-      return null;
-    }
-
-    return this.getPlacementPercent(this.stateService.imageSort.rankedImageIds.indexOf(comparisonOpponentId));
+  protected get rangeEndPlacementPercent(): number | null {
+    return this.getInsertionPlacementPercent(this.stateService.imageSort.activeInsertion?.high);
   }
 
   protected get sortProgressPercent(): number {
@@ -76,8 +62,16 @@ export class ImageTournamentComponent implements OnDestroy {
     return Math.max(0, Math.min(100, (ranked / total) * 100));
   }
 
-  protected get showPlacementBounds(): boolean {
-    return this.bestPlacementPercent !== null && this.worstPlacementPercent !== null && this.midPlacementPercent !== null;
+  protected get showPlacementRange(): boolean {
+    return this.rangeStartPlacementPercent !== null && this.rangeEndPlacementPercent !== null;
+  }
+
+  protected get rangeEndOffsetPercent(): number {
+    if (this.rangeStartPlacementPercent === null || this.rangeEndPlacementPercent === null) {
+      return 0;
+    }
+
+    return Math.max(0, 100 - this.rangeEndPlacementPercent);
   }
 
   protected onImageClick(winner: GalleryImage): void {
@@ -269,7 +263,7 @@ export class ImageTournamentComponent implements OnDestroy {
     return imageIds.map(id => GallerySortUtils.resolveSubjectImage(id, this.stateService.images, this.stateService.imageGroups)).filter(Boolean);
   }
 
-  private getPlacementPercent(position: number | undefined): number | null {
+  private getInsertionPlacementPercent(position: number | undefined): number | null {
     const rankedCount = this.stateService.imageSort.rankedImageIds.length;
     if (position === undefined || rankedCount <= 0) {
       return null;

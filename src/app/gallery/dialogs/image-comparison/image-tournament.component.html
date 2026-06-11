@@ -83,14 +83,12 @@
 
   @if (stateService.settings?.showComparisonRelations) {
     <div class="h-separator"></div>
-    <div class="progress-remaining" style="position: relative; overflow: hidden;">
-      <span [style.width.%]="sortProgressPercent" style="position: absolute; top: 0; bottom: 0; left: 0; pointer-events: none; opacity: 0.2; z-index: 0; background-color: var(--color-positive);"></span>
-      @if (showPlacementBounds) {
-        <span [style.left.%]="bestPlacementPercent" style="position: absolute; top: 0; bottom: 0; width: 2px; pointer-events: none; opacity: 0.75; z-index: 1; background-color: var(--color-positive);"></span>
-        <span [style.left.%]="midPlacementPercent" style="position: absolute; top: 0; bottom: 0; width: 2px; transform: translateX(-50%); pointer-events: none; opacity: 0.75; z-index: 1; background-color: var(--color-highlight);"></span>
-        <span [style.left.%]="worstPlacementPercent" style="position: absolute; top: 0; bottom: 0; width: 2px; transform: translateX(-2px); pointer-events: none; opacity: 0.75; z-index: 1; background-color: var(--color-negative);"></span>
+    <div class="progress-remaining">
+      <span class="progress-remaining-bar" [style.width.%]="sortProgressPercent"></span>
+      @if (showPlacementRange) {
+        <span class="placement-range" [style.left.%]="rangeStartPlacementPercent" [style.right.%]="rangeEndOffsetPercent"></span>
       }
-      <span style="position: relative; z-index: 2;">{{ sortStatus }}</span>
+      <span class="progress-remaining-text">{{ sortStatus }}</span>
     </div>
   }
 </div>
