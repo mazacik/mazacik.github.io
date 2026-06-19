@@ -102,6 +102,12 @@ export class TaggerComponent {
     input.focus();
   }
 
+  protected onSearchResultTagToggled(event: MouseEvent): void {
+    if (!event.shiftKey) {
+      this.searchQuery = '';
+    }
+  }
+
   protected hasSearchQuery(): boolean {
     return this.searchQuery.length > 0;
   }

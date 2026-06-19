@@ -2,9 +2,15 @@
   @if (rankedImages.length) {
     <div class="longest-chain">
       @for (image of rankedImages; track image.id) {
-        <div class="chain-segment">
-          <img class="chain-image" [src]="image.thumbnailLink" [style.aspect-ratio]="image.aspectRatio" loading="lazy" (click)="openFullscreen(image)" />
-          <i class="rank-again-button icon-button smaller fa-solid fa-rotate-left" title="Rank Image Again" (click)="moveImageToPending(image, $event)"></i>
+        <div class="chain-segment" [class.controls-active]="isRankingControlsActive(image)" (focusin)="activateRankingControls(image)">
+          <img class="chain-image" [src]="image.thumbnailLink" [style.aspect-ratio]="image.aspectRatio" loading="lazy" (click)="onImageClick(image, $event)" />
+          @if (canMoveRankedImage(image, -1)) {
+            <i class="ranking-action ranking-action-earlier icon-button smaller fa-solid fa-chevron-left" title="Move Earlier" (click)="moveRankedImage(image, -1, $event)"></i>
+          }
+          @if (canMoveRankedImage(image, 1)) {
+            <i class="ranking-action ranking-action-later icon-button smaller fa-solid fa-chevron-right" title="Move Later" (click)="moveRankedImage(image, 1, $event)"></i>
+          }
+          <i class="rank-again-button icon-button smaller fa-solid fa-times" title="Rank Image Again" (click)="moveImageToPending(image, $event)"></i>
         </div>
       }
     </div>
