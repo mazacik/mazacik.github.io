@@ -31,7 +31,7 @@ export class StoryManagerStateService {
     const articles = [];
     for (const article of this.articles) {
       articles.push(article);
-      articles.push(article.collectChildren());
+      articles.push(...article.collectChildren());
     }    
     return articles;
   }
@@ -69,15 +69,23 @@ export class StoryManagerStateService {
   public delete(article: Article): void {
     this.dialogService.createConfirmation({ title: 'Delete: ' + article.getNameWithParents(), messages: ['Are you sure you want to delete "' + article.title + '"?'] }).then(confirmation => {
       if (confirmation) {
-        if (article == this.current) {
-          this.current = ArrayUtils.nearestRightFirst(this.articles, this.articles.indexOf(article));
+        const articlesToDelete: Article[] = this.collectArticleTree(article);
+        const deletedArticleSet: Set<Article> = new Set(articlesToDelete);
+
+        if (deletedArticleSet.has(this.current)) {
+          this.current = ArrayUtils.nearestRightFirst(this.articles, this.articles.indexOf(article), candidate => !deletedArticleSet.has(candidate));
         }
 
-        ArrayUtils.remove(this.articles, article);
+        ArrayUtils.remove(this.articles, articlesToDelete);
+        ArrayUtils.remove(this.searchResults, articlesToDelete);
         ArrayUtils.remove(article.parent?.children, article);
         this.serializationService.save(true);
       }
     });
+  }
+
+  private collectArticleTree(article: Article): Article[] {
+    return [article, ...article.collectChildren()];
   }
 
   public options(article: Article): void {
