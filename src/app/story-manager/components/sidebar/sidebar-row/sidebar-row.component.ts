@@ -1,10 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 import { Article } from 'src/app/story-manager/models/article.class';
-import { StoryManagerGoogleDriveService } from 'src/app/story-manager/services/story-manager-google-drive.service';
-import { StoryManagerStateService } from 'src/app/story-manager/services/story-manager-state.service';
+import { ArticleDropPosition, StoryManagerStateService } from 'src/app/story-manager/services/story-manager-state.service';
 
 @Component({
   selector: 'app-sidebar-row',
@@ -20,7 +18,6 @@ export class SidebarRowComponent {
   @Input() article: Article;
 
   constructor(
-    protected googleService: StoryManagerGoogleDriveService,
     protected stateService: StoryManagerStateService
   ) { }
 
@@ -40,66 +37,66 @@ export class SidebarRowComponent {
     }
   }
 
-  // TODO drag in root makes open button not work first time
+  protected openOptions(event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.stateService.options(this.article);
+  }
 
-  private static object: Article;
-  private static array: Article[];
-  private static index: number;
+  protected onDragStart(event: DragEvent): void {
+    event.stopPropagation();
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/plain', this.article.id);
+    this.stateService.startDrag(this.article);
+  }
 
-  public start(event: DragEvent, target: Article): void {
-    console.log('start: ' + target.title);
+  protected onDragOver(event: DragEvent): void {
+    event.stopPropagation();
 
-    event.dataTransfer.setDragImage(new Image(), 0, 0);
-
-    SidebarRowComponent.object = target;
-    if (target.parent) {
-      SidebarRowComponent.array = target.parent.children;
-      SidebarRowComponent.index = target.parent.children.indexOf(target);
-    } else {
-      const root: Article[] = this.stateService.articles;
-      SidebarRowComponent.array = root;
-      SidebarRowComponent.index = root.indexOf(target);
+    const position: ArticleDropPosition = this.getDropPosition(event);
+    if (this.stateService.setDropTarget(this.article, position)) {
+      event.preventDefault();
+      event.dataTransfer.dropEffect = 'move';
     }
   }
 
-  public enter(event: DragEvent, target: Article): void {
-    console.log('enter: ' + target.title);
-
-    if (!target.parent || target.parent.children == SidebarRowComponent.array) {
-      ArrayUtils.move(SidebarRowComponent.array, SidebarRowComponent.object, SidebarRowComponent.array.indexOf(target));
-    }
+  protected onDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.stateService.dropDraggedArticle();
   }
 
-  public leave(event: DragEvent, target: Article): void {
-    console.log('leave: ' + target.title);
-  }
-
-  public drop(event: DragEvent, target: Article): void {
-    console.log('drop: ' + target.title);
-
-    if (SidebarRowComponent.array.indexOf(SidebarRowComponent.object) != SidebarRowComponent.index) {
-      this.stateService.save();
-    }
-
-    SidebarRowComponent.object = null;
-    SidebarRowComponent.array = null;
-    SidebarRowComponent.index = null;
-  }
-
-  public end(event: DragEvent, target: Article): void {
-    console.log('end: ' + target.title);
-
-    if (SidebarRowComponent.object) {
-      ArrayUtils.move(SidebarRowComponent.array, SidebarRowComponent.object, SidebarRowComponent.index);
-    }
-  }
-
-  protected isDraggingSome(): boolean {
-    return SidebarRowComponent.object != null;
+  protected onDragEnd(event: DragEvent): void {
+    event.stopPropagation();
+    this.stateService.clearDrag();
   }
 
   protected isDraggingThis(): boolean {
-    return SidebarRowComponent.object == this.article;
+    return this.stateService.draggedArticle == this.article;
+  }
+
+  protected isDropPosition(position: ArticleDropPosition): boolean {
+    return this.stateService.dropTarget == this.article && this.stateService.dropPosition == position;
+  }
+
+  private getDropPosition(event: DragEvent): ArticleDropPosition {
+    const element: HTMLElement = event.currentTarget as HTMLElement;
+    const rect: DOMRect = element.getBoundingClientRect();
+    const offset: number = (event.clientY - rect.top) / rect.height;
+
+    if (!this.article.folder) {
+      return offset < 0.5 ? 'before' : 'after';
+    }
+
+    if (offset < 0.25) {
+      return 'before';
+    }
+
+    if (offset > 0.75) {
+      return 'after';
+    }
+
+    return 'inside';
   }
 
 }

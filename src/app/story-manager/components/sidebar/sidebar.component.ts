@@ -32,4 +32,17 @@ export class SidebarComponent {
     }
   }
 
+  protected onRootDragOver(event: DragEvent): void {
+    if (this.stateService.setDropTarget(null, 'root')) {
+      event.preventDefault();
+      event.dataTransfer.dropEffect = 'move';
+    }
+  }
+
+  protected onRootDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.stateService.dropDraggedArticle();
+  }
+
 }

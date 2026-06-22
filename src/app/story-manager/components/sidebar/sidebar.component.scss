@@ -21,27 +21,87 @@
   flex-direction: column;
   box-sizing: border-box;
   width: 100%;
+  background-color: var(--color-surface-50);
+}
+
+.sidebar-header {
+  padding: variables.$gap-1;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  gap: variables.$gap-1;
+  min-height: variables.$button-height-small;
+  padding: 0 variables.$gap-1;
+  border: 1px solid var(--color-border);
+  border-radius: variables.$gap-1;
+  background-color: var(--color-surface-100);
+  color: var(--color-text-secondary);
+
+  i {
+    font-size: 0.85rem;
+    opacity: 0.75;
+  }
 }
 
 .search-input {
+  flex: 1;
+  min-height: variables.$button-height-small;
+  min-width: 0;
+  padding: 0;
+  margin: 0;
   border: none;
   caret-color: var(--color-text-secondary);
   font-variant-numeric: tabular-nums;
   user-select: none;
-  padding: variables.$gap-2;
-  border-radius: variables.$gap-1;
-  border: 1px solid var(--color-border);
-  margin: variables.$gap-1;
 }
 
 .items-container {
   flex: 1;
+  min-height: 0;
+}
+
+.tree-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: variables.$gap-1;
+}
+
+.root-drop-zone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: variables.$button-height-small;
+  margin-top: variables.$gap-1;
+  border: 1px dashed transparent;
+  border-radius: variables.$gap-1;
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+  opacity: 0;
+  pointer-events: none;
+  transition-property: opacity, border-color, background-color;
+  transition-duration: variables.$transition-duration-fastest;
+
+  &.visible,
+  &.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  &.active {
+    border-color: var(--color-highlight);
+    background-color: color-mix(in srgb, var(--color-highlight) 14%, transparent);
+  }
 }
 
 .buttons-container {
   display: flex;
   gap: variables.$gap-1;
-  margin: 0 variables.$gap-1 variables.$gap-1 variables.$gap-1;
+  padding: variables.$gap-1;
+  border-top: 1px solid var(--color-border);
 
   .button {
     flex: 1;
