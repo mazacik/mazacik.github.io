@@ -1,31 +1,28 @@
 @if (article) {
-  <div class="flex gap cursor-pointer hover-brighten hover-container" style="line-height: 24px" (drop)="drop($event, article)" ondragover="event.preventDefault()">
-    <div class="flex gap flex-1 width-100 min-width-0 align-items-center" (click)="onClick()">
+  <div
+    class="story-row hover-container"
+    [class.current]="isCurrent()"
+    [class.search-result]="isSearchResult()"
+    [class.dragging]="isDraggingThis()"
+    [class.drop-before]="isDropPosition('before')"
+    [class.drop-inside]="isDropPosition('inside')"
+    [class.drop-after]="isDropPosition('after')"
+    draggable="true"
+    (click)="onClick()"
+    (contextmenu)="openOptions($event)"
+    (dragstart)="onDragStart($event)"
+    (dragover)="onDragOver($event)"
+    (drop)="onDrop($event)"
+    (dragend)="onDragEnd($event)">
+    <div class="row-content">
       @for (_ of [].constructor(article.collectParents().length); track $index) {
-        <i class="fa-solid fa-angle-down opacity-0"></i>
+        <span class="tree-indent"></span>
       }
 
-      @if (article.folder) {
-        <i class="fa-solid" [ngClass]="article.open ? 'fa-angle-down' : 'fa-angle-right'"></i>
-      } @else {
-        <i class="fa-solid fa-angle-down opacity-0"></i>
-      }
+      <i class="toggle-icon fa-solid" [class.placeholder]="!article.folder" [ngClass]="article.folder ? (article.open ? 'fa-angle-down' : 'fa-angle-right') : 'fa-angle-right'"></i>
+      <i class="type-icon fa-solid" [ngClass]="article.folder ? (article.open ? 'fa-folder-open' : 'fa-folder') : 'fa-note-sticky'"></i>
 
-      <span
-        class="ellipsis flex-1 width-0"
-        [class.highlight]="isCurrent()"
-        [class.positive]="isSearchResult()"
-        draggable="true"
-        (dragstart)="start($event, article)"
-        (dragenter)="enter($event, article)"
-        (dragleave)="leave($event, article)"
-        (dragend)="end($event, article)"
-        ondragover="event.preventDefault()"
-        >{{ article.title }}</span
-      >
-    </div>
-    <div class="article-buttons hover-positive hover-visible">
-      <i class="fa-solid fa-ellipsis-vertical" (click)="stateService.options(article)"></i>
+      <span class="title ellipsis">{{ article.title }}</span>
     </div>
   </div>
   <div class="flex column overflow-hidden anim-drawer" [class.open]="article.open">

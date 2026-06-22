@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import { ApplicationService } from "src/app/shared/services/application.service";
+import { SortState } from "src/app/shared/classes/binary-insertion-sort.class";
 import { ArrayUtils } from "src/app/shared/utils/array.utils";
 import { DialogService } from "../../shared/services/dialog.service";
 import { GroupManagerComponent } from "../dialogs/group-manager/group-manager.component";
@@ -53,6 +54,9 @@ export class GalleryService {
       return;
     }
 
+    const previousSortState: SortState = this.stateService.imageSort.getState();
+    const removedSortSubjectId: string = GallerySortUtils.getSortSubjectId(image);
+
     this.applicationService.loading.set(true);
 
     if (archive) {
@@ -79,8 +83,14 @@ export class GalleryService {
       }
     }
 
-    this.stateService.imageSort.start(GallerySortUtils.getSortableSubjectIds(this.stateService.images, this.stateService.imageGroups), this.stateService.imageSort.getState());
+    const sortableSubjectIds = GallerySortUtils.getSortableSubjectIds(this.stateService.images, this.stateService.imageGroups);
+    if (removedSortSubjectId && !sortableSubjectIds.includes(removedSortSubjectId)) {
+      this.stateService.imageSort.removeImageId(removedSortSubjectId);
+    }
+
+    this.stateService.imageSort.start(sortableSubjectIds, this.stateService.imageSort.getState());
     this.stateService.sortState = this.stateService.imageSort.getState();
+    const activeRankingReset = this.didActiveRankingReset(previousSortState, this.stateService.sortState);
 
     this.filterService.images.set(this.stateService.images.filter(image => image.passesFilters));
 
@@ -88,6 +98,16 @@ export class GalleryService {
 
     this.serializationService.save(true);
     this.applicationService.loading.set(false);
+
+    if (activeRankingReset) {
+      this.dialogService.createMessage({
+        title: 'Image Ranking Reset',
+        messages: [
+          'The active image ranking was reset because the comparison set changed.',
+          'Compare the active image again from the beginning.'
+        ]
+      });
+    }
   }
 
   public toggleFavorite(image: GalleryImage): void {
@@ -105,6 +125,24 @@ export class GalleryService {
   public updateNote(image: GalleryImage, note: string): void {
     image.note = note;
     this.serializationService.save();
+  }
+
+  private didActiveRankingReset(previousState: SortState, nextState: SortState): boolean {
+    const previousActiveInsertion = previousState?.activeInsertion;
+    const nextActiveInsertion = nextState?.activeInsertion;
+
+    if (!previousActiveInsertion || !nextActiveInsertion || previousActiveInsertion.imageId !== nextActiveInsertion.imageId) {
+      return false;
+    }
+
+    const wasAlreadyStartingOver = previousActiveInsertion.low === 0 && previousActiveInsertion.high === previousState.rankedImageIds.length;
+    if (wasAlreadyStartingOver) {
+      return false;
+    }
+
+    return nextActiveInsertion.low === 0
+      && nextActiveInsertion.high === nextState.rankedImageIds.length
+      && (previousActiveInsertion.low !== nextActiveInsertion.low || previousActiveInsertion.high !== nextActiveInsertion.high);
   }
 
 }

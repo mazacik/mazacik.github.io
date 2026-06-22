@@ -1,18 +1,31 @@
 <div class="sidebar-container">
-  <input class="search-input" #searchInput (input)="onSearchInputChange(searchInput)" (focus)="searchInput.select()" placeholder="Search" />
-  <div class="h-separator margins subtle"></div>
-  <div class="items-container y-scrollbar-container">
-    <div class="flex column margins-1-h">
-      @for (article of stateService.getRoot(); track article.id; let i = $index) {
-        @if (i != 0) {
-          <div class="h-separator subtle"></div>
-        }
-        <app-sidebar-row [article]="article"></app-sidebar-row>
-      }
+  <div class="sidebar-header">
+    <div class="search-container">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input class="search-input" #searchInput (input)="onSearchInputChange(searchInput)" (focus)="searchInput.select()" placeholder="Search" />
     </div>
   </div>
-  <div class="h-separator gap-1-bottom margins subtle"></div>
+  <div class="items-container y-scrollbar-container">
+    <div class="tree-container">
+      @for (article of stateService.getRoot(); track article.id) {
+        <app-sidebar-row [article]="article"></app-sidebar-row>
+      }
+      <div
+        class="root-drop-zone"
+        [class.visible]="stateService.draggedArticle"
+        [class.active]="stateService.dropPosition == 'root'"
+        (dragover)="onRootDragOver($event)"
+        (drop)="onRootDrop($event)">
+        <span>Move to Root</span>
+      </div>
+    </div>
+  </div>
   <div class="buttons-container">
-    <div class="button" (click)="stateService.options(null)">Create</div>
+    <div class="button smaller" (click)="stateService.create(null, false)">
+      <span>Create Note</span>
+    </div>
+    <div class="button smaller" (click)="stateService.create(null, true)">
+      <span>Create Folder</span>
+    </div>
   </div>
 </div>

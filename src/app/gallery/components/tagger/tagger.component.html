@@ -74,7 +74,7 @@
     <div class="flex column margins-1-l margins-2-r">
       @if (hasSearchQuery()) {
         @for (tag of getSearchResultTags(); track tag.id) {
-          <app-tagger-row [tag]="tag" [target]="target" [groupMode]="groupMode" [showFullName]="true" [flatMode]="true"></app-tagger-row>
+          <app-tagger-row [tag]="tag" [target]="target" [groupMode]="groupMode" [showFullName]="true" [flatMode]="true" (tagToggled)="onSearchResultTagToggled($event)"></app-tagger-row>
         }
       } @else {
         @for (tag of tagService.getRootTags(); track tag.id) {

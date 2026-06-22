@@ -9,7 +9,7 @@
     width: 100%;
     display: flex;
     overflow: auto;
-    padding: variables.$gap-2;
+    padding: variables.$gap-1;
   }
 
   .longest-chain {
@@ -29,6 +29,7 @@
   }
 
   .chain-image {
+    display: block;
     height: 240px;
     border-radius: variables.$gap-1;
     border: 1px solid var(--color-border);
@@ -39,6 +40,34 @@
     position: absolute;
     top: variables.$gap-1;
     right: variables.$gap-1;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .ranking-action {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .ranking-action-earlier {
+    left: variables.$gap-1;
+  }
+
+  .ranking-action-later {
+    right: variables.$gap-1;
+  }
+
+  .chain-segment:hover,
+  .chain-segment:focus-within,
+  .chain-segment.controls-active {
+    .ranking-action,
+    .rank-again-button {
+      opacity: 1;
+      pointer-events: auto;
+    }
   }
 
   .chain-empty {

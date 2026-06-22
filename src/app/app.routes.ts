@@ -3,16 +3,11 @@ import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterStateSnapshot, Rou
 import { FolderPickerComponent } from './gallery/folder-picker/folder-picker.component';
 import { GalleryComponent } from './gallery/gallery.component';
 import { LandingComponent } from './landing/landing.component';
-import { LoginComponent } from './login/login.component';
 import { ShoppingListComponent } from './shopping-list/shopping-list.component';
 import { authGuard } from './router/google-auth.guard';
 import { AppConstants } from './shared/constants/app.constants';
 import { DialogService } from './shared/services/dialog.service';
 import { StoryManagerComponent } from './story-manager/story-manager.component';
-
-const activeAppGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
-  return sessionStorage.getItem(AppConstants.KEY_ACTIVE_APP_ID) ? true : inject(Router).navigate(['']);
-}
 
 const folderGuard: CanActivateFn = async (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
   const router = inject(Router);
@@ -31,8 +26,7 @@ const folderGuard: CanActivateFn = async (route: ActivatedRouteSnapshot, state: 
 
 export const routes: Routes = [{
   path: 'login',
-  canActivate: [activeAppGuard],
-  component: LoginComponent
+  component: LandingComponent
 }, {
   path: 'gallery',
   canActivateChild: [authGuard],

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { GalleryImage } from 'src/app/gallery/models/gallery-image.class';
 import { Tag } from 'src/app/gallery/models/tag.class';
 import { FilterService } from 'src/app/gallery/services/filter.service';
@@ -22,6 +22,7 @@ export class TaggerRowComponent {
   @Input() groupMode: boolean;
   @Input() showFullName: boolean = false;
   @Input() flatMode: boolean = false;
+  @Output() tagToggled = new EventEmitter<MouseEvent>();
 
   constructor(
     private tagService: TagService,
@@ -31,7 +32,7 @@ export class TaggerRowComponent {
     protected stateService: GalleryStateService
   ) { }
 
-  protected onTagClick(): void {
+  protected onTagClick(event: MouseEvent): void {
     if (this.tag.group) {
       if (!this.flatMode) {
         this.tag.open = !this.tag.open;
@@ -49,6 +50,7 @@ export class TaggerRowComponent {
 
       this.serializationService.save();
       this.filterService.updateFilters();
+      this.tagToggled.emit(event);
     }
   }
 

@@ -1,6 +1,6 @@
 @if (tag) {
   <div class="flex gap hover-brighten hover-container" style="line-height: 24px" (contextmenu)="openOptions($event)" (drop)="drop($event, tag)" ondragover="event.preventDefault()">
-    <div class="flex gap flex-1 width-100 min-width-0 align-items-center" [class.margins-1-l]="flatMode" [class.disabled]="tag.pseudo" [class.cursor-pointer]="!tag.pseudo" (click)="onTagClick()">
+    <div class="flex gap flex-1 width-100 min-width-0 align-items-center" [class.margins-1-l]="flatMode" [class.disabled]="tag.pseudo" [class.cursor-pointer]="!tag.pseudo" (click)="onTagClick($event)">
       @if (!flatMode) {
         @for (_ of [].constructor(tag.collectParents().length); track $index) {
           <i class="fa-solid fa-angle-down opacity-0"></i>

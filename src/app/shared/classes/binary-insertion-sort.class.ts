@@ -193,6 +193,19 @@ export class BinaryInsertionSort {
     this.notify();
   }
 
+  public swapRankedImage(imageId: string, direction: -1 | 1): boolean {
+    const index = this.state.rankedImageIds.indexOf(imageId);
+    const nextIndex = index + direction;
+    if (index === -1 || nextIndex < 0 || nextIndex >= this.state.rankedImageIds.length) {
+      return false;
+    }
+
+    [this.state.rankedImageIds[index], this.state.rankedImageIds[nextIndex]] = [this.state.rankedImageIds[nextIndex], this.state.rankedImageIds[index]];
+    this.clearComparisonOpponentIndexOverride();
+    this.notify();
+    return true;
+  }
+
   public getOverlayIds(imageId: string): SortOverlayIds {
     if (this.state.activeInsertion?.imageId === imageId) {
       return this.getActiveOverlayIds();
