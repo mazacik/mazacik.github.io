@@ -19,10 +19,21 @@ export class FilterService {
   public readonly bookmarksFilter: Filter = new Filter(0);
   public readonly groupsFilter: Filter = new Filter(0);
 
+  private tagFiltersInvert: boolean = false;
+
   constructor(
     private stateService: GalleryStateService,
     private tagService: TagService
   ) { }
+
+  public isTagFiltersInvert(): boolean {
+    return this.tagFiltersInvert;
+  }
+
+  public invertTagFilters(value: boolean = !this.tagFiltersInvert): void {
+    this.tagFiltersInvert = value;
+    this.updateFilters();
+  }
 
   public updateFilters(...images: GalleryImage[]): void {
     (ArrayUtils.isEmpty(images) ? this.stateService.images : images).forEach(image => image.passesFilters = this.doesPassFilters(image));
@@ -50,7 +61,7 @@ export class FilterService {
       return false;
     }
 
-    return this.doesPassTagsCheck(image, this.tagService.getRootTags());
+    return this.doesPassTagsCheck(image, this.tagService.getRootTags()) != this.tagFiltersInvert;
   }
 
   private doesPassFilter(filter: Filter, value: boolean): boolean {
