@@ -41,11 +41,12 @@
   <div class="h-separator gap-1-bottom margins"></div>
   <div class="buttons-container">
     <div class="button-row">
-      <div class="button" [class.disabled]="!canClear()" (click)="clearFilters()">Clear Filter</div>
-    </div>
-    <div class="button-row">
       <div class="button" (click)="tagService.openTagCreate()">Create Tag</div>
       <div class="button" (click)="tagService.openTagGroupCreate()">Create Tag Group</div>
+    </div>
+    <div class="button-row">
+      <div class="button" [class.positive]="filterService.isTagFiltersInvert()" (click)="filterService.invertTagFilters()">Invert Tag Filters</div>
+      <div class="button" [class.disabled]="!canClear()" (click)="clearFilters()">Clear Tag Filters</div>
     </div>
   </div>
 </div>

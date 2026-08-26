@@ -43,6 +43,9 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
   protected tournamentSubview: 'comparison' | 'chain' = 'comparison';
   protected taggerOverlayVisible: boolean = false;
   private fullscreenWasOpen: boolean = false;
+  private documentScrollEnabled: boolean = false;
+  private masonryDocumentScrollTop: number = 0;
+  private documentScrollRestoreFrame: number | null = null;
 
   protected get viewMode(): GalleryViewMode {
     return this.stateService.viewMode;
@@ -51,6 +54,7 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
   protected set viewMode(value: GalleryViewMode) {
     const previousValue = this.stateService.viewMode;
     this.stateService.viewMode = value;
+    this.updateDocumentScrollMode();
     if (value === 'tournament' && previousValue !== 'tournament') {
       this.imageTournamentComponent?.onEnterTournament();
     }
@@ -74,6 +78,7 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
         this.resetTaggerOverlayScroll();
       }
       this.fullscreenWasOpen = fullscreenOpen;
+      this.updateDocumentScrollMode();
     });
   }
 
@@ -88,6 +93,10 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
 
   ngOnDestroy(): void {
     this.keyboardShortcutService.unregister(this);
+    if (this.documentScrollRestoreFrame !== null) {
+      window.cancelAnimationFrame(this.documentScrollRestoreFrame);
+    }
+    document.documentElement.classList.remove('mobile-masonry-document-scroll');
   }
 
   processKeyboardShortcut(event: KeyboardEvent): void {
@@ -122,14 +131,14 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
       id: 'close-filter',
       tooltip: 'Close Filter',
       classes: 'fa-solid fa-arrow-left',
-      onClick: () => this.stateService.filterVisible = false,
+      onClick: () => this.setFilterVisible(false),
       hidden: () => !isFilter()
     }, {
       id: 'open-filter',
       tooltip: 'Open Filter',
       classes: 'fa-solid fa-filter',
       hidden: () => !isMasonry() || this.stateService.filterVisible,
-      onClick: () => this.stateService.filterVisible = true
+      onClick: () => this.setFilterVisible(true)
     }, {
       id: 'toggle-view-mode',
       tooltip: () => {
@@ -184,6 +193,18 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
       classes: 'fa-solid fa-arrows-spin',
       hidden: () => !isFullscreen() || !this.stateService.fullscreenImage().group,
       onClick: () => this.setRandomGroupTarget()
+    }, {
+      id: 'toggle-comparison-relations',
+      tooltip: () => `${this.stateService.settings?.showComparisonRelations ? 'Hide' : 'Show'} Comparison Relations`,
+      classes: () => `fa-solid fa-code-compare${this.stateService.settings?.showComparisonRelations ? ' active' : ''}`,
+      hidden: () => !isTournament() || this.tournamentSubview !== 'comparison',
+      onClick: () => this.setComparisonRelations(!this.stateService.settings?.showComparisonRelations)
+    }, {
+      id: 'toggle-comparison-progress',
+      tooltip: () => `${this.stateService.settings?.showComparisonProgress ? 'Hide' : 'Show'} Comparison Progress`,
+      classes: () => `fa-solid fa-bars-progress${this.stateService.settings?.showComparisonProgress ? ' active' : ''}`,
+      hidden: () => !isTournament() || this.tournamentSubview !== 'comparison',
+      onClick: () => this.setComparisonProgress(!this.stateService.settings?.showComparisonProgress)
     }]);
 
     this.applicationService.addHeaderButtons('end', [{
@@ -261,13 +282,13 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
         type: 'toggle',
         label: 'Show Comparison Relations',
         getValue: () => this.stateService.settings?.showComparisonRelations,
-        onChange: value => {
-          this.stateService.settings.showComparisonRelations = value;
-          this.serializationService.save();
-          if (this.stateService.viewMode === 'tournament') {
-            this.imageTournamentComponent?.refreshComparisonRelations();
-          }
-        }
+        onChange: value => this.setComparisonRelations(value)
+      }, {
+        id: 'show-comparison-progress',
+        type: 'toggle',
+        label: 'Show Comparison Progress',
+        getValue: () => this.stateService.settings?.showComparisonProgress,
+        onChange: value => this.setComparisonProgress(value)
       }, {
         id: 'reset-comparison',
         type: 'action',
@@ -309,6 +330,52 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
     const target: GalleryImage = this.stateService.fullscreenImage();
     if (target?.group) {
       this.stateService.fullscreenImage.set(ArrayUtils.getRandom(target.group.images, [target]));
+    }
+  }
+
+  private setComparisonRelations(value: boolean): void {
+    this.stateService.settings.showComparisonRelations = value;
+    this.serializationService.save();
+    if (this.stateService.viewMode === 'tournament') {
+      this.imageTournamentComponent?.refreshComparisonRelations();
+    }
+  }
+
+  private setComparisonProgress(value: boolean): void {
+    this.stateService.settings.showComparisonProgress = value;
+    this.serializationService.save();
+  }
+
+  private setFilterVisible(value: boolean): void {
+    this.stateService.filterVisible = value;
+    this.updateDocumentScrollMode();
+  }
+
+  private updateDocumentScrollMode(): void {
+    const shouldEnable = this.stateService.viewMode === 'masonry'
+      && !this.stateService.fullscreenImage()
+      && !this.stateService.filterVisible;
+    if (shouldEnable === this.documentScrollEnabled) {
+      return;
+    }
+
+    if (this.documentScrollRestoreFrame !== null) {
+      window.cancelAnimationFrame(this.documentScrollRestoreFrame);
+      this.documentScrollRestoreFrame = null;
+    }
+
+    if (!shouldEnable) {
+      this.masonryDocumentScrollTop = window.scrollY;
+    }
+
+    this.documentScrollEnabled = shouldEnable;
+    document.documentElement.classList.toggle('mobile-masonry-document-scroll', shouldEnable);
+
+    if (shouldEnable) {
+      this.documentScrollRestoreFrame = window.requestAnimationFrame(() => {
+        window.scrollTo({ top: this.masonryDocumentScrollTop });
+        this.documentScrollRestoreFrame = null;
+      });
     }
   }
 

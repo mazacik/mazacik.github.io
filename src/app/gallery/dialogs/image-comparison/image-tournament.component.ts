@@ -2,9 +2,11 @@ import { Component, OnDestroy, effect } from '@angular/core';
 import { GalleryImage } from 'src/app/gallery/models/gallery-image.class';
 import { ImageComponent } from 'src/app/shared/components/image/image.component';
 import { GalleryUtils } from '../../../shared/utils/gallery.utils';
+import { DialogService } from '../../../shared/services/dialog.service';
 import { GallerySerializationService } from '../../services/gallery-serialization.service';
 import { GalleryStateService } from '../../services/gallery-state.service';
 import { GallerySortUtils } from '../../utils/gallery-sort.utils';
+import { ImageRankingConsistencyCheck, ImageRankingConsistencyUtils } from './image-ranking-consistency.utils';
 
 @Component({
   selector: 'app-image-tournament',
@@ -22,9 +24,12 @@ export class ImageTournamentComponent implements OnDestroy {
   private comparisonImageIds: [string, string] | null = null;
   private longPressTimer: number | null = null;
   private suppressNextClick: boolean = false;
+  private consistencyCheck: ImageRankingConsistencyCheck | null = null;
+  private consistencyWarningOpen: boolean = false;
   private readonly longPressDelayMs: number = 500;
 
   constructor(
+    private dialogService: DialogService,
     private serializationService: GallerySerializationService,
     protected stateService: GalleryStateService
   ) {
@@ -74,18 +79,27 @@ export class ImageTournamentComponent implements OnDestroy {
     return Math.max(0, 100 - this.rangeEndPlacementPercent);
   }
 
-  protected onImageClick(winner: GalleryImage): void {
+  protected async onImageClick(winner: GalleryImage): Promise<void> {
     if (this.suppressNextClick || !this.canChooseImages()) {
       this.suppressNextClick = false;
       return;
     }
 
-    this.stateService.imageSort.answer(GallerySortUtils.getSortSubjectId(winner));
+    const winnerSubjectId = GallerySortUtils.getSortSubjectId(winner);
+    if (this.consistencyCheck) {
+      await this.answerConsistencyCheck(winnerSubjectId);
+      return;
+    }
+
+    const rankedCountBefore = this.stateService.imageSort.rankedImageIds.length;
+    this.stateService.imageSort.answer(winnerSubjectId);
     this.persistSortState();
+    this.startConsistencyCheckAfterInsertion(rankedCountBefore);
     this.refreshComparisonRelations();
   }
 
   public onEnterTournament(): void {
+    this.clearConsistencyCheck();
     const before = JSON.stringify(this.stateService.sortState ?? null);
     this.stateService.imageSort.start(this.getSortableSubjectIds(), this.stateService.sortState);
     this.stateService.sortState = this.stateService.imageSort.getState();
@@ -96,6 +110,7 @@ export class ImageTournamentComponent implements OnDestroy {
   }
 
   public resetActiveImage(): void {
+    this.clearConsistencyCheck();
     this.stateService.imageSort.resetActiveInsertion();
     this.persistSortState();
     this.refreshComparisonRelations();
@@ -112,12 +127,14 @@ export class ImageTournamentComponent implements OnDestroy {
     event.preventDefault();
     event.stopPropagation();
     this.clearLongPressTimer();
+    this.clearConsistencyCheck();
     this.stateService.imageSort.skipActiveInsertion();
     this.persistSortState();
     this.refreshComparisonRelations();
   }
 
   public resetSort(): void {
+    this.clearConsistencyCheck();
     this.stateService.sortState = null;
     this.stateService.imageSort.start(this.getSortableSubjectIds(), null);
     this.persistSortState();
@@ -205,9 +222,10 @@ export class ImageTournamentComponent implements OnDestroy {
   }
 
   public refreshComparisonRelations(): void {
+    this.clearInvalidConsistencyCheck();
     this.comparison = this.getCurrentComparison();
     this.updateComparisonImageReadiness();
-    if (this.comparison && this.stateService.settings?.showComparisonRelations) {
+    if (this.comparison && !this.consistencyCheck && this.stateService.settings?.showComparisonRelations) {
       const rightOverlay = this.stateService.imageSort.getOverlayIds(GallerySortUtils.getSortSubjectId(this.comparison[1]));
       this.winnersRight = this.resolveImages([...rightOverlay.winners].reverse());
       this.losersRight = this.resolveImages(rightOverlay.losers);
@@ -219,7 +237,7 @@ export class ImageTournamentComponent implements OnDestroy {
   }
 
   private getCurrentComparison(): [GalleryImage, GalleryImage] {
-    const comparisonIds = this.stateService.imageSort.currentComparisonIds;
+    const comparisonIds = this.consistencyCheck?.comparisonSubjectIds ?? this.stateService.imageSort.currentComparisonIds;
     if (!comparisonIds) {
       return null;
     }
@@ -230,7 +248,11 @@ export class ImageTournamentComponent implements OnDestroy {
   }
 
   protected canChooseImages(): boolean {
-    return this.comparisonImagesReady[0] && this.comparisonImagesReady[1];
+    return !this.consistencyWarningOpen && this.comparisonImagesReady[0] && this.comparisonImagesReady[1];
+  }
+
+  protected get isConsistencyCheckActive(): boolean {
+    return !!this.consistencyCheck;
   }
 
   private updateComparisonImageReadiness(): void {
@@ -298,6 +320,56 @@ export class ImageTournamentComponent implements OnDestroy {
   private persistSortState(): void {
     this.stateService.sortState = this.stateService.imageSort.getState();
     this.serializationService.save(true);
+  }
+
+  private startConsistencyCheckAfterInsertion(rankedCountBefore: number): void {
+    const rankedSubjectIds = this.stateService.imageSort.rankedImageIds;
+    if (rankedSubjectIds.length <= rankedCountBefore || rankedSubjectIds.length < 10) {
+      return;
+    }
+
+    this.consistencyCheck = ImageRankingConsistencyUtils.createCheck(rankedSubjectIds);
+  }
+
+  private async answerConsistencyCheck(winnerSubjectId: string): Promise<void> {
+    const consistencyCheck = this.consistencyCheck;
+    if (!consistencyCheck || !consistencyCheck.comparisonSubjectIds.includes(winnerSubjectId)) {
+      return;
+    }
+
+    if (winnerSubjectId === consistencyCheck.higherRankedSubjectId) {
+      this.clearConsistencyCheck();
+      this.refreshComparisonRelations();
+      return;
+    }
+
+    this.consistencyWarningOpen = true;
+    try {
+      await this.dialogService.createMessage({
+        title: 'Ranking Consistency Warning',
+        messages: ['You chose the lower-ranked image.'],
+        hideCloseButton: true
+      });
+    } finally {
+      this.clearConsistencyCheck();
+      this.refreshComparisonRelations();
+    }
+  }
+
+  private clearInvalidConsistencyCheck(): void {
+    if (!this.consistencyCheck) {
+      return;
+    }
+
+    const rankedSubjectIds = this.stateService.imageSort.rankedImageIds;
+    if (this.consistencyCheck.comparisonSubjectIds.some(subjectId => !rankedSubjectIds.includes(subjectId))) {
+      this.clearConsistencyCheck();
+    }
+  }
+
+  private clearConsistencyCheck(): void {
+    this.consistencyCheck = null;
+    this.consistencyWarningOpen = false;
   }
 
   private clearLongPressTimer(): void {

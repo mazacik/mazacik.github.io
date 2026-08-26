@@ -15,10 +15,12 @@
           (touchend)="onImageTouchEnd()"
           (touchcancel)="onImageTouchEnd()"
           (touchmove)="onImageTouchMove()"></app-image>
-        <div class="active-image-actions">
-          <i class="icon-button fa-solid fa-rotate-left" title="Restart Image Comparisons" (click)="restartActiveImageComparisons($event)"></i>
-          <i class="icon-button fa-solid fa-forward-step" title="Skip Image" (click)="skipActiveImage($event)"></i>
-        </div>
+        @if (!isConsistencyCheckActive) {
+          <div class="active-image-actions">
+            <i class="icon-button fa-solid fa-rotate-left" title="Restart Image Comparisons" (click)="restartActiveImageComparisons($event)"></i>
+            <i class="icon-button fa-solid fa-forward-step" title="Skip Image" (click)="skipActiveImage($event)"></i>
+          </div>
+        }
         @if (hasGroupNavigation(comparison[0])) {
           <div class="group-navigation">
             <i class="icon-button fa-solid fa-chevron-left" title="Previous Group Image" (click)="showPreviousGroupImage(0, $event)"></i>
@@ -41,7 +43,7 @@
           (touchend)="onImageTouchEnd()"
           (touchcancel)="onImageTouchEnd()"
           (touchmove)="onImageTouchMove()"></app-image>
-        @if (stateService.settings?.showComparisonRelations) {
+        @if (!isConsistencyCheckActive && stateService.settings?.showComparisonRelations) {
           @if (winnersRight.length) {
             <div class="side-column winners-column">
               @for (image of winnersRight; track image.id) {
@@ -81,7 +83,7 @@
     </div>
   }
 
-  @if (stateService.settings?.showComparisonRelations) {
+  @if (stateService.settings?.showComparisonProgress) {
     <div class="h-separator"></div>
     <div class="progress-remaining">
       <span class="progress-remaining-bar" [style.width.%]="sortProgressPercent"></span>

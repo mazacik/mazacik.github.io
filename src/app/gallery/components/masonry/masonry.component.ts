@@ -55,33 +55,42 @@ export class MasonryComponent {
   }
 
   protected updateLayout(images: GalleryImage[] = this.filterService.masonryImages()): void {
-    if (this.masonryContainer && !ArrayUtils.isEmpty(images)) {
-      const minColumnWidth: number = ScreenUtils.isLargeScreen() ? 250 : 200;
-      const masonryGap: number = ScreenUtils.isLargeScreen() ? 9.6666666666 : 4.3333333333;
-
-      const containerWidth: number = this.masonryContainer.clientWidth;
-      const columnCount: number = Math.max(Math.floor(containerWidth / minColumnWidth), 2);
-      const columnWidth: number = (containerWidth - masonryGap * (columnCount - 1)) / columnCount;
-
-      const columnsTop: number[] = [];
-      const columnsLeft: number[] = [];
-      for (let i = 0; i < columnCount; i++) {
-        columnsTop[i] = 0;
-        columnsLeft[i] = i * (columnWidth + masonryGap);
-      }
-
-      for (const image of this.filterService.masonryImages()) {
-        if (image.masonryWidth != columnWidth) {
-          image.masonryWidth = columnWidth;
-          image.masonryHeight = columnWidth / image.aspectRatio;
-        }
-
-        const shortestColumnIndex: number = columnsTop.indexOf(Math.min(...columnsTop));
-        image.masonryTop = columnsTop[shortestColumnIndex];
-        image.masonryLeft = columnsLeft[shortestColumnIndex];
-        columnsTop[shortestColumnIndex] = columnsTop[shortestColumnIndex] + image.masonryHeight + masonryGap;
-      }
+    if (!this.masonryContainer) {
+      return;
     }
+
+    if (ArrayUtils.isEmpty(images)) {
+      this.masonryContainer.style.height = '0px';
+      return;
+    }
+
+    const minColumnWidth: number = ScreenUtils.isLargeScreen() ? 250 : 200;
+    const masonryGap: number = ScreenUtils.isLargeScreen() ? 9.6666666666 : 4.3333333333;
+
+    const containerWidth: number = this.masonryContainer.clientWidth;
+    const columnCount: number = Math.max(Math.floor(containerWidth / minColumnWidth), 2);
+    const columnWidth: number = (containerWidth - masonryGap * (columnCount - 1)) / columnCount;
+
+    const columnsTop: number[] = [];
+    const columnsLeft: number[] = [];
+    for (let i = 0; i < columnCount; i++) {
+      columnsTop[i] = 0;
+      columnsLeft[i] = i * (columnWidth + masonryGap);
+    }
+
+    for (const image of this.filterService.masonryImages()) {
+      if (image.masonryWidth != columnWidth) {
+        image.masonryWidth = columnWidth;
+        image.masonryHeight = columnWidth / image.aspectRatio;
+      }
+
+      const shortestColumnIndex: number = columnsTop.indexOf(Math.min(...columnsTop));
+      image.masonryTop = columnsTop[shortestColumnIndex];
+      image.masonryLeft = columnsLeft[shortestColumnIndex];
+      columnsTop[shortestColumnIndex] = columnsTop[shortestColumnIndex] + image.masonryHeight + masonryGap;
+    }
+
+    this.masonryContainer.style.height = `${Math.max(...columnsTop)}px`;
   }
 
   private scrollTo(image: GalleryImage): void {

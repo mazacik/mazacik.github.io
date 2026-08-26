@@ -11,14 +11,14 @@ import { DialogContentBase } from 'src/app/shared/components/dialog/dialog-conte
 })
 export class MessageDialogComponent extends DialogContentBase<void> implements OnInit {
 
-  public override inputs: { title: string, messages: string[] };
+  public override inputs: { title: string, messages: string[], hideCloseButton?: boolean };
 
   public configuration: DialogContainerConfiguration;
 
   ngOnInit(): void {
     this.configuration = {
       title: this.inputs.title,
-      headerButtons: [{
+      headerButtons: this.inputs.hideCloseButton ? [] : [{
         iconClass: 'fa-solid fa-times',
         click: () => this.close()
       }],
