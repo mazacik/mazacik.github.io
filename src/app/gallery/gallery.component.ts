@@ -43,6 +43,9 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
   protected tournamentSubview: 'comparison' | 'chain' = 'comparison';
   protected taggerOverlayVisible: boolean = false;
   private fullscreenWasOpen: boolean = false;
+  private documentScrollEnabled: boolean = false;
+  private masonryDocumentScrollTop: number = 0;
+  private documentScrollRestoreFrame: number | null = null;
 
   protected get viewMode(): GalleryViewMode {
     return this.stateService.viewMode;
@@ -51,6 +54,7 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
   protected set viewMode(value: GalleryViewMode) {
     const previousValue = this.stateService.viewMode;
     this.stateService.viewMode = value;
+    this.updateDocumentScrollMode();
     if (value === 'tournament' && previousValue !== 'tournament') {
       this.imageTournamentComponent?.onEnterTournament();
     }
@@ -74,6 +78,7 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
         this.resetTaggerOverlayScroll();
       }
       this.fullscreenWasOpen = fullscreenOpen;
+      this.updateDocumentScrollMode();
     });
   }
 
@@ -88,6 +93,10 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
 
   ngOnDestroy(): void {
     this.keyboardShortcutService.unregister(this);
+    if (this.documentScrollRestoreFrame !== null) {
+      window.cancelAnimationFrame(this.documentScrollRestoreFrame);
+    }
+    document.documentElement.classList.remove('mobile-masonry-document-scroll');
   }
 
   processKeyboardShortcut(event: KeyboardEvent): void {
@@ -122,14 +131,14 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
       id: 'close-filter',
       tooltip: 'Close Filter',
       classes: 'fa-solid fa-arrow-left',
-      onClick: () => this.stateService.filterVisible = false,
+      onClick: () => this.setFilterVisible(false),
       hidden: () => !isFilter()
     }, {
       id: 'open-filter',
       tooltip: 'Open Filter',
       classes: 'fa-solid fa-filter',
       hidden: () => !isMasonry() || this.stateService.filterVisible,
-      onClick: () => this.stateService.filterVisible = true
+      onClick: () => this.setFilterVisible(true)
     }, {
       id: 'toggle-view-mode',
       tooltip: () => {
@@ -335,6 +344,39 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
   private setComparisonProgress(value: boolean): void {
     this.stateService.settings.showComparisonProgress = value;
     this.serializationService.save();
+  }
+
+  private setFilterVisible(value: boolean): void {
+    this.stateService.filterVisible = value;
+    this.updateDocumentScrollMode();
+  }
+
+  private updateDocumentScrollMode(): void {
+    const shouldEnable = this.stateService.viewMode === 'masonry'
+      && !this.stateService.fullscreenImage()
+      && !this.stateService.filterVisible;
+    if (shouldEnable === this.documentScrollEnabled) {
+      return;
+    }
+
+    if (this.documentScrollRestoreFrame !== null) {
+      window.cancelAnimationFrame(this.documentScrollRestoreFrame);
+      this.documentScrollRestoreFrame = null;
+    }
+
+    if (!shouldEnable) {
+      this.masonryDocumentScrollTop = window.scrollY;
+    }
+
+    this.documentScrollEnabled = shouldEnable;
+    document.documentElement.classList.toggle('mobile-masonry-document-scroll', shouldEnable);
+
+    if (shouldEnable) {
+      this.documentScrollRestoreFrame = window.requestAnimationFrame(() => {
+        window.scrollTo({ top: this.masonryDocumentScrollTop });
+        this.documentScrollRestoreFrame = null;
+      });
+    }
   }
 
   protected onTaggerOverlayScroll(element: HTMLDivElement): void {
