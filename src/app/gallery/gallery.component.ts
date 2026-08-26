@@ -184,6 +184,18 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
       classes: 'fa-solid fa-arrows-spin',
       hidden: () => !isFullscreen() || !this.stateService.fullscreenImage().group,
       onClick: () => this.setRandomGroupTarget()
+    }, {
+      id: 'toggle-comparison-relations',
+      tooltip: () => `${this.stateService.settings?.showComparisonRelations ? 'Hide' : 'Show'} Comparison Relations`,
+      classes: () => `fa-solid fa-code-compare${this.stateService.settings?.showComparisonRelations ? ' active' : ''}`,
+      hidden: () => !isTournament() || this.tournamentSubview !== 'comparison',
+      onClick: () => this.setComparisonRelations(!this.stateService.settings?.showComparisonRelations)
+    }, {
+      id: 'toggle-comparison-progress',
+      tooltip: () => `${this.stateService.settings?.showComparisonProgress ? 'Hide' : 'Show'} Comparison Progress`,
+      classes: () => `fa-solid fa-bars-progress${this.stateService.settings?.showComparisonProgress ? ' active' : ''}`,
+      hidden: () => !isTournament() || this.tournamentSubview !== 'comparison',
+      onClick: () => this.setComparisonProgress(!this.stateService.settings?.showComparisonProgress)
     }]);
 
     this.applicationService.addHeaderButtons('end', [{
@@ -261,13 +273,13 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
         type: 'toggle',
         label: 'Show Comparison Relations',
         getValue: () => this.stateService.settings?.showComparisonRelations,
-        onChange: value => {
-          this.stateService.settings.showComparisonRelations = value;
-          this.serializationService.save();
-          if (this.stateService.viewMode === 'tournament') {
-            this.imageTournamentComponent?.refreshComparisonRelations();
-          }
-        }
+        onChange: value => this.setComparisonRelations(value)
+      }, {
+        id: 'show-comparison-progress',
+        type: 'toggle',
+        label: 'Show Comparison Progress',
+        getValue: () => this.stateService.settings?.showComparisonProgress,
+        onChange: value => this.setComparisonProgress(value)
       }, {
         id: 'reset-comparison',
         type: 'action',
@@ -310,6 +322,19 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
     if (target?.group) {
       this.stateService.fullscreenImage.set(ArrayUtils.getRandom(target.group.images, [target]));
     }
+  }
+
+  private setComparisonRelations(value: boolean): void {
+    this.stateService.settings.showComparisonRelations = value;
+    this.serializationService.save();
+    if (this.stateService.viewMode === 'tournament') {
+      this.imageTournamentComponent?.refreshComparisonRelations();
+    }
+  }
+
+  private setComparisonProgress(value: boolean): void {
+    this.stateService.settings.showComparisonProgress = value;
+    this.serializationService.save();
   }
 
   protected onTaggerOverlayScroll(element: HTMLDivElement): void {
