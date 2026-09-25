@@ -1,9 +1,368 @@
-<div class="story-manager-container">
-  <app-sidebar [class.display-none]="isMobileView() && stateService.current"></app-sidebar>
-  <div class="v-separator desktop-only"></div>
-  <div class="content" [class.display-none]="isMobileView() && !stateService.current">
-    @if (stateService.current) {
-      <textarea class="note-content" spellcheck="false" placeholder="Text" [(ngModel)]="stateService.current.text" (ngModelChange)="stateService.save()"></textarea>
+<div class="workspace" [attr.inert]="persistence.committing ? '' : null">
+  @if (persistence.error) {
+    <div class="error box" role="alert">
+      {{ persistence.error }} <button (click)="persistence.retry()">Retry</button>
+      @if (persistence.recoveryConflict) {
+        <button (click)="persistence.downloadRecovery()">Download local recovery</button><button (click)="persistence.useDriveCopy()">Use Drive document</button>
+      }
+    </div>
+  }
+  @if (!persistence.ready) {
+    <p class="muted">Loading story library…</p>
+  } @else if (!story) {
+    <div class="library">
+      <div class="row">
+        <button (click)="createStory()">Create story</button>
+        <input aria-label="Search stories" placeholder="Search stories…" [(ngModel)]="search" />
+      </div>
+      <div class="story-grid">
+        @for (item of folders; track item.id) {
+          <button type="button" class="story-card" [attr.aria-label]="'Open story: ' + item.title" (click)="open(item)">
+            <span class="story-card-title">{{ item.title }}</span>
+            <span class="story-counts">
+              @for (stat of storyStats(item); track stat.label) {
+                <span>{{ stat.count }} {{ stat.label }}</span>
+              }
+            </span>
+          </button>
+        }
+      </div>
+      @if (!folders.length) {
+        <p>{{ search ? 'No stories match your search.' : 'Create a story to collect ideas and build your first scene.' }}</p>
+      }
+    </div>
+  } @else {
+    <header class="story-header row">
+      <h2>{{ folder?.title }}</h2>
+      <nav class="row" aria-label="Story views">
+        @for (item of tabs; track item) {
+          <button [class.active]="tab === item" (click)="setTab(item)">{{ item }}</button>
+        }
+      </nav>
+    </header>
+    @if (tab === 'Notes') {
+      <div class="notes-layout split" [class.has-detail]="currentNote">
+        <app-sidebar class="list-panel" />
+        <div class="note-editor detail-panel">
+          @if (currentNote) {
+            <div class="detail-toolbar note-toolbar">
+              <button class="back-list" (click)="notes.current = null">← Notes</button>
+              <h3 [title]="currentNote.title">{{ currentNote.title }}</h3>
+              <div class="note-actions row">
+                <button (click)="notes.rename(currentNote)">Rename</button>
+                <button (click)="notes.delete(currentNote)">Delete</button>
+                <button (click)="openNoteLinks()">Open links</button>
+              </div>
+            </div>
+            <div class="note-body">
+              <textarea class="note-text" aria-label="Note text" placeholder="Write your note…" spellcheck="false" [(ngModel)]="currentNote.text" (ngModelChange)="notes.save()"></textarea>
+            </div>
+          }
+        </div>
+      </div>
+    } @else if (story) {
+      @if (tab === 'Play') {
+        <div class="page play-page"><story-player [story]="story" [revision]="story.revision" /></div>
+      }
+      @if (tab === 'Variables') {
+        <div class="page"><story-flags-editor [story]="story" [selectedId]="flagId" (changed)="changed()" (remove)="deleteFlag($event)" /></div>
+      }
+      @if (tab === 'Scenes') {
+        <div class="page">
+          @if (showValidation && issues.length) {
+            <div class="box validation">
+              @for (issue of issues; track $index) {
+                <p>
+                  <button class="link danger" (click)="openIssue(issue)">{{ issue.message }}</button>
+                </p>
+              }
+            </div>
+          }
+          <div class="split" [class.has-detail]="sceneView !== 'list'">
+            <aside class="list-panel">
+              <div class="list-controls">
+                <div class="search-container">
+                  <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                  <input class="search-input" aria-label="Search scenes" [(ngModel)]="sceneSearch" placeholder="Search" />
+                </div>
+                @if (sceneSearch) {
+                  <p class="muted">Clear search to reorder</p>
+                }
+              </div>
+              <div class="list-scroll">
+                @for (s of scenes; track s.id) {
+                  <div class="ordered-entry">
+                    <story-reorder [items]="story.scenes" [index]="story.scenes.indexOf(s)" [disabled]="!!sceneSearch" [label]="s.title" (changed)="changed()" />
+                    <button class="list-item" [class.active]="sceneId === s.id" (click)="selectScene(s.id)">{{ s.id === story.start ? '▶ ' : '' }}{{ s.title }}</button>
+                  </div>
+                }
+              </div>
+              <div class="list-footer">
+                <button (click)="addScene()">Create scene</button>
+                @if (sceneView === 'list') {
+                  <button (click)="showSceneMap()">Scene map</button>
+                }
+              </div>
+            </aside>
+            <main class="detail-panel">
+              @if (sceneView === 'map' || sceneView === 'list') {
+                <div class="detail-toolbar">
+                  <button class="back-list" (click)="showSceneList()">← Scenes</button>
+                  <h3>Scene map</h3>
+                  <div class="detail-actions">
+                    @if (issues.length) {
+                      <button (click)="showValidation = !showValidation" [attr.aria-expanded]="showValidation" aria-label="Validation issues">{{ issues.length }} issues</button>
+                    }
+                    <button (click)="showStorySettings()">Story settings</button>
+                  </div>
+                </div>
+                <story-scene-map [story]="story" [revision]="story.revision" [selected]="sceneId" [issues]="issues" (selectScene)="selectScene($event)" (selectChoice)="selectConnection($event)" />
+              } @else if (sceneView === 'settings') {
+                <div class="detail-toolbar">
+                  <button (click)="showSceneMap()">← Back to map</button><button class="back-list" (click)="showSceneList()">← Scenes</button>
+                  <h3>Story settings</h3>
+                </div>
+                <div class="detail-scroll">
+                  <div class="detail-form">
+                    <label
+                      >Starting scene<select [(ngModel)]="story.start" (ngModelChange)="changed()">
+                        <option value="">Choose scene</option>
+                        @for (s of story.scenes; track s.id) {
+                          <option [value]="s.id">{{ s.title }}</option>
+                        }
+                      </select></label
+                    ><label
+                      >Player character<select [(ngModel)]="story.player" (ngModelChange)="changed()">
+                        <option value="">Choose player</option>
+                        @for (e of characters; track e.id) {
+                          <option [value]="e.id">{{ e.name }}</option>
+                        }
+                      </select></label
+                    ><story-layers [story]="story" (changed)="changed()" />
+                  </div>
+                </div>
+              } @else if (scene; as s) {
+                <div class="detail-toolbar">
+                  <button (click)="showSceneMap()">← Back to map</button><button class="back-list" (click)="showSceneList()">← Scenes</button>
+                  <h3 [title]="s.title">{{ s.title }}</h3>
+                  <div class="detail-actions">
+                    <button (click)="duplicateScene()">Duplicate</button><button (click)="deleteScene()">Delete</button>
+                    <button (click)="testScene = testScene ? '' : s.id">{{ testScene ? 'Close test' : 'Test scene' }}</button>
+                  </div>
+                </div>
+                <div class="detail-scroll" [class.scene-testing]="!!testScene">
+                  <div class="detail-form">
+                    @if (testScene) {
+                      <story-player [story]="story" [revision]="story.revision" [testScene]="testScene" />
+                    } @else {
+                      <label>Scene title<input [(ngModel)]="s.title" (ngModelChange)="changed()" /></label>
+                      @if (sceneIssues.length) {
+                        <details>
+                          <summary class="danger">{{ sceneIssues.length }} issues in this scene</summary>
+                          @for (issue of sceneIssues; track $index) {
+                            <p class="danger">{{ issue.message }}</p>
+                          }
+                        </details>
+                      }
+                      <label
+                        >Entry passage<select [(ngModel)]="s.entry" (ngModelChange)="changed()">
+                          @for (p of s.passages; track p.id) {
+                            <option [value]="p.id">{{ p.title }}</option>
+                          }
+                        </select></label
+                      >
+                      <div class="row">
+                        @for (p of s.passages; track p.id) {
+                          <div class="ordered-entry">
+                            <story-reorder [items]="s.passages" [index]="$index" [label]="p.title" (changed)="changed()" /><button [class.active]="p.id === passageId" (click)="passageId = p.id">
+                              {{ p.title }}
+                            </button>
+                          </div>
+                        }
+                        <button (click)="addPassage()">+ Passage</button>
+                      </div>
+                      @if (passage; as p) {
+                        <div class="entry-actions"><button (click)="deletePassage(p)">Delete passage</button></div>
+                        <label>Passage title<input [(ngModel)]="p.title" (ngModelChange)="changed()" /></label>
+                        <label
+                          >Speaker<select [(ngModel)]="p.speaker" (ngModelChange)="changed()">
+                            <option value="">Narration</option>
+                            @for (e of characters; track e.id) {
+                              <option [value]="e.id">{{ e.name }}</option>
+                            }
+                          </select></label
+                        >
+                        <story-text-editor [story]="story" [(text)]="p.text" (textChange)="changed()" />
+                        <h3>Choices</h3>
+                        @for (c of p.choices; track c.id; let i = $index) {
+                          <section class="box" [id]="'choice-' + c.id">
+                            <div class="entry-actions">
+                              <story-reorder [items]="p.choices" [index]="i" label="choice" [mutate]="false" (moved)="moveChoice(i, $event)" />
+                              <button (click)="deleteChoice(c.id)">Delete choice</button>
+                            </div>
+                            <label>Choice label<input [(ngModel)]="c.label" (ngModelChange)="changed()" /></label>
+                            <label class="check"><input type="checkbox" [(ngModel)]="c.repeatable" (ngModelChange)="changed()" />Repeatable</label>
+                            <details>
+                              <summary>Availability</summary>
+                              <story-condition [story]="story" [condition]="c.available" (changed)="changed()" /><label
+                                >When unavailable<select [(ngModel)]="c.unavailable" (ngModelChange)="changed()">
+                                  <option value="disabled">Show disabled</option>
+                                  <option value="hidden">Hide</option>
+                                </select></label
+                              ><label>Explanation<input [(ngModel)]="c.explanation" (ngModelChange)="changed()" /></label>
+                            </details>
+                            <h4>What happens</h4>
+                            <story-outcomes [story]="story" [steps]="c.steps" (changed)="changed()" />
+                          </section>
+                        }
+                        <button (click)="addChoice()">Add choice / Continue</button>
+                      }
+                      <details>
+                        <summary>Related idea notes</summary>
+                        @for (note of storyNotes; track note.id) {
+                          <div class="row">
+                            <label class="check"><input type="checkbox" [ngModel]="s.noteIds.includes(note.id)" (ngModelChange)="linkNote(note.id, $event)" />{{ note.title }}</label
+                            ><button (click)="openNote(note)">Open note</button><button [disabled]="!passage" (click)="copyNote(note.id)">Copy text into passage</button>
+                          </div>
+                        }
+                      </details>
+                    }
+                  </div>
+                </div>
+              }
+            </main>
+          </div>
+        </div>
+      }
+      @if (tab === 'Characters' || tab === 'Items' || tab === 'Keys' || tab === 'Equipment') {
+        <div class="page split" [class.has-detail]="entity">
+          <aside class="list-panel">
+            <div class="list-controls">
+              @if (tab === 'Equipment') {
+                <div class="entry-actions" role="group" aria-label="Equipment category">
+                  <button [class.active]="equipmentView === 'types'" (click)="setEquipmentView('types')">Types</button>
+                  <button [class.active]="equipmentView === 'variants'" (click)="setEquipmentView('variants')">Equipment</button>
+                </div>
+              }
+              <div class="search-container">
+                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                <input class="search-input" [attr.aria-label]="'Search ' + tab.toLowerCase()" [(ngModel)]="sceneSearch" placeholder="Search" />
+              </div>
+              @if (sceneSearch) {
+                <p class="muted">Clear search to reorder</p>
+              }
+            </div>
+            <div class="list-scroll" [storyListReorder]="entities" [reorderDisabled]="!!sceneSearch" (reordered)="moveEntity($event.id, $event.offset)">
+              @for (e of entities; track e.id) {
+                <button
+                  class="list-item"
+                  [class.active]="entityId === e.id"
+                  [attr.data-reorder-id]="e.id"
+                  [draggable]="!sceneSearch"
+                  aria-keyshortcuts="Alt+ArrowUp Alt+ArrowDown"
+                  title="Drag to reorder, or use Alt + Up/Down"
+                  (click)="entityId = e.id">
+                  {{ e.name }}
+                </button>
+              }
+            </div>
+            <div class="list-footer">
+              <button (click)="addEntity()">Create {{ selectedEntityLabel }}</button>
+            </div>
+          </aside>
+          <main class="detail-panel">
+            @if (entity; as e) {
+              <div class="detail-toolbar">
+                <button class="back-list" (click)="entityId = ''">← {{ tab }}</button>
+                <input
+                  class="detail-title"
+                  [attr.aria-label]="tab === 'Keys' ? 'Key name' : e.kind === 'character' ? 'Character name' : e.kind === 'equipment' ? 'Equipment name' : 'Item name'"
+                  [title]="e.name"
+                  placeholder="Name"
+                  [(ngModel)]="e.name"
+                  (ngModelChange)="changed()" />
+                <div class="detail-actions">
+                  @if (e.kind === 'equipment') {
+                    @if (e.equipmentRole === 'type') {
+                      <button (click)="createVariant(e)">Create equipment</button>
+                    } @else if (e.parentId) {
+                      <button (click)="openEquipmentType()">Open type</button>
+                    }
+                  }
+                  <button (click)="duplicateEntity()">Duplicate</button><button (click)="deleteEntity()">Delete</button>
+                </div>
+              </div>
+              <div class="detail-tabs" role="tablist" aria-label="Editor sections">
+                @for (section of detailTabs; track section) {
+                  <button
+                    type="button"
+                    role="tab"
+                    [id]="'detail-tab-' + section"
+                    aria-controls="entity-detail-panel"
+                    [attr.aria-selected]="detailSection === section"
+                    [attr.tabindex]="detailSection === section ? 0 : -1"
+                    [class.selected]="detailSection === section"
+                    [attr.aria-label]="section + (detailIssues(section).length ? ' ? has errors' : '')"
+                    (click)="selectDetailSection(section)"
+                    (keydown)="detailTabKey($event, section)">
+                    {{ section }}
+                    @if (detailCount(section) !== undefined) {
+                      <span class="tab-count">{{ detailCount(section) }}</span>
+                    }
+                    @if (detailIssues(section).length) {
+                      <span class="tab-error" aria-hidden="true" title="This section has errors">!</span>
+                    }
+                  </button>
+                }
+              </div>
+              <div #entityDetailScroll class="detail-scroll" id="entity-detail-panel" role="tabpanel" [attr.aria-labelledby]="'detail-tab-' + detailSection" tabindex="0">
+                <div class="detail-form">
+                  @if (e.kind === 'equipment') {
+                    <story-equipment-editor [story]="story" [entity]="e" [section]="detailSection" (changed)="changed()" (removeProperty)="deleteProperty(e.properties, $event)" />
+                  } @else {
+                    @switch (detailSection) {
+                      @case ('Unlocks') {
+                        <section>
+                          <h3>Unlocks</h3>
+                          <div class="entry-actions">
+                            @for (target of keyTargets; track target.id) {
+                              <button (click)="openKeyTarget(target)">{{ target.label }}</button>
+                            }
+                          </div>
+                          @if (!keyTargets.length) {
+                            <p class="muted">No equipment uses this key yet. Add it under equipment Locks settings or a character's equipment copy.</p>
+                          }
+                        </section>
+                      }
+                      @case ('Inventory') {
+                        <story-inventory-editor [story]="story" [entity]="e" (changed)="changed()" />
+                      }
+                      @case ('Equipment') {
+                        <story-character-equipment [story]="story" [entity]="e" [focusCopyId]="focusCopyId" (changed)="changed()" />
+                      }
+                      @case ('Variables') {
+                        @if (e.kind === 'character') {
+                          <story-entity-flags [story]="story" [entity]="e" (changed)="changed()" />
+                        } @else {
+                          <story-properties [properties]="e.properties" (changed)="changed()" (remove)="deleteProperty(e.properties, $event)" />
+                        }
+                      }
+                      @case ('Effects') {
+                        <story-entity-flags [story]="story" [entity]="e" (changed)="changed()" />
+                      }
+                    }
+                  }
+                  @if (detailSection !== 'Inventory' && detailSection !== 'Equipment') {
+                    @for (issue of detailIssues(detailSection); track $index) {
+                      <p class="danger">{{ issue.message }}</p>
+                    }
+                  }
+                </div>
+              </div>
+            }
+          </main>
+        </div>
+      }
     }
-  </div>
+  }
 </div>

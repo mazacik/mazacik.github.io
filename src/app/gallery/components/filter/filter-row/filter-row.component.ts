@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Tag } from 'src/app/gallery/models/tag.class';
 import { FilterService } from 'src/app/gallery/services/filter.service';
 import { GallerySerializationService } from 'src/app/gallery/services/gallery-serialization.service';
@@ -18,6 +18,7 @@ export class FilterRowComponent {
   @Input() tag: Tag;
   @Input() showFullName: boolean = false;
   @Input() flatMode: boolean = false;
+  @Output() tagToggled = new EventEmitter<Tag>();
 
   constructor(
     private tagService: TagService,
@@ -28,19 +29,24 @@ export class FilterRowComponent {
   ) { }
 
   protected onTagClick(): void {
-    if (this.tag.group) {
-      if (!this.flatMode) {
-        this.tag.open = !this.tag.open;
-      }
+    if (this.tag.group && !this.flatMode) {
+      this.tag.open = !this.tag.open;
     } else {
-      this.toggleTagState();
+      this.activate();
     }
   }
 
-  protected toggleTagState(): void {
+  public activate(): void {
     this.tag.state = this.tag.state == 0 ? 1 : this.tag.state == 1 ? -1 : 0;
     this.filterService.updateFilters();
     this.serializationService.save();
+    this.tagToggled.emit(this.tag);
+  }
+
+  protected getGroupFilterLabel(): string {
+    const state = this.tag.state === 1 ? 'included' : this.tag.state === -1 ? 'excluded' : 'neutral';
+    const next = this.tag.state === 1 ? 'exclude' : this.tag.state === -1 ? 'clear filter for' : 'include';
+    return `${this.tag.getNameWithParents()}: ${state}. Click to ${next} this group.`;
   }
 
   protected getTextClass(): string {

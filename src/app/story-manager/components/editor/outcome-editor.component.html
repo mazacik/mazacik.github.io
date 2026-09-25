@@ -1,0 +1,191 @@
+@for (step of steps; track step.id; let i = $index) {
+  <div class="box">
+    <div class="entry-actions">
+      <strong
+        >{{ i + 1 }} ·
+        {{
+          step.kind === 'go' ? 'Continue to' : step.kind === 'end' ? 'End story' : step.kind === 'effect' || step.kind === 'unlock' ? 'Action' : step.kind === 'random' ? 'Chance' : 'Condition'
+        }}</strong
+      >
+      <story-reorder [items]="steps" [index]="i" label="step" [mutate]="false" (moved)="move(i, $event)" />
+      <button (click)="remove(i)">Remove</button>
+    </div>
+    @if (step.kind === 'effect' || step.kind === 'unlock') {
+      <label
+        >Action<select [ngModel]="step.kind === 'unlock' ? 'unlockAttempt' : step.effect.kind" (ngModelChange)="changeAction(i, $event)">
+          <option value="set">Set variable</option>
+          <option value="add">Increase / decrease number</option>
+          <option value="giveQuantity">Give quantity</option>
+          <option value="removeQuantity">Remove quantity</option>
+          <option value="transferQuantity">Transfer quantity</option>
+          <option value="giveEquipment">Give equipment copy</option>
+          <option value="removeEquipment">Remove equipment copy</option>
+          <option value="transferEquipment">Transfer equipment copy</option>
+          <option value="equip">Equip copy</option>
+          <option value="unequip">Unequip copy</option>
+          <option value="lockEquipment">Lock equipment</option>
+          @if (allowUnlock) {
+            <option value="unlockAttempt">Unlock attempt</option>
+          }
+          <option value="unlockEquipment">Unlock equipment</option>
+          <option value="breakEquipment">Break equipment</option>
+          <option value="destroyEquipment">Destroy equipment</option>
+          <option value="repairEquipment">Repair equipment</option>
+          <option value="reveal">Reveal information</option>
+          <option value="addFlag">Set Boolean true</option>
+          <option value="removeFlag">Set Boolean false</option>
+        </select></label
+      >
+    }
+    @switch (step.kind) {
+      @case ('condition') {
+        <story-condition [story]="story" [condition]="step.condition" (changed)="changed.emit()" />
+        <div class="branch">
+          <h4>Then</h4>
+          <story-outcomes [allowUnlock]="allowUnlock" [allowNavigation]="allowNavigation" [story]="story" [steps]="step.yes" (changed)="changed.emit()" />
+        </div>
+        <div class="branch">
+          <h4>Otherwise</h4>
+          <story-outcomes [allowUnlock]="allowUnlock" [allowNavigation]="allowNavigation" [story]="story" [steps]="step.no" (changed)="changed.emit()" />
+        </div>
+      }
+      @case ('random') {
+        @for (branch of step.branches; track branch.id) {
+          <div class="branch">
+            <div class="entry-actions">
+              <story-reorder [items]="step.branches" [index]="$index" label="chance outcome" (changed)="changed.emit()" /><button (click)="removeBranch(step, $index)">Remove outcome</button>
+            </div>
+            <label>Outcome {{ $index + 1 }} · probability (%)<input type="number" min="0" max="100" [(ngModel)]="branch.percent" (ngModelChange)="changed.emit()" /></label
+            ><story-outcomes [allowUnlock]="allowUnlock" [allowNavigation]="allowNavigation" [story]="story" [steps]="branch.steps" (changed)="changed.emit()" />
+          </div>
+        }
+        <button (click)="addBranch(step)">Add chance outcome</button>
+        <p class="muted">Percentages must total 100. Empty branches continue with the following step.</p>
+      }
+      @case ('unlock') {
+        <label
+          >Equipment copy<select [(ngModel)]="step.target" (ngModelChange)="step.method = ''; changed.emit()">
+            <option value="">Choose copy</option>
+            @for (c of story.copies || []; track c.id) {
+              <option [value]="c.id">{{ c.name }}</option>
+            }
+          </select></label
+        >
+        <label
+          >Unlock method<select [(ngModel)]="step.method" (ngModelChange)="changed.emit()">
+            <option value="">Choose method</option>
+            @for (m of methods(step.target); track m.id) {
+              <option [value]="m.id">{{ m.label }}</option>
+            }
+          </select></label
+        >
+        <label
+          >Acting character<select [(ngModel)]="step.actor" (ngModelChange)="changed.emit()">
+            <option value="">Choose helper</option>
+            @for (e of characters; track e.id) {
+              <option [value]="e.id">{{ e.name }}</option>
+            }
+          </select></label
+        >
+      }
+      @case ('go') {
+        <label
+          >Scene<select [(ngModel)]="step.scene" (ngModelChange)="step.passage = ''; changed.emit()">
+            <option value="">Choose scene</option>
+            @for (s of story.scenes; track s.id) {
+              <option [value]="s.id">{{ s.title }}</option>
+            }
+          </select></label
+        >
+        <label
+          >Passage<select [(ngModel)]="step.passage" (ngModelChange)="changed.emit()">
+            <option value="">Scene entry passage</option>
+            @for (p of passages(step.scene); track p.id) {
+              <option [value]="p.id">{{ p.title }}</option>
+            }
+          </select></label
+        >
+        <div class="entry-actions">
+          <button (click)="createScene(step)">Create destination scene</button><button [disabled]="!step.scene" (click)="createPassage(step)">Create destination passage</button>
+        </div>
+      }
+      @case ('effect') {
+        <label
+          >Target<select [(ngModel)]="step.effect.target" (ngModelChange)="targetChanged(step.effect)">
+            <option value="">Choose target</option>
+            @if (step.effect.kind === 'addFlag' || step.effect.kind === 'removeFlag') {
+              @for (flag of standardFlags; track flag.id) {
+                <option [value]="flag.id">{{ flag.name }}</option>
+              }
+            }
+            @if (step.effect.kind === 'set' || step.effect.kind === 'add' || step.effect.kind === 'reveal') {
+              @for (p of effectProperties(step.effect); track p.property.id) {
+                @if (step.effect.kind !== 'add' || p.property.type === 'number') {
+                  <option [value]="p.property.id">{{ p.label }}</option>
+                }
+              }
+            }
+            @if (step.effect.kind === 'reveal') {
+              @for (e of allEntities; track e.id) {
+                <option [value]="e.id">{{ e.name }}</option>
+              }
+            }
+            @if (step.effect.kind === 'equip' || step.effect.kind === 'unequip' || step.effect.kind.endsWith('Quantity') || step.effect.kind.endsWith('Equipment')) {
+              @for (e of effectObjects(step.effect); track e.id) {
+                <option [value]="e.id">{{ itemLabel(e) }}</option>
+              }
+            }
+          </select></label
+        >
+        @if (step.effect.kind.endsWith('Quantity')) {
+          <label>Quantity<input type="number" min="1" step="1" [(ngModel)]="step.effect.value" (ngModelChange)="changed.emit()" /></label>
+          <p class="muted">Only carried items count. Equipped items are excluded.</p>
+        }
+        @if (step.effect.kind === 'transferQuantity' || step.effect.kind === 'transferEquipment') {
+          <label
+            >From character<select [(ngModel)]="step.effect.from" (ngModelChange)="changed.emit()">
+              <option value="">Choose source</option>
+              @for (e of characters; track e.id) {
+                <option [value]="e.id">{{ e.name }}</option>
+              }
+            </select></label
+          >
+        }
+        @if (step.effect.kind === 'set' || step.effect.kind === 'add') {
+          <story-value [type]="type(step.effect)" [(value)]="step.effect.value" (valueChange)="changed.emit()" />
+        }
+        @if (needsCharacter(step.effect)) {
+          <label
+            >Character<select [(ngModel)]="step.effect.actor" (ngModelChange)="changed.emit()">
+              <option value="">Choose character</option>
+              @for (e of characters; track e.id) {
+                <option [value]="e.id">{{ e.name }}</option>
+              }
+            </select></label
+          >
+        }
+        @if (step.effect.kind === 'removeFlag') {
+          <p class="muted">Sets the direct value to false. Owned items or equipment may still make it true.</p>
+        }
+        @if (
+          step.effect.kind === 'equip' ||
+          step.effect.kind === 'unequip' ||
+          step.effect.kind === 'removeEquipment' ||
+          step.effect.kind === 'transferEquipment' ||
+          step.effect.kind === 'unlockEquipment' ||
+          step.effect.kind === 'breakEquipment' ||
+          step.effect.kind === 'destroyEquipment'
+        ) {
+          <label class="check"><input type="checkbox" [(ngModel)]="step.effect.ignoreLayering" (ngModelChange)="changed.emit()" />Ignore blocked access</label>
+          <p class="muted">Bypasses coverage restrictions. Covering equipment stays equipped unless replaced on an occupied layer.</p>
+        }
+      }
+    }
+  </div>
+}
+<div class="entry-actions">
+  <button (click)="add('effect')">+ Action</button><button (click)="add('condition')">+ Condition</button><button (click)="add('random')">+ Chance</button>
+  @if (allowNavigation) {
+    <button (click)="add('go')">+ Continue</button><button (click)="add('end')">+ Ending</button>
+  }
+</div>

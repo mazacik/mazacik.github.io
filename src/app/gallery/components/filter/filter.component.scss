@@ -48,6 +48,7 @@
 
     .search-input-container {
       position: relative;
+      flex-shrink: 0;
 
       .search-input {
         width: 100%;
@@ -85,12 +86,18 @@
 
     .filters-container {
       flex: 1;
+      min-height: 0;
+      overflow-y: auto;
       scrollbar-gutter: stable;
 
       i {
         font-size: 0.8rem;
         margin-top: 1px;
       }
+    }
+
+    .search-focused {
+      font-weight: 700;
     }
   }
 
@@ -105,6 +112,7 @@
       gap: variables.$gap-1;
 
       .button {
+        font: inherit;
         flex: 1;
         gap: variables.$gap-1;
       }

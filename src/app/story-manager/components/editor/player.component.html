@@ -1,0 +1,288 @@
+<div class="row player-toolbar">
+  <h2>{{ testScene ? 'Test scene' : 'Play' }}</h2>
+  <button [disabled]="busy || !canUndo" (click)="undo()">Undo</button>
+  <button [disabled]="busy" (click)="start()">{{ testScene ? 'Start / restart test' : game ? 'Restart' : 'Start playthrough' }}</button>
+</div>
+<div class="player-layout">
+  <div class="player-content">
+    @if (error) {
+      <p class="danger" role="alert">{{ error }}</p>
+    }
+    @if (testScene && setup) {
+      <div class="test-setup" [class.has-game]="!!game">
+        <details [open]="!game">
+          <summary>Test starting situation</summary>
+          <p class="muted">These values affect this test only. Restart the test to apply changes.</p>
+          @for (issue of flagErrors; track $index) {
+            <p class="danger">{{ issue.message }}</p>
+          }
+          <details>
+            <summary>Previous choices</summary>
+            <app-multiselect label="Previous choices" placeholder="Select choices..." [options]="choiceOptions" [value]="setup.chosen" (valueChange)="setChosen($event)" />
+          </details>
+          <h4>Known information</h4>
+          <app-multiselect label="Known information" placeholder="Select known information..." [options]="knownOptions" [value]="setup.known" (valueChange)="setKnown($event)" />
+          @for (p of properties; track p.property.id) {
+            <label>{{ p.label }}<story-value [type]="p.property.type" [value]="read(p.property.id, setup)" (valueChange)="setVariable(p.property.id, $event)" /></label>
+          }
+          @for (actor of characters; track actor.id) {
+            <h4>{{ actor.name }} · Items</h4>
+            @for (e of items; track e.id) {
+              <label>{{ e.name }} · Carried quantity<input type="number" min="0" step="1" [ngModel]="amount(actor.id, e.id)" (ngModelChange)="setAmount(actor.id, e.id, $event)" /></label>
+            }
+          }
+          <h3>Equipment copies</h3>
+          @for (c of copies; track c.id) {
+            <label
+              >{{ c.name }} · Owner<select [ngModel]="setup.copyStates?.[c.id]?.owner || ''" (ngModelChange)="setCopyOwner(c.id, $event)">
+                <option value="">Unassigned</option>
+                @for (actor of characters; track actor.id) {
+                  <option [value]="actor.id">{{ actor.name }}</option>
+                }
+              </select></label
+            >
+            <label class="check"
+              ><input
+                type="checkbox"
+                [disabled]="!setup.copyStates?.[c.id]?.owner"
+                [ngModel]="itemEquipped(setup.copyStates?.[c.id]?.owner, c.id)"
+                (ngModelChange)="equipItem(setup.copyStates[c.id].owner, c.id, $event)" />Equipped</label
+            >
+            <label class="check"
+              ><input
+                type="checkbox"
+                [disabled]="!itemEquipped(setup.copyStates?.[c.id]?.owner, c.id)"
+                [ngModel]="setup.copyStates?.[c.id]?.locked || false"
+                (ngModelChange)="setSetupLocked(c.id, $event)" />Locked</label
+            >
+            <label
+              >Physical condition<select [ngModel]="setup.copyStates?.[c.id]?.condition || 'intact'" (ngModelChange)="setSetupCondition(c.id, $event)">
+                <option value="intact">Intact</option>
+                <option value="broken">Broken</option>
+                <option value="destroyed">Destroyed</option>
+              </select></label
+            >
+          }
+        </details>
+        @if (methodTests.length) {
+          <details>
+            <summary>Unlock attempts</summary>
+            @for (test of methodTests; track test.key) {
+              <label
+                >{{ test.label
+                }}<select [ngModel]="forcedUnlock[test.key] || ''" (ngModelChange)="forcedUnlock[test.key] = $event">
+                  <option value="">Normal result</option>
+                  <option value="success">Force success</option>
+                  <option value="failure">Force failure</option>
+                </select></label
+              >
+            }
+          </details>
+        }
+        @if (randomSteps.length) {
+          <details>
+            <summary>Chance outcomes</summary>
+            @for (r of randomSteps; track r.step.id) {
+              <label
+                >{{ r.label
+                }}<select [ngModel]="forced[r.step.id] ?? -1" (ngModelChange)="forced[r.step.id] = $event">
+                  <option [ngValue]="-1">Real randomness</option>
+                  @for (b of r.step.branches; track b.id) {
+                    <option [ngValue]="$index">Force outcome {{ $index + 1 }} ({{ b.percent }}%)</option>
+                  }
+                </select></label
+              >
+            }
+          </details>
+        }
+      </div>
+    }
+    @if (game; as g) {
+      <div class="reader">
+        <div #historyScroll class="dialogue-history" tabindex="0" aria-label="Dialogue history">
+          @for (issue of testIssues; track $index) {
+            <p class="danger">{{ issue.message }}</p>
+          }
+          @if (g.status === 'canceled' || g.revision !== story.revision) {
+            <p>This story has changed. Restart to play the latest version.</p>
+          }
+          <section #transcriptContent class="transcript" aria-label="Dialogue and player decisions" role="log">
+            @for (entry of g.transcript; track $index) {
+              <article
+                class="transcript-entry"
+                [class.player-action]="entry.kind === 'equipmentAttempt' || entry.kind === 'equipmentAction'"
+                [class.equipment-attempt]="entry.kind === 'equipmentAttempt'"
+                [class.equipment-action]="entry.kind === 'equipmentAction'">
+                <h3>{{ transcriptSpeaker(entry) }}</h3>
+                @if (transcriptAction(entry); as action) {
+                  <div class="prose">{{ action }}</div>
+                }
+                <div class="prose" [class.action-result]="entry.kind === 'equipmentAttempt'">
+                  @for (part of entry.parts; track $index) {
+                    @if (part.entity && g.revision === story.revision) {
+                      <button class="link" (click)="inspected = part.entity">{{ part.text }}</button>
+                    } @else {
+                      {{ part.text }}
+                    }
+                  }
+                </div>
+              </article>
+              @if (entry.choice) {
+                <article class="transcript-entry player-action player-decision">
+                  <h3>You</h3>
+                  <div class="prose">{{ entry.choice }}</div>
+                </article>
+              }
+            }
+            @if (g.status === 'ended') {
+              <h3>The end</h3>
+            }
+          </section>
+          @if (g.revision === story.revision) {
+            @if (visibleVariables('').length) {
+              <section>
+                <h3>Story variables</h3>
+                @for (v of visibleVariables(''); track v.property.id) {
+                  <p>{{ v.property.name }}: {{ read(v.property.id, g.state) }}</p>
+                }
+              </section>
+            }
+            @for (actor of characters; track actor.id) {
+              @if (known(actor.id) && visibleVariables(actor.id).length) {
+                <section>
+                  <h3>{{ actor.name }}</h3>
+                  @for (v of visibleVariables(actor.id); track v.property.id) {
+                    <p class="reader-character-variable">{{ v.property.name }}: {{ read(v.property.id, g.state) }}</p>
+                  }
+                </section>
+              }
+            }
+            @if (inspectedEntity; as e) {
+              <aside class="box">
+                <div class="row">
+                  <h3>{{ e.name }}</h3>
+                  <button (click)="inspected = ''">Close</button>
+                </div>
+                @if (known(e.id)) {
+                  @for (p of e.properties; track p.id) {
+                    @if (known(p.id)) {
+                      <p>{{ p.name }}: {{ read(p.id, g.state) ?? p.initial }}</p>
+                    }
+                  }
+                } @else {
+                  <p>You have not discovered information about this {{ e.kind }} yet.</p>
+                }
+              </aside>
+            }
+          }
+          @if (testScene) {
+            <details>
+              <summary>Current Boolean variables</summary>
+              @for (status of statuses('', g.state); track status.flag.id) {
+                <p>Story · {{ status.flag.name }}: {{ status.active }} · {{ status.explanation }}</p>
+              }
+              @for (actor of characters; track actor.id) {
+                <h4>{{ actor.name }}</h4>
+                @for (status of statuses(actor.id, g.state); track status.flag.id) {
+                  <p>{{ status.flag.name }}: {{ status.active ? 'present' : 'absent' }} — {{ status.explanation }}</p>
+                }
+              }
+            </details>
+            <details>
+              <summary>Checks, effects, and random results</summary>
+              @for (line of g.trace; track $index) {
+                <p>{{ line }}</p>
+              }
+            </details>
+          }
+        </div>
+        @if (g.status === 'active' && g.revision === story.revision) {
+          <section class="choices" aria-label="Dialogue choices">
+            @for (choice of choices; track choice.id) {
+              <button [disabled]="busy || !allowed(choice.id)" (click)="select(choice.id)">
+                {{ choice.label }}
+                @if (!allowed(choice.id) && choice.explanation) {
+                  <small>{{ choice.explanation }}</small>
+                }
+              </button>
+            }
+            @if (!choices.length) {
+              <p>No choices are currently available.</p>
+            }
+          </section>
+        }
+      </div>
+    }
+  </div>
+
+  @if (game; as g) {
+    <aside class="gear-panel" aria-label="Player inventory and equipment">
+      <div class="gear-switch" role="group" aria-label="Inventory or equipment">
+        <button [class.active]="gearView === 'inventory'" [attr.aria-pressed]="gearView === 'inventory'" (click)="gearView = 'inventory'">Inventory</button>
+        <button [class.active]="gearView === 'equipment'" [attr.aria-pressed]="gearView === 'equipment'" (click)="gearView = 'equipment'">Equipment</button>
+      </div>
+      <div class="gear-content" tabindex="0" [attr.aria-label]="gearView === 'inventory' ? 'Carried inventory' : 'Equipped items'">
+        @if (g.revision === story.revision) {
+          <section [attr.aria-label]="gearView === 'inventory' ? 'Inventory' : 'Equipment'" [class.inventory-view]="gearView === 'inventory'" [class.equipment-view]="gearView === 'equipment'">
+            @for (e of gearView === 'inventory' ? inventory : equipment; track e.id) {
+              <article class="gear-row" [attr.data-item-id]="e.id">
+                <div class="gear-row-header">
+                  <span class="gear-name">{{ e.name }}</span>
+                  @if (e.kind === 'object') {
+                    <span class="gear-quantity" [attr.aria-label]="'Quantity: ' + e.quantity">&times; {{ e.quantity }}</span>
+                  }
+                  @if (isLocked(e.id)) {
+                    <span class="gear-status">Locked</span>
+                  } @else if (g.state.copyStates?.[e.id]?.condition === 'broken') {
+                    <span class="gear-status">Broken</span>
+                  }
+                </div>
+                <div class="gear-details">
+                  @if (e.description) {
+                    <p class="gear-description">{{ e.description }}</p>
+                  }
+                  @if (known(e.id)) {
+                    @for (p of e.properties; track p.id) {
+                      @if (known(p.id)) {
+                        <p class="gear-property">{{ p.name }}: {{ read(p.id, g.state) ?? p.initial }}</p>
+                      }
+                    }
+                  }
+                  @if (e.kind === 'equipment' && canChangeEquipment) {
+                    <div class="entry-actions">
+                      <button class="gear-action" [disabled]="busy || !!equipmentReason(e.id, gearView === 'inventory')" (click)="changeEquipment(e.id, gearView === 'inventory')">
+                        {{ gearView === 'inventory' ? 'Equip' : 'Unequip' }}
+                      </button>
+                      @if (gearView === 'equipment' && e.lockable && !isLocked(e.id)) {
+                        <button class="gear-action" [disabled]="busy || !!equipmentReason(e.id, 'lock')" (click)="changeEquipment(e.id, 'lock')">Lock</button>
+                      }
+                    </div>
+                    @if (gearView === 'equipment' && isLocked(e.id)) {
+                      <div class="unlock-actions">
+                        @for (method of methods(e.id); track method.id) {
+                          <div class="unlock-action">
+                            <button class="gear-action" [disabled]="busy || !!unlockReason(e.id, method.id)" (click)="unlock(e.id, method.id)">{{ method.label }}</button>
+                            @if (unlockReason(e.id, method.id); as reason) {
+                              <p class="gear-reason">{{ reason }}</p>
+                            }
+                          </div>
+                        }
+                      </div>
+                    } @else if (equipmentReason(e.id, gearView === 'inventory'); as reason) {
+                      <p class="gear-reason">{{ reason }}</p>
+                    }
+                  }
+                </div>
+              </article>
+            }
+            @if (!(gearView === 'inventory' ? inventory : equipment).length) {
+              <p>{{ gearView === 'inventory' ? 'No items.' : 'No equipped items.' }}</p>
+            }
+          </section>
+        } @else {
+          <p class="muted">This playthrough uses an older story version. Restart to view its inventory and equipment.</p>
+        }
+      </div>
+    </aside>
+  }
+</div>

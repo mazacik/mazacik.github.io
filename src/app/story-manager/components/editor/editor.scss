@@ -1,0 +1,205 @@
+@use 'src/styles/variables.scss';
+
+// Included only by story editor components (Angular view encapsulation).
+:host {
+  display: block;
+  min-width: 0;
+  min-height: 0;
+  overflow-wrap: anywhere;
+}
+label {
+  display: flex;
+  flex-direction: column;
+  gap: variables.$gap-1;
+  margin: 0 0 variables.$gap-3;
+  min-width: 0;
+}
+input,
+select,
+textarea,
+button {
+  font: inherit;
+  color: inherit;
+  border: 1px solid var(--color-border);
+  border-radius: variables.$gap-1;
+  background: transparent;
+  padding: 8px;
+  margin: 0;
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 36px;
+}
+input:not([type='checkbox']),
+select {
+  width: 360px;
+}
+input[type='number'] {
+  width: 120px;
+}
+input[type='checkbox'] {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  min-height: 18px;
+  padding: 0;
+  margin: 0;
+  flex: 0 0 18px;
+  accent-color: var(--color-highlight);
+}
+textarea {
+  width: 100%;
+}
+button {
+  cursor: pointer;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  background: transparent;
+  transition: background-color variables.$transition-duration-fastest;
+}
+button:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+button:hover:not(:disabled) {
+  background-color: var(--color-button-background-secondary-hover);
+}
+button.active {
+  color: var(--color-text-secondary-active);
+  background-color: var(--color-button-background-secondary-active);
+  border-color: var(--color-border-lighter);
+}
+button:focus-visible,
+summary:focus-visible,
+[tabindex]:not(input):not(select):not(textarea):focus-visible {
+  outline: 2px solid var(--color-highlight);
+  outline-offset: 2px;
+}
+.row,
+.entry-actions {
+  display: flex;
+  gap: variables.$gap-1;
+  align-items: center;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+.row > * {
+  min-width: 0;
+  max-width: 100%;
+}
+.row > label {
+  flex: 1 1 180px;
+}
+.entry-actions {
+  margin-bottom: variables.$gap-1;
+}
+.box {
+  border: 1px solid var(--color-border);
+  padding: variables.$gap-1;
+  margin: 0 0 variables.$gap-1;
+  border-radius: variables.$gap-1;
+  min-width: 0;
+}
+.muted {
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}
+.danger {
+  color: var(--color-negative);
+}
+.branch {
+  border-left: 1px solid var(--color-border);
+  padding-left: variables.$gap-1;
+  margin: variables.$gap-1 0;
+  min-width: 0;
+}
+.check {
+  flex-direction: row;
+  align-items: center;
+  min-height: 36px;
+  cursor: pointer;
+}
+h3,
+h4 {
+  margin: variables.$gap-3 0 variables.$gap-2;
+}
+p {
+  margin: variables.$gap-1 0 variables.$gap-3;
+}
+details {
+  margin: variables.$gap-3 0;
+}
+summary {
+  padding: variables.$gap-1 0;
+  cursor: pointer;
+}
+.prose {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.7;
+}
+.link {
+  border: 0;
+  padding: 0;
+  min-height: 0;
+  text-decoration: underline;
+  color: var(--color-highlight);
+  background: transparent;
+}
+.ordered-entry {
+  display: flex;
+  align-items: center;
+  gap: variables.$gap-1;
+  margin-bottom: variables.$gap-1;
+  min-width: 0;
+}
+.ordered-entry > button {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+.ordered-entry > story-reorder {
+  flex: 0 0 auto;
+  order: 1;
+}
+.reorder {
+  display: flex;
+  gap: variables.$gap-1;
+}
+.reorder button {
+  padding: 4px;
+  width: 28px;
+  min-height: 32px;
+}
+@media (max-width: 799px) {
+  button:not(.link) {
+    min-height: 44px;
+  }
+}
+
+.field-row {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: variables.$gap-1;
+  margin-bottom: variables.$gap-3;
+  min-width: 0;
+}
+.field-row > label {
+  flex: 0 1 auto;
+  margin-bottom: 0;
+  max-width: 100%;
+}
+.field-row > .entry-actions {
+  margin-bottom: 0;
+}
+section:first-child > h3:first-child,
+:host > h3:first-child {
+  margin-top: 0;
+}
+
+app-multiselect + button,
+app-multiselect + .entry-actions {
+  margin-top: variables.$gap-2;
+}

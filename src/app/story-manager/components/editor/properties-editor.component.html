@@ -1,0 +1,19 @@
+<h3>Variables</h3>
+@for (p of properties; track p.id) {
+  <div class="box variable-row">
+    <label>Name<input [(ngModel)]="p.name" (ngModelChange)="changed.emit()" /></label>
+    <label
+      >Type<select [(ngModel)]="p.type" (ngModelChange)="reset(p)">
+        <option value="text">Text</option>
+        <option value="number">Number</option>
+        <option value="boolean">True / false</option>
+      </select></label
+    >
+    <label>Starting value<story-value [type]="p.type" [(value)]="p.initial" (valueChange)="changed.emit()" /></label>
+    <div class="entry-actions">
+      <story-reorder [items]="properties" [index]="$index" label="property" (changed)="changed.emit()" />
+      <button (click)="remove.emit(p)">Delete variable</button>
+    </div>
+  </div>
+}
+<button (click)="add()">Add variable</button>

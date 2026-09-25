@@ -1,0 +1,72 @@
+@if (section === 'General') {
+  <section>
+    @if (entity.equipmentRole !== 'type') {
+      <label
+        >Equipment type<select [ngModel]="entity.parentId || ''" (ngModelChange)="setParent($event)">
+          <option value="">Choose type</option>
+          @for (p of parents; track p.id) {
+            <option [value]="p.id">{{ p.name }}</option>
+          }
+        </select></label
+      >
+    }
+    @if (inheritanceError) {
+      <p class="danger">{{ inheritanceError }}</p>
+    }
+    <h3>Required layers</h3>
+    @if (entity.parentId) {
+      <label class="check"><input type="checkbox" [ngModel]="entity.requiredSlots !== undefined" (ngModelChange)="setSlotsOverride($event)" />Override type layers</label>
+    }
+    <app-multiselect
+      label="Required layers"
+      placeholder="Select layers…"
+      [options]="layerOptions"
+      [disabled]="!!entity.parentId && entity.requiredSlots === undefined"
+      [value]="resolved.requiredSlots ?? []"
+      (valueChange)="setSlots($event)" />
+    @for (slot of missingSlots; track slot) {
+      <p class="danger">Missing layer: {{ slot }}</p>
+    }
+    @if (!resolved.requiredSlots?.length) {
+      <p class="danger">Select at least one required layer.</p>
+    }
+  </section>
+}
+@if (section === 'Variables') {
+  @if (parent; as p) {
+    <section>
+      <h3>Type variables</h3>
+      @for (v of p.properties; track v.id) {
+        <div class="field-row">
+          <label>{{ v.name }}<story-value [type]="v.type" [value]="entity.propertyOverrides?.[v.id] ?? v.initial" (valueChange)="setOverride(v.id, $event)" /></label>
+          <div class="entry-actions">
+            @if (ownOverride(v.id)) {
+              <button (click)="resetOverride(v.id)">Reset to type default</button>
+            } @else {
+              <span class="muted">From type {{ p.name }}</span>
+            }
+          </div>
+        </div>
+      }
+    </section>
+  }
+  @for (id of invalidOverrides; track id) {
+    <p class="danger">Missing type variable: {{ id }} <button (click)="resetOverride(id)">Remove override</button></p>
+  }
+  <section><story-properties [properties]="entity.properties" (changed)="changed.emit()" (remove)="removeProperty.emit($event)" /></section>
+}
+@if (section === 'Effects') {
+  <section>
+    <h3>Effects</h3>
+    @for (g of invalidGrants; track $index) {
+      <p class="danger">Missing or incompatible effect: {{ g.flag }} <button (click)="removeInvalidGrant(g.flag)">Remove effect</button></p>
+    }
+    <app-multiselect label="Effects" placeholder="Select effects..." [options]="effectOptions" [value]="selectedEffects" (valueChange)="setEffects($event)" />
+    <div class="entry-actions">
+      <button (click)="createGrantVariable()">Create effect</button>
+    </div>
+  </section>
+}
+@if (section === 'Locks' && entity.equipmentRole !== 'type') {
+  <story-locks [story]="story" [entity]="entity" (changed)="changed.emit()" />
+}

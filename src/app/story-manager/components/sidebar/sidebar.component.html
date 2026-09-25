@@ -2,30 +2,20 @@
   <div class="sidebar-header">
     <div class="search-container">
       <i class="fa-solid fa-magnifying-glass"></i>
-      <input class="search-input" #searchInput (input)="onSearchInputChange(searchInput)" (focus)="searchInput.select()" placeholder="Search" />
+      <input class="search-input" aria-label="Search notes" #searchInput (input)="onSearchInputChange(searchInput)" (focus)="searchInput.select()" placeholder="Search" />
     </div>
   </div>
-  <div class="items-container y-scrollbar-container">
-    <div class="tree-container">
-      @for (article of stateService.getRoot(); track article.id) {
+  <div class="items-container">
+    <div class="notes-list">
+      @for (article of visibleNotes; track article.id) {
         <app-sidebar-row [article]="article"></app-sidebar-row>
       }
-      <div
-        class="root-drop-zone"
-        [class.visible]="stateService.draggedArticle"
-        [class.active]="stateService.dropPosition == 'root'"
-        (dragover)="onRootDragOver($event)"
-        (drop)="onRootDrop($event)">
-        <span>Move to Root</span>
-      </div>
     </div>
   </div>
+  @if (stateService.draggedArticle) {
+    <div class="root-drop-zone" [class.active]="stateService.dropPosition == 'root'" (dragover)="onRootDragOver($event)" (drop)="onRootDrop($event)">Move to end</div>
+  }
   <div class="buttons-container">
-    <div class="button smaller" (click)="stateService.create(null, false)">
-      <span>Create Note</span>
-    </div>
-    <div class="button smaller" (click)="stateService.create(null, true)">
-      <span>Create Folder</span>
-    </div>
+    <button (click)="stateService.create(stateService.storyFolder, false)">Create Note</button>
   </div>
 </div>

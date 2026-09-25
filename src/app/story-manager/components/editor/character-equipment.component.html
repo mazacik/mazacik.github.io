@@ -1,0 +1,71 @@
+<h3>Starting equipment</h3>
+<div class="field-row">
+  <label
+    >Equipment<select [(ngModel)]="selected">
+      <option value="">Choose equipment</option>
+      @for (template of templates; track template.id) {
+        <option [value]="template.id">{{ template.name }}</option>
+      }
+    </select></label
+  >
+  <button [disabled]="!selected" (click)="addCopy()">Add equipment</button>
+</div>
+@for (c of copies; track c.id) {
+  <details class="box" [id]="'equipment-copy-' + c.id" [open]="expandedId === c.id">
+    <summary>{{ c.name }} · {{ c.equipped ? 'Equipped' : 'Carried' }}{{ c.locked ? ' · Locked' : '' }}</summary>
+    <div class="entry-actions">
+      <button (click)="duplicateCopy(c)">Duplicate</button>
+      <button (click)="removeFromInventory(c)">Remove from inventory</button>
+      <button (click)="deleteCopy(c)">Delete copy</button>
+    </div>
+    <p class="muted">Equipment: {{ templateName(c) }}</p>
+    <label>Name<input [(ngModel)]="c.name" (ngModelChange)="changed.emit()" /></label>
+    @if (resolved(c); as template) {
+      <label class="check"><input type="checkbox" [ngModel]="c.equipped" (ngModelChange)="setEquipped(c, $event)" />Starts equipped</label>
+      @if (template.lockable || c.locked) {
+        <label class="check"><input type="checkbox" [disabled]="(!c.equipped || !template.lockable) && !c.locked" [(ngModel)]="c.locked" (ngModelChange)="changed.emit()" />Starts locked</label>
+        <h4>Keys that open this</h4>
+        <label class="check"><input type="checkbox" [ngModel]="c.keyItems !== undefined" (ngModelChange)="setKeys(c, $event)" />Override equipment keys</label>
+        @if (c.keyItems !== undefined) {
+          <story-key-picker [story]="story" [(keys)]="c.keyItems" (keysChange)="changed.emit()" />
+        } @else {
+          <p class="muted">Uses the equipment's matching keys.</p>
+        }
+      }
+      @for (v of template.properties; track v.id) {
+        <label>{{ v.name }}<story-value [type]="v.type" [value]="c.values[v.id] ?? v.initial" (valueChange)="setCopyValue(c, v.id, $event)" /></label>
+        <div class="entry-actions">
+          @if (copyOverride(c, v.id)) {
+            <button (click)="resetCopyValue(c, v.id)">Reset to equipment default</button>
+          } @else {
+            <span class="muted">Equipment default</span>
+          }
+        </div>
+      }
+    } @else {
+      <p class="danger">This equipment is missing or has an invalid type.</p>
+    }
+    @for (id of invalidCopyValues(c); track id) {
+      <p class="danger">Missing variable: {{ id }} <button (click)="resetCopyValue(c, id)">Remove override</button></p>
+    }
+  </details>
+}
+@if (unassigned.length) {
+  <details>
+    <summary>Add existing equipment</summary>
+    <p class="muted">These copies have no starting character. Adding one keeps its values and dialogue references.</p>
+    <label
+      >Equipment copy<select [(ngModel)]="existingId">
+        <option value="">Choose existing equipment</option>
+        @for (c of unassigned; track c.id) {
+          <option [value]="c.id">{{ c.name }} · {{ templateName(c) }}</option>
+        }
+      </select></label
+    >
+    <button [disabled]="!existingId" (click)="addExisting()">Add to character</button>
+  </details>
+}
+
+@for (issue of issues; track $index) {
+  <p class="danger">{{ issue.message }}</p>
+}

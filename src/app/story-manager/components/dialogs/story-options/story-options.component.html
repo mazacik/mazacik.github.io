@@ -1,9 +1,8 @@
 @if (inputs.article) {
-  <div class="button action-button" (click)="rename()">Rename {{ inputs.article.folder ? 'Folder' : 'Note' }}</div>
-  <div class="button action-button" (click)="delete()">Delete {{ inputs.article.folder ? 'Folder' : 'Note' }}</div>
+  <button type="button" (click)="rename()">Rename {{ inputs.article.folder ? 'Folder' : 'Note' }}</button>
+  <button type="button" (click)="delete()">Delete {{ inputs.article.folder ? 'Folder' : 'Note' }}</button>
 }
 
 @if (!inputs.article || inputs.article.folder) {
-  <div class="button action-button" (click)="create(false)">Create {{ inputs.article ? 'Sub-Note' : 'Note' }}</div>
-  <div class="button action-button" (click)="create(true)">Create {{ inputs.article ? 'Sub-Folder' : 'Folder' }}</div>
+  <button type="button" (click)="create()">Create Note</button>
 }

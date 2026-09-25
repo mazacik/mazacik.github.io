@@ -143,9 +143,12 @@ textarea {
   color: var(--color-text-secondary);
   background-color: transparent;
 
-  &:focus-visible {
-    outline: initial;
-  }
+}
+
+textarea {
+  width: 100%;
+  resize: none;
+  overflow: hidden;
 }
 
 select {
@@ -172,8 +175,8 @@ textarea {
   color: inherit;
   font-weight: inherit;
 
-  &:focus-visible {
-    outline: initial;
+  &:focus {
+    outline: none;
   }
 }
 

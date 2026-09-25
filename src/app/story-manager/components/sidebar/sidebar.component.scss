@@ -4,27 +4,22 @@
   display: flex;
   user-select: none;
   overflow: hidden;
-  height: 100%;
-  width: variables.$sidebar-width;
-  min-width: variables.$sidebar-width;
-}
-
-@media screen and (max-width:1280px) {
-  :host {
-    width: 100%;
-    min-width: 100%;
-  }
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
 }
 
 .sidebar-container {
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
   width: 100%;
-  background-color: var(--color-surface-50);
 }
 
 .sidebar-header {
+  flex-shrink: 0;
   padding: variables.$gap-1;
   border-bottom: 1px solid var(--color-border);
 }
@@ -33,8 +28,9 @@
   display: flex;
   align-items: center;
   gap: variables.$gap-1;
-  min-height: variables.$button-height-small;
-  padding: 0 variables.$gap-1;
+  min-height: 36px;
+  box-sizing: border-box;
+  padding: 8px variables.$gap-1;
   border: 1px solid var(--color-border);
   border-radius: variables.$gap-1;
   background-color: var(--color-surface-100);
@@ -48,7 +44,7 @@
 
 .search-input {
   flex: 1;
-  min-height: variables.$button-height-small;
+  min-height: 0;
   min-width: 0;
   padding: 0;
   margin: 0;
@@ -61,12 +57,14 @@
 .items-container {
   flex: 1;
   min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
 }
 
-.tree-container {
+.notes-list {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: variables.$gap-1;
   padding: variables.$gap-1;
 }
 
@@ -75,21 +73,14 @@
   align-items: center;
   justify-content: center;
   min-height: variables.$button-height-small;
-  margin-top: variables.$gap-1;
-  border: 1px dashed transparent;
+  flex-shrink: 0;
+  margin: variables.$gap-1;
+  border: 1px dashed var(--color-border);
   border-radius: variables.$gap-1;
   color: var(--color-text-secondary);
   font-size: 0.85rem;
-  opacity: 0;
-  pointer-events: none;
-  transition-property: opacity, border-color, background-color;
+  transition-property: border-color, background-color;
   transition-duration: variables.$transition-duration-fastest;
-
-  &.visible,
-  &.active {
-    opacity: 1;
-    pointer-events: all;
-  }
 
   &.active {
     border-color: var(--color-highlight);
@@ -98,13 +89,13 @@
 }
 
 .buttons-container {
+  flex-shrink: 0;
   display: flex;
   gap: variables.$gap-1;
   padding: variables.$gap-1;
   border-top: 1px solid var(--color-border);
 
-  .button {
+  button {
     flex: 1;
-    gap: variables.$gap-1;
   }
 }

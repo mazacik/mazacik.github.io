@@ -1,0 +1,55 @@
+<div class="row map-toolbar">
+  <button (click)="scale(1.25)" aria-label="Zoom in">+</button><button (click)="scale(0.8)" aria-label="Zoom out">−</button><button (click)="fit()">Fit map</button
+  ><button [disabled]="!selected" (click)="focused = !focused; fit(); layout()">{{ focused ? 'All scenes' : 'Focus selected' }}</button
+  ><input aria-label="Find scene on map" placeholder="Find scene…" [(ngModel)]="query" />
+</div>
+@if (error) {
+  <p class="danger">{{ error }}</p>
+}
+<svg
+  role="group"
+  aria-label="Automatic scene map"
+  [attr.viewBox]="x + ' ' + y + ' ' + width / zoom + ' ' + height / zoom"
+  (pointerdown)="down($event)"
+  (pointermove)="move($event)"
+  (pointerup)="up()"
+  (pointercancel)="up()"
+  (wheel)="$event.preventDefault(); scale($event.deltaY < 0 ? 1.1 : 0.9)">
+  <defs>
+    <marker id="story-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" /></marker>
+  </defs>
+  @for (edge of edges; track edge.id) {
+    <g
+      class="connection"
+      tabindex="0"
+      role="button"
+      [attr.aria-label]="edge.label"
+      (click)="selectChoice.emit({ scene: edge.from, passage: edge.passage, choice: edge.choice })"
+      (keydown.enter)="selectChoice.emit({ scene: edge.from, passage: edge.passage, choice: edge.choice })">
+      <path [attr.d]="edge.path" marker-end="url(#story-arrow)" />
+      <text [attr.x]="edge.x" [attr.y]="edge.y">{{ edge.label }}</text>
+    </g>
+  }
+  @for (node of nodes; track node.id) {
+    <g
+      data-node="true"
+      tabindex="0"
+      role="button"
+      [attr.aria-label]="node.title"
+      [attr.transform]="'translate(' + (node.x - 110) + ',' + (node.y - 45) + ')'"
+      [class.selected]="selected === node.id"
+      [class.match]="query && node.title.toLowerCase().includes(query.toLowerCase())"
+      (click)="selectScene.emit(node.id)"
+      (keydown.enter)="selectScene.emit(node.id)">
+      <rect width="220" height="90" rx="10" />
+      <text x="12" y="32">{{ node.title.slice(0, 27) }}</text>
+      <text class="subtitle" x="12" y="58">{{ node.subtitle }}</text>
+      @if (hasIssue(node.id)) {
+        <text class="issue" x="195" y="22">!</text>
+      }
+    </g>
+  }
+</svg>
+@if (!story.scenes.length) {
+  <p class="muted">Create a scene to begin. Connections arrange themselves as you write choices.</p>
+}

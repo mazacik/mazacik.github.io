@@ -1,11 +1,11 @@
-import { Injectable } from "@angular/core";
+import { Injectable } from '@angular/core';
 import { nanoid } from 'nanoid';
-import { DialogService } from "src/app/shared/services/dialog.service";
-import { ArrayUtils } from "src/app/shared/utils/array.utils";
-import { StringUtils } from "src/app/shared/utils/string.utils";
-import { ArticleOptionsComponent } from "../components/dialogs/story-options/story-options.component";
-import { Article } from "../models/article.class";
-import { StoryManagerSerializationService } from "./story-manager-serialization.service";
+import { DialogService } from 'src/app/shared/services/dialog.service';
+import { ArrayUtils } from 'src/app/shared/utils/array.utils';
+import { StringUtils } from 'src/app/shared/utils/string.utils';
+import { ArticleOptionsComponent } from '../components/dialogs/story-options/story-options.component';
+import { Article } from '../models/article.class';
+import { StoryManagerSerializationService } from './story-manager-serialization.service';
 
 export type ArticleDropPosition = 'before' | 'inside' | 'after' | 'root';
 
@@ -13,10 +13,10 @@ export type ArticleDropPosition = 'before' | 'inside' | 'after' | 'root';
   providedIn: 'root',
 })
 export class StoryManagerStateService {
-
   public articles: Article[];
 
   public current: Article;
+  public storyFolder: Article;
   public searchQuery: string;
   public searchResults: Article[] = [];
   public draggedArticle: Article;
@@ -25,11 +25,15 @@ export class StoryManagerStateService {
 
   constructor(
     private dialogService: DialogService,
-    private serializationService: StoryManagerSerializationService
-  ) { }
+    private serializationService: StoryManagerSerializationService,
+  ) {}
 
   public getRoot(): Article[] {
-    return this.articles?.filter(article => !article.parent);
+    return this.articles?.filter((article) => !article.parent);
+  }
+
+  public getVisibleRoot(): Article[] {
+    return this.storyFolder?.children ?? [];
   }
 
   public collectArticles(): Article[] {
@@ -37,7 +41,7 @@ export class StoryManagerStateService {
     for (const article of this.articles) {
       articles.push(article);
       articles.push(...article.collectChildren());
-    }    
+    }
     return articles;
   }
 
@@ -125,7 +129,7 @@ export class StoryManagerStateService {
       nextSiblings.splice(insertionIndex, 0, article);
       nextParent.open = true;
     } else {
-      insertionIndex = this.normalizeIndex(insertionIndex, this.getRoot().filter(root => root != article).length);
+      insertionIndex = this.normalizeIndex(insertionIndex, this.getRoot().filter((root) => root != article).length);
       this.insertRootArticle(article, insertionIndex);
     }
 
@@ -138,7 +142,9 @@ export class StoryManagerStateService {
   }
 
   public async create(parent: Article | null, folder: boolean): Promise<void> {
-    const title: string = await this.dialogService.createInput({ title: folder ? 'Create Folder' : 'Create Note', placeholder: 'Title' });
+    if (folder ? !!parent : !parent?.folder || !this.articles.includes(parent)) return;
+    const title: string = await this.dialogService.createInput({ title: folder ? 'Create story' : 'Create Note', placeholder: 'Title' });
+    if (!folder && !this.articles.includes(parent)) return;
     if (title) {
       const article: Article = new Article();
       article.id = nanoid();
@@ -155,7 +161,7 @@ export class StoryManagerStateService {
   }
 
   public rename(article: Article): void {
-    this.dialogService.createInput({ title: 'Rename: ' + article.getNameWithParents(), placeholder: 'Text', defaultValue: article.title }).then(title => {
+    this.dialogService.createInput({ title: 'Rename: ' + article.getNameWithParents(), placeholder: 'Text', defaultValue: article.title }).then((title) => {
       if (!StringUtils.isEmpty(title)) {
         article.title = title;
         this.serializationService.save(true);
@@ -164,13 +170,14 @@ export class StoryManagerStateService {
   }
 
   public delete(article: Article): void {
-    this.dialogService.createConfirmation({ title: 'Delete: ' + article.getNameWithParents(), messages: ['Are you sure you want to delete "' + article.title + '"?'] }).then(confirmation => {
+    this.dialogService.createConfirmation({ title: 'Delete: ' + article.getNameWithParents(), messages: ['Are you sure you want to delete "' + article.title + '"?'] }).then((confirmation) => {
       if (confirmation) {
         const articlesToDelete: Article[] = this.collectArticleTree(article);
         const deletedArticleSet: Set<Article> = new Set(articlesToDelete);
 
         if (deletedArticleSet.has(this.current)) {
-          this.current = ArrayUtils.nearestRightFirst(this.articles, this.articles.indexOf(article), candidate => !deletedArticleSet.has(candidate));
+          const storyNotes = (this.storyFolder?.collectChildren() ?? this.articles).filter((candidate) => !candidate.folder);
+          this.current = ArrayUtils.nearestRightFirst(storyNotes, storyNotes.indexOf(this.current), (candidate) => !deletedArticleSet.has(candidate));
         }
 
         ArrayUtils.remove(this.articles, articlesToDelete);
@@ -190,9 +197,13 @@ export class StoryManagerStateService {
   }
 
   private canMoveArticle(article: Article, nextParent: Article): boolean {
-    if (!article) {
+    if (!article || (!article.folder && !nextParent)) {
       return false;
     }
+    if (!this.articles.includes(article) || (nextParent && !this.articles.includes(nextParent))) return false;
+
+    if (article.folder && !article.parent) return false;
+    if (this.storyFolder && nextParent !== this.storyFolder && !this.storyFolder.collectChildren().includes(nextParent)) return false;
 
     if (nextParent && !nextParent.folder) {
       return false;
@@ -209,9 +220,9 @@ export class StoryManagerStateService {
     return true;
   }
 
-  private getDropDestination(target: Article, position: ArticleDropPosition): { parent: Article, index: number } {
+  private getDropDestination(target: Article, position: ArticleDropPosition): { parent: Article; index: number } {
     if (position == 'root') {
-      return { parent: null, index: this.getRoot().length };
+      return { parent: this.storyFolder ?? null, index: this.storyFolder?.children.length ?? this.getRoot().length };
     }
 
     if (!target) {
@@ -236,7 +247,7 @@ export class StoryManagerStateService {
 
     return {
       parent: parent,
-      index: targetIndex + (position == 'after' ? 1 : 0)
+      index: targetIndex + (position == 'after' ? 1 : 0),
     };
   }
 
@@ -255,7 +266,7 @@ export class StoryManagerStateService {
   private insertRootArticle(article: Article, index: number): void {
     ArrayUtils.remove(this.articles, article);
 
-    const roots: Article[] = this.getRoot().filter(root => root != article);
+    const roots: Article[] = this.getRoot().filter((root) => root != article);
     const nextRoot: Article = roots[index];
 
     if (nextRoot) {
@@ -264,5 +275,4 @@ export class StoryManagerStateService {
       this.articles.push(article);
     }
   }
-
 }

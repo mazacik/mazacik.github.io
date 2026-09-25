@@ -1,0 +1,106 @@
+@if (entity.equipmentRole !== 'type') {
+  <section>
+    <h3>Locks</h3>
+    <div class="lock-options">
+      <label class="check"><input type="checkbox" [ngModel]="resolved.lockable || false" (ngModelChange)="entity.lockable = $event; changed.emit()" />Lockable</label>
+      @if (resolved.lockable) {
+        <label class="check"><input type="checkbox" [ngModel]="resolved.lockOnEquip || false" (ngModelChange)="entity.lockOnEquip = $event; changed.emit()" />Lock when equipped</label>
+      }
+    </div>
+    @if (resolved.lockable) {
+      <h4>Default keys that open this</h4>
+      <story-key-picker [story]="story" [keys]="resolved.keyItems || []" (keysChange)="entity.keyItems = $event; changed.emit()" />
+      <h4>Unlock methods</h4>
+      <fieldset>
+        @for (method of resolved.unlockMethods || []; track method.id) {
+          <details class="box unlock-method">
+            <summary>{{ method.label }}</summary>
+            <div class="method-toolbar">
+              <label>Button label<input [(ngModel)]="method.label" (ngModelChange)="changed.emit()" /></label>
+              <div class="entry-actions">
+                <story-reorder [items]="entity.unlockMethods || []" [index]="$index" label="unlock method" (changed)="changed.emit()" />
+                <button (click)="removeMethod(method)">Delete method</button>
+              </div>
+            </div>
+            <div class="method-tabs" role="tablist" [attr.aria-label]="method.label + ' settings'">
+              @for (section of methodSections; track section) {
+                <button
+                  type="button"
+                  role="tab"
+                  [id]="methodTabId(method, section)"
+                  [attr.aria-controls]="methodTabId(method, 'panel')"
+                  [attr.aria-selected]="methodSection(method) === section"
+                  [attr.tabindex]="methodSection(method) === section ? 0 : -1"
+                  [class.active]="methodSection(method) === section"
+                  (click)="selectMethodSection(method, section)"
+                  (keydown)="methodTabKey($event, method, section)">
+                  {{ section }}
+                </button>
+              }
+            </div>
+            <div class="method-panel" role="tabpanel" tabindex="0" [id]="methodTabId(method, 'panel')" [attr.aria-labelledby]="methodTabId(method, methodSection(method))">
+              @switch (methodSection(method)) {
+                @case ('Requirements') {
+                  <div class="method-grid">
+                    <section>
+                      <h4>Available when</h4>
+                      <story-condition [story]="context" [condition]="method.available" (changed)="changed.emit()" />
+                    </section>
+                    <section>
+                      <h4>Access</h4>
+                      <div class="lock-options">
+                        <label class="check"><input type="checkbox" [(ngModel)]="method.requiresAccess" (ngModelChange)="changed.emit()" />Requires layer access</label>
+                        <label class="check"><input type="checkbox" [(ngModel)]="method.requiresKey" (ngModelChange)="changed.emit()" />Requires a matching key</label>
+                      </div>
+                      <label>Unavailable explanation<input [(ngModel)]="method.explanation" (ngModelChange)="changed.emit()" /></label>
+                    </section>
+                  </div>
+                }
+                @case ('Attempt') {
+                  <div class="method-grid">
+                    <section>
+                      <h4>Success check</h4>
+                      <story-condition [story]="context" [condition]="method.success" (changed)="changed.emit()" />
+                    </section>
+                    <section>
+                      <h4>Chance</h4>
+                      <label>Success probability (%)<input type="number" min="0" max="100" [(ngModel)]="method.chance" (ngModelChange)="changed.emit()" /></label>
+                    </section>
+                  </div>
+                  <section class="attempt-actions">
+                    <h4>Attempt costs and actions</h4>
+                    <p class="muted">Apply on every attempt, including failure.</p>
+                    <story-outcomes [story]="context" [steps]="method.costs" [allowUnlock]="false" [allowNavigation]="false" (changed)="changed.emit()" />
+                  </section>
+                }
+                @case ('Results') {
+                  <div class="method-grid method-results">
+                    <section>
+                      <h4>On success</h4>
+                      <label
+                        >Equipment result<select [(ngModel)]="method.result" (ngModelChange)="changed.emit()">
+                          <option value="unlock">Unlock</option>
+                          <option value="unequip">Unlock and unequip</option>
+                          <option value="break">Break and unequip</option>
+                          <option value="destroy">Destroy copy</option>
+                        </select></label
+                      >
+                      <label>Success message<textarea [(ngModel)]="method.successMessage" (ngModelChange)="changed.emit()"></textarea></label>
+                      <story-outcomes [story]="context" [steps]="method.yes" [allowUnlock]="false" (changed)="changed.emit()" />
+                    </section>
+                    <section>
+                      <h4>On failure</h4>
+                      <label>Failure message<textarea [(ngModel)]="method.failureMessage" (ngModelChange)="changed.emit()"></textarea></label>
+                      <story-outcomes [story]="context" [steps]="method.no" [allowUnlock]="false" (changed)="changed.emit()" />
+                    </section>
+                  </div>
+                }
+              }
+            </div>
+          </details>
+        }
+        <button (click)="addMethod()">Add unlock method</button>
+      </fieldset>
+    }
+  </section>
+}

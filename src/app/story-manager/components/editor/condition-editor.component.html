@@ -1,0 +1,137 @@
+<label
+  >Check
+  <select [(ngModel)]="condition.kind" (ngModelChange)="kindChanged()">
+    <option value="always">Always</option>
+    <option value="all">All checks pass</option>
+    <option value="any">Any check passes</option>
+    <option value="not">Check does not pass</option>
+    <option value="property">Variable comparison</option>
+    <option value="quantity">Carried quantity</option>
+    <option value="owns">Character owns item</option>
+    <option value="wears">Character has equipment equipped</option>
+    <option value="known">Information is known</option>
+    <option value="chosen">Choice was selected</option>
+    <option value="locked">Equipment is locked</option>
+    <option value="broken">Equipment is broken</option>
+    <option value="destroyed">Equipment is destroyed</option>
+    <option value="flag">Boolean variable is true</option>
+  </select>
+</label>
+@if (condition.kind === 'all' || condition.kind === 'any' || condition.kind === 'not') {
+  @for (child of condition.children; track child) {
+    <div class="branch">
+      <story-condition [story]="story" [condition]="child" (changed)="changed.emit()" />
+      @if (condition.kind !== 'not') {
+        <div class="entry-actions"><story-reorder [items]="condition.children" [index]="$index" label="check" (changed)="changed.emit()" /><button (click)="remove($index)">Remove check</button></div>
+      }
+    </div>
+  }
+  @if (condition.kind !== 'not') {
+    <button (click)="add()">Add check</button>
+  }
+}
+@if (condition.kind === 'property' || condition.kind === 'quantity') {
+  <label
+    >{{ condition.kind === 'quantity' ? 'Item' : 'Variable'
+    }}<select [(ngModel)]="condition.target" (ngModelChange)="targetChanged()">
+      <option value="">Choose variable</option>
+      @if (condition.kind === 'quantity') {
+        @for (e of items; track e.id) {
+          <option [value]="e.id">{{ itemLabel(e) }}</option>
+        }
+      } @else {
+        @for (p of properties; track p.property.id) {
+          <option [value]="p.property.id">{{ p.label }}</option>
+        }
+      }
+    </select></label
+  >
+  <label
+    >Comparison<select [(ngModel)]="condition.op" (ngModelChange)="changed.emit()">
+      <option value="eq">Equals</option>
+      <option value="ne">Does not equal</option>
+      @if (type === 'number') {
+        <option value="gt">Greater than</option>
+        <option value="gte">At least</option>
+        <option value="lt">Less than</option>
+        <option value="lte">At most</option>
+      }
+    </select></label
+  >
+  <story-value [type]="type" [(value)]="condition.value" (valueChange)="changed.emit()" />
+}
+@if (condition.kind === 'owns' || condition.kind === 'wears' || condition.kind === 'quantity') {
+  <label
+    >Character<select [(ngModel)]="condition.actor" (ngModelChange)="changed.emit()">
+      <option value="">Choose character</option>
+      @for (e of characters; track e.id) {
+        <option [value]="e.id">{{ e.name }}</option>
+      }
+    </select></label
+  >
+  @if (condition.kind !== 'quantity') {
+    <label
+      >{{ condition.kind === 'wears' ? 'Equipment' : 'Item'
+      }}<select [(ngModel)]="condition.target" (ngModelChange)="changed.emit()">
+        <option value="">Choose item</option>
+        @for (e of objects; track e.id) {
+          <option [value]="e.id">{{ itemLabel(e) }}</option>
+        }
+      </select></label
+    >
+  }
+}
+@if (condition.kind === 'known') {
+  <label
+    >Information<select [(ngModel)]="condition.target" (ngModelChange)="changed.emit()">
+      <option value="">Choose information</option>
+      @for (e of allEntities; track e.id) {
+        <option [value]="e.id">{{ e.name }}</option>
+      }
+      @for (p of properties; track p.property.id) {
+        <option [value]="p.property.id">{{ p.label }}</option>
+      }
+    </select></label
+  >
+}
+@if (condition.kind === 'flag') {
+  <label
+    >Boolean variable<select [(ngModel)]="condition.target" (ngModelChange)="changed.emit()">
+      <option value="">Choose variable</option>
+      @for (v of booleanVariables; track v.id) {
+        <option [value]="v.id">{{ v.name }} · {{ scope(v) }}</option>
+      }
+    </select></label
+  >
+  @if (flagNeedsCharacter) {
+    <label
+      >Character<select [(ngModel)]="condition.actor" (ngModelChange)="changed.emit()">
+        <option value="">Choose character</option>
+        @for (e of characters; track e.id) {
+          <option [value]="e.id">{{ e.name }}</option>
+        }
+      </select></label
+    >
+  }
+}
+@if (condition.kind === 'chosen') {
+  <label
+    >Previous choice<select [(ngModel)]="condition.target" (ngModelChange)="changed.emit()">
+      <option value="">Choose dialogue option</option>
+      @for (c of choices; track c.id) {
+        <option [value]="c.id">{{ c.label }}</option>
+      }
+    </select></label
+  >
+}
+
+@if (condition.kind === 'locked' || condition.kind === 'broken' || condition.kind === 'destroyed') {
+  <label
+    >Equipment copy<select [(ngModel)]="condition.target" (ngModelChange)="changed.emit()">
+      <option value="">Choose copy</option>
+      @for (c of story.copies || []; track c.id) {
+        <option [value]="c.id">{{ c.name }}</option>
+      }
+    </select></label
+  >
+}

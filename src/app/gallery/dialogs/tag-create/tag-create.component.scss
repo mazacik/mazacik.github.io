@@ -1,0 +1,94 @@
+@use 'src/styles/variables.scss';
+
+app-tag-create {
+  display: flex;
+  flex-direction: column;
+  gap: variables.$gap-1;
+  width: 500px;
+  max-width: 100%;
+  min-width: 0;
+  padding: variables.$gap-2;
+  box-sizing: border-box;
+
+  > input,
+  > ng-select {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .validation-message {
+    color: var(--color-negative);
+    font-size: 0.85rem;
+    overflow-wrap: anywhere;
+  }
+}
+
+// Also applies to the dropdown appended to body, outside the dialog's scroll area.
+.gallery-tag-parent-select {
+  color: var(--color-text-secondary);
+  font: inherit;
+
+  &.ng-select .ng-select-container {
+    min-height: 36px;
+    border: 1px solid var(--color-border);
+    border-radius: variables.$gap-1;
+    background: var(--color-surface-100);
+    align-items: center;
+  }
+
+  .ng-value-container {
+    padding-left: variables.$gap-2;
+  }
+
+  &.ng-select.ng-select-single .ng-select-container .ng-value-container .ng-input {
+    top: 0;
+    padding: 0 variables.$gap-2;
+  }
+
+  .ng-input > input {
+    height: 34px;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    color: inherit;
+    font: inherit;
+    box-shadow: none;
+  }
+
+  .ng-arrow-wrapper {
+    width: 24px;
+  }
+
+  .ng-arrow {
+    border: 5px solid transparent;
+    border-bottom: 0;
+    border-top-color: currentColor;
+  }
+
+  &.ng-select-focused .ng-select-container {
+    border-color: var(--color-highlight);
+  }
+
+  &.ng-dropdown-panel {
+    background: var(--color-surface-100);
+    border: 1px solid var(--color-border);
+    border-radius: variables.$gap-1;
+    box-shadow: 0 4px 12px #0003;
+  }
+
+  &.ng-dropdown-panel .ng-option {
+    padding: variables.$gap-2;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .ng-option-marked {
+    background: var(--color-button-background-secondary-hover);
+  }
+
+  .ng-option-selected {
+    font-weight: 600;
+  }
+}

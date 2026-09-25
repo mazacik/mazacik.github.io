@@ -1,0 +1,24 @@
+@use 'src/styles/variables.scss';
+
+.variable-row {
+  display: grid;
+  grid-template-columns: minmax(100px, 1fr) minmax(95px, 0.7fr) minmax(100px, 1fr) auto;
+  align-items: end;
+  gap: variables.$gap-1;
+}
+.variable-row label,
+.variable-row .entry-actions {
+  margin: 0;
+}
+.variable-row .entry-actions {
+  flex-wrap: nowrap;
+}
+@media (max-width: 799px) {
+  .variable-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .variable-row .entry-actions {
+    flex-wrap: wrap;
+    justify-content: end;
+  }
+}
