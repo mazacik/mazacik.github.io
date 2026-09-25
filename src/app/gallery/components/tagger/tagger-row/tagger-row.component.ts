@@ -22,7 +22,7 @@ export class TaggerRowComponent {
   @Input() groupMode: boolean;
   @Input() showFullName: boolean = false;
   @Input() flatMode: boolean = false;
-  @Output() tagToggled = new EventEmitter<MouseEvent>();
+  @Output() tagToggled = new EventEmitter<MouseEvent | KeyboardEvent>();
 
   constructor(
     private tagService: TagService,
@@ -32,12 +32,12 @@ export class TaggerRowComponent {
     protected stateService: GalleryStateService
   ) { }
 
-  protected onTagClick(event: MouseEvent): void {
+  public activate(event: MouseEvent | KeyboardEvent): void {
     if (this.tag.group) {
       if (!this.flatMode) {
         this.tag.open = !this.tag.open;
       }
-    } else if (!this.tag.pseudo) {
+    } else if (!this.tag.pseudo && this.target) {
       if (this.groupMode && this.target.group) {
         if (this.target.group.images.every(groupImage => groupImage.tags.includes(this.tag))) {
           this.target.group.images.forEach(groupImage => ArrayUtils.remove(groupImage.tags, this.tag));
@@ -117,7 +117,9 @@ export class TaggerRowComponent {
   }
 
   protected getDisplayName(): string {
-    return this.showFullName ? this.tag.getNameWithParents() : this.tag.name;
+    return this.showFullName
+      ? this.tag.collectParents().concat(this.tag).reverse().map(tag => tag.name).join(' | ')
+      : this.tag.name;
   }
 
   protected getTagGroups(): Tag[] {

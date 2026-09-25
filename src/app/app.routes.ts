@@ -7,7 +7,6 @@ import { ShoppingListComponent } from './shopping-list/shopping-list.component';
 import { authGuard } from './router/google-auth.guard';
 import { AppConstants } from './shared/constants/app.constants';
 import { DialogService } from './shared/services/dialog.service';
-import { StoryManagerComponent } from './story-manager/story-manager.component';
 
 const folderGuard: CanActivateFn = async (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
   const router = inject(Router);
@@ -38,7 +37,7 @@ export const routes: Routes = [{
 }, {
   path: 'story-manager',
   canActivate: [authGuard],
-  component: StoryManagerComponent
+  loadComponent: () => import('./story-manager/story-manager.component').then(m => m.StoryManagerComponent)
 }, {
   path: 'shopping-list',
   component: ShoppingListComponent

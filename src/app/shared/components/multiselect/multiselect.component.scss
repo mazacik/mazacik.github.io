@@ -1,0 +1,136 @@
+@use 'src/styles/variables.scss';
+
+app-multiselect {
+  display: block;
+  width: 360px;
+  max-width: 100%;
+  min-width: 0;
+}
+
+// Also scopes the panel that ng-select appends to the document body.
+.app-multiselect-control {
+  color: var(--color-text-secondary);
+  font: inherit;
+  min-width: 0;
+
+  &.ng-select .ng-select-container {
+    border: 1px solid var(--color-border);
+    border-radius: variables.$gap-1;
+    min-height: 36px;
+    align-items: center;
+    padding: variables.$gap-1;
+    gap: variables.$gap-1;
+    background: transparent;
+  }
+  &.ng-select .ng-select-container .ng-value-container {
+    min-width: 0;
+    max-height: 9rem;
+    overflow-y: auto;
+    gap: variables.$gap-1;
+    align-items: center;
+  }
+  &.ng-select.ng-select-multiple .ng-select-container .ng-value-container .ng-value {
+    display: flex;
+    align-items: center;
+    max-width: 100%;
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    background: var(--color-button-background-secondary-hover);
+    border-radius: variables.$gap-1;
+  }
+  .multiselect-label {
+    padding-left: variables.$gap-1;
+    min-width: 0;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
+  .multiselect-remove {
+    flex: 0 0 auto;
+    min-width: 28px;
+    min-height: 28px;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    border-radius: variables.$gap-1;
+    color: inherit;
+    background: transparent;
+    font: inherit;
+    cursor: pointer;
+  }
+  .multiselect-remove:hover {
+    background: var(--color-button-background-secondary-hover);
+  }
+  .multiselect-remove:focus-visible {
+    outline: 2px solid var(--color-highlight);
+    outline-offset: -2px;
+  }
+  &.ng-select .ng-select-container .ng-value-container .ng-input {
+    min-width: 2rem;
+    max-width: 100%;
+  }
+  &.ng-select .ng-select-container .ng-value-container .ng-input > input {
+    min-width: 0;
+    min-height: 26px;
+    height: auto;
+    margin: 0;
+    border-radius: 0;
+    font: inherit;
+    color: inherit;
+    display: block;
+  }
+  .ng-placeholder {
+    opacity: 0.65;
+  }
+  .ng-has-value .ng-placeholder {
+    display: none;
+  }
+  .ng-arrow-wrapper {
+    width: 24px;
+    flex: 0 0 24px;
+  }
+  .ng-arrow {
+    border: 5px solid transparent;
+    border-bottom: 0;
+    border-top-color: currentColor;
+  }
+  &.ng-select-disabled {
+    opacity: 0.5;
+  }
+  &.ng-dropdown-panel {
+    background: var(--color-surface-100);
+    border: 1px solid var(--color-border);
+    border-radius: variables.$gap-1;
+    box-shadow: 0 4px 12px #0003;
+    overflow: hidden;
+  }
+  &.ng-dropdown-panel .ng-dropdown-panel-items .ng-option {
+    padding: variables.$gap-2;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    min-height: 36px;
+  }
+  .ng-option-marked {
+    background: var(--color-button-background-secondary-hover);
+  }
+  .ng-option-selected {
+    font-weight: 600;
+  }
+  .ng-option-disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+  small {
+    display: block;
+    font-weight: normal;
+  }
+}
+
+@media (max-width: 799px) {
+  .app-multiselect-control.ng-select .ng-select-container,
+  .app-multiselect-control.ng-dropdown-panel .ng-option {
+    min-height: 44px;
+  }
+}

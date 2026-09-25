@@ -30,6 +30,13 @@
         </div>
       </div>
     </div>
+    @if (tag.group) {
+      <button type="button" class="group-filter-button" [ngClass]="tag.colorClass"
+        [title]="getGroupFilterLabel()" [attr.aria-label]="getGroupFilterLabel()"
+        (click)="$event.stopPropagation(); activate()">
+        <i class="fa-solid fa-check-double" aria-hidden="true"></i>
+      </button>
+    }
   </div>
   @if (tag.group && !flatMode) {
     <div class="flex column overflow-hidden anim-drawer" [class.open]="tag.open">

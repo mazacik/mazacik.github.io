@@ -1,31 +1,29 @@
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { ArrayUtils } from 'src/app/shared/utils/array.utils';
 import { StringUtils } from 'src/app/shared/utils/string.utils';
 import { StoryManagerStateService } from '../../services/story-manager-state.service';
-import { SidebarRowComponent } from "./sidebar-row/sidebar-row.component";
+import { SidebarRowComponent } from './sidebar-row/sidebar-row.component';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [
-    FormsModule,
-    SidebarRowComponent
-  ],
+  imports: [SidebarRowComponent],
   templateUrl: './sidebar.component.html',
-  styleUrls: ['./sidebar.component.scss']
+  styleUrls: ['../editor/editor.scss', './sidebar.component.scss'],
 })
 export class SidebarComponent {
+  constructor(protected stateService: StoryManagerStateService) {}
 
-  constructor(
-    protected stateService: StoryManagerStateService
-  ) { }
+  protected get visibleNotes() {
+    return (this.stateService.storyFolder?.collectChildren() ?? this.stateService.getVisibleRoot() ?? []).filter((article) => !article.folder);
+  }
 
   protected onSearchInputChange(element: HTMLInputElement): void {
     this.stateService.searchQuery = element.value;
     this.stateService.searchResults.length = 0;
     if (!StringUtils.isEmpty(this.stateService.searchQuery)) {
-      for (const article of this.stateService.collectArticles()) {
-        if (!article.folder && article.text?.match(new RegExp(this.stateService.searchQuery, 'i'))) {
+      const query = this.stateService.searchQuery.toLowerCase();
+      for (const article of this.visibleNotes) {
+        if (article.text?.toLowerCase().includes(query) || article.title.toLowerCase().includes(query)) {
           ArrayUtils.push(this.stateService.searchResults, article);
         }
       }
@@ -44,5 +42,4 @@ export class SidebarComponent {
     event.stopPropagation();
     this.stateService.dropDraggedArticle();
   }
-
 }

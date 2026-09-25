@@ -1,11 +1,15 @@
-@if (article) {
+@if (article && !article.folder) {
   <div
-    class="story-row hover-container"
+    class="story-row"
+    tabindex="0"
+    role="button"
+    [attr.aria-label]="article.title"
+    (keydown.enter)="onClick()"
+    (keydown.space)="$event.preventDefault(); onClick()"
     [class.current]="isCurrent()"
     [class.search-result]="isSearchResult()"
     [class.dragging]="isDraggingThis()"
     [class.drop-before]="isDropPosition('before')"
-    [class.drop-inside]="isDropPosition('inside')"
     [class.drop-after]="isDropPosition('after')"
     draggable="true"
     (click)="onClick()"
@@ -14,20 +18,6 @@
     (dragover)="onDragOver($event)"
     (drop)="onDrop($event)"
     (dragend)="onDragEnd($event)">
-    <div class="row-content">
-      @for (_ of [].constructor(article.collectParents().length); track $index) {
-        <span class="tree-indent"></span>
-      }
-
-      <i class="toggle-icon fa-solid" [class.placeholder]="!article.folder" [ngClass]="article.folder ? (article.open ? 'fa-angle-down' : 'fa-angle-right') : 'fa-angle-right'"></i>
-      <i class="type-icon fa-solid" [ngClass]="article.folder ? (article.open ? 'fa-folder-open' : 'fa-folder') : 'fa-note-sticky'"></i>
-
-      <span class="title ellipsis">{{ article.title }}</span>
-    </div>
-  </div>
-  <div class="flex column overflow-hidden anim-drawer" [class.open]="article.open">
-    @for (child of article.children; track child.id) {
-      <app-sidebar-row [article]="child"></app-sidebar-row>
-    }
+    <span class="title">{{ article.title }}</span>
   </div>
 }

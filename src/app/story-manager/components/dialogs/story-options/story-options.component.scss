@@ -6,13 +6,4 @@
   gap: variables.$gap-1;
   padding: variables.$gap-1;
   flex: 1;
-
-  .button {
-    width: 100%;
-
-    &.action-button {
-      min-height: initial;
-      padding: variables.$gap-1 0;
-    }
-  }
 }

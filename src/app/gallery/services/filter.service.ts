@@ -76,38 +76,40 @@ export class FilterService {
     return true;
   }
 
-  private doesPassTagsCheck(image: GalleryImage, tags: Tag[]): boolean {
+  private doesPassTagsCheck(image: GalleryImage, roots: Tag[]): boolean {
+    const tags = roots.flatMap(root => [root, ...root.collectChildren()]);
+    let hasIncludedTag = false;
+
+    // Explicit tag filters take priority over group filters. Red tags still veto
+    // matches, and multiple green tags retain their existing AND behavior.
     for (const tag of tags) {
-      if (tag.state == 0) {
-        if (tag.group) {
-          if (!this.doesPassTagsCheck(image, tag.children)) {
-            return false;
-          }
-        }
-      } else {
-        if (tag.pseudo) {
-          const intersection: Tag[] = ArrayUtils.intersection(image.tags, tag.children);
-          if (tag.state == -1 && intersection.length != 0) {
-            return false;
-          }
+      if (tag.group || tag.state === 0) continue;
+      const matches = tag.pseudo
+        ? tag.children.some(child => image.tags.includes(child))
+        : image.tags.includes(tag);
+      if (!this.doesPassFilter(tag, matches)) return false;
+      if (tag.state === 1) hasIncludedTag = true;
+    }
+    if (hasIncludedTag) return true;
 
-          if (tag.state == 1 && intersection.length == 0) {
-            return false;
-          }
-        } else {
-          const imageHasTag: boolean = image.tags.includes(tag);
-          if (tag.state == -1 && imageHasTag) {
-            return false;
-          }
+    const groups = tags.filter(tag => tag.group && tag.state !== 0);
+    const includedGroups = groups.filter(group => group.state === 1);
+    const matchesGroup = (group: Tag): boolean => group.collectChildren()
+      .some(child => !child.group && !child.pseudo && image.tags.includes(child));
 
-          if (tag.state == 1 && !imageHasTag) {
-            return false;
-          }
-        }
-      }
+    // A green subgroup narrows its ancestor's inclusion to the more specific
+    // selection. Independent green branches still combine with OR.
+    const specificIncludes = includedGroups.filter(group =>
+      !group.collectChildren().some(child => child.group && child.state === 1));
+
+    for (const group of groups.filter(group => group.state === -1)) {
+      if (!matchesGroup(group)) continue;
+      // A matching green subgroup is an exception to its red ancestors.
+      const includedDescendants = specificIncludes.filter(child => child.collectParents().includes(group));
+      if (!includedDescendants.some(matchesGroup)) return false;
     }
 
-    return true;
+    return includedGroups.length === 0 || specificIncludes.some(matchesGroup);
   }
 
 }

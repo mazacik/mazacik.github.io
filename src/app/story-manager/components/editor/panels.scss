@@ -1,0 +1,209 @@
+@use 'src/styles/variables.scss';
+
+// Shared panel geometry, scoped by Angular to each story component.
+.split {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  min-height: 0;
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+}
+.list-panel,
+.detail-panel {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+.list-panel {
+  border-right: 1px solid var(--color-border);
+}
+.list-controls,
+.detail-toolbar,
+.list-footer {
+  flex: 0 0 auto;
+  padding: variables.$gap-1;
+}
+.list-controls {
+  border-bottom: 1px solid var(--color-border);
+}
+.list-controls p {
+  margin: variables.$gap-1 0 0;
+}
+.list-footer,
+.detail-toolbar,
+.detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: variables.$gap-1;
+}
+.detail-toolbar .detail-title {
+  flex: 0 1 auto;
+  width: fit-content;
+  field-sizing: content;
+  min-width: 0;
+  padding: variables.$gap-1;
+  font-size: 1.25rem;
+  font-weight: bold;
+  line-height: 1.4;
+  border-color: transparent;
+}
+.detail-title:hover,
+.detail-title:focus {
+  background: var(--color-button-background-secondary-hover);
+}
+.list-footer {
+  border-top: 1px solid var(--color-border);
+}
+.list-footer > button {
+  flex: 1;
+}
+.search-container {
+  display: flex;
+  align-items: center;
+  gap: variables.$gap-1;
+  min-height: 36px;
+  box-sizing: border-box;
+  padding: 8px variables.$gap-1;
+  border: 1px solid var(--color-border);
+  border-radius: variables.$gap-1;
+  color: var(--color-text-secondary);
+}
+.search-container i {
+  font-size: 0.85rem;
+  opacity: 0.75;
+}
+.search-input {
+  flex: 1;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.detail-toolbar {
+  align-items: center;
+  border-bottom: 1px solid var(--color-border);
+  margin: 0;
+}
+.detail-toolbar h3 {
+  margin: 0;
+  flex: 1 1 160px;
+  min-width: 0;
+  font-size: 1.25rem;
+  line-height: 1.4;
+  max-height: 2lh;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.detail-actions {
+  flex: 0 1 auto;
+  margin-left: auto;
+  justify-content: flex-end;
+  max-width: 100%;
+}
+.list-scroll,
+.detail-scroll {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  padding: variables.$gap-1;
+}
+.list-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: variables.$gap-1;
+}
+.list-scroll > .ordered-entry {
+  flex-shrink: 0;
+  margin: 0;
+}
+.detail-form {
+  max-width: 960px;
+  min-width: 0;
+}
+.list-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 8px variables.$gap-2;
+  border-radius: variables.$gap-1;
+  line-height: 1.4;
+}
+.list-item[data-reorder-id] {
+  position: relative;
+  flex-shrink: 0;
+}
+.list-item.dragging {
+  opacity: 0.45;
+}
+.list-item.drop-before::before,
+.list-item.drop-after::after {
+  content: '';
+  position: absolute;
+  left: variables.$gap-1;
+  right: variables.$gap-1;
+  height: 2px;
+  background: var(--color-highlight);
+}
+.list-item.drop-before::before {
+  top: -2px;
+}
+.list-item.drop-after::after {
+  bottom: -2px;
+}
+.back-list {
+  display: none;
+}
+@media (max-width: 799px) {
+  .split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .split.has-detail > .list-panel,
+  .split:not(.has-detail) > .detail-panel {
+    display: none;
+  }
+  .list-panel {
+    border: 0;
+    padding-right: 0;
+  }
+  .back-list {
+    display: inline-block;
+  }
+}
+
+.detail-tabs {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  gap: variables.$gap-1;
+  padding: variables.$gap-1;
+  border-bottom: 1px solid var(--color-border);
+}
+.detail-tabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: variables.$gap-1;
+  border-color: transparent;
+  padding: variables.$gap-1 variables.$gap-2;
+  color: var(--color-text-secondary);
+}
+.detail-tabs button.selected {
+  background: var(--color-button-background-secondary-active);
+  color: var(--color-text-secondary-active);
+}
+.tab-count {
+  font-size: 0.85em;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.75;
+}
+.tab-error {
+  color: var(--color-negative);
+  font-weight: bold;
+}

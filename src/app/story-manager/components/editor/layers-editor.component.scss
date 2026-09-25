@@ -1,0 +1,31 @@
+@use 'src/styles/variables.scss';
+
+.layer-row {
+  display: grid;
+  grid-template-columns: minmax(100px, 1fr) minmax(0, 2fr) auto;
+  align-items: center;
+  gap: variables.$gap-1;
+}
+.layer-coverage {
+  display: flex;
+  align-items: center;
+  gap: variables.$gap-1;
+  min-width: 0;
+}
+.layer-coverage app-multiselect {
+  flex: 0 1 360px;
+}
+.layer-coverage > span { flex: 0 0 auto; }
+.entry-actions {
+  margin: 0;
+  justify-content: end;
+}
+@media (max-width: 799px) {
+  .layer-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .layer-coverage {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}

@@ -9,7 +9,7 @@ import { StoryManagerStateService } from 'src/app/story-manager/services/story-m
     selector: 'app-story-options',
     imports: [],
     templateUrl: './story-options.component.html',
-    styleUrls: ['./story-options.component.scss']
+    styleUrls: ['../../editor/editor.scss', './story-options.component.scss']
 })
 export class ArticleOptionsComponent extends DialogContentBase<void> {
 
@@ -38,9 +38,9 @@ export class ArticleOptionsComponent extends DialogContentBase<void> {
     this.stateService.rename(this.inputs.article);
   }
 
-  public async create(folder: boolean): Promise<void> {
+  public async create(): Promise<void> {
     this.close();
-    this.stateService.create(this.inputs.article, folder);
+    this.stateService.create(this.inputs.article, false);
   }
 
   public async delete(): Promise<void> {

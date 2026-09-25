@@ -1,0 +1,61 @@
+<div class="split" [class.has-detail]="selected">
+  <aside class="list-panel">
+    <div class="list-controls">
+      <div class="search-container">
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+        <input class="search-input" aria-label="Search variables" [(ngModel)]="query" placeholder="Search" />
+      </div>
+      @if (query) {
+        <p class="muted">Clear search to reorder</p>
+      }
+    </div>
+    <div class="list-scroll" [storyListReorder]="flags" [reorderDisabled]="!!query" (reordered)="reorder($event)">
+      @for (flag of flags; track flag.id) {
+        <button
+          class="list-item"
+          [class.active]="selectedId === flag.id"
+          [attr.data-reorder-id]="flag.id"
+          [draggable]="!query"
+          aria-keyshortcuts="Alt+ArrowUp Alt+ArrowDown"
+          title="Drag to reorder, or use Alt + Up/Down"
+          (click)="selectedId = flag.id">
+          {{ flag.name }} · {{ scope(flag) }} · {{ type(flag) }}
+        </button>
+      }
+    </div>
+    <div class="list-footer"><button (click)="add()">Create variable</button></div>
+  </aside>
+  <main class="detail-panel">
+    @if (selected; as flag) {
+      <div class="detail-toolbar">
+        <button class="back-list" (click)="selectedId = ''">← Variables</button>
+        <input class="detail-title" aria-label="Variable name" [title]="flag.name" placeholder="Name" [(ngModel)]="flag.name" (ngModelChange)="changed.emit()" />
+        <div class="detail-actions"><button (click)="duplicate(flag)">Duplicate</button><button (click)="remove.emit(flag)">Delete</button></div>
+      </div>
+      <div class="detail-scroll">
+        <div class="detail-form">
+          <label
+            >Scope<select [ngModel]="scope(flag)" (ngModelChange)="flag.scope = $event; changed.emit()">
+              <option value="story">Story</option>
+              <option value="character">Character</option>
+            </select></label
+          >
+          <label
+            >Type<select [ngModel]="type(flag)" (ngModelChange)="flag.type = $event; resetType(flag)">
+              <option value="boolean">Boolean</option>
+              <option value="number">Number</option>
+              <option value="text">Text</option>
+            </select></label
+          >
+          <label>Default value<story-value [type]="type(flag)" [value]="initial(flag)" (valueChange)="flag.initial = $event; changed.emit()" /></label>
+          <label class="check"><input type="checkbox" [(ngModel)]="flag.visible" (ngModelChange)="changed.emit()" />Visible to reader</label>
+          @for (issue of issues; track $index) {
+            @if (issue.flag === flag.id || issue.entity) {
+              <p class="danger">{{ issue.message }}</p>
+            }
+          }
+        </div>
+      </div>
+    }
+  </main>
+</div>

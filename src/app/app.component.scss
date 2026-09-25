@@ -59,7 +59,7 @@
 }
 
 @media screen and (max-width:1280px) {
-  :host-context(html.mobile-masonry-document-scroll) {
+  :host-context(html.mobile-gallery-document-scroll) {
     height: auto;
     min-height: 100dvh;
     overflow: visible;

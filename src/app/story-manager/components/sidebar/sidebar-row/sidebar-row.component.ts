@@ -1,40 +1,27 @@
-import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { Article } from 'src/app/story-manager/models/article.class';
 import { ArticleDropPosition, StoryManagerStateService } from 'src/app/story-manager/services/story-manager-state.service';
 
 @Component({
   selector: 'app-sidebar-row',
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
   templateUrl: './sidebar-row.component.html',
-  styleUrls: ['./sidebar-row.component.scss']
+  styleUrls: ['./sidebar-row.component.scss'],
 })
 export class SidebarRowComponent {
-
   @Input() article: Article;
 
-  constructor(
-    protected stateService: StoryManagerStateService
-  ) { }
+  constructor(protected stateService: StoryManagerStateService) {}
 
   protected isCurrent(): boolean {
-    return this.article.collectChildren().concat(this.article).some(a => a == this.stateService.current);
+    return this.article === this.stateService.current;
   }
 
   protected isSearchResult(): boolean {
-    return this.article.collectChildren().concat(this.article).some(a => this.stateService.searchResults.includes(a));
+    return this.stateService.searchResults.includes(this.article);
   }
 
   protected onClick(): void {
-    if (this.article.folder) {
-      this.article.open = !this.article.open;
-    } else {
-      this.stateService.current = this.article;
-    }
+    this.stateService.current = this.article;
   }
 
   protected openOptions(event: MouseEvent): void {
@@ -84,19 +71,6 @@ export class SidebarRowComponent {
     const rect: DOMRect = element.getBoundingClientRect();
     const offset: number = (event.clientY - rect.top) / rect.height;
 
-    if (!this.article.folder) {
-      return offset < 0.5 ? 'before' : 'after';
-    }
-
-    if (offset < 0.25) {
-      return 'before';
-    }
-
-    if (offset > 0.75) {
-      return 'after';
-    }
-
-    return 'inside';
+    return offset < 0.5 ? 'before' : 'after';
   }
-
 }

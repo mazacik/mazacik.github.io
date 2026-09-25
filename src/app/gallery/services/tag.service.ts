@@ -4,6 +4,7 @@ import { DialogService } from "src/app/shared/services/dialog.service";
 import { ArrayUtils } from "src/app/shared/utils/array.utils";
 import { StringUtils } from "src/app/shared/utils/string.utils";
 import { Tag } from "../models/tag.class";
+import { TagCreateComponent, TagCreateResult } from "../dialogs/tag-create/tag-create.component";
 import { FilterService } from "./filter.service";
 import { GalleryStateService } from "./gallery-state.service";
 import { GallerySerializationService } from "./gallery-serialization.service";
@@ -47,103 +48,53 @@ export class TagService {
   }
 
   public async openTagCreate(parent?: Tag): Promise<void> {
-    if (parent) {
-      const name: string = await this.dialogService.createInput({
-        title: 'Create Tag: ' + parent.getNameWithParents(),
-        placeholder: 'Name',
-        validationFn: value => !parent.children.filter(t => !t.group).map(t => t.name).includes(value)
-      });
-
-      if (!StringUtils.isEmpty(name)) {
-        const tag: Tag = new Tag();
-        tag.id = nanoid();
-        tag.name = name;
-        tag.group = false;
-        tag.state = 0;
-        tag.parent = parent;
-        tag.children = [];
-
-        parent.children.push(tag);
-        this.sort(parent.children);
-
-        this.tags.push(tag);
-        this.sort(this.tags);
-
-        this.serializationService.save();
-      }
-    } else {
-      const name: string = await this.dialogService.createInput({
-        title: 'Create Tag: Root',
-        placeholder: 'Name',
-        validationFn: value => !this.tags.filter(t => !t.parent).map(t => t.name).includes(value)
-      });
-
-      if (!StringUtils.isEmpty(name)) {
-        const tag: Tag = new Tag();
-        tag.id = nanoid();
-        tag.name = name;
-        tag.group = false;
-        tag.state = 0;
-        tag.parent = parent;
-        tag.children = [];
-
-        this.tags.push(tag);
-        this.sort(this.tags);
-
-        this.serializationService.save();
-      }
-    }
+    await this.openCreate(false, parent);
   }
 
   public async openTagGroupCreate(parent?: Tag): Promise<void> {
-    if (parent) {
-      const name: string = await this.dialogService.createInput({
-        title: 'Create Tag Group: ' + parent.getNameWithParents(),
-        placeholder: 'Name',
-        validationFn: value => !parent.children.filter(t => t.group).map(t => t.name).includes(value)
-      });
+    await this.openCreate(true, parent);
+  }
 
-      if (!StringUtils.isEmpty(name)) {
-        const tagGroup: Tag = new Tag();
-        tagGroup.id = nanoid();
-        tagGroup.name = name;
-        tagGroup.group = true;
-        tagGroup.state = 0;
-        tagGroup.parent = parent;
-        tagGroup.children = [];
-        tagGroup.open = true;
+  private async openCreate(group: boolean, initialParent?: Tag): Promise<void> {
+    const parentGroups = this.tags.filter(tag => tag.group);
+    this.sort(parentGroups, true);
+    const validateName = (name: string, parent: Tag | null): string | null => {
+      if (StringUtils.isEmpty(name)) return null;
+      if (parent && (!parent.group || !this.tags.includes(parent))) return 'Choose an existing parent group.';
 
-        parent.children.push(tagGroup);
-        this.sort(parent.children);
-
-        this.tags.push(tagGroup);
-        this.sort(this.tags);
-
-        this.serializationService.save();
+      const siblings = parent ? parent.children.filter(tag => tag.group === group) : this.getRootTags();
+      if (siblings.some(tag => tag.name === name)) {
+        return parent
+          ? `A ${group ? 'tag group' : 'tag'} with this name already exists in this parent group.`
+          : 'A tag or tag group with this name already exists at Root.';
       }
-    } else {
-      const name: string = await this.dialogService.createInput({
-        title: 'Create Tag Group: Root',
-        placeholder: 'Name',
-        validationFn: value => !this.tags.filter(t => !t.parent).map(t => t.name).includes(value)
-      });
+      return null;
+    };
+    const result: TagCreateResult | undefined = await this.dialogService.create(TagCreateComponent, {
+      group,
+      parentGroups,
+      initialParent: initialParent ?? null,
+      validateName
+    });
 
-      if (!StringUtils.isEmpty(name)) {
-        const tagGroup: Tag = new Tag();
-        tagGroup.id = nanoid();
-        tagGroup.name = name;
-        tagGroup.group = true;
-        tagGroup.state = 0;
-        tagGroup.parent = parent;
-        tagGroup.children = [];
-        tagGroup.open = true;
+    if (!result || StringUtils.isEmpty(result.name) || validateName(result.name, result.parent) !== null) return;
 
-        this.tags.push(tagGroup);
-        this.sort(this.tags);
+    const tag = new Tag();
+    tag.id = nanoid();
+    tag.name = result.name;
+    tag.group = group;
+    tag.state = 0;
+    tag.parent = result.parent;
+    tag.children = [];
+    if (group) tag.open = true;
 
-        this.serializationService.save();
-      }
+    if (tag.parent) {
+      tag.parent.children.push(tag);
+      this.sort(tag.parent.children);
     }
+    this.tags.push(tag);
+    this.sort(this.tags);
+    this.serializationService.save();
   }
 
   public async insertTagGroup(tag: Tag): Promise<void> {

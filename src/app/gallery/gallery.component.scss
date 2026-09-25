@@ -37,7 +37,7 @@
 }
 
 @media screen and (max-width:1280px) {
-  :host-context(html.mobile-masonry-document-scroll) {
+  :host-context(html.mobile-gallery-document-scroll) {
     height: auto;
     min-height: 0;
     display: block;
@@ -50,6 +50,27 @@
       > .flex {
         min-height: 0;
         position: static;
+      }
+
+      > app-image-tournament,
+      > app-image-tournament-longest-chain,
+      > .fullscreen-container {
+        height: auto;
+        position: fixed;
+        top: calc(#{variables.$button-height} + #{variables.$gap-2} + 1px);
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 20;
+      }
+
+      > app-image-tournament,
+      > app-image-tournament-longest-chain {
+        background-color: var(--color-surface-100);
+      }
+
+      > .fullscreen-container {
+        z-index: 30;
       }
     }
   }
