@@ -25,14 +25,14 @@
         <div class="flex space-between pointer-events-none">
           <span dir="ltr" class="ellipsis">{{ getDisplayName() }}</span>
           @if (stateService.settings.showTagCount && tag.getCount(stateService.images); as count) {
-            <span class="pointer-events-none" style="white-space: pre"> {{ tag.pseudo ? '➝' : '•' }} {{ count }}</span>
+            <span class="pointer-events-none margin-1-l">{{ tag.pseudo ? '•' : '' }} {{ count }}</span>
           }
         </div>
       </div>
     </div>
   </div>
   @if (tag.group && !flatMode) {
-    <div class="flex column overflow-hidden anim-drawer" [class.open]="tag.open">
+    <div class="flex column overflow-hidden drawer" [class.open]="tag.open">
       @for (child of getTagGroups(); track child.id) {
         <app-tagger-row [tag]="child" [target]="target" [groupMode]="groupMode"></app-tagger-row>
       }

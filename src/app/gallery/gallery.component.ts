@@ -156,12 +156,6 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
       },
       hidden: () => !isMasonry() && !isTournament()
     }, {
-      id: 'create-group',
-      tooltip: 'Create Image Group',
-      classes: 'fa-solid fa-folder-plus',
-      hidden: () => !isMasonry(),
-      onClick: () => this.galleryService.openImageGroupEditor()
-    }, {
       id: 'group-manager',
       tooltip: 'Open Image Group Manager',
       classes: 'fa-solid fa-object-group',
@@ -176,6 +170,12 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
     }]);
 
     this.applicationService.addHeaderButtons('center', [{
+      id: 'create-group',
+      tooltip: 'Create Image Group',
+      classes: 'fa-solid fa-folder-plus',
+      hidden: () => !isMasonry(),
+      onClick: () => this.galleryService.openImageGroupEditor()
+    }, {
       id: 'random-image',
       tooltip: 'Random Image',
       classes: 'fa-solid fa-shuffle',

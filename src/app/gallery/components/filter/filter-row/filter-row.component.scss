@@ -1,7 +1,7 @@
 .group-filter-button {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   align-self: center;
   flex: 0 0 24px;
   width: 24px;
@@ -25,4 +25,11 @@
 .group-filter-button:focus-visible {
   opacity: 1;
   pointer-events: auto;
+}
+
+@media screen and (max-width:1280px) {
+  .group-filter-button {
+    opacity: 1;
+    pointer-events: auto;
+  }
 }

@@ -1,10 +1,10 @@
 <label for="gallery-tag-create-parent">Parent group</label>
 <ng-select class="gallery-tag-parent-select" labelForId="gallery-tag-create-parent"
   [items]="parentOptions" bindLabel="label" [(ngModel)]="selectedParent"
-  [clearable]="false" [searchable]="true" appendTo="body">
+  [clearable]="false" [searchable]="true" appendTo="body" (change)="focusName()">
 </ng-select>
 <label for="gallery-tag-create-name">Name</label>
-<input id="gallery-tag-create-name" [(ngModel)]="name" placeholder="Name" autofocus
+<input #nameInput id="gallery-tag-create-name" [(ngModel)]="name" placeholder="Name" autofocus
   [attr.aria-invalid]="getValidationMessage() !== null" [attr.aria-describedby]="getValidationMessage() ? 'gallery-tag-create-error' : null"
   (keydown.enter)="submit(); $event.preventDefault()" />
 @if (getValidationMessage(); as message) {

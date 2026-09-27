@@ -78,24 +78,25 @@ export class FilterService {
 
   private doesPassTagsCheck(image: GalleryImage, roots: Tag[]): boolean {
     const tags = roots.flatMap(root => [root, ...root.collectChildren()]);
-    let hasIncludedTag = false;
+    const includedTags: Tag[] = [];
 
-    // Explicit tag filters take priority over group filters. Red tags still veto
-    // matches, and multiple green tags retain their existing AND behavior.
+    // Explicit tag filters use AND semantics. They may narrow or override only
+    // their ancestor groups; unrelated group filters still apply.
     for (const tag of tags) {
       if (tag.group || tag.state === 0) continue;
       const matches = tag.pseudo
         ? tag.children.some(child => image.tags.includes(child))
         : image.tags.includes(tag);
       if (!this.doesPassFilter(tag, matches)) return false;
-      if (tag.state === 1) hasIncludedTag = true;
+      if (tag.state === 1) includedTags.push(tag);
     }
-    if (hasIncludedTag) return true;
 
     const groups = tags.filter(tag => tag.group && tag.state !== 0);
     const includedGroups = groups.filter(group => group.state === 1);
     const matchesGroup = (group: Tag): boolean => group.collectChildren()
       .some(child => !child.group && !child.pseudo && image.tags.includes(child));
+    const isOverriddenByIncludedTag = (group: Tag): boolean => includedTags
+      .some(tag => tag.collectParents().includes(group));
 
     // A green subgroup narrows its ancestor's inclusion to the more specific
     // selection. Independent green branches still combine with OR.
@@ -104,12 +105,13 @@ export class FilterService {
 
     for (const group of groups.filter(group => group.state === -1)) {
       if (!matchesGroup(group)) continue;
-      // A matching green subgroup is an exception to its red ancestors.
+      // Matching green descendants are exceptions to their red ancestors.
       const includedDescendants = specificIncludes.filter(child => child.collectParents().includes(group));
-      if (!includedDescendants.some(matchesGroup)) return false;
+      if (!includedDescendants.some(matchesGroup) && !isOverriddenByIncludedTag(group)) return false;
     }
 
-    return includedGroups.length === 0 || specificIncludes.some(matchesGroup);
+    return includedGroups.length === 0 || specificIncludes
+      .some(group => matchesGroup(group) || isOverriddenByIncludedTag(group));
   }
 
 }

@@ -64,8 +64,7 @@ describe('Gallery group filter controls', () => {
   }
 
   function button(label: string): HTMLButtonElement {
-    return Array.from((fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>('.button'))
-      .find(element => element.textContent.trim() === label);
+    return (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>(`.filter-actions [aria-label="${label}"]`);
   }
 
   async function mode(label: 'List' | 'Tree'): Promise<void> {
@@ -124,6 +123,25 @@ describe('Gallery group filter controls', () => {
     expect(save).toHaveBeenCalledTimes(3);
   });
 
+  it('places the image count left and icon-only quick filters right in one row', async () => {
+    const summary = fixture.nativeElement.querySelector('.filter-summary') as HTMLElement;
+    const toggles = Array.from(summary.querySelectorAll<HTMLButtonElement>('.filter-toggle'));
+    const summaryStyle = getComputedStyle(summary);
+    expect(summaryStyle.justifyContent).toBe('space-between');
+    expect(parseFloat(summaryStyle.paddingLeft)).toBeCloseTo(parseFloat(summaryStyle.paddingTop) * 2, 2);
+    expect(summaryStyle.marginLeft).toBe('0px');
+    expect(parseFloat(getComputedStyle(summary.querySelector('.filter-toggles')).gap)).toBeGreaterThan(0);
+    expect(summary.querySelector('.filter-count').textContent.trim()).toBe('Filter: 2 images');
+    expect(toggles.map(toggle => toggle.getAttribute('aria-label'))).toEqual(['Favorites', 'Bookmarks', 'Groups']);
+    expect(toggles.every(toggle => toggle.textContent.trim() === '')).toBeTrue();
+
+    toggles[0].click();
+    await render();
+    expect(filters.favoritesFilter.state).toBe(1);
+    expect(toggles[0].querySelector('.fa-heart').classList).toContain('positive');
+    expect(save).toHaveBeenCalledTimes(1);
+  });
+
   it('lets a green child override a red group through the filter controls', async () => {
     groupButton().click();
     groupButton().click();
@@ -168,7 +186,7 @@ describe('Gallery group filter controls', () => {
 
   it('defaults to Tree without search and saves an independent List preference', async () => {
     expect(input()).toBeNull();
-    expect([button('List').textContent.trim(), button('Tree').textContent.trim()]).toEqual(['List', 'Tree']);
+    expect([button('List').title, button('Tree').title]).toEqual(['List', 'Tree']);
     expect(button('Tree').getAttribute('aria-pressed')).toBe('true');
 
     await mode('List');
@@ -178,6 +196,11 @@ describe('Gallery group filter controls', () => {
       'filter-list-result-animals',
       'filter-list-result-cats',
       'filter-list-result-dogs'
+    ]);
+    expect(listRows().map(element => element.querySelector('.ellipsis').textContent.trim())).toEqual([
+      'Animals',
+      'Cats | Animals',
+      'Dogs | Animals'
     ]);
     expect(document.activeElement).toBe(input());
 
@@ -246,9 +269,7 @@ describe('Gallery group filter controls', () => {
     cats.state = -1;
     filters.updateFilters();
     await render();
-    const clear = Array.from(fixture.nativeElement.querySelectorAll('.button') as NodeListOf<HTMLElement>)
-      .find(button => button.textContent.trim() === 'Clear Tag Filters');
-    clear.click();
+    button('Clear Tag Filters').click();
     await render();
     expect(animals.state).toBe(0);
     expect(cats.state).toBe(0);
@@ -256,15 +277,38 @@ describe('Gallery group filter controls', () => {
     expect(save).toHaveBeenCalledTimes(1);
   });
 
-  it('reveals the hidden group filter button on keyboard focus with state and action labels', async () => {
+  it('shows all six bottom actions as a grouped Font Awesome icon row', () => {
+    const actions = Array.from((fixture.nativeElement as HTMLElement)
+      .querySelectorAll<HTMLButtonElement>('.filter-actions > button, .filter-actions > .flex > button'));
+    expect(actions.map(action => action.getAttribute('aria-label'))).toEqual([
+      'List', 'Tree', 'Invert Tag Filters', 'Clear Tag Filters', 'Create Tag', 'Create Tag Group'
+    ]);
+    expect(actions.every(action => action.classList.contains('icon-button') &&
+      (action.classList.contains('fa-solid') || action.querySelector('.fa-solid')))).toBeTrue();
+    expect(button('List').classList).toContain('fa-bars');
+    expect(button('Tree').classList).toContain('fa-folder-tree');
+    expect(button('Create Tag').querySelector('.fa-tag')).not.toBeNull();
+    expect(button('Create Tag Group').querySelector('.fa-folder')).not.toBeNull();
+    expect(button('Create Tag').querySelector('.action-badge.fa-plus')).not.toBeNull();
+    expect(button('Create Tag Group').querySelector('.action-badge.fa-plus')).not.toBeNull();
+    expect(button('Invert Tag Filters').querySelector('.fa-filter')).not.toBeNull();
+    expect(button('Invert Tag Filters').querySelector('.action-badge.fa-exclamation')).not.toBeNull();
+    expect(button('Clear Tag Filters').querySelector('.fa-filter')).not.toBeNull();
+    expect(button('Clear Tag Filters').querySelector('.action-badge.fa-xmark')).not.toBeNull();
+    expect(actions.map(action => getComputedStyle(action).padding)).toEqual(Array(6).fill('0px'));
+  });
+
+  it('keeps the group filter button visible on mobile and reveals it on desktop keyboard focus', async () => {
     const button = groupButton();
     expect(button.type).toBe('button');
     expect(button.tabIndex).toBe(0);
     expect(button.querySelector('.fa-check-double')).not.toBeNull();
-    expect(button.getAttribute('aria-label')).toBe(button.title);
-    expect(button.title).toContain('Animals: neutral. Click to include');
-    expect(getComputedStyle(button).opacity).toBe('0');
-    expect(getComputedStyle(button).pointerEvents).toBe('none');
+    expect(button.title).toBe('');
+    expect(button.getAttribute('aria-label')).toContain('Animals: neutral. Click to include');
+    const mobile = matchMedia('(max-width:1280px)').matches;
+    expect(getComputedStyle(button).opacity).toBe(mobile ? '1' : '0');
+    expect(getComputedStyle(button).pointerEvents).toBe(mobile ? 'auto' : 'none');
+    expect(getComputedStyle(button).justifyContent).toBe('flex-end');
     button.focus();
     expect(document.activeElement).toBe(button);
     const bounds = button.getBoundingClientRect();

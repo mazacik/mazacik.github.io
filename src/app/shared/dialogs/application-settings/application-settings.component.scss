@@ -54,7 +54,33 @@
   gap: variables.$gap-1;
 }
 
+.setting-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .full-width {
   width: 100%;
   justify-content: center;
+}
+
+@media screen and (max-width:1280px) {
+  .settings-layout {
+    flex-direction: column;
+  }
+
+  .settings-layout > .v-separator {
+    display: none;
+  }
+
+  .tabs {
+    flex-flow: row wrap;
+
+    .button {
+      flex: 1 1 auto;
+      width: auto !important;
+    }
+  }
 }

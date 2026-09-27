@@ -123,6 +123,7 @@ body {
       overflow: visible;
     }
   }
+
 }
 
 a {
@@ -634,6 +635,53 @@ hr {
   }
 }
 
+.sidebar-actions {
+  flex-shrink: 0;
+
+  .icon-button {
+    padding: 0;
+  }
+
+  .badged-action {
+    position: relative;
+
+    .action-badge {
+      position: absolute;
+      right: 2px;
+      top: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      color: inherit;
+      background-color: transparent;
+      font-size: 8px;
+    }
+  }
+}
+
+.sidebar-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+
+  &:focus-visible {
+    border-radius: variables.$gap-1;
+    outline: 2px solid currentColor;
+    outline-offset: -2px;
+  }
+}
+
 span.button,
 span.icon-button {
   user-select: none;
@@ -708,136 +756,41 @@ span.icon-button {
   gap: variables.$gap-3;
 }
 
-.margins-1 {
-  margin: variables.$gap-1;
+@mixin spacing-utilities($class, $property, $size, $value) {
+  .#{$class}-#{$size} {
+    #{$property}: $value !important;
+  }
+
+  .#{$class}-#{$size}-t {
+    #{$property}-top: $value !important;
+  }
+
+  .#{$class}-#{$size}-r {
+    #{$property}-right: $value !important;
+  }
+
+  .#{$class}-#{$size}-b {
+    #{$property}-bottom: $value !important;
+  }
+
+  .#{$class}-#{$size}-l {
+    #{$property}-left: $value !important;
+  }
+
+  .#{$class}-#{$size}-v {
+    #{$property}-top: $value !important;
+    #{$property}-bottom: $value !important;
+  }
+
+  .#{$class}-#{$size}-h {
+    #{$property}-left: $value !important;
+    #{$property}-right: $value !important;
+  }
 }
 
-.margins-1-v {
-  margin-top: variables.$gap-1;
-  margin-bottom: variables.$gap-1;
-}
-
-.margins-1-h {
-  margin-left: variables.$gap-1;
-  margin-right: variables.$gap-1;
-}
-
-.margins-1-t {
-  margin-top: variables.$gap-1;
-}
-
-.margins-1-r {
-  margin-right: variables.$gap-1;
-}
-
-.margins-1-b {
-  margin-bottom: variables.$gap-1;
-}
-
-.margins-1-l {
-  margin-left: variables.$gap-1;
-}
-
-.margins-2 {
-  margin: variables.$gap-2;
-}
-
-.margins-2-v {
-  margin-top: variables.$gap-2;
-  margin-bottom: variables.$gap-2;
-}
-
-.margins-2-h {
-  margin-left: variables.$gap-2;
-  margin-right: variables.$gap-2;
-}
-
-.margins-2-t {
-  margin-top: variables.$gap-2;
-}
-
-.margins-2-r {
-  margin-right: variables.$gap-2;
-}
-
-.margins-2-b {
-  margin-bottom: variables.$gap-2;
-}
-
-.margins-2-l {
-  margin-left: variables.$gap-2;
-}
-
-.margins-3 {
-  margin: variables.$gap-3;
-}
-
-.margins-3-v {
-  margin-top: variables.$gap-3;
-  margin-bottom: variables.$gap-3;
-}
-
-.margins-3-h {
-  margin-left: variables.$gap-3;
-  margin-right: variables.$gap-3;
-}
-
-.margins-3-t {
-  margin-top: variables.$gap-3;
-}
-
-.margins-3-r {
-  margin-right: variables.$gap-3;
-}
-
-.margins-3-b {
-  margin-bottom: variables.$gap-3;
-}
-
-.margins-3-l {
-  margin-left: variables.$gap-3;
-}
-
-.padding-1 {
-  padding: variables.$gap-1;
-}
-
-.padding-1-v {
-  padding-top: variables.$gap-1;
-  padding-bottom: variables.$gap-1;
-}
-
-.padding-1-h {
-  padding-left: variables.$gap-1;
-  padding-right: variables.$gap-1;
-}
-
-.padding-2 {
-  padding: variables.$gap-2;
-}
-
-.padding-2-v {
-  padding-top: variables.$gap-2;
-  padding-bottom: variables.$gap-2;
-}
-
-.padding-2-h {
-  padding-left: variables.$gap-2;
-  padding-right: variables.$gap-2;
-}
-
-.padding-3 {
-  padding: variables.$gap-3;
-}
-
-.padding-3-v {
-  padding-top: variables.$gap-3;
-  padding-bottom: variables.$gap-3;
-}
-
-.padding-3-h {
-  padding-left: variables.$gap-3;
-  padding-right: variables.$gap-3;
+@each $size, $value in ('half': variables.$gap-1 * 0.5, '1': variables.$gap-1, '2': variables.$gap-2, '3': variables.$gap-3) {
+  @include spacing-utilities('margins', margin, $size, $value);
+  @include spacing-utilities('padding', padding, $size, $value);
 }
 
 .align-items-center {
@@ -894,18 +847,7 @@ span.icon-button {
   transition: opacity variables.$transition-duration ease;
 }
 
-.anim-drawer {
-  // display: grid;
-  // grid-template-rows: 0fr; // collapse first row
-  // overflow: hidden;
-  // transition: grid-template-rows variables.$transition-duration ease,
-  // grid-auto-rows variables.$transition-duration ease;
-
-  &.open {
-    // grid-template-rows: 1fr;
-    // grid-auto-rows: 1fr;
-  }
-
+.drawer {
   &:not(.open) {
     height: 0;
   }

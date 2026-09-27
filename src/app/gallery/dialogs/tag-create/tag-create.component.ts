@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { StringUtils } from 'src/app/shared/utils/string.utils';
@@ -28,6 +28,7 @@ export interface TagCreateInputs {
 export class TagCreateComponent extends DialogContentBase<TagCreateResult | undefined, TagCreateInputs> implements OnInit {
   public configuration: DialogContainerConfiguration;
 
+  @ViewChild('nameInput') private nameInput: ElementRef<HTMLInputElement>;
   protected name: string = '';
   protected parentOptions: { label: string; parent: Tag | null }[] = [];
   protected selectedParent: { label: string; parent: Tag | null };
@@ -55,6 +56,10 @@ export class TagCreateComponent extends DialogContentBase<TagCreateResult | unde
 
   protected canSubmit(): boolean {
     return !StringUtils.isEmpty(this.name) && this.getValidationMessage() === null;
+  }
+
+  protected focusName(): void {
+    setTimeout(() => this.nameInput?.nativeElement.focus());
   }
 
   public override submit(): void {

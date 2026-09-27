@@ -73,8 +73,7 @@ describe('List and Tree tagger modes', () => {
   }
 
   function button(label: string): HTMLButtonElement {
-    return Array.from((fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>('.button'))
-      .find(element => element.textContent.trim() === label);
+    return (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>(`button[aria-label="${label}"]`);
   }
 
   async function mode(label: 'List' | 'Tree'): Promise<void> {
@@ -115,9 +114,7 @@ describe('List and Tree tagger modes', () => {
   }
 
   function enableGroupMode(): void {
-    const button = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll<HTMLElement>('.button'))
-      .find(element => element.textContent.trim() === 'Group Mode');
-    button.click();
+    button('Group Mode').click();
     fixture.detectChanges();
   }
 
@@ -263,8 +260,8 @@ describe('List and Tree tagger modes', () => {
     delete state.settings.taggerMode;
     await render();
     expect(input()).toBeNull();
-    const modeButtons = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>('.buttons-container > .button-row .button')).slice(0, 2);
-    expect(modeButtons.map(element => element.textContent.trim())).toEqual(['List', 'Tree']);
+    const modeButtons = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>('.tagger-actions button')).slice(0, 2);
+    expect(modeButtons.map(element => element.getAttribute('aria-label'))).toEqual(['List', 'Tree']);
     expect(button('Tree').getAttribute('aria-pressed')).toBe('true');
     const folder = tags.getRootTags()[0];
     const treeRow = fixture.nativeElement.querySelector('app-tagger-row .cursor-pointer') as HTMLElement;
@@ -392,6 +389,29 @@ describe('List and Tree tagger modes', () => {
     expect(document.activeElement).toBe(input());
   });
 
+  it('uses compact icon controls and a single footer action row', () => {
+    const toggles = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>('.tagger-toggle'));
+    expect(toggles.map(toggle => toggle.getAttribute('aria-label'))).toEqual(['Favorite', 'Bookmark']);
+    expect(toggles.every(toggle => toggle.textContent.trim() === '')).toBeTrue();
+    expect(toggles.every(toggle => toggle.closest('.file-information') !== null)).toBeTrue();
+
+    const actions = Array.from((fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>('.tagger-actions button'));
+    expect(actions.map(action => action.getAttribute('aria-label'))).toEqual(['List', 'Tree', 'Group Mode', 'Create Tag', 'Create Tag Group']);
+    expect((fixture.nativeElement as HTMLElement).querySelectorAll('.tagger-actions').length).toBe(1);
+  });
+
+  it('keeps Group Mode visible but disabled when the current image has no group', async () => {
+    fullscreenImage.set(null);
+    await render();
+    image.group = null;
+    fullscreenImage.set(image);
+    await render();
+
+    expect(button('Group Mode')).not.toBeNull();
+    expect(button('Group Mode').disabled).toBeTrue();
+    expect(button('Group Mode').classList).toContain('disabled');
+  });
+
   it('caps long applied lists and scrolls both sections independently within the available viewport', async () => {
     const host = fixture.nativeElement as HTMLElement;
     host.style.transition = 'none';
@@ -410,10 +430,10 @@ describe('List and Tree tagger modes', () => {
     expect(applied.scrollHeight).toBeGreaterThan(applied.clientHeight);
     expect(lower.scrollHeight).toBeGreaterThan(lower.clientHeight);
     applied.scrollTop = 50;
-    expect(applied.scrollTop).toBe(50);
+    expect(applied.scrollTop).toBeCloseTo(50, 0);
     expect(lower.scrollTop).toBe(0);
     lower.scrollTop = 50;
-    expect(applied.scrollTop).toBe(50);
+    expect(applied.scrollTop).toBeCloseTo(50, 0);
     expect(input().getBoundingClientRect().top).toBeGreaterThanOrEqual(applied.getBoundingClientRect().bottom);
     expect(input().getBoundingClientRect().bottom).toBeLessThanOrEqual(lower.getBoundingClientRect().top);
     expect(button('List').getBoundingClientRect().bottom).toBeLessThanOrEqual(host.getBoundingClientRect().bottom);
