@@ -57,15 +57,6 @@ export class FilterComponent {
     this.serializationService.save();
   }
 
-  protected getFilterClass(filter: Filter): string {
-    switch (filter.state) {
-      case 1:
-        return 'positive';
-      case -1:
-        return 'negative';
-    }
-  }
-
   protected getFilterIconClass(filter: Filter): string {
     switch (filter.state) {
       case 1:

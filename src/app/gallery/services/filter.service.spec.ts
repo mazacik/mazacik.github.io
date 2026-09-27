@@ -106,12 +106,22 @@ describe('Tag group filtering', () => {
     expect(visible()).toEqual(['cloud', 'untagged']);
   });
 
-  it('lets explicit green tags override group inclusion as well as exclusion', () => {
+  it('does not let an unrelated green tag override group inclusion or exclusion', () => {
     animals.state = 1;
     clouds.state = 1;
-    expect(visible()).toEqual(['cloud']);
+    expect(visible()).toEqual([]);
     animals.state = -1;
     expect(visible()).toEqual(['cloud']);
+  });
+
+  it('combines a green tag with an unrelated green group', () => {
+    const vehicles = add('Vehicles', true);
+    const cars = add('Cars', false, vehicles);
+    image('car', cars);
+    image('cat-in-car', cats, cars);
+    cats.state = 1;
+    vehicles.state = 1;
+    expect(visible()).toEqual(['cat-in-car']);
   });
 
   it('excludes red group matches from the union of green groups', () => {

@@ -10,11 +10,11 @@
   scroll-snap-align: center;
 
   .note-input {
+    width: 100%;
     min-height: 0;
-    height: auto;
     border: 0;
     border-radius: 0;
-    padding: variables.$gap-2;
+    padding: 0;
   }
 
   .search-input-container {
@@ -24,11 +24,9 @@
     .search-input {
       width: 100%;
       min-height: 0;
-      height: auto;
       border: 0;
       border-radius: 0;
-      padding: variables.$gap-2;
-      padding-right: calc(#{variables.$gap-2} * 2 + 1rem);
+      padding: 0;
     }
 
     .clear-search-button {
@@ -87,6 +85,12 @@
       overflow: hidden;
       font-size: 0.95rem;
       align-content: center;
+    }
+
+    .tagger-toggles {
+      position: absolute;
+      right: variables.$gap-2;
+      bottom: variables.$gap-2;
     }
   }
 
@@ -190,25 +194,6 @@
       i {
         font-size: 0.8rem;
         margin-top: 1px;
-      }
-    }
-  }
-
-  .buttons-container {
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    gap: variables.$gap-1;
-    margin: 0 variables.$gap-1 variables.$gap-1 variables.$gap-1;
-
-    .button-row {
-      display: flex;
-      gap: variables.$gap-1;
-
-      .button {
-        font: inherit;
-        flex: 1;
-        gap: variables.$gap-1;
       }
     }
   }

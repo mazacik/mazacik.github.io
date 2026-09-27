@@ -66,7 +66,9 @@ export class FilterRowComponent {
   }
 
   protected getDisplayName(): string {
-    return this.showFullName ? this.tag.getNameWithParents() : this.tag.name;
+    return this.showFullName
+      ? this.tag.collectParents().concat(this.tag).reverse().map(tag => tag.name).join(' | ')
+      : this.tag.name;
   }
 
   protected getTagGroups(): Tag[] {

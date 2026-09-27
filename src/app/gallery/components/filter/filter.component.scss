@@ -19,6 +19,10 @@
     z-index: 1;
     backdrop-filter: blur(5px);
     background-color: color-mix(in srgb, var(--color-surface-0) 65%, transparent);
+
+    .filter-container > :not(.filters-container) {
+      touch-action: none;
+    }
   }
 
   @media screen and (max-width:1280px) {
@@ -53,11 +57,9 @@
       .search-input {
         width: 100%;
         min-height: 0;
-        padding-right: calc(#{variables.$gap-2} * 2 + 1rem);
-        height: auto;
         border: 0;
         border-radius: 0;
-        padding: variables.$gap-2;
+        padding: 0;
       }
 
       .clear-search-button {
@@ -88,6 +90,8 @@
       flex: 1;
       min-height: 0;
       overflow-y: auto;
+      overscroll-behavior-y: contain;
+      touch-action: pan-y;
       scrollbar-gutter: stable;
 
       i {
@@ -101,21 +105,50 @@
     }
   }
 
-  .buttons-container {
-    display: flex;
-    flex-direction: column;
-    gap: variables.$gap-1;
-    margin: 0 variables.$gap-1 variables.$gap-1 variables.$gap-1;
+  .filter-actions {
+    flex-shrink: 0;
 
-    .button-row {
-      display: flex;
-      gap: variables.$gap-1;
+    .icon-button {
+      padding: 0;
+    }
 
-      .button {
-        font: inherit;
-        flex: 1;
-        gap: variables.$gap-1;
+    .badged-action {
+      position: relative;
+
+      .action-badge {
+        position: absolute;
+        right: 2px;
+        top: 2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        color: inherit;
+        background-color: transparent;
+        font-size: 8px;
       }
+    }
+  }
+
+  .filter-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+
+    &:focus-visible {
+      border-radius: variables.$gap-1;
+      outline: 2px solid currentColor;
+      outline-offset: -2px;
     }
   }
 

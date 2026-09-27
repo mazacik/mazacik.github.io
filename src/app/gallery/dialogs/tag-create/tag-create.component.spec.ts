@@ -75,6 +75,23 @@ describe('TagCreateComponent', () => {
     expect(fixture.nativeElement.querySelector('ng-select .ng-value-label').textContent.trim()).toBe('Animals | Dogs');
   });
 
+  it('moves focus to the name after selecting a typed parent with Enter', async () => {
+    await render();
+    await openParents();
+    const search = fixture.nativeElement.querySelector('#gallery-tag-create-parent') as HTMLInputElement;
+    search.focus();
+    search.value = 'Animals | Dogs';
+    search.dispatchEvent(new Event('input'));
+    await render();
+
+    search.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    await render();
+
+    const name = fixture.nativeElement.querySelector('#gallery-tag-create-name') as HTMLInputElement;
+    expect(document.activeElement).toBe(name);
+    expect(fixture.nativeElement.querySelector('ng-select .ng-value-label').textContent.trim()).toBe('Animals | Dogs');
+  });
+
   it('keeps the name and revalidates immediately when the parent changes', async () => {
     await render();
     await enterName('Taken');
