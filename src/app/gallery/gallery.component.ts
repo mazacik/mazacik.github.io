@@ -43,6 +43,10 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
   protected tournamentSubview: 'comparison' | 'chain' = 'comparison';
   protected taggerOverlayVisible: boolean = false;
   private fullscreenWasOpen: boolean = false;
+  private browserFullscreenActive: boolean = !!document.fullscreenElement;
+  private readonly browserFullscreenChangeListener = (): void => {
+    this.browserFullscreenActive = !!document.fullscreenElement;
+  };
 
   protected get viewMode(): GalleryViewMode {
     return this.stateService.viewMode;
@@ -75,11 +79,10 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
       }
       this.fullscreenWasOpen = fullscreenOpen;
     });
-
-    document.documentElement.classList.add('mobile-gallery-document-scroll');
   }
 
   ngOnInit(): void {
+    document.addEventListener('fullscreenchange', this.browserFullscreenChangeListener);
     this.configureHeader();
     this.registerModuleSettings();
     this.serializationService.processData().then(() => {
@@ -90,7 +93,11 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
 
   ngOnDestroy(): void {
     this.keyboardShortcutService.unregister(this);
-    document.documentElement.classList.remove('mobile-gallery-document-scroll');
+    document.removeEventListener('fullscreenchange', this.browserFullscreenChangeListener);
+    this.applicationService.removeHeaderButtons(['browser-fullscreen']);
+    if (document.fullscreenElement) {
+      void document.exitFullscreen().catch(error => console.warn('Could not exit browser fullscreen mode.', error));
+    }
   }
 
   processKeyboardShortcut(event: KeyboardEvent): void {
@@ -202,11 +209,34 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
     }]);
 
     this.applicationService.addHeaderButtons('end', [{
+      id: 'browser-fullscreen',
+      tooltip: () => {
+        if (!document.fullscreenEnabled && !this.browserFullscreenActive) {
+          return 'Browser Fullscreen Unavailable';
+        }
+        return this.browserFullscreenActive ? 'Exit Browser Fullscreen' : 'Enter Browser Fullscreen';
+      },
+      classes: () => `fa-solid ${this.browserFullscreenActive ? 'fa-compress' : 'fa-expand'}`,
+      disabled: () => !document.fullscreenEnabled && !this.browserFullscreenActive,
+      onClick: () => void this.toggleBrowserFullscreen()
+    }, {
       id: 'open-settings',
       tooltip: 'Open Settings',
       classes: 'fa-solid fa-gear',
       onClick: () => this.dialogService.create(ApplicationSettingsComponent)
     }]);
+  }
+
+  private async toggleBrowserFullscreen(): Promise<void> {
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+      } else if (document.fullscreenEnabled) {
+        await document.documentElement.requestFullscreen({ navigationUI: 'hide' });
+      }
+    } catch (error) {
+      console.warn('Could not change browser fullscreen mode.', error);
+    }
   }
 
   private registerModuleSettings(): void {

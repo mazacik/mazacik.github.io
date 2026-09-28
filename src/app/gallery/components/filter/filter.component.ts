@@ -23,11 +23,6 @@ export class FilterComponent {
   private focusedTagId: string | null = null;
   private scrollSelectionAfterRender = false;
 
-  private searchInput: ElementRef<HTMLInputElement>;
-  @ViewChild('searchInput') private set searchInputElement(input: ElementRef<HTMLInputElement>) {
-    this.searchInput = input;
-    input?.nativeElement.focus();
-  }
   @ViewChild('resultsContainer') private resultsContainer: ElementRef<HTMLElement>;
   @ViewChildren('listRow') private listRows: QueryList<FilterRowComponent>;
 
@@ -84,7 +79,6 @@ export class FilterComponent {
     this.searchQuery = '';
     this.resetListSelection();
     input.value = '';
-    input.focus();
   }
 
   protected hasSearchQuery(): boolean {
@@ -99,11 +93,6 @@ export class FilterComponent {
 
   protected getFocusedTag(tags: Tag[]): Tag | undefined {
     return tags.find(tag => tag.id === this.focusedTagId) ?? tags[0];
-  }
-
-  protected onTagToggled(tag: Tag): void {
-    this.focusedTagId = tag.id;
-    this.searchInput?.nativeElement.focus();
   }
 
   protected onSearchKeydown(event: KeyboardEvent): void {
