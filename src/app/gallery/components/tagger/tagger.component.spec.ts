@@ -103,6 +103,7 @@ describe('List and Tree tagger modes', () => {
   }
 
   async function key(key: string, options: KeyboardEventInit = {}): Promise<KeyboardEvent> {
+    input().focus();
     const event = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true, ...options });
     input().dispatchEvent(event);
     await render();
@@ -240,7 +241,7 @@ describe('List and Tree tagger modes', () => {
     expect(panel.scrollTop).toBe(74);
   });
 
-  it('retains mouse activation and clears focus when using the clear button', async () => {
+  it('supports mouse activation and clearing the search', async () => {
     await search();
     const result = fixture.nativeElement.querySelector('#tagger-search-result-large .cursor-pointer') as HTMLElement;
     result.click();
@@ -253,7 +254,6 @@ describe('List and Tree tagger modes', () => {
     await render();
     expect(input().value).toBe('');
     expect(focusedId()).toBe('tagger-search-result-small');
-    expect(document.activeElement).toBe(input());
   });
 
   it('defaults to Tree with no search and preserves tree expansion when switching modes', async () => {
@@ -269,7 +269,6 @@ describe('List and Tree tagger modes', () => {
     await render();
     expect(folder.open).toBeFalse();
     await mode('List');
-    expect(document.activeElement).toBe(input());
     expect(rows('unapplied').length).toBe(2);
     expect(rows('unapplied')[0].textContent).toContain('Dog large | Animals');
     await search('small');
@@ -296,6 +295,7 @@ describe('List and Tree tagger modes', () => {
     await render();
     expect(input()).not.toBeNull();
     expect(button('List').getAttribute('aria-pressed')).toBe('true');
+    expect(document.activeElement).not.toBe(input());
   });
 
   it('tracks the current image, keeps applied tags visible, and resets selection on target and group changes', async () => {
@@ -386,7 +386,6 @@ describe('List and Tree tagger modes', () => {
     await clickApplied(large);
     expect(input().value).toBe('dog');
     expect(rows('unapplied').length).toBe(2);
-    expect(document.activeElement).toBe(input());
   });
 
   it('uses compact icon controls and a single footer action row', () => {

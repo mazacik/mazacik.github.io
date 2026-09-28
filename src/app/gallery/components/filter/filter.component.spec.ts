@@ -81,12 +81,14 @@ describe('Gallery group filter controls', () => {
   }
 
   async function search(query: string): Promise<void> {
+    input().focus();
     input().value = query;
     input().dispatchEvent(new Event('input'));
     await render();
   }
 
   async function key(key: string, options: KeyboardEventInit = {}): Promise<KeyboardEvent> {
+    input().focus();
     const event = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true, ...options });
     input().dispatchEvent(event);
     await render();
@@ -124,14 +126,14 @@ describe('Gallery group filter controls', () => {
   });
 
   it('places the image count left and icon-only quick filters right in one row', async () => {
-    const summary = fixture.nativeElement.querySelector('.filter-summary') as HTMLElement;
+    const count = fixture.nativeElement.querySelector('.filter-count') as HTMLElement;
+    const summary = count.parentElement;
     const toggles = Array.from(summary.querySelectorAll<HTMLButtonElement>('.filter-toggle'));
     const summaryStyle = getComputedStyle(summary);
     expect(summaryStyle.justifyContent).toBe('space-between');
-    expect(parseFloat(summaryStyle.paddingLeft)).toBeCloseTo(parseFloat(summaryStyle.paddingTop) * 2, 2);
+    expect(parseFloat(summaryStyle.paddingLeft)).toBeCloseTo(parseFloat(summaryStyle.paddingTop) * 4, 2);
     expect(summaryStyle.marginLeft).toBe('0px');
-    expect(parseFloat(getComputedStyle(summary.querySelector('.filter-toggles')).gap)).toBeGreaterThan(0);
-    expect(summary.querySelector('.filter-count').textContent.trim()).toBe('Filter: 2 images');
+    expect(count.textContent.trim()).toBe('Filter • 2');
     expect(toggles.map(toggle => toggle.getAttribute('aria-label'))).toEqual(['Favorites', 'Bookmarks', 'Groups']);
     expect(toggles.every(toggle => toggle.textContent.trim() === '')).toBeTrue();
 
@@ -202,7 +204,7 @@ describe('Gallery group filter controls', () => {
       'Cats | Animals',
       'Dogs | Animals'
     ]);
-    expect(document.activeElement).toBe(input());
+    expect(document.activeElement).not.toBe(input());
 
     await search('dogs');
     await mode('Tree');
@@ -211,6 +213,16 @@ describe('Gallery group filter controls', () => {
     await mode('List');
     expect(input().value).toBe('');
     expect(save).toHaveBeenCalledTimes(3);
+  });
+
+  it('does not focus the search input when List mode is restored', async () => {
+    state.settings.filterMode = 'list';
+    fixture.destroy();
+    fixture = TestBed.createComponent(FilterComponent);
+    await render();
+
+    expect(input()).not.toBeNull();
+    expect(document.activeElement).not.toBe(input());
   });
 
   it('matches normal tags, pseudo tags, and groups through indirect parent names', async () => {

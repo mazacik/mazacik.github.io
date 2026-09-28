@@ -28,11 +28,6 @@ export class TaggerComponent {
 
   private scrollSelectionAfterRender = false;
 
-  private searchInput: ElementRef<HTMLInputElement>;
-  @ViewChild('searchInput') private set searchInputElement(input: ElementRef<HTMLInputElement>) {
-    this.searchInput = input;
-    input?.nativeElement.focus();
-  }
   @ViewChild('appliedContainer') private appliedContainer: ElementRef<HTMLElement>;
   @ViewChild('resultsContainer') private resultsContainer: ElementRef<HTMLElement>;
   @ViewChildren('listRow') private listRows: QueryList<TaggerRowComponent>;
@@ -84,7 +79,6 @@ export class TaggerComponent {
   protected toggleGroupMode(): void {
     this.groupMode = !this.groupMode;
     this.resetSearchSelection();
-    this.searchInput?.nativeElement.focus();
   }
 
   private resetSearchSelection(): void {
@@ -165,7 +159,6 @@ export class TaggerComponent {
     this.searchQuery = '';
     this.resetSearchSelection();
     input.value = '';
-    input.focus();
   }
 
   protected onSearchResultTagToggled(event: MouseEvent | KeyboardEvent): void {
@@ -173,12 +166,10 @@ export class TaggerComponent {
       this.searchQuery = '';
     }
     this.resetSearchSelection();
-    this.searchInput?.nativeElement.focus();
   }
 
   protected onAppliedTagToggled(): void {
     this.resetSearchSelection();
-    this.searchInput?.nativeElement.focus();
   }
 
   protected hasSearchQuery(): boolean {
