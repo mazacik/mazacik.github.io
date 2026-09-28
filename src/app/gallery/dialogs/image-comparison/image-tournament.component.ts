@@ -1,4 +1,4 @@
-import { Component, OnDestroy, effect } from '@angular/core';
+import { Component, ElementRef, OnDestroy, ViewChild, effect } from '@angular/core';
 import { GalleryImage } from 'src/app/gallery/models/gallery-image.class';
 import { ImageComponent } from 'src/app/shared/components/image/image.component';
 import { GalleryUtils } from '../../../shared/utils/gallery.utils';
@@ -17,16 +17,21 @@ import { ImageRankingConsistencyCheck, ImageRankingConsistencyUtils } from './im
 export class ImageTournamentComponent implements OnDestroy {
   protected readonly galleryUtils = GalleryUtils;
 
+  @ViewChild('comparisonContainer')
+  private comparisonContainer?: ElementRef<HTMLElement>;
+
   protected comparison: [GalleryImage, GalleryImage] = null;
   protected winnersRight: GalleryImage[] = [];
   protected losersRight: GalleryImage[] = [];
   protected comparisonImagesReady: [boolean, boolean] = [false, false];
+  protected mobileComparisonIndex: 0 | 1 = 0;
   private comparisonImageIds: [string, string] | null = null;
   private longPressTimer: number | null = null;
   private suppressNextClick: boolean = false;
   private consistencyCheck: ImageRankingConsistencyCheck | null = null;
   private consistencyWarningOpen: boolean = false;
   private readonly longPressDelayMs: number = 500;
+  private readonly mobileComparisonMediaQuery: string = '(max-width: 799px) and (orientation: portrait)';
 
   constructor(
     private dialogService: DialogService,
@@ -98,7 +103,60 @@ export class ImageTournamentComponent implements OnDestroy {
     this.refreshComparisonRelations();
   }
 
+  protected async onComparisonImageClick(image: GalleryImage): Promise<void> {
+    if (!this.isMobileComparisonLayout()) {
+      await this.onImageClick(image);
+      return;
+    }
+
+    if (this.suppressNextClick) {
+      this.suppressNextClick = false;
+      return;
+    }
+
+    this.openFullscreen(image);
+  }
+
+  protected onComparisonScroll(element: HTMLElement): void {
+    if (this.isMobileComparisonLayout()) {
+      this.mobileComparisonIndex = this.getClosestComparisonIndex(element);
+    }
+  }
+
+  protected async chooseCurrentComparisonImage(event: MouseEvent): Promise<void> {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!this.comparison) {
+      return;
+    }
+
+    const comparisonElement = this.comparisonContainer?.nativeElement;
+    if (comparisonElement) {
+      this.mobileComparisonIndex = this.getClosestComparisonIndex(comparisonElement);
+    }
+
+    await this.onImageClick(this.comparison[this.mobileComparisonIndex]);
+  }
+
+  protected showMobileComparisonPage(index: 0 | 1, event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.clearLongPressTimer();
+    const comparisonElement = this.comparisonContainer?.nativeElement;
+    const columns = Array.from(comparisonElement?.querySelectorAll<HTMLElement>(':scope > .comparison-column') ?? []);
+    if (!comparisonElement || columns.length < 2) {
+      return;
+    }
+
+    this.mobileComparisonIndex = index;
+    comparisonElement.scrollTo({
+      top: columns[index].offsetTop - columns[0].offsetTop,
+      behavior: 'smooth'
+    });
+  }
+
   public onEnterTournament(): void {
+    this.resetMobileComparisonPage();
     this.clearConsistencyCheck();
     const before = JSON.stringify(this.stateService.sortState ?? null);
     this.stateService.imageSort.start(this.getSortableSubjectIds(), this.stateService.sortState);
@@ -134,6 +192,7 @@ export class ImageTournamentComponent implements OnDestroy {
   }
 
   public resetSort(): void {
+    this.resetMobileComparisonPage();
     this.clearConsistencyCheck();
     this.stateService.sortState = null;
     this.stateService.imageSort.start(this.getSortableSubjectIds(), null);
@@ -245,6 +304,30 @@ export class ImageTournamentComponent implements OnDestroy {
     const activeImage = GallerySortUtils.resolveSubjectImage(comparisonIds[0], this.stateService.images, this.stateService.imageGroups);
     const opponentImage = GallerySortUtils.resolveSubjectImage(comparisonIds[1], this.stateService.images, this.stateService.imageGroups);
     return activeImage && opponentImage ? [activeImage, opponentImage] : null;
+  }
+
+  private isMobileComparisonLayout(): boolean {
+    return window.matchMedia(this.mobileComparisonMediaQuery).matches;
+  }
+
+  private getClosestComparisonIndex(element: HTMLElement): 0 | 1 {
+    const columns = Array.from(element.querySelectorAll<HTMLElement>(':scope > .comparison-column'));
+    if (columns.length < 2) {
+      return 0;
+    }
+
+    const firstPageTop = 0;
+    const secondPageTop = columns[1].offsetTop - columns[0].offsetTop;
+    const firstDistance = Math.abs(element.scrollTop - firstPageTop);
+    const secondDistance = Math.abs(element.scrollTop - secondPageTop);
+    return secondDistance < firstDistance ? 1 : 0;
+  }
+
+  private resetMobileComparisonPage(): void {
+    this.mobileComparisonIndex = 0;
+    if (this.comparisonContainer) {
+      this.comparisonContainer.nativeElement.scrollTop = 0;
+    }
   }
 
   protected canChooseImages(): boolean {

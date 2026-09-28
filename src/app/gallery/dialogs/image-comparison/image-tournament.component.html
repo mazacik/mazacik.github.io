@@ -1,20 +1,28 @@
 <div class="comparison-wrapper">
   @if (comparison) {
-    <div class="comparison">
-      <div class="comparison-column">
+    <div #comparisonContainer class="comparison" (scroll)="onComparisonScroll(comparisonContainer)">
+      <div class="comparison-column" role="group" aria-label="Comparison image A">
         <app-image
           class="image-container"
           [src]="comparison[0].contentLink"
           [placeholderSrc]="galleryUtils.getPlaceholderSrc(comparison[0])"
           [sourceWidth]="comparison[0].imageMediaMetadata?.width || comparison[0].videoMediaMetadata?.width"
           [sourceHeight]="comparison[0].imageMediaMetadata?.height || comparison[0].videoMediaMetadata?.height"
-          (click)="onImageClick(comparison[0])"
+          (click)="onComparisonImageClick(comparison[0])"
           (imageDisplayed)="onComparisonImageDisplayed(0, comparison[0], $event)"
           (contextmenu)="onImageContextMenu(comparison[0], $event)"
           (touchstart)="onImageTouchStart(comparison[0])"
           (touchend)="onImageTouchEnd()"
           (touchcancel)="onImageTouchEnd()"
           (touchmove)="onImageTouchMove()"></app-image>
+        <button
+          type="button"
+          class="mobile-other-image-preview mobile-other-image-preview-bottom"
+          title="View comparison image B"
+          aria-label="View comparison image B"
+          (click)="showMobileComparisonPage(1, $event)">
+          <img class="side-image" [src]="comparison[1].thumbnailLink || comparison[1].contentLink" [style.aspect-ratio]="comparison[1].aspectRatio" alt="" loading="lazy" />
+        </button>
         @if (!isConsistencyCheckActive) {
           <div class="active-image-actions">
             <i class="icon-button fa-solid fa-rotate-left" title="Restart Image Comparisons" (click)="restartActiveImageComparisons($event)"></i>
@@ -29,20 +37,28 @@
         }
       </div>
       <div class="h-separator v-separator"></div>
-      <div class="comparison-column">
+      <div class="comparison-column" role="group" aria-label="Comparison image B">
         <app-image
           class="image-container"
           [src]="comparison[1].contentLink"
           [placeholderSrc]="galleryUtils.getPlaceholderSrc(comparison[1])"
           [sourceWidth]="comparison[1].imageMediaMetadata?.width || comparison[1].videoMediaMetadata?.width"
           [sourceHeight]="comparison[1].imageMediaMetadata?.height || comparison[1].videoMediaMetadata?.height"
-          (click)="onImageClick(comparison[1])"
+          (click)="onComparisonImageClick(comparison[1])"
           (imageDisplayed)="onComparisonImageDisplayed(1, comparison[1], $event)"
           (contextmenu)="onImageContextMenu(comparison[1], $event)"
           (touchstart)="onImageTouchStart(comparison[1])"
           (touchend)="onImageTouchEnd()"
           (touchcancel)="onImageTouchEnd()"
           (touchmove)="onImageTouchMove()"></app-image>
+        <button
+          type="button"
+          class="mobile-other-image-preview mobile-other-image-preview-top"
+          title="View comparison image A"
+          aria-label="View comparison image A"
+          (click)="showMobileComparisonPage(0, $event)">
+          <img class="side-image" [src]="comparison[0].thumbnailLink || comparison[0].contentLink" [style.aspect-ratio]="comparison[0].aspectRatio" alt="" loading="lazy" />
+        </button>
         @if (!isConsistencyCheckActive && stateService.settings?.showComparisonRelations) {
           @if (winnersRight.length) {
             <div class="side-column winners-column">
@@ -80,6 +96,17 @@
   } @else {
     <div class="comparison comparison-empty">
       Ranking complete.
+    </div>
+  }
+
+  @if (comparison) {
+    <div class="mobile-comparison-actions">
+      <button
+        type="button"
+        class="button mobile-comparison-choice"
+        [disabled]="!canChooseImages()"
+        [class.disabled]="!canChooseImages()"
+        (click)="chooseCurrentComparisonImage($event)">Choose This Image</button>
     </div>
   }
 

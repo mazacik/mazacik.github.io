@@ -16,11 +16,8 @@
   .comparison {
     flex: 1;
     display: flex;
+    min-height: 0;
     overflow: hidden;
-
-    @media (orientation: portrait) {
-      flex-direction: column;
-    }
 
     .comparison-column {
       display: flex;
@@ -111,6 +108,85 @@
       z-index: 10;
     }
 
+  }
+
+  .mobile-comparison-actions {
+    display: none;
+  }
+
+  .mobile-other-image-preview {
+    display: none;
+  }
+
+  @media screen and (max-width: 799px) and (orientation: portrait) {
+    .comparison-wrapper {
+      overflow: hidden;
+    }
+
+    .comparison {
+      display: block;
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior-y: contain;
+      scroll-snap-type: y mandatory;
+
+      > .comparison-column {
+        width: 100%;
+        height: 100%;
+        min-height: 100%;
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
+      }
+
+      > .v-separator {
+        display: block;
+        border-right: 0;
+      }
+    }
+
+    .mobile-comparison-actions {
+      display: flex;
+      flex-shrink: 0;
+      padding: variables.$gap-1;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .mobile-comparison-choice {
+      width: 100%;
+      color: inherit;
+      font: inherit;
+    }
+
+    .mobile-other-image-preview {
+      display: block;
+      position: absolute;
+      right: variables.$gap-2;
+      z-index: 11;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: variables.$gap-1;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      cursor: pointer;
+
+      &.mobile-other-image-preview-top {
+        top: variables.$gap-2;
+      }
+
+      &.mobile-other-image-preview-bottom {
+        bottom: variables.$gap-2;
+      }
+
+      .side-image {
+        width: 64px;
+      }
+    }
+
+    .comparison-column:last-child .losers-column {
+      top: calc(64px + variables.$gap-3);
+    }
   }
 
   .comparison.comparison-empty {
