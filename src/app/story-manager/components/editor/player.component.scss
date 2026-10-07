@@ -24,18 +24,10 @@
   min-width: 0;
   overflow: hidden;
 }
-.player-content,
-.gear-content {
+.player-content {
   flex: 1;
   min-width: 0;
   min-height: 0;
-  overflow-y: auto;
-  overscroll-behavior-y: contain;
-}
-.gear-content {
-  padding: variables.$gap-3;
-}
-.player-content {
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -47,83 +39,6 @@
 .test-setup.has-game {
   flex: 0 1 auto;
   max-height: 35%;
-}
-.gear-panel {
-  display: flex;
-  flex-direction: column;
-  flex: 0 0 32%;
-  max-width: 320px;
-  min-width: 0;
-  min-height: 0;
-  border-left: 1px solid var(--color-border);
-}
-.gear-switch {
-  display: flex;
-  flex-wrap: wrap;
-  flex-shrink: 0;
-  gap: variables.$gap-1;
-  padding: variables.$gap-2;
-  border-bottom: 1px solid var(--color-border);
-}
-.gear-switch button {
-  flex: 1 1 100px;
-}
-.gear-row {
-  padding: variables.$gap-3 0;
-  border-bottom: 1px solid var(--color-border);
-}
-.gear-row:first-child {
-  padding-top: 0;
-}
-.gear-row-header {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: variables.$gap-1;
-  margin-bottom: variables.$gap-2;
-}
-.gear-name {
-  flex: 1 1 9ch;
-  font-weight: 600;
-  min-width: 0;
-}
-.gear-details {
-  display: grid;
-  gap: variables.$gap-2;
-}
-.gear-details .entry-actions,
-.gear-details p {
-  margin: 0;
-}
-.gear-description {
-  white-space: pre-wrap;
-  line-height: 1.5;
-}
-.gear-quantity,
-.gear-status,
-.gear-reason {
-  font-size: 0.875rem;
-  color: var(--color-text-secondary);
-}
-.gear-quantity {
-  white-space: nowrap;
-  padding: 0 variables.$gap-1;
-}
-.gear-row .gear-reason {
-  margin: 0;
-  line-height: 1.4;
-}
-.unlock-actions,
-.unlock-action {
-  display: grid;
-  justify-items: start;
-  gap: variables.$gap-1;
-  min-width: 0;
-}
-@media (max-width: 799px) {
-  .gear-panel {
-    flex-basis: 40%;
-  }
 }
 .reader {
   display: flex;
@@ -163,10 +78,6 @@
 }
 .player-action h3 {
   font-size: 0.875rem;
-  color: var(--color-text-secondary);
-}
-.action-result {
-  margin-top: variables.$gap-1;
   color: var(--color-text-secondary);
 }
 .choices {

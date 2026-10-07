@@ -41,6 +41,7 @@ export class GallerySerializationService {
     stateService.sortState = data.sortState;
     stateService.settings = data.settings ?? {} as GallerySettings;
     stateService.settings.showComparisonProgress ??= stateService.settings.showComparisonRelations ?? false;
+    stateService.settings.useRankedRow ??= false;
 
     const filterService: FilterService = this.injector.get(FilterService);
     filterService.favoritesFilter.state = data.heartsFilter || 0;

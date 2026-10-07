@@ -1,5 +1,14 @@
 <div class="comparison-wrapper">
-  @if (comparison) {
+  @if (isRankedRowMode && rowActiveImage) {
+    <app-image-ranking-row
+      [activeImage]="rowActiveImage"
+      [rankedSubjects]="rankedSubjects"
+      (place)="placeInRankedRow($event)"
+      (selectionChange)="selectedPlacementIndex = $event"
+      (fullscreen)="openFullscreen($event)"
+      (restart)="restartActiveImageComparisons($event)"
+      (skip)="skipActiveImage($event)"></app-image-ranking-row>
+  } @else if (!isRankedRowMode && comparison) {
     <div #comparisonContainer class="comparison" (scroll)="onComparisonScroll(comparisonContainer)">
       <div class="comparison-column" role="group" aria-label="Comparison image A">
         <app-image
@@ -63,24 +72,14 @@
           @if (winnersRight.length) {
             <div class="side-column winners-column">
               @for (image of winnersRight; track image.id) {
-                <div class="side-image-container">
-                  <img class="side-image" [src]="image.thumbnailLink" [style.aspect-ratio]="image.aspectRatio" loading="lazy" (click)="openRelationFullscreen(image, $event)" (contextmenu)="onImageContextMenu(image, $event)" (touchstart)="onImageTouchStart(image)" (touchend)="onImageTouchEnd()" (touchcancel)="onImageTouchEnd()" (touchmove)="onImageTouchMove()" />
-                  @if (canCompareAgainst(image)) {
-                    <i class="side-image-action side-image-action-end icon-button smaller fa-solid fa-code-compare" title="Compare Against This Image" (click)="compareAgainst(image, $event)"></i>
-                  }
-                </div>
+                <img class="side-image" [src]="image.thumbnailLink" [style.aspect-ratio]="image.aspectRatio" loading="lazy" (click)="compareAgainst(image, $event)" (contextmenu)="onImageContextMenu(image, $event)" (touchstart)="onImageTouchStart(image)" (touchend)="onImageTouchEnd()" (touchcancel)="onImageTouchEnd()" (touchmove)="onImageTouchMove()" />
               }
             </div>
           }
           @if (losersRight.length) {
             <div class="side-column losers-column">
               @for (image of losersRight; track image.id) {
-                <div class="side-image-container">
-                  <img class="side-image" [src]="image.thumbnailLink" [style.aspect-ratio]="image.aspectRatio" loading="lazy" (click)="openRelationFullscreen(image, $event)" (contextmenu)="onImageContextMenu(image, $event)" (touchstart)="onImageTouchStart(image)" (touchend)="onImageTouchEnd()" (touchcancel)="onImageTouchEnd()" (touchmove)="onImageTouchMove()" />
-                  @if (canCompareAgainst(image)) {
-                    <i class="side-image-action side-image-action-start icon-button smaller fa-solid fa-code-compare" title="Compare Against This Image" (click)="compareAgainst(image, $event)"></i>
-                  }
-                </div>
+                <img class="side-image" [src]="image.thumbnailLink" [style.aspect-ratio]="image.aspectRatio" loading="lazy" (click)="compareAgainst(image, $event)" (contextmenu)="onImageContextMenu(image, $event)" (touchstart)="onImageTouchStart(image)" (touchend)="onImageTouchEnd()" (touchcancel)="onImageTouchEnd()" (touchmove)="onImageTouchMove()" />
               }
             </div>
           }
@@ -99,7 +98,7 @@
     </div>
   }
 
-  @if (comparison) {
+  @if (comparison && !isRankedRowMode) {
     <div class="mobile-comparison-actions">
       <button
         type="button"
@@ -115,7 +114,7 @@
     <div class="progress-remaining">
       <span class="progress-remaining-bar" [style.width.%]="sortProgressPercent"></span>
       @if (showPlacementRange) {
-        <span class="placement-range" [style.left.%]="rangeStartPlacementPercent" [style.right.%]="rangeEndOffsetPercent"></span>
+        <span class="placement-range" [class.placement-point]="isRankedRowMode" [style.left.%]="rangeStartPlacementPercent" [style.right.%]="rangeEndOffsetPercent"></span>
       }
       <span class="progress-remaining-text">{{ sortStatus }}</span>
     </div>

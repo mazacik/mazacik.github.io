@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, ViewChild, effect } from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, ViewChild, effect } from '@angular/core';
 import { GalleryImage } from 'src/app/gallery/models/gallery-image.class';
 import { ImageComponent } from 'src/app/shared/components/image/image.component';
 import { GalleryUtils } from '../../../shared/utils/gallery.utils';
@@ -6,11 +6,13 @@ import { DialogService } from '../../../shared/services/dialog.service';
 import { GallerySerializationService } from '../../services/gallery-serialization.service';
 import { GalleryStateService } from '../../services/gallery-state.service';
 import { GallerySortUtils } from '../../utils/gallery-sort.utils';
+import { GalleryFeatures } from '../../constants/gallery-features';
 import { ImageRankingConsistencyCheck, ImageRankingConsistencyUtils } from './image-ranking-consistency.utils';
+import { ImageRankingRowComponent, RankedRowPlacement, RankedRowSubject } from './image-ranking-row.component';
 
 @Component({
   selector: 'app-image-tournament',
-  imports: [ImageComponent],
+  imports: [ImageComponent, ImageRankingRowComponent],
   templateUrl: './image-tournament.component.html',
   styleUrls: ['./image-tournament.component.scss']
 })
@@ -19,6 +21,14 @@ export class ImageTournamentComponent implements OnDestroy {
 
   @ViewChild('comparisonContainer')
   private comparisonContainer?: ElementRef<HTMLElement>;
+
+  @ViewChild(ImageRankingRowComponent)
+  private rankingRow?: ImageRankingRowComponent;
+
+  protected rowActiveImage: GalleryImage | null = null;
+  protected rankedSubjects: RankedRowSubject[] = [];
+  protected selectedPlacementIndex = 0;
+  private desktopRowAvailable = window.innerWidth >= 1024;
 
   protected comparison: [GalleryImage, GalleryImage] = null;
   protected winnersRight: GalleryImage[] = [];
@@ -48,6 +58,34 @@ export class ImageTournamentComponent implements OnDestroy {
     this.clearLongPressTimer();
   }
 
+  public get isRankedRowMode(): boolean {
+    return GalleryFeatures.rankedColumnPlacement && this.desktopRowAvailable && !!this.stateService.settings?.useRankedRow;
+  }
+
+  public setRankedRowMode(enabled: boolean): void {
+    if (!GalleryFeatures.rankedColumnPlacement) return;
+    this.stateService.settings.useRankedRow = enabled;
+    this.serializationService.save();
+    if (this.isRankedRowMode) this.clearConsistencyCheck();
+    this.refreshComparisonRelations();
+  }
+
+  @HostListener('window:resize')
+  protected onWindowResize(): void {
+    const available = window.innerWidth >= 1024;
+    if (available === this.desktopRowAvailable) return;
+    this.desktopRowAvailable = available;
+    if (this.isRankedRowMode) this.clearConsistencyCheck();
+    this.refreshComparisonRelations();
+  }
+
+  protected placeInRankedRow(placement: RankedRowPlacement): void {
+    if (!this.isRankedRowMode || !this.stateService.imageSort.placeActiveInsertion(placement.subjectId, placement.index)) return;
+    this.clearConsistencyCheck();
+    this.persistSortState();
+    this.refreshComparisonRelations();
+  }
+
   protected get sortStatus(): string {
     const ranked = this.stateService.imageSort.rankedImageIds.length;
     const total = ranked + this.stateService.imageSort.pendingCountIncludingActive;
@@ -55,10 +93,12 @@ export class ImageTournamentComponent implements OnDestroy {
   }
 
   protected get rangeStartPlacementPercent(): number | null {
+    if (this.isRankedRowMode) return this.rowActiveImage ? this.getInsertionPlacementPercent(this.selectedPlacementIndex) : null;
     return this.getInsertionPlacementPercent(this.stateService.imageSort.activeInsertion?.low);
   }
 
   protected get rangeEndPlacementPercent(): number | null {
+    if (this.isRankedRowMode) return this.rangeStartPlacementPercent;
     return this.getInsertionPlacementPercent(this.stateService.imageSort.activeInsertion?.high);
   }
 
@@ -165,6 +205,7 @@ export class ImageTournamentComponent implements OnDestroy {
       this.serializationService.save(true);
     }
     this.refreshComparisonRelations();
+    this.rankingRow?.resetPosition();
   }
 
   public resetActiveImage(): void {
@@ -172,6 +213,7 @@ export class ImageTournamentComponent implements OnDestroy {
     this.stateService.imageSort.resetActiveInsertion();
     this.persistSortState();
     this.refreshComparisonRelations();
+    this.rankingRow?.resetPosition();
   }
 
   protected restartActiveImageComparisons(event: MouseEvent): void {
@@ -198,6 +240,7 @@ export class ImageTournamentComponent implements OnDestroy {
     this.stateService.imageSort.start(this.getSortableSubjectIds(), null);
     this.persistSortState();
     this.refreshComparisonRelations();
+    this.rankingRow?.resetPosition();
   }
 
   protected onImageContextMenu(image: GalleryImage, event: MouseEvent): void {
@@ -235,17 +278,6 @@ export class ImageTournamentComponent implements OnDestroy {
     this.comparisonImagesReady[index] = true;
   }
 
-  protected openRelationFullscreen(image: GalleryImage, event?: Event): void {
-    event?.preventDefault();
-    event?.stopPropagation();
-    if (this.suppressNextClick) {
-      this.suppressNextClick = false;
-      return;
-    }
-
-    this.openFullscreen(image);
-  }
-
   protected openFullscreen(image: GalleryImage): void {
     if (!image) return;
     this.stateService.fullscreenImage.set(image);
@@ -267,14 +299,14 @@ export class ImageTournamentComponent implements OnDestroy {
     this.setComparisonImage(index, this.getSiblingGroupImage(this.comparison[index], 1));
   }
 
-  protected canCompareAgainst(image: GalleryImage): boolean {
-    return this.stateService.imageSort.canCompareAgainstRankedImage(GallerySortUtils.getSortSubjectId(image));
-  }
-
   protected compareAgainst(image: GalleryImage, event: MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
     this.clearLongPressTimer();
+    if (this.suppressNextClick) {
+      this.suppressNextClick = false;
+      return;
+    }
     if (this.stateService.imageSort.setComparisonOpponent(GallerySortUtils.getSortSubjectId(image))) {
       this.refreshComparisonRelations();
     }
@@ -282,9 +314,18 @@ export class ImageTournamentComponent implements OnDestroy {
 
   public refreshComparisonRelations(): void {
     this.clearInvalidConsistencyCheck();
+    const activeId = this.stateService.imageSort.activeInsertion?.imageId;
+    this.rowActiveImage = activeId ? GallerySortUtils.resolveSubjectImage(activeId, this.stateService.images, this.stateService.imageGroups) : null;
+    const rankedIds = this.stateService.imageSort.rankedImageIds;
+    if (this.isRankedRowMode) {
+      const subjects = rankedIds.map(id => ({ id, image: GallerySortUtils.resolveSubjectImage(id, this.stateService.images, this.stateService.imageGroups) ?? null }));
+      if (subjects.length !== this.rankedSubjects.length || subjects.some((subject, index) => subject.id !== this.rankedSubjects[index].id || subject.image !== this.rankedSubjects[index].image)) {
+        this.rankedSubjects = subjects;
+      }
+    }
     this.comparison = this.getCurrentComparison();
     this.updateComparisonImageReadiness();
-    if (this.comparison && !this.consistencyCheck && this.stateService.settings?.showComparisonRelations) {
+    if (!this.isRankedRowMode && this.comparison && !this.consistencyCheck && this.stateService.settings?.showComparisonRelations) {
       const rightOverlay = this.stateService.imageSort.getOverlayIds(GallerySortUtils.getSortSubjectId(this.comparison[1]));
       this.winnersRight = this.resolveImages([...rightOverlay.winners].reverse());
       this.losersRight = this.resolveImages(rightOverlay.losers);

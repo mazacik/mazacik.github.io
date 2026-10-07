@@ -178,28 +178,7 @@ summary {
   }
 }
 
-.field-row {
-  display: flex;
-  align-items: end;
-  flex-wrap: wrap;
-  gap: variables.$gap-1;
-  margin-bottom: variables.$gap-3;
-  min-width: 0;
-}
-.field-row > label {
-  flex: 0 1 auto;
-  margin-bottom: 0;
-  max-width: 100%;
-}
-.field-row > .entry-actions {
-  margin-bottom: 0;
-}
 section:first-child > h3:first-child,
 :host > h3:first-child {
   margin-top: 0;
-}
-
-app-multiselect + button,
-app-multiselect + .entry-actions {
-  margin-top: variables.$gap-2;
 }

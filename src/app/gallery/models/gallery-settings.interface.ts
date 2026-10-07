@@ -8,6 +8,7 @@ export interface GallerySettings {
   autoBookmark: boolean;
   showComparisonRelations: boolean;
   showComparisonProgress: boolean;
+  useRankedRow?: boolean;
   showFullscreenComparisonRelations: boolean;
 
 }

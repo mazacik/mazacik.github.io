@@ -10,6 +10,7 @@ import { FilterComponent } from './components/filter/filter.component';
 import { FullscreenComponent } from './components/fullscreen/fullscreen.component';
 import { MasonryComponent } from './components/masonry/masonry.component';
 import { TaggerComponent } from './components/tagger/tagger.component';
+import { GalleryFeatures } from './constants/gallery-features';
 import { ImageTournamentLongestChainComponent } from './dialogs/image-comparison/image-tournament-longest-chain.component';
 import { ImageTournamentComponent } from './dialogs/image-comparison/image-tournament.component';
 import { GalleryImage } from './models/gallery-image.class';
@@ -195,10 +196,16 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
       hidden: () => !isFullscreen() || !this.stateService.fullscreenImage().group,
       onClick: () => this.setRandomGroupTarget()
     }, {
+      id: 'toggle-ranked-row',
+      tooltip: () => this.stateService.settings?.useRankedRow ? 'Switch to Pairwise Comparison' : 'Switch to Ranked-column Placement',
+      classes: () => `fa-solid fa-arrows-up-down${this.stateService.settings?.useRankedRow ? ' active' : ''}`,
+      hidden: () => !GalleryFeatures.rankedColumnPlacement || !isTournament() || this.tournamentSubview !== 'comparison' || window.innerWidth < 1024,
+      onClick: () => this.setRankedRowMode(!this.stateService.settings?.useRankedRow)
+    }, {
       id: 'toggle-comparison-relations',
       tooltip: () => `${this.stateService.settings?.showComparisonRelations ? 'Hide' : 'Show'} Comparison Relations`,
       classes: () => `fa-solid fa-code-compare${this.stateService.settings?.showComparisonRelations ? ' active' : ''}`,
-      hidden: () => !isTournament() || this.tournamentSubview !== 'comparison',
+      hidden: () => !isTournament() || this.tournamentSubview !== 'comparison' || !!this.imageTournamentComponent?.isRankedRowMode,
       onClick: () => this.setComparisonRelations(!this.stateService.settings?.showComparisonRelations)
     }, {
       id: 'toggle-comparison-progress',
@@ -301,7 +308,13 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
     this.applicationService.registerModuleSettings({
       id: 'comparison-settings',
       label: 'Comparison',
-      items: [{
+      items: [...(GalleryFeatures.rankedColumnPlacement ? [{
+        id: 'use-ranked-row',
+        type: 'toggle' as const,
+        label: 'Use Ranked Column on Desktop',
+        getValue: () => !!this.stateService.settings?.useRankedRow,
+        onChange: value => this.setRankedRowMode(value)
+      }] : []), {
         id: 'show-comparison-relations',
         type: 'toggle',
         label: 'Show Comparison Relations',
@@ -362,6 +375,16 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
     this.serializationService.save();
     if (this.stateService.viewMode === 'tournament') {
       this.imageTournamentComponent?.refreshComparisonRelations();
+    }
+  }
+
+  private setRankedRowMode(value: boolean): void {
+    if (!GalleryFeatures.rankedColumnPlacement) return;
+    if (this.imageTournamentComponent) {
+      this.imageTournamentComponent.setRankedRowMode(value);
+    } else {
+      this.stateService.settings.useRankedRow = value;
+      this.serializationService.save();
     }
   }
 

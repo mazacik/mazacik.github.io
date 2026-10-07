@@ -71,23 +71,6 @@
       }
     }
 
-    .side-image-container {
-      position: relative;
-    }
-
-    .side-image-action {
-      position: absolute;
-      top: variables.$gap-1;
-    }
-
-    .side-image-action-start {
-      left: variables.$gap-1;
-    }
-
-    .side-image-action-end {
-      right: variables.$gap-1;
-    }
-
     .active-image-actions {
       display: flex;
       gap: variables.$gap-1;
@@ -129,6 +112,11 @@
       overflow-y: auto;
       overscroll-behavior-y: contain;
       scroll-snap-type: y mandatory;
+      scrollbar-width: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
 
       > .comparison-column {
         width: 100%;
@@ -139,8 +127,7 @@
       }
 
       > .v-separator {
-        display: block;
-        border-right: 0;
+        display: none;
       }
     }
 
@@ -160,7 +147,8 @@
     .mobile-other-image-preview {
       display: block;
       position: absolute;
-      right: variables.$gap-2;
+      left: 50%;
+      transform: translateX(-50%);
       z-index: 11;
       margin: 0;
       padding: 0;
@@ -172,11 +160,11 @@
       cursor: pointer;
 
       &.mobile-other-image-preview-top {
-        top: variables.$gap-2;
+        top: variables.$gap-1;
       }
 
       &.mobile-other-image-preview-bottom {
-        bottom: variables.$gap-2;
+        bottom: variables.$gap-1;
       }
 
       .side-image {
@@ -184,9 +172,6 @@
       }
     }
 
-    .comparison-column:last-child .losers-column {
-      top: calc(64px + variables.$gap-3);
-    }
   }
 
   .comparison.comparison-empty {
@@ -234,6 +219,12 @@
       transition:
         left variables.$transition-duration ease,
         right variables.$transition-duration ease;
+
+      &.placement-point {
+        width: 2px;
+        height: 100%;
+        transform: translateX(-50%);
+      }
     }
 
     .progress-remaining-text {

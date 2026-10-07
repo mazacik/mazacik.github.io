@@ -8,7 +8,7 @@ import { StoryManagerSerializationService } from '../../services/story-manager-s
 import { parseDocument } from '../../services/story-document';
 import { storyFixture } from '../../engine/story-fixture';
 import { startGame } from '../../engine/story-engine';
-import { always, copy, isKey, newUnlockMethod, newFlag, newScene } from '../../models/story.model';
+import { newFlag, newScene } from '../../models/story.model';
 import { SceneMapComponent } from './scene-map.component';
 
 // An iframe gives each case its real CSS viewport, including media queries. Copy
@@ -20,68 +20,12 @@ describe('Story panel layout with application styles', () => {
 
   beforeEach(async () => {
     const story = storyFixture();
-    const actor = story.entities[0],
-      object = story.entities.find((e) => e.kind === 'object');
-    const equipment = story.entities.find((e) => e.kind === 'equipment');
-    actor.name = object.name = equipment.name = longName;
-    equipment.requiredSlots = ['Head', 'Body'];
-    actor.properties = Array.from({ length: 6 }, (_, i) => ({ id: 'actor-property-' + i, name: longName, type: 'number' as const, initial: i, known: true }));
-    equipment.properties = actor.properties.map((p) => ({ ...p, id: 'equipment-' + p.id }));
-    object.properties = actor.properties.map((p) => ({ ...p, id: 'object-' + p.id }));
-    object.properties.push(...object.properties.map((p) => ({ ...p, id: p.id + '-extra' })));
-    actor.inventory = Array.from({ length: 6 }, (_, i) => ({ id: 'inventory-' + i, target: object.id, quantity: i + 1, equipped: false }));
     for (let i = 0; i < 35; i++) {
-      story.entities.push({ ...copy(actor), id: 'actor-' + i, inventory: [], properties: [] }, { ...copy(object), id: 'object-' + i, properties: [] });
-      story.entities.push({ ...copy(equipment), id: 'equipment-' + i, properties: [] });
       const scene = newScene();
       scene.title = longName;
       story.scenes.push(scene);
+      story.flags.push({ ...newFlag(), name: longName });
     }
-    story.flags = Array.from({ length: 35 }, () => ({ ...newFlag(), name: longName }));
-    story.flags.push(...actor.properties.map((p) => ({ ...newFlag(), id: p.id, name: p.name, scope: 'character' as const, type: 'number' as const, initial: p.initial })));
-    actor.properties = [];
-    const variant: typeof equipment = { ...copy(equipment), id: 'sharp-variant', name: longName, parentId: equipment.id, requiredSlots: undefined, properties: [], flagGrants: [] };
-    story.entities.push(variant);
-    story.copies.push(
-      ...Array.from({ length: 3 }, (_, i) => ({
-        id: 'worn-copy-' + i,
-        definition: equipment.id,
-        name: longName,
-        owner: actor.id,
-        equipped: false,
-        values: { ['equipment-actor-property-0']: 20 + i },
-      })),
-    );
-    story.flags.push({ ...newFlag(), id: 'layout-armed', name: longName, scope: 'character' });
-    equipment.flagGrants = [{ flag: 'layout-armed', when: 'owned' }];
-    variant.propertyOverrides = { 'equipment-actor-property-0': 40 };
-    variant.flagGrants = [{ flag: 'layout-armed', when: 'owned', suppressed: true }];
-    story.slots.push(longName, 'Lining');
-    story.layerCoverage = { Lining: [longName], [longName]: ['Body'], Body: ['Legs'] };
-    story.entities.push({ ...copy(equipment), id: 'covering-equipment', requiredSlots: [longName], properties: [], flagGrants: [] });
-    story.copies.push({ id: 'covering-copy', definition: 'covering-equipment', name: longName, owner: actor.id, equipped: true, values: {} });
-    equipment.lockable = true;
-    const key = { ...copy(object), id: 'layout-key', key: true, properties: object.properties.map((p) => ({ ...p, id: 'key-' + p.id })) };
-    story.entities.push(key, ...Array.from({ length: 35 }, (_, i) => ({ ...copy(key), id: 'layout-key-' + i, properties: [] })));
-    equipment.keyItems = [key.id];
-    equipment.unlockMethods = [
-      { ...newUnlockMethod(), id: 'layout-key', label: 'Use matching key', requiresKey: true },
-      {
-        ...newUnlockMethod(),
-        id: 'layout-dispel',
-        label: 'Dispel the ancient curse',
-        requiresAccess: false,
-        chance: 50,
-        explanation: longName,
-        failureMessage: longName,
-        available: { ...always(), kind: 'all', children: [{ ...always(), kind: 'not', children: [{ ...always(), kind: 'flag', target: 'layout-armed', actor: '@actor' }] }] },
-      },
-    ];
-    story.copies[0].locked = true;
-    story.entities.push({ ...copy(equipment), id: 'layout-equipment-type', equipmentRole: 'type' });
-    variant.equipmentRole = 'variant';
-    variant.parentId = 'layout-equipment-type';
-    story.scenes[0].passages[0].choices[0].available = { ...always(), kind: 'all', children: [{ ...always(), kind: 'any', children: [{ ...always(), kind: 'known', target: actor.id }] }] };
     persistence = { ready: true, data: { stories: [story], playthroughs: [startGame(story, 'Saved game')], articles: [] }, save: jasmine.createSpy(), flush() {} };
     persistence.data.playthroughs[0].transcript[0].parts = [{ text: ('A long remembered journey. ' + longName + '\n').repeat(20) }];
     const dialogs = { createConfirmation: jasmine.createSpy().and.resolveTo(true) };
@@ -193,12 +137,10 @@ describe('Story panel layout with application styles', () => {
           .withContext(label + ' usable scroll height')
           .toBeGreaterThan(80);
         const top = toolbar.getBoundingClientRect().top,
-          navTop = el('nav').getBoundingClientRect().top,
-          tabsTop = el('.detail-tabs')?.getBoundingClientRect().top;
+          navTop = el('nav').getBoundingClientRect().top;
         scroll.scrollTop = scroll.scrollHeight;
         expect(toolbar.getBoundingClientRect().top).toBe(top);
         expect(el('nav').getBoundingClientRect().top).toBe(navTop);
-        if (tabsTop !== undefined) expect(el('.detail-tabs').getBoundingClientRect().top).toBe(tabsTop);
         if (scroll.scrollHeight > scroll.clientHeight)
           expect(scroll.scrollTop)
             .withContext(label + ' form scrolls')
@@ -250,7 +192,7 @@ describe('Story panel layout with application styles', () => {
       const card = el('.story-card'),
         title = el('.story-card-title');
       expect(card.querySelector('button, a')).toBeNull();
-      expect(card.querySelectorAll('.story-counts > span').length).toBe(7);
+      expect(card.querySelectorAll('.story-counts > span').length).toBe(3);
       expect(win.getComputedStyle(title).textDecorationLine).toBe('none');
       const cardStyle = win.getComputedStyle(card);
       expect(title.getBoundingClientRect().top - card.getBoundingClientRect().top).toBeCloseTo(parseFloat(cardStyle.paddingTop) + parseFloat(cardStyle.borderTopWidth), 1);
@@ -258,84 +200,17 @@ describe('Story panel layout with application styles', () => {
       c.open(notes.articles[0]);
       const documentBefore = JSON.stringify(persistence.data),
         notesBefore = notes.articles.map((n) => n.text);
-      let pagePadding: string;
-      for (const tab of ['Characters', 'Items', 'Keys', 'Equipment', 'Variables'] as const) {
-        c.setTab(tab);
-        c.entityId = c.story.entities.find((e) => (tab === 'Keys' ? isKey(c.story, e) : e.kind === (tab === 'Characters' ? 'character' : tab === 'Equipment' ? 'equipment' : 'object'))).id;
-        c.flagId = c.story.flags[0].id;
+      c.setTab('Variables');
+      c.flagId = c.story.flags[0].id;
+      await render();
+      checkPanels('Variables');
+      await snapshot('variables');
+      if (width < 800) {
+        el('.back-list').click();
         await render();
-        doc.querySelectorAll('details').forEach((d) => (d.open = true));
-        checkPanels(tab);
-        const padding = win.getComputedStyle(el('.page')).paddingLeft;
-        pagePadding ??= padding;
-        expect(padding).withContext('Matching spacing across story tabs').toBe(pagePadding);
-        await snapshot(tab.toLowerCase());
-        for (const section of c.detailTabs) {
-          c.selectDetailSection(section);
-          await render();
-          doc.querySelectorAll('details').forEach((d) => (d.open = true));
-          checkPanels(tab + ' ' + section);
-          expect(el('[role="tab"][aria-selected="true"]').textContent).toContain(section);
-          expect(el('[role="tabpanel"]').getAttribute('aria-labelledby')).toBe('detail-tab-' + section);
-          if (section === 'Variables' && (tab === 'Equipment' || tab === 'Items')) {
-            const propertyRow = el('story-properties .variable-row');
-            const fields = Array.from(propertyRow.querySelectorAll('label'));
-            if (width >= 800) expect(new Set(fields.map((field) => field.getBoundingClientRect().top)).size).toBe(1);
-          }
-          if (tab === 'Characters' && section === 'Equipment') {
-            expect(el('story-character-equipment').textContent).toContain('Starts locked');
-            expect(el('story-inventory-editor')).toBeNull();
-          }
-          if (tab === 'Equipment') {
-            expect(el('story-character-equipment')).toBeNull();
-            expect(el('story-equipment-editor').textContent).not.toContain('Create copy');
-            expect(!!el('story-locks')).toBe(section === 'Locks');
-          }
-          await snapshot(tab.toLowerCase() + '-' + section.toLowerCase());
-          if (tab === 'Equipment' && section === 'Locks') {
-            for (const methodSection of ['Attempt', 'Results']) {
-              doc.querySelectorAll<HTMLButtonElement>('.method-tabs button').forEach((button) => {
-                if (button.textContent.trim() === methodSection) button.click();
-              });
-              await render();
-              doc.querySelectorAll('details').forEach((d) => (d.open = true));
-              checkPanels('Unlock method ' + methodSection);
-              if (methodSection === 'Results') {
-                const columns = Array.from(el('.method-results').children) as HTMLElement[];
-                if (width >= 800 && fontSize === 14) expect(columns[0].getBoundingClientRect().top).toBe(columns[1].getBoundingClientRect().top);
-                else expect(columns[1].getBoundingClientRect().top).toBeGreaterThan(columns[0].getBoundingClientRect().top);
-              }
-              const scroll = el('.detail-scroll');
-              scroll.scrollTop += el('.unlock-method').getBoundingClientRect().top - scroll.getBoundingClientRect().top;
-              await snapshot('equipment-locks-' + methodSection.toLowerCase());
-            }
-          }
-        }
-        if (tab === 'Equipment') {
-          c.entityId = 'sharp-variant';
-          c.selectDetailSection('General');
-          await render();
-          checkPanels('Equipment');
-          await snapshot('equipment-variant');
-          c.setEquipmentView('types');
-          await render();
-          checkWidth('Equipment type');
-          expect(el('story-equipment-editor').textContent).not.toContain('Choose type');
-          expect(el('.detail-actions').textContent).toContain('Create equipment');
-          await snapshot('equipment-type');
-          c.selectDetailSection('Effects');
-          await render();
-          checkPanels('Equipment type effects');
-          expect(el('story-equipment-editor app-multiselect')).not.toBeNull();
-          await snapshot('equipment-type-effects');
-        }
-        if (width < 800) {
-          el('.back-list').click();
-          await render();
-          expect(visible(el('.list-panel'))).toBeTrue();
-          expect(visible(el('.detail-panel'))).toBeFalse();
-          checkWidth(tab + ' list');
-        }
+        expect(visible(el('.list-panel'))).toBeTrue();
+        expect(visible(el('.detail-panel'))).toBeFalse();
+        checkWidth('Variables list');
       }
       c.setTab('Notes');
       notes.current = notes.articles[1];
@@ -398,6 +273,7 @@ describe('Story panel layout with application styles', () => {
       await snapshot('scene-logic');
       c.testScene = c.sceneId;
       await render();
+      doc.querySelectorAll('.test-setup details').forEach((detail: HTMLDetailsElement) => (detail.open = true));
       checkWidth('Scene test');
       const testScroll = el('.test-setup');
       expect(testScroll.clientHeight).toBeGreaterThan(80);
@@ -411,31 +287,6 @@ describe('Story panel layout with application styles', () => {
       await render();
       checkWidth('Story settings');
       await snapshot('settings');
-      el('.detail-scroll').scrollTop = el('story-layers').offsetTop;
-      checkWidth('Layer coverage settings');
-      expect(el('story-layers input[type=checkbox]')).toBeNull();
-      expect(el('story-layers app-multiselect').getBoundingClientRect().width).toBeLessThanOrEqual(360);
-      await snapshot('layers');
-      const layerRow = el('story-layers .layer-row:last-child');
-      const layerSearch = layerRow.querySelector('input');
-      const layerScroll = el('.detail-scroll');
-      layerScroll.scrollTop += layerRow.getBoundingClientRect().top - layerScroll.getBoundingClientRect().top;
-      expect(win.getComputedStyle(layerRow.querySelector('.ng-placeholder')).display).toBe('none');
-      checkWidth('Long selected layer chip');
-      await snapshot('layers-chips');
-      layerSearch.value = 'Body';
-      layerSearch.dispatchEvent(new Event('input', { bubbles: true }));
-      await render();
-      // ng-select v20 appends to the runner document; adopt into this test viewport.
-      const dropdown = document.querySelector<HTMLElement>('.ng-dropdown-panel');
-      expect(dropdown).not.toBeNull();
-      doc.body.append(dropdown);
-      checkWidth('Layer multiselect dropdown');
-      expect(dropdown.getBoundingClientRect().right).toBeLessThanOrEqual(width);
-      expect(dropdown.textContent).toContain('Body');
-      await snapshot('layers-dropdown');
-      layerSearch.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
-      await render();
       c.setTab('Play');
       await render();
       expect(doc.querySelector('.saved-game')).toBeNull();
@@ -443,7 +294,6 @@ describe('Story panel layout with application styles', () => {
       expect(win.getComputedStyle(el('.player-content')).overflowY).toBe('hidden');
       expect(win.getComputedStyle(el('.dialogue-history')).overflowY).toBe('auto');
       const navTop = el('nav').getBoundingClientRect().top;
-      const switchTop = el('.gear-switch').getBoundingClientRect().top;
       const dialogue = el('.dialogue-history');
       const choices = el('.choices');
       const choicesTop = choices.getBoundingClientRect().top;
@@ -457,50 +307,20 @@ describe('Story panel layout with application styles', () => {
       const originalTranscript = savedGame.transcript;
       dialogue.scrollTop = 0;
       savedGame.transcript = [...originalTranscript, { ...originalTranscript[0], parts: [{ text: 'The latest dialogue is now visible.' }] }];
-      const inventoryScroll = el('.gear-content').scrollTop;
       await render();
       const latest = el('.transcript-entry:last-child').getBoundingClientRect();
       expect(dialogue.scrollTop).toBeGreaterThan(0);
       expect(latest.bottom).toBeLessThanOrEqual(dialogue.getBoundingClientRect().bottom + 1);
       expect(latest.bottom).toBeGreaterThan(dialogue.getBoundingClientRect().top);
       expect(choices.getBoundingClientRect().top).toBe(choicesTop);
-      expect(el('.gear-content').scrollTop).toBe(inventoryScroll);
       dialogue.scrollTop = 0;
       await render();
       expect(dialogue.scrollTop).withContext('Reading older dialogue is not interrupted by unrelated renders').toBe(0);
       savedGame.transcript = originalTranscript;
       await render();
       expect(el('nav').getBoundingClientRect().top).toBe(navTop);
-      expect(el('.gear-switch').getBoundingClientRect().top).toBe(switchTop);
-      expect(el('.inventory-view')).not.toBeNull();
-      expect(el('.gear-panel').getBoundingClientRect().right).toBeLessThanOrEqual(width);
-      expect(el('.gear-panel').getBoundingClientRect().left).toBeGreaterThanOrEqual(dialogue.getBoundingClientRect().right);
+      expect(el('.gear-panel')).toBeNull();
       await snapshot('play');
-      const equipmentButton = Array.from(doc.querySelectorAll<HTMLButtonElement>('.gear-switch button')).find((b) => b.textContent === 'Equipment');
-      equipmentButton.click();
-      await render();
-      const equipmentPanel = el('.equipment-view');
-      expect(equipmentPanel.querySelector('summary')).toBeNull();
-      const action = equipmentPanel.querySelector<HTMLButtonElement>('.gear-action');
-      expect(win.getComputedStyle(action).fontSize).toBe(win.getComputedStyle(equipmentButton).fontSize);
-      expect(action.getBoundingClientRect().height).toBeGreaterThanOrEqual(36);
-      expect(doc.querySelector('.inventory-view')).toBeNull();
-      expect(equipmentButton.getAttribute('aria-pressed')).toBe('true');
-      expect(equipmentPanel.textContent).toContain('Blocked by');
-      expect(Array.from(equipmentPanel.querySelectorAll('button')).some((b) => b.textContent.trim() === 'Unequip' && !b.disabled)).toBeTrue();
-      checkWidth('Player equipment actions');
-      await snapshot('play-equipment');
-      const gearScroll = el('.gear-content');
-      const dialogueTop = dialogue.scrollTop;
-      gearScroll.scrollTop = gearScroll.scrollHeight;
-      if (gearScroll.scrollHeight > gearScroll.clientHeight) expect(gearScroll.scrollTop).toBeGreaterThan(0);
-      expect(dialogue.scrollTop).toBe(dialogueTop);
-      expect(el('.gear-switch').getBoundingClientRect().top).toBe(switchTop);
-      expect(equipmentPanel.textContent).toContain('Locked');
-      expect(equipmentPanel.textContent).toContain('Use matching key');
-      expect(equipmentPanel.textContent).toContain('Dispel the ancient curse');
-      checkWidth('Player unlock methods');
-      await snapshot('play-locks');
       expect(JSON.stringify(persistence.data)).toBe(documentBefore);
       expect(notes.articles.map((n) => n.text)).toEqual(notesBefore);
       expect(persistence.save).not.toHaveBeenCalled();
