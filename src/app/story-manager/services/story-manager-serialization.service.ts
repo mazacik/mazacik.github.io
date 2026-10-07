@@ -4,7 +4,7 @@ import { Data } from '../models/data.interface';
 import { copy, Playthrough, uid } from '../models/story.model';
 import { StoryManagerGoogleDriveService } from './story-manager-google-drive.service';
 import { StoryManagerStateService } from './story-manager-state.service';
-import { parseDocument, serializeArticles } from './story-document';
+import { parseDocument, serializeArticles, STORY_DOCUMENT_VERSION } from './story-document';
 import { Recovery, StoryRecovery } from './story-recovery';
 import { DialogService } from '../../shared/services/dialog.service';
 
@@ -72,7 +72,13 @@ export class StoryManagerSerializationService {
   private snapshot(game?: Playthrough): Data {
     const games = this.data.playthroughs.filter((p) => p.id !== game?.id);
     if (game) games.push(game);
-    return copy({ ...this.data, version: 4, saveId: uid(), articles: serializeArticles(this.injector.get(StoryManagerStateService).articles), playthroughs: game ? games : this.data.playthroughs });
+    return copy({
+      ...this.data,
+      version: STORY_DOCUMENT_VERSION,
+      saveId: uid(),
+      articles: serializeArticles(this.injector.get(StoryManagerStateService).articles),
+      playthroughs: game ? games : this.data.playthroughs,
+    });
   }
   public save(instant = false): void {
     if (!this.ready) return;

@@ -1,10 +1,10 @@
 import { Article } from '../models/article.class';
 import { Data } from '../models/data.interface';
-import { copy, isKey, newStory, Story } from '../models/story.model';
-import { upgradeEquipmentTypes } from './equipment-types';
+import { copy, newStory, Story } from '../models/story.model';
+export const STORY_DOCUMENT_VERSION = 5;
 
 export function parseDocument(input: Data): { data: Data; articles: Article[] } {
-  if (!input || !Array.isArray(input.articles) || (input.version && input.version !== 1 && input.version !== 2 && input.version !== 3 && input.version !== 4))
+  if (!input || !Array.isArray(input.articles) || (input.version !== undefined && ![1, 2, 3, 4, STORY_DOCUMENT_VERSION].includes(input.version)))
     throw new Error('Unsupported story document. Nothing was overwritten.');
   const byId = new Map<string, Article>();
   for (const record of input.articles) {
@@ -31,23 +31,12 @@ export function parseDocument(input: Data): { data: Data; articles: Article[] } 
   }
   if ((input.stories && !Array.isArray(input.stories)) || (input.playthroughs && !Array.isArray(input.playthroughs))) throw new Error('Invalid story collections.');
   input = copy(input);
-  const legacy = input.version !== 4;
-  const stories: Story[] = (input.stories ?? []).map((raw) =>
-    legacy
-      ? newStory(raw.id)
-      : {
-          ...raw,
-          entities: raw.entities.map((entity) => (isKey(raw, entity) ? { ...entity, key: true } : entity)),
-          // Retired rules no longer affect variables; preserve IDs, defaults and saved values.
-          flags: (raw.flags ?? []).map((flag) => {
-            const { kind, rule, ...variable } = flag as typeof flag & { kind?: unknown; rule?: unknown };
-            return variable;
-          }),
-          copies: raw.copies ?? [],
-        },
-  );
-  stories.forEach(upgradeEquipmentTypes);
-  // Pre-v4 gameplay data is deliberately reset; note records and containers stay intact.
+  const legacy = input.version !== STORY_DOCUMENT_VERSION;
+  const stories: Story[] = (input.stories ?? []).map((raw) => {
+    if (!raw || typeof raw.id !== 'string' || !raw.id) throw new Error('Invalid story container.');
+    return legacy ? newStory(raw.id) : raw;
+  });
+  // Reset retired gameplay while preserving every note and its container.
   const playthroughs = legacy ? [] : (input.playthroughs ?? []);
   const looseNotes = [...byId.values()].filter((article) => !article.folder && !article.parent);
   if (looseNotes.length) {
@@ -60,7 +49,7 @@ export function parseDocument(input: Data): { data: Data; articles: Article[] } 
     stories.push(newStory(id));
   }
   const articles = [...byId.values()];
-  return { data: { ...input, version: 4, articles: looseNotes.length ? serializeArticles(articles) : input.articles, stories, playthroughs }, articles };
+  return { data: { ...input, version: STORY_DOCUMENT_VERSION, articles: looseNotes.length ? serializeArticles(articles) : input.articles, stories, playthroughs }, articles };
 }
 
 export function serializeArticles(articles: Article[]): Data['articles'] {

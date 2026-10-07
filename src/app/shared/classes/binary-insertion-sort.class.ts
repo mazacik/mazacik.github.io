@@ -96,6 +96,22 @@ export class BinaryInsertionSort {
     return this.isValidComparisonOpponentIndex(this.state.rankedImageIds.indexOf(imageId));
   }
 
+  public placeActiveInsertion(subjectId: string, index: number): boolean {
+    if (
+      !this.state.activeInsertion || this.state.activeInsertion.imageId !== subjectId
+      || !Number.isInteger(index) || index < 0 || index > this.state.rankedImageIds.length
+    ) {
+      return false;
+    }
+
+    this.state.rankedImageIds.splice(index, 0, subjectId);
+    this.state.activeInsertion = null;
+    this.clearComparisonOpponentIndexOverride();
+    this.advance();
+    this.notify();
+    return true;
+  }
+
   public setComparisonOpponent(imageId: string): boolean {
     const opponentIndex = this.state.rankedImageIds.indexOf(imageId);
     if (!this.isValidComparisonOpponentIndex(opponentIndex)) {

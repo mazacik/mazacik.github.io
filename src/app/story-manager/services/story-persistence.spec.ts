@@ -12,7 +12,7 @@ describe('Story saving and recovery', () => {
   beforeEach(() => {
     scope = 'account:document';
     cloud = {
-      version: 4,
+      version: 5,
       articles: [
         { id: 'story', title: 'My story', text: '', childIds: ['note'], folder: true },
         { id: 'note', title: 'Idea', text: 'Preserve this', childIds: [], folder: false },
@@ -52,6 +52,30 @@ describe('Story saving and recovery', () => {
     expect(service.ready).toBeTrue();
     expect(drive.update).not.toHaveBeenCalled();
     expect(backup).toBeUndefined();
+  });
+  it('saves migrated notes in version 5 and backs up the original older document', async () => {
+    cloud.version = 4;
+    cloud.playthroughs = [startGame(cloud.stories[0], 'Old game')];
+    const original = copy(cloud),
+      service = create(notes, application, drive);
+    await service.loaded;
+    expect(service.data.version).toBe(5);
+    expect(service.data.stories[0].scenes).toEqual([]);
+    expect(service.data.stories[0].flags).toEqual([]);
+    expect(service.data.playthroughs).toEqual([]);
+    expect(notes.articles[1].text).toBe('Preserve this');
+    expect(drive.update).not.toHaveBeenCalled();
+    notes.articles[1].text = 'An edited note';
+    service.save(true);
+    await settle();
+    expect(backup).toEqual(original);
+    expect(cloud.version).toBe(5);
+    expect(cloud.articles[0].childIds).toEqual(['note']);
+    expect(cloud.articles[1].text).toBe('An edited note');
+    expect(cloud.playthroughs).toEqual([]);
+    const reloaded = create({}, application, drive);
+    await reloaded.loaded;
+    expect(reloaded.data.stories).toEqual(service.data.stories);
   });
   it('loads loose notes into a story and persists their assignment on the next save with an original backup', async () => {
     cloud.articles.push({ id: 'loose', title: 'Old note', text: 'Preserve every word', folder: false, childIds: [] });

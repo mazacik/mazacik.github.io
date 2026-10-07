@@ -2,7 +2,7 @@ import { ListMove, ListReorderDirective } from './list-reorder.directive';
 import { moveEntry } from '../../engine/story-order';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { copy, FlagDefinition, newFlag, Story, uid, variableType, variableScope, variableDefault } from '../../models/story.model';
+import { copy, FlagDefinition, newFlag, Story, uid, variableType, variableDefault } from '../../models/story.model';
 import { validateFlags } from '../../engine/story-flags';
 import { ValueEditorComponent } from './value-editor.component';
 
@@ -19,7 +19,6 @@ export class FlagsEditorComponent {
   @Output() remove = new EventEmitter<FlagDefinition>();
   query = '';
   type = variableType;
-  scope = variableScope;
   initial = variableDefault;
   resetType(flag: FlagDefinition) {
     flag.initial = this.type(flag) === 'boolean' ? false : this.type(flag) === 'number' ? 0 : '';

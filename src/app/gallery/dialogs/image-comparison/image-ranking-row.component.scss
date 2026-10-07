@@ -1,0 +1,106 @@
+@use 'src/styles/variables.scss';
+
+$insertion-gap: variables.$gap-1;
+$thumbnail-width: 320px;
+
+:host {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.active-image {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  position: relative;
+
+  app-image { cursor: pointer; }
+}
+
+.active-actions, .group-navigation {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: variables.$gap-1;
+  z-index: 1;
+
+  button { color: inherit; padding: 0; }
+}
+.active-actions { top: variables.$gap-2; }
+.group-navigation { bottom: variables.$gap-2; }
+
+.ranked-column {
+  display: flex;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  min-height: 0;
+  border-left: 1px solid var(--color-border);
+}
+.column-viewport { position: relative; display: flex; flex: 1; min-height: 0; min-width: 0; }
+.ranked-scroller {
+  position: relative;
+  width: max-content;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  overscroll-behavior-y: contain;
+  overflow-anchor: none;
+  padding: 0 variables.$gap-1;
+  scrollbar-color: var(--color-border) var(--color-surface-0);
+  user-select: none;
+
+  &::before, &::after {
+    content: '';
+    flex: 0 0 max(0px, calc(50% - #{$insertion-gap * 0.5}));
+  }
+
+}
+.insertion-gap {
+  flex: 0 0 $insertion-gap;
+  width: $thumbnail-width;
+}
+.ranked-card {
+  flex: 0 0 auto;
+  width: $thumbnail-width;
+  min-height: 0;
+  border: 1px solid var(--color-border);
+  border-radius: variables.$gap-1;
+  background: transparent;
+  color: inherit;
+  font-size: small;
+  padding: 0;
+  cursor: pointer;
+  overflow: hidden;
+
+  img { display: block; width: 100%; object-fit: contain; }
+}
+.missing-image { display: flex; align-items: center; justify-content: center; height: 120px; }
+.insertion-indicator {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 0;
+  height: 0;
+  transform: translateY(-50%);
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-left: 6px solid var(--color-border);
+  opacity: 1;
+  pointer-events: none;
+}
+.placement-button {
+  position: absolute;
+  right: variables.$gap-1;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+  font: inherit;
+  color: inherit;
+}

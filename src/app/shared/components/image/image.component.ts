@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, effect, ElementRef, input, InputSignal, output, OutputEmitterRef } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, effect, ElementRef, input, InputSignal, output, OutputEmitterRef } from '@angular/core';
 
 @Component({
   selector: 'app-image',
@@ -26,7 +26,8 @@ export class ImageComponent {
 
   constructor(
     private readonly destroyRef: DestroyRef,
-    private readonly elementRef: ElementRef<HTMLElement>
+    private readonly elementRef: ElementRef<HTMLElement>,
+    private readonly changeDetector: ChangeDetectorRef
   ) {
     this.destroyRef.onDestroy(() => this.clearScheduledCallbacks());
     effect(() => this.next(this.src(), this.placeholderSrc(), this.sourceWidth(), this.sourceHeight()));
@@ -106,6 +107,8 @@ export class ImageComponent {
       return;
     }
 
+    // Decoding can finish after an OnPush ancestor has already been checked.
+    this.changeDetector.markForCheck();
     this.clearScheduledCallbacks();
 
     if (activeImage) {
@@ -334,6 +337,7 @@ export class ImageComponent {
     const animationFrameId = window.requestAnimationFrame(time => {
       this.animationFrames.delete(animationFrameId);
       callback(time);
+      this.changeDetector.markForCheck();
     });
     this.animationFrames.add(animationFrameId);
   }
@@ -342,6 +346,7 @@ export class ImageComponent {
     const timeoutId = window.setTimeout(() => {
       this.fallbackTimeouts.delete(timeoutId);
       callback();
+      this.changeDetector.markForCheck();
     }, delayMs);
     this.fallbackTimeouts.add(timeoutId);
   }

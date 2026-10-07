@@ -19,7 +19,7 @@
           aria-keyshortcuts="Alt+ArrowUp Alt+ArrowDown"
           title="Drag to reorder, or use Alt + Up/Down"
           (click)="selectedId = flag.id">
-          {{ flag.name }} · {{ scope(flag) }} · {{ type(flag) }}
+          {{ flag.name }} · {{ type(flag) }}
         </button>
       }
     </div>
@@ -35,12 +35,6 @@
       <div class="detail-scroll">
         <div class="detail-form">
           <label
-            >Scope<select [ngModel]="scope(flag)" (ngModelChange)="flag.scope = $event; changed.emit()">
-              <option value="story">Story</option>
-              <option value="character">Character</option>
-            </select></label
-          >
-          <label
             >Type<select [ngModel]="type(flag)" (ngModelChange)="flag.type = $event; resetType(flag)">
               <option value="boolean">Boolean</option>
               <option value="number">Number</option>
@@ -50,7 +44,7 @@
           <label>Default value<story-value [type]="type(flag)" [value]="initial(flag)" (valueChange)="flag.initial = $event; changed.emit()" /></label>
           <label class="check"><input type="checkbox" [(ngModel)]="flag.visible" (ngModelChange)="changed.emit()" />Visible to reader</label>
           @for (issue of issues; track $index) {
-            @if (issue.flag === flag.id || issue.entity) {
+            @if (issue.flag === flag.id) {
               <p class="danger">{{ issue.message }}</p>
             }
           }

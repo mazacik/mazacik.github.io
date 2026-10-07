@@ -1,65 +1,18 @@
 import { parseDocument, serializeArticles } from './story-document';
 import { Data } from '../models/data.interface';
-import { copy, newFlag, variableKey } from '../models/story.model';
+import { copy, newStory, variableKey } from '../models/story.model';
 import { storyFixture } from '../engine/story-fixture';
-import { flagsFixture } from '../engine/story-flags-fixture';
-import { initialState, startGame, writeVariable } from '../engine/story-engine';
-import { upgradeEquipmentTypes } from './equipment-types';
-import { hasFlag } from '../engine/story-flags';
-import { locksFixture } from '../engine/story-locks-fixture';
-import { playableFingerprint } from '../engine/story-order';
-describe('Notes document compatibility', () => {
-  it('classifies existing matching keys without changing saved inventory, references or gameplay revisions', () => {
-    const story = locksFixture(),
-      game = startGame(story, 'Saved');
-    const source = { version: 4, articles: [], stories: [story], playthroughs: [game] };
-    const before = copy(source);
-    const parsed = parseDocument(source).data;
-    const key = parsed.stories[0].entities.find((e) => e.id === 'apple');
-    expect(key.key).toBeTrue();
-    expect(parsed.playthroughs).toEqual(source.playthroughs);
-    expect(parsed.stories[0].revision).toBe(story.revision);
-    expect(playableFingerprint(parsed.stories[0])).toBe(playableFingerprint(story));
-    expect(source).toEqual(before);
-    expect(parseDocument(parsed).data).toEqual(parsed);
-    parsed.stories[0].entities.forEach((e) => delete e.keyItems);
-    parsed.stories[0].copies.forEach((c) => delete c.keyItems);
-    expect(parseDocument(parsed).data.stories[0].entities.find((e) => e.id === key.id).key).toBeTrue();
-  });
-  it('retires computed rules while preserving variable identity, defaults and saved values', () => {
-    const story = flagsFixture();
-    story.flags.push({ ...newFlag(), id: 'weather', name: 'Weather', initial: true }, { ...newFlag(), id: 'mood', name: 'Mood', scope: 'character' });
-    const game = startGame(story, 'Existing game');
-    game.state.storyValues['weather'] = false;
-    game.state.characterValues['player']['mood'] = true;
-    const source = copy({ version: 4, articles: [], stories: [story], playthroughs: [game] });
-    for (const flag of source.stories[0].flags) Object.assign(flag, { kind: 'computed', rule: { kind: 'flag', flag: 'removed-reference', children: [] } });
-    const before = copy(source);
-    const parsed = parseDocument(source).data;
-    expect(source).toEqual(before);
-    const expected = copy(story);
-    upgradeEquipmentTypes(expected);
-    expect(parsed.stories[0]).toEqual(expected);
-    expect(parsed.playthroughs[0]).toEqual(game);
-    expect(hasFlag(parsed.stories[0], parsed.playthroughs[0].state, '', 'weather')).toBeFalse();
-    expect(hasFlag(parsed.stories[0], parsed.playthroughs[0].state, 'player', 'mood')).toBeTrue();
-    const fresh = initialState(parsed.stories[0]);
-    expect(hasFlag(parsed.stories[0], fresh, '', 'weather')).toBeTrue();
-    expect(hasFlag(parsed.stories[0], fresh, 'player', 'mood')).toBeFalse();
-    writeVariable(parsed.stories[0], fresh, variableKey('story', '', 'weather'), false);
-    expect(hasFlag(parsed.stories[0], fresh, '', 'weather')).toBeFalse();
-    expect(parseDocument(parsed).data).toEqual(parsed);
-  });
-  it('resets older gameplay data without mutating note records or containers', () => {
+import { startGame, choose, writeVariable } from '../engine/story-engine';
+describe('Story documents', () => {
+  it('resets all older gameplay while preserving notes and containers exactly', () => {
     const story = storyFixture(),
       game = startGame(story, 'Old');
-    for (const version of [undefined, 1, 2, 3]) {
+    for (const version of [undefined, 1, 2, 3, 4]) {
       const source = { ...copy(legacy), version, stories: [story], playthroughs: [game] };
       const before = copy(source),
         parsed = parseDocument(source);
-      expect(parsed.data.version).toBe(4);
-      expect(parsed.data.stories.find((s) => s.id === story.id).entities).toEqual([]);
-      expect(parsed.data.stories.find((s) => s.id === story.id).scenes).toEqual([]);
+      expect(parsed.data.version).toBe(5);
+      expect(parsed.data.stories.find((s) => s.id === story.id)).toEqual(newStory(story.id));
       expect(parsed.data.playthroughs).toEqual([]);
       expect(serializeArticles(parsed.articles).slice(0, legacy.articles.length)).toEqual(legacy.articles);
       expect(parsed.articles.find((a) => a.id === 'idea').parent.id).toBe('nested');
@@ -67,14 +20,24 @@ describe('Notes document compatibility', () => {
       expect(parseDocument(parsed.data).data).toEqual(parsed.data);
     }
   });
-  it('preserves authored flags and direct state through document serialization', () => {
-    const story = flagsFixture(),
+  it('ignores retired gameplay fields in a version-4 document', () => {
+    const raw = { id: 'story', entities: null, copies: [{ invalid: true }], scenes: null, flags: null, player: 'removed' };
+    const source = { version: 4, articles: [], stories: [raw], playthroughs: [{ state: null }] };
+    const before = copy(source);
+    const parsed = parseDocument(source as unknown as Data).data;
+    expect(parsed.stories).toEqual([newStory('story')]);
+    expect(parsed.playthroughs).toEqual([]);
+    expect(source).toEqual(before);
+  });
+  it('round-trips new variables, scenes and saved progress without resetting them', () => {
+    const story = storyFixture(),
       game = startGame(story, 'Saved');
-    game.state.characterValues['player']['bottom'] = true;
-    const parsed = parseDocument(copy({ version: 4, articles: [], stories: [story], playthroughs: [game] })).data;
-    expect(parsed.stories[0].flags).toEqual(story.flags);
-    expect(hasFlag(parsed.stories[0], parsed.playthroughs[0].state, 'player', 'bottom')).toBeTrue();
-    expect(parsed.playthroughs[0].state.directFlags).toEqual(game.state.directFlags);
+    writeVariable(story, game.state, variableKey('weather'), 'Rain');
+    const source = { version: 5, articles: [], stories: [story], playthroughs: [game] };
+    const parsed = parseDocument(copy(source)).data;
+    expect(parsed).toEqual(source);
+    expect(parseDocument(parsed).data).toEqual(parsed);
+    expect(choose(parsed.stories[0], parsed.playthroughs[0], story.scenes[0].passages[0].choices[0].id, () => 0.75).state.storyValues['weather']).toBe('Rain');
   });
   const legacy: Data = {
     articles: [
@@ -101,9 +64,9 @@ describe('Notes document compatibility', () => {
     expect(serializeArticles(parseDocument(parsed.data).articles)).toEqual(serializeArticles(parsed.articles));
   });
   it('recovers loose notes without colliding with existing IDs or changing active games', () => {
-    const story = parseDocument({ version: 4, articles: [], stories: [storyFixture()] }).data.stories[0],
+    const story = parseDocument({ version: 5, articles: [], stories: [storyFixture()] }).data.stories[0],
       game = startGame(story, 'Keep playing');
-    const source: Data = { ...copy(legacy), version: 4, stories: [story], playthroughs: [game] };
+    const source: Data = { ...copy(legacy), version: 5, stories: [story], playthroughs: [game] };
     source.articles.push({ id: 'recovered-notes', title: 'Existing story', text: '', folder: true, childIds: [] });
     const original = copy(source),
       parsed = parseDocument(source);

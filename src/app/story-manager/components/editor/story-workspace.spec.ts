@@ -11,7 +11,8 @@ import { startGame } from '../../engine/story-engine';
 import { SceneMapComponent } from './scene-map.component';
 import { PlayerComponent } from './player.component';
 import { OutcomeEditorComponent } from './outcome-editor.component';
-import { always, newFlag, newUnlockMethod, variableKey, uid } from '../../models/story.model';
+import { TextEditorComponent } from './text-editor.component';
+import { always, newFlag, variableKey, uid } from '../../models/story.model';
 
 function dragRow(source: HTMLElement, target: HTMLElement, after: boolean) {
   const dataTransfer = new DataTransfer();
@@ -54,212 +55,64 @@ describe('Story authoring workspace', () => {
       ],
     }).compileComponents();
   });
-  it('separates entity sections and remembers them across entities without changing story data or saves', () => {
-    const fixture = TestBed.createComponent(StoryManagerComponent),
-      c = fixture.componentInstance;
-    c.open(notes.articles[0]);
-    c.setTab('Equipment');
-    const equipment = c.entity;
-    c.story.entities.push({ ...equipment, id: 'second-equipment', name: 'Second equipment' });
-    const before = JSON.stringify(persistence.data);
+  it('shows only notes, variables and scene counts in the library', () => {
+    const fixture = TestBed.createComponent(StoryManagerComponent);
     fixture.detectChanges();
-    const click = (section: string) => {
-      (fixture.nativeElement.querySelector('#detail-tab-' + section) as HTMLButtonElement).click();
-      fixture.detectChanges();
-    };
-    expect(c.detailTabs).toEqual(['General', 'Variables', 'Effects', 'Locks']);
-    expect(fixture.nativeElement.querySelector('story-properties')).toBeNull();
-    click('Variables');
-    expect(fixture.nativeElement.querySelector('story-properties')).not.toBeNull();
-    expect(fixture.nativeElement.querySelector('story-locks')).toBeNull();
-    c.entityId = 'second-equipment';
+    const card = fixture.nativeElement.querySelector('.story-card') as HTMLElement;
+    expect(Array.from(card.querySelectorAll('.story-counts > span')).map((node) => node.textContent.trim())).toEqual(['1 notes', '4 scenes', '3 variables']);
+    card.querySelector<HTMLElement>('.story-counts').click();
     fixture.detectChanges();
-    expect(c.detailSection).toBe('Variables');
-    click('Locks');
-    expect(fixture.nativeElement.querySelector('story-locks')).not.toBeNull();
-    expect(fixture.nativeElement.querySelector('story-properties')).toBeNull();
-    c.setTab('Characters');
-    fixture.detectChanges();
-    expect(c.detailTabs).toEqual(['Variables', 'Inventory', 'Equipment']);
-    click('Inventory');
-    expect(fixture.nativeElement.querySelector('story-inventory-editor')).not.toBeNull();
-    expect(fixture.nativeElement.querySelector('story-character-equipment')).toBeNull();
-    click('Equipment');
-    expect(fixture.nativeElement.querySelector('story-character-equipment')).not.toBeNull();
-    expect(fixture.nativeElement.querySelector('story-inventory-editor')).toBeNull();
-    c.setTab('Equipment');
-    fixture.detectChanges();
-    expect(c.detailSection).toBe('Locks');
-    c.setTab('Items');
-    fixture.detectChanges();
-    expect(c.detailTabs).toEqual(['Variables', 'Effects']);
-    click('Effects');
-    expect(fixture.nativeElement.querySelector('story-entity-flags')).not.toBeNull();
-    expect(fixture.nativeElement.querySelector('story-properties')).toBeNull();
-    expect(JSON.stringify(persistence.data)).toBe(before);
+    expect(fixture.componentInstance.tab).toBe('Notes');
     expect(persistence.save).not.toHaveBeenCalled();
   });
-  it('shows Locks only for equipment and restores that section after visiting a type', () => {
+  it('creates scenes and passages without any entity controls', async () => {
     const fixture = TestBed.createComponent(StoryManagerComponent),
       c = fixture.componentInstance;
     c.open(notes.articles[0]);
-    c.setTab('Equipment');
-    c.selectDetailSection('Locks');
+    c.setTab('Scenes');
+    c.addScene();
+    c.addPassage();
+    c.addChoice();
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('story-locks')).not.toBeNull();
-    c.setEquipmentView('types');
-    c.addEntity();
-    fixture.detectChanges();
-    expect(c.detailTabs).toEqual(['General', 'Variables', 'Effects']);
-    expect(fixture.nativeElement.querySelector('#detail-tab-Locks')).toBeNull();
-    expect(fixture.nativeElement.querySelector('story-locks')).toBeNull();
-    expect(c.detailSection).toBe('General');
-    c.setEquipmentView('variants');
-    fixture.detectChanges();
-    expect(c.detailSection).toBe('Locks');
-    expect(fixture.nativeElement.querySelector('story-locks')).not.toBeNull();
+    await fixture.whenStable();
+    expect(c.scene.passages.length).toBe(2);
+    expect(fixture.nativeElement.querySelector('story-text-editor')).not.toBeNull();
+    expect(fixture.nativeElement.textContent).not.toMatch(/Player character|Speaker|Inventory|Equipment/);
+    expect(notes.articles[1].text).toBe('Keep this idea');
+    expect(persistence.save).toHaveBeenCalled();
   });
-  it('marks invalid sections and opens validation targets including the exact equipment copy', () => {
+  it('opens variable and scene validation targets', () => {
     const fixture = TestBed.createComponent(StoryManagerComponent),
       c = fixture.componentInstance;
     c.open(notes.articles[0]);
-    c.setTab('Equipment');
-    c.entity.lockable = true;
-    c.entity.unlockMethods = [{ ...newUnlockMethod(), chance: 150 }];
-    c.entity.flagGrants = [{ flag: 'missing-variable', when: 'equipped' }];
-    c.story.copies[0].values = { 'missing-variable': 10 };
-    fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('#detail-tab-Locks .tab-error')).not.toBeNull();
-    expect(fixture.nativeElement.querySelector('#detail-tab-Effects .tab-error')).not.toBeNull();
-    const lockIssue = c.issues.find((i) => i.entity === c.entityId && i.section === 'Locks');
-    expect(lockIssue).toBeDefined();
-    c.openIssue(lockIssue);
-    fixture.detectChanges();
-    expect(c.detailSection).toBe('Locks');
-    expect(fixture.nativeElement.querySelector('story-locks')).not.toBeNull();
-    const copyIssue = c.issues.find((i) => i.copy === c.story.copies[0].id && i.section === 'Equipment');
-    expect(copyIssue).toBeDefined();
-    c.openIssue(copyIssue);
-    fixture.detectChanges();
-    expect(c.tab).toBe('Characters');
-    expect(c.detailSection).toBe('Equipment');
-    expect(fixture.nativeElement.querySelector('#equipment-copy-' + copyIssue.copy).open).toBeTrue();
-    expect(persistence.save).not.toHaveBeenCalled();
+    c.openIssue({ flag: 'trust', message: 'Fix variable' });
+    expect(c.tab).toBe('Variables');
+    expect(c.flagId).toBe('trust');
+    const scene = c.story.scenes[2];
+    c.openIssue({ scene: scene.id, passage: scene.passages[1].id, message: 'Fix passage' });
+    expect(c.tab).toBe('Scenes');
+    expect(c.passageId).toBe(scene.passages[1].id);
   });
-  it('supports arrow, Home and End navigation with one keyboard tab stop and an associated panel', () => {
-    const fixture = TestBed.createComponent(StoryManagerComponent),
+  it('inserts only variable references and keeps them after renaming', async () => {
+    const fixture = TestBed.createComponent(TextEditorComponent),
       c = fixture.componentInstance;
-    c.open(notes.articles[0]);
-    c.setTab('Equipment');
+    c.story = storyFixture();
     fixture.detectChanges();
-    const press = (key: string) => {
-      const current = fixture.nativeElement.querySelector('[role="tab"][aria-selected="true"]') as HTMLElement;
-      current.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }));
-      fixture.detectChanges();
-      expect(fixture.nativeElement.querySelectorAll('[role="tab"][tabindex="0"]').length).toBe(1);
-      expect(fixture.nativeElement.querySelector('[role="tabpanel"]').getAttribute('aria-labelledby')).toBe('detail-tab-' + c.detailSection);
-    };
-    press('ArrowLeft');
-    expect(c.detailSection).toBe('Locks');
-    press('ArrowRight');
-    expect(c.detailSection).toBe('General');
-    press('End');
-    expect(c.detailSection).toBe('Locks');
-    press('Home');
-    expect(c.detailSection).toBe('General');
-    expect(persistence.save).not.toHaveBeenCalled();
-  });
-  it('duplicates contextual equipment variables without retaining references to the original schema', () => {
-    const c = TestBed.createComponent(StoryManagerComponent).componentInstance;
-    c.open(notes.articles[0]);
-    c.setTab('Equipment');
-    const source = c.entity;
-    source.properties = [{ id: 'charge', name: 'Charge', type: 'number', initial: 10, known: true }];
-    source.lockable = true;
-    source.unlockMethods = [{ ...newUnlockMethod(), success: { ...always(), kind: 'property', target: variableKey('copy', '@equipment', 'charge'), op: 'gt', value: 0 } }];
-    c.duplicateEntity();
-    expect(c.entity.properties[0].id).not.toBe('charge');
-    expect(c.entity.unlockMethods[0].success.target).toBe(variableKey('copy', '@equipment', c.entity.properties[0].id));
-    expect(source.unlockMethods[0].success.target).toBe(variableKey('copy', '@equipment', 'charge'));
-  });
-  it('creates equipment types and variants in separate views and opens the owning type', async () => {
-    const fixture = TestBed.createComponent(StoryManagerComponent),
-      c = fixture.componentInstance;
-    c.open(notes.articles[0]);
-    c.setTab('Equipment');
-    c.setEquipmentView('types');
-    c.addEntity();
-    const type = c.entity;
-    type.name = 'Sword';
-    type.requiredSlots = ['Body'];
-    expect(type.equipmentRole).toBe('type');
-    fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).not.toContain('Inherits from');
-    const create = Array.from(fixture.nativeElement.querySelectorAll('.detail-actions button') as NodeListOf<HTMLButtonElement>).find((b) => b.textContent.trim() === 'Create equipment');
-    create.click();
-    fixture.detectChanges();
-    const variant = c.entity;
-    expect(variant.equipmentRole).toBe('variant');
-    expect(variant.parentId).toBe(type.id);
-    expect(c.equipmentView).toBe('variants');
-    expect(c.entities).not.toContain(type);
-    const before = JSON.stringify(persistence.data);
-    const open = Array.from(fixture.nativeElement.querySelectorAll('.detail-actions button') as NodeListOf<HTMLButtonElement>).find((b) => b.textContent.trim() === 'Open type');
-    open.click();
-    fixture.detectChanges();
-    expect(c.entity).toBe(type);
-    expect(c.entities).not.toContain(variant);
-    expect(JSON.stringify(persistence.data)).toBe(before);
-  });
-  it('separates keys from items and navigates to inherited templates and exact character copies without saving', async () => {
-    const fixture = TestBed.createComponent(StoryManagerComponent),
-      c = fixture.componentInstance;
-    c.open(notes.articles[0]);
-    const key = c.story.entities.find((e) => e.id === 'key');
-    const template = c.story.entities.find((e) => e.kind === 'equipment');
-    template.lockable = true;
-    template.keyItems = [key.id];
-    const variant = { ...template, id: 'variant', name: 'Inherited lock', parentId: template.id, keyItems: undefined, properties: [] };
-    c.story.entities.push(variant);
-    const instance = c.story.copies[0];
-    instance.keyItems = [key.id];
-    c.setTab('Items');
-    expect(c.entities).not.toContain(key);
-    c.setTab('Keys');
-    expect(c.entity).toBe(key);
-    expect(c.keyTargets.map((target) => target.id)).toEqual([template.id, variant.id, instance.id]);
-    fixture.detectChanges();
-    const before = JSON.stringify(persistence.data);
-    const targetButton = Array.from(fixture.nativeElement.querySelectorAll('.detail-form button') as NodeListOf<HTMLButtonElement>).find((b) => b.textContent.trim() === variant.name);
-    targetButton.click();
-    fixture.detectChanges();
-    expect(c.tab).toBe('Equipment');
-    expect(c.entity).toBe(variant);
-    c.setTab('Keys');
-    c.openKeyTarget(c.keyTargets.find((target) => target.id === instance.id));
-    fixture.detectChanges();
-    expect(c.tab).toBe('Characters');
-    expect(c.entity.id).toBe(instance.owner);
-    expect(fixture.nativeElement.querySelector('#equipment-copy-' + instance.id).open).toBeTrue();
-    expect(JSON.stringify(persistence.data)).toBe(before);
-    expect(persistence.save).not.toHaveBeenCalled();
-  });
-  it('creates, duplicates and reorders keys independently of ordinary items', () => {
-    const c = TestBed.createComponent(StoryManagerComponent).componentInstance;
-    c.open(notes.articles[0]);
-    const items = c.story.entities.filter((e) => e.kind === 'object');
-    c.setTab('Keys');
-    c.addEntity();
-    const key = c.entity;
-    expect(key.key).toBeTrue();
-    expect(c.selectedEntityLabel).toBe('key');
-    c.duplicateEntity();
-    const duplicate = c.entity;
-    expect(duplicate.key).toBeTrue();
-    c.moveEntity(duplicate.id, -1);
-    expect(c.entities).toEqual([duplicate, key]);
-    c.setTab('Items');
-    expect(c.entities).toEqual(items);
+    await fixture.whenStable();
+    const editor = fixture.nativeElement.querySelector('textarea') as HTMLTextAreaElement;
+    c.text = 'Weather: [[';
+    editor.value = c.text;
+    editor.selectionStart = c.text.length;
+    c.update(c.text, editor);
+    expect(c.show).toBeTrue();
+    expect(c.references.map((reference) => reference.label)).toEqual(['Trust', 'Secret learned', 'Weather']);
+    const token = c.references.find((reference) => reference.label === 'Weather').token;
+    c.insert(token, editor);
+    expect(c.text).toBe('Weather: ' + token);
+    c.story.flags.find((variable) => variable.id === 'weather').name = 'Forecast';
+    expect(c.preview).toBe('Weather: {Forecast}');
+    c.query = 'Forecast';
+    expect(c.references).toEqual([{ label: 'Forecast', token }]);
   });
   it('creates single-use choices and exposes a Repeatable checkbox in the editor', async () => {
     const fixture = TestBed.createComponent(StoryManagerComponent),
@@ -292,43 +145,9 @@ describe('Story authoring workspace', () => {
       'Notes',
       'Variables',
       'Scenes',
-      'Characters',
-      'Equipment',
-      'Items',
-      'Keys',
       'Play',
     ]);
     expect(persistence.save).not.toHaveBeenCalled();
-  });
-  it('selects the first item on entering each detail view without saving and leaves empty views unselected', async () => {
-    const fixture = TestBed.createComponent(StoryManagerComponent),
-      c = fixture.componentInstance;
-    c.open(notes.articles[0]);
-    c.story.flags = [newFlag(), newFlag()];
-    const before = JSON.stringify(persistence.data);
-    for (const tab of ['Characters', 'Items', 'Equipment', 'Variables', 'Notes'] as const) {
-      c.sceneSearch = 'no match';
-      c.setTab(tab);
-      fixture.detectChanges();
-      await fixture.whenStable();
-      if (tab === 'Notes') expect(c.currentNote).toBe(c.storyNotes[0]);
-      else if (tab === 'Variables') expect(c.flagId).toBe(c.story.flags[0].id);
-      else expect(c.entity).toBe(c.story.entities.find((entity) => entity.kind === (tab === 'Characters' ? 'character' : tab === 'Equipment' ? 'equipment' : 'object')));
-      expect(fixture.nativeElement.querySelector('.detail-toolbar')).not.toBeNull();
-      fixture.nativeElement.querySelector('.back-list').click();
-      fixture.detectChanges();
-      expect(fixture.nativeElement.querySelector('.detail-toolbar')).toBeNull();
-    }
-    expect(JSON.stringify(persistence.data)).toBe(before);
-    expect(persistence.save).not.toHaveBeenCalled();
-    c.story.entities = [];
-    c.story.flags = [];
-    notes.storyFolder.children = [];
-    for (const tab of ['Characters', 'Items', 'Equipment', 'Variables', 'Notes'] as const) {
-      c.setTab(tab);
-      fixture.detectChanges();
-      expect(fixture.nativeElement.querySelector('.detail-toolbar')).toBeNull();
-    }
   });
   it('confirms note deletion and clears the editor without selecting another story or folder', async () => {
     const fixture = TestBed.createComponent(StoryManagerComponent);
@@ -359,36 +178,6 @@ describe('Story authoring workspace', () => {
     expect(fixture.nativeElement.querySelector('.note-text')).toBeNull();
     expect(persistence.save).toHaveBeenCalledOnceWith(true);
     expect(JSON.stringify(persistence.data)).toBe(playableBefore);
-  });
-  it('opens a plain story card from its counts and shows separate content totals', async () => {
-    const story = persistence.data.stories[0];
-    story.scenes = story.scenes.slice(0, 2);
-    story.entities = story.entities.filter((e) => e.kind === 'character');
-    story.flags = [newFlag()];
-    const fixture = TestBed.createComponent(StoryManagerComponent);
-    fixture.detectChanges();
-    await fixture.whenStable();
-    const card: HTMLButtonElement = fixture.nativeElement.querySelector('.story-card');
-    expect(card.tagName).toBe('BUTTON');
-    expect(card.querySelector('button, a, .link')).toBeNull();
-    expect(fixture.nativeElement.textContent).not.toMatch(/STORY MANAGER|Your stories|Unassigned notes|words|Open story|Rename|Delete/);
-    expect(Array.from(card.querySelectorAll('.story-counts > span')).map((row) => row.textContent.trim())).toEqual([
-      '1 notes',
-      '2 scenes',
-      '2 characters',
-      '0 items',
-      '0 keys',
-      '0 equipment',
-      '1 variables',
-    ]);
-    const title = card.querySelector<HTMLElement>('.story-card-title');
-    expect(getComputedStyle(title).marginTop).toBe('0px');
-    expect(getComputedStyle(title).textDecorationLine).toBe('none');
-    card.querySelector<HTMLElement>('.story-counts').click();
-    fixture.detectChanges();
-    expect(fixture.componentInstance.story.id).toBe(story.id);
-    expect(fixture.nativeElement.querySelector('app-sidebar')).not.toBeNull();
-    expect(persistence.save).not.toHaveBeenCalled();
   });
   it('does not open notes outside a story or create or move a note to the root', async () => {
     const fixture = TestBed.createComponent(StoryManagerComponent),
@@ -422,7 +211,7 @@ describe('Story authoring workspace', () => {
     fixture.componentInstance.open(notes.articles[0]);
     fixture.detectChanges();
     const tabs = Array.from(fixture.nativeElement.querySelectorAll('nav button')) as HTMLButtonElement[];
-    expect(fixture.nativeElement.querySelectorAll('header nav button').length).toBe(8);
+    expect(fixture.nativeElement.querySelectorAll('header nav button').length).toBe(4);
     tabs.find((b) => b.textContent.trim() === 'Play').click();
     fixture.detectChanges();
     await fixture.whenStable();
@@ -431,50 +220,6 @@ describe('Story authoring workspace', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('app-sidebar')).not.toBeNull();
     expect(persistence.save).not.toHaveBeenCalled();
-  });
-  it('persists list ordering without canceling games and keeps selection and entity kinds intact', async () => {
-    const fixture = TestBed.createComponent(StoryManagerComponent),
-      c = fixture.componentInstance;
-    c.open(notes.articles[0]);
-    c.setTab('Characters');
-    c.entityId = 'player';
-    c.story.entities.push({ ...c.story.entities.find((e) => e.kind === 'object'), id: 'second-object' });
-    c.changed();
-    persistence.data.playthroughs[0].status = 'active';
-    const originalObjects = c.story.entities.filter((e) => e.kind === 'object').map((e) => e.id);
-    const revision = c.story.revision;
-    fixture.detectChanges();
-    await fixture.whenStable();
-    const row = (id: string) => fixture.nativeElement.querySelector(`[data-reorder-id="${id}"]`) as HTMLButtonElement;
-    expect(fixture.nativeElement.querySelector('.list-panel story-reorder')).toBeNull();
-    dragRow(row('player'), row('Mira'), true);
-    fixture.detectChanges();
-    expect(c.characters.map((e) => e.id)).toEqual(['Mira', 'player']);
-    expect(c.story.entities.filter((e) => e.kind === 'object').map((e) => e.id)).toEqual(originalObjects);
-    expect(c.entityId).toBe('player');
-    expect(persistence.data.playthroughs[0].status).toBe('active');
-    expect(c.story.revision).toBe(revision);
-    expect(persistence.save).toHaveBeenCalled();
-    c.sceneSearch = 'player';
-    fixture.detectChanges();
-    expect(row('player').draggable).toBeFalse();
-    c.setTab('Items');
-    fixture.detectChanges();
-    const charactersBefore = c.characters.map((entity) => entity.id);
-    dragRow(row(originalObjects[1]), row(originalObjects[0]), false);
-    fixture.detectChanges();
-    expect(c.story.entities.filter((entity) => entity.kind === 'object').map((entity) => entity.id)).toEqual([...originalObjects].reverse());
-    expect(c.characters.map((entity) => entity.id)).toEqual(charactersBefore);
-    expect(c.entityId).toBe(originalObjects[0]);
-    expect(c.story.revision).toBe(revision);
-    c.story.scenes.reverse();
-    c.changed();
-    expect(persistence.data.playthroughs[0].status).toBe('active');
-    const scene = c.story.scenes.find((s) => s.passages[0].choices.length > 1);
-    scene.passages[0].choices.reverse();
-    c.changed();
-    expect(persistence.data.playthroughs[0].status).toBe('canceled');
-    expect(notes.articles[1].text).toBe('Keep this idea');
   });
   it('drags flags without changing selection or playthroughs and ignores external, filtered, and no-op drops', async () => {
     const fixture = TestBed.createComponent(StoryManagerComponent),
@@ -528,119 +273,11 @@ describe('Story authoring workspace', () => {
     component.story.scenes[0].noteIds.push('note');
     component.changed();
     expect(persistence.data.playthroughs[0].status).toBe('active');
-    component.story.entities[0].notes = 'Private writing note';
-    component.changed();
-    expect(persistence.data.playthroughs[0].status).toBe('active');
     component.story.scenes[0].passages[0].text = 'Edited dialogue';
     component.changed();
     expect(persistence.data.playthroughs[0].status).toBe('canceled');
     expect(other.status).toBe('active');
     expect(notes.articles[1].text).toBe('Keep this idea');
-  });
-  it('renames characters, objects, and flags directly in their titles', async () => {
-    const fixture = TestBed.createComponent(StoryManagerComponent),
-      c = fixture.componentInstance;
-    c.open(notes.articles[0]);
-    c.story.flags = [newFlag()];
-    for (const tab of ['Characters', 'Items', 'Equipment', 'Variables'] as const) {
-      c.setTab(tab);
-      fixture.detectChanges();
-      await fixture.whenStable();
-      const item = tab === 'Variables' ? c.story.flags[0] : c.entity;
-      const id = item.id;
-      const title = fixture.nativeElement.querySelector('.detail-toolbar input.detail-title') as HTMLInputElement;
-      expect(title.value).toBe(item.name);
-      title.value = 'Renamed ' + tab;
-      title.dispatchEvent(new Event('input'));
-      fixture.detectChanges();
-      expect(item.name).toBe(title.value);
-      expect(item.id).toBe(id);
-      expect(fixture.nativeElement.querySelector('.list-item.active').textContent).toContain(title.value);
-      const labels = Array.from(fixture.nativeElement.querySelectorAll('.detail-form > label')) as HTMLLabelElement[];
-      expect(labels.some((label) => label.textContent.trim() === 'Name')).toBeFalse();
-    }
-    expect(persistence.save).toHaveBeenCalled();
-  });
-  it('creates characters, objects, scenes, and passages through workspace actions', async () => {
-    const fixture = TestBed.createComponent(StoryManagerComponent),
-      c = fixture.componentInstance;
-    c.open(notes.articles[0]);
-    c.setTab('Characters');
-    c.addEntity();
-    fixture.detectChanges();
-    await fixture.whenStable();
-    expect(fixture.nativeElement.textContent).not.toContain('Reader description');
-    expect(fixture.nativeElement.querySelector('.detail-form')).not.toBeNull();
-    expect(c.entity.kind).toBe('character');
-    c.setTab('Items');
-    c.addEntity();
-    fixture.detectChanges();
-    await fixture.whenStable();
-    expect(c.entity.kind).toBe('object');
-    expect(c.entity.name).toBe('New item');
-    expect(fixture.nativeElement.querySelector('[aria-label="Item name"]')).not.toBeNull();
-    expect(fixture.nativeElement.querySelector('.list-footer').textContent).toContain('Create item');
-    expect(fixture.nativeElement.textContent).not.toContain('Required layers');
-    expect(fixture.nativeElement.textContent).not.toContain('Stackable');
-    expect(fixture.nativeElement.textContent).not.toContain('Unique copies');
-    c.setTab('Equipment');
-    c.addEntity();
-    fixture.detectChanges();
-    await fixture.whenStable();
-    expect(c.entity.kind).toBe('equipment');
-    expect(fixture.nativeElement.textContent).not.toContain('Stackable');
-    expect(fixture.nativeElement.textContent).not.toContain('Unique copies');
-    expect(fixture.nativeElement.textContent).toContain('Required layers');
-    c.setTab('Scenes');
-    c.addScene();
-    c.addPassage();
-    c.addChoice();
-    fixture.detectChanges();
-    await fixture.whenStable();
-    expect(c.scene.passages.length).toBe(2);
-    expect(fixture.nativeElement.textContent).toContain('What happens');
-  });
-  it('keeps equipment ordering separate and supports slots, duplication, issue links and deletion', async () => {
-    const fixture = TestBed.createComponent(StoryManagerComponent),
-      c = fixture.componentInstance;
-    c.open(notes.articles[0]);
-    c.setTab('Equipment');
-    const first = c.entity;
-    c.addEntity();
-    const added = c.entity;
-    expect(added.equipmentRole).toBe('variant');
-    expect(added.requiredSlots).toBeUndefined();
-    c.setRequiredSlot(added, 'Head', true);
-    c.setRequiredSlot(added, 'Body', true);
-    const before = c.story.revision;
-    const others = c.story.entities.filter((e) => e.kind !== 'equipment').map((e) => e.id);
-    persistence.data.playthroughs[0].status = 'active';
-    fixture.detectChanges();
-    await fixture.whenStable();
-    const row = (id: string) => fixture.nativeElement.querySelector(`[data-reorder-id="${id}"]`) as HTMLButtonElement;
-    dragRow(row(added.id), row(first.id), false);
-    fixture.detectChanges();
-    expect(c.entities.map((e) => e.id)).toEqual([added.id, first.id]);
-    expect(c.story.entities.filter((e) => e.kind !== 'equipment').map((e) => e.id)).toEqual(others);
-    expect(c.entityId).toBe(added.id);
-    expect(c.story.revision).toBe(before);
-    expect(persistence.data.playthroughs[0].status).toBe('active');
-    c.setRequiredSlot(added, 'Head', false);
-    expect(c.story.revision).toBeGreaterThan(before);
-    expect(persistence.data.playthroughs[0].status).toBe('canceled');
-    c.duplicateEntity();
-    const duplicate = c.entity;
-    expect(duplicate.id).not.toBe(added.id);
-    expect(duplicate.kind).toBe('equipment');
-    expect(duplicate.requiredSlots).toEqual(['Body']);
-    c.setTab('Items');
-    c.openIssue({ entity: duplicate.id, message: 'Equipment issue' });
-    expect(c.tab).toBe('Equipment');
-    expect(c.entity).toBe(duplicate);
-    c.deleteEntity();
-    await fixture.whenStable();
-    expect(c.story.entities.some((e) => e.id === duplicate.id)).toBeFalse();
-    expect(c.story.entities.some((e) => e.id === added.id)).toBeTrue();
   });
   it('duplicates scenes with new IDs and preserves internal passage connections', () => {
     const fixture = TestBed.createComponent(StoryManagerComponent),
@@ -683,7 +320,8 @@ describe('Story authoring workspace', () => {
     expect(fixture.nativeElement.querySelector('#choice-' + choice.id)).not.toBeNull();
     c.showStorySettings();
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('main').textContent).toContain('Player character');
+    expect(fixture.nativeElement.querySelector('main').textContent).toContain('Starting scene');
+    expect(fixture.nativeElement.querySelector('main').textContent).not.toMatch(/player character|equipment|layer/i);
     expect(fixture.nativeElement.querySelector('aside').textContent).not.toContain('Player character');
     c.showSceneList();
     fixture.detectChanges();
@@ -694,49 +332,6 @@ describe('Story authoring workspace', () => {
     }
     expect(JSON.stringify(persistence.data)).toBe(before);
     expect(persistence.save).not.toHaveBeenCalled();
-  });
-  it('keeps player selection in settings and preserves the first-character default', async () => {
-    const fixture = TestBed.createComponent(StoryManagerComponent),
-      c = fixture.componentInstance;
-    c.open(notes.articles[0]);
-    c.setTab('Characters');
-    for (const entity of c.characters) {
-      c.entityId = entity.id;
-      fixture.detectChanges();
-      const buttons = Array.from(fixture.nativeElement.querySelectorAll('button') as NodeListOf<HTMLButtonElement>);
-      expect(buttons.some((b) => /Make player character|Player character/.test(b.textContent))).toBeFalse();
-    }
-    c.story.player = '';
-    c.addEntity();
-    const first = c.entityId;
-    expect(c.story.player).toBe(first);
-    c.addEntity();
-    expect(c.story.player).toBe(first);
-    c.setTab('Scenes');
-    c.showStorySettings();
-    fixture.detectChanges();
-    await fixture.whenStable();
-    const label = Array.from(fixture.nativeElement.querySelectorAll('label') as NodeListOf<HTMLLabelElement>).find((l) => l.textContent.includes('Player character'));
-    const select = label.querySelector('select');
-    select.value = c.entityId || c.characters[0].id;
-    select.dispatchEvent(new Event('change'));
-    expect(c.story.player).toBe(c.characters[0].id);
-  });
-  it('explains filtered reordering once beside search', async () => {
-    const fixture = TestBed.createComponent(StoryManagerComponent),
-      c = fixture.componentInstance;
-    c.open(notes.articles[0]);
-    c.setTab('Items');
-    c.sceneSearch = 'k';
-    fixture.detectChanges();
-    await fixture.whenStable();
-    const list = fixture.nativeElement.querySelector('.list-panel') as HTMLElement;
-    expect(list.querySelector('.list-controls').textContent).toContain('Clear search to reorder');
-    expect(list.querySelector('.list-scroll').textContent).not.toContain('Clear search');
-    expect(list.querySelector('story-reorder')).toBeNull();
-    const rows = Array.from(list.querySelectorAll<HTMLButtonElement>('[data-reorder-id]'));
-    expect(rows.length).toBeGreaterThan(0);
-    expect(rows.every((row) => !row.draggable)).toBeTrue();
   });
   it('keeps story folders at the root and notes within their story', () => {
     const root = notes.articles[0],
@@ -809,7 +404,7 @@ describe('Scene map and reader', () => {
     fixture.detectChanges();
     expect(c.choices).not.toContain(choice);
     expect(c.allowed(choice.id)).toBeFalse();
-    c.undo();
+    await c.undo();
     expect(c.choices).toContain(choice);
     expect(c.allowed(choice.id)).toBeTrue();
     choice.repeatable = true;
@@ -858,6 +453,7 @@ describe('Scene map and reader', () => {
   });
   it('hides secret descriptions, handles availability and keeps testing isolated with undo', async () => {
     const story = storyFixture();
+    story.flags[1].description = 'Secret description';
     const persistence = { data: { playthroughs: [] }, commit: jasmine.createSpy() };
     await TestBed.configureTestingModule({
       imports: [PlayerComponent],
@@ -873,19 +469,18 @@ describe('Scene map and reader', () => {
     c.ngOnChanges();
     await c.start();
     const choice = story.scenes[0].passages[0].choices[0];
-    c.inspected = 'Mira';
     fixture.detectChanges();
     await fixture.whenStable();
-    expect(fixture.nativeElement.textContent).not.toContain('Description of Mira');
+    expect(fixture.nativeElement.textContent).not.toContain('Secret description');
     expect(fixture.nativeElement.textContent).not.toContain('Private secret');
     const random = c.randomSteps[0].step;
     c.forced[random.id] = 0;
     await c.select(choice.id);
     expect(c.game.scene).toBe(story.scenes[2].id);
-    c.undo();
+    await c.undo();
     expect(c.game.scene).toBe(story.start);
     expect(persistence.commit).not.toHaveBeenCalled();
-    choice.available = { ...always(), kind: 'known', target: 'Mira' };
+    choice.available = { ...always(), kind: 'known', target: variableKey('secret') };
     choice.unavailable = 'hidden';
     expect(c.choices.length).toBe(0);
     choice.unavailable = 'disabled';
