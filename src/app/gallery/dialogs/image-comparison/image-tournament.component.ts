@@ -87,6 +87,8 @@ export class ImageTournamentComponent implements OnDestroy {
   }
 
   protected get sortStatus(): string {
+    if (this.isConsistencyCheckActive) return 'Consistency Check';
+
     const ranked = this.stateService.imageSort.rankedImageIds.length;
     const total = ranked + this.stateService.imageSort.pendingCountIncludingActive;
     return `${ranked}/${total}`;
