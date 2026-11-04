@@ -1,0 +1,3 @@
+@for (action of actions; track action.label) {
+  <button type="button" class="button action-button" (click)="runAction(action, $event)">{{ action.label }}</button>
+}

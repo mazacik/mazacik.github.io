@@ -1,0 +1,17 @@
+@use 'src/styles/variables.scss';
+
+:host {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: variables.$gap-1;
+  padding: variables.$gap-1;
+
+  .action-button {
+    width: 100%;
+    min-height: initial;
+    padding: variables.$gap-1 0;
+    color: inherit;
+    font: inherit;
+  }
+}
