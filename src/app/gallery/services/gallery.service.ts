@@ -4,6 +4,7 @@ import { SortState } from "src/app/shared/classes/binary-insertion-sort.class";
 import { ArrayUtils } from "src/app/shared/utils/array.utils";
 import { DialogService } from "../../shared/services/dialog.service";
 import { GroupManagerComponent } from "../dialogs/group-manager/group-manager.component";
+import { ImageOptionsComponent } from "../dialogs/image-options/image-options.component";
 import { TagManagerComponent } from "../dialogs/tag-manager/tag-manager.component";
 import { GalleryGroup } from "../models/gallery-group.class";
 import { GalleryImage } from "../models/gallery-image.class";
@@ -37,6 +38,10 @@ export class GalleryService {
 
   public openTagOptions(tag: Tag): void {
     this.dialogService.create(TagManagerComponent, { tag: tag });
+  }
+
+  public openImageOptions(image: GalleryImage): void {
+    this.dialogService.create(ImageOptionsComponent, { image: image });
   }
 
   public openYandexRIS(event: MouseEvent, target: GalleryImage): void {

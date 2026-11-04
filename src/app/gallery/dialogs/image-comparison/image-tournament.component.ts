@@ -33,6 +33,8 @@ export class ImageTournamentComponent implements OnDestroy {
   protected comparison: [GalleryImage, GalleryImage] = null;
   protected winnersRight: GalleryImage[] = [];
   protected losersRight: GalleryImage[] = [];
+  protected winnersRightBoundaryIndex = -1;
+  protected losersRightBoundaryIndex = -1;
   protected comparisonImagesReady: [boolean, boolean] = [false, false];
   protected mobileComparisonIndex: 0 | 1 = 0;
   private comparisonImageIds: [string, string] | null = null;
@@ -331,11 +333,19 @@ export class ImageTournamentComponent implements OnDestroy {
       const rightOverlay = this.stateService.imageSort.getOverlayIds(GallerySortUtils.getSortSubjectId(this.comparison[1]));
       this.winnersRight = this.resolveImages([...rightOverlay.winners].reverse());
       this.losersRight = this.resolveImages(rightOverlay.losers);
+      this.winnersRightBoundaryIndex = this.getComparisonBoundaryIndex(this.winnersRight);
+      this.losersRightBoundaryIndex = this.getComparisonBoundaryIndex(this.losersRight);
       return;
     }
 
     this.winnersRight = [];
     this.losersRight = [];
+    this.winnersRightBoundaryIndex = -1;
+    this.losersRightBoundaryIndex = -1;
+  }
+
+  private getComparisonBoundaryIndex(images: GalleryImage[]): number {
+    return images.findIndex(image => !this.stateService.imageSort.canCompareAgainstRankedImage(GallerySortUtils.getSortSubjectId(image)));
   }
 
   private getCurrentComparison(): [GalleryImage, GalleryImage] {

@@ -9,7 +9,8 @@
         [style.top.px]="image.masonryTop"
         [style.left.px]="image.masonryLeft"
         [style.opacity]="image.group && stateService.groupEditorGroup && !stateService.groupEditorGroup.images.includes(image) ? '0.15' : '1'"
-        (click)="onImageClick(image)">
+        (click)="onImageClick(image)"
+        (contextmenu)="onImageContextMenu(image, $event)">
         <div class="brick-container">
           <img #imageElement [src]="image.thumbnailLink" loading="lazy" (create)="masonryBricks[image.id] = $event.nativeElement" (load)="imageElement.style.opacity = '1'" />
         </div>
@@ -21,7 +22,6 @@
               <i class="icon-button active fa-solid fa-object-group" title="Group Manager" (click)="galleryService.openImageGroupEditor(image.group); $event.stopPropagation()"></i>
             }
           </div>
-          <div class="brick-footer"></div>
         }
       </div>
     }

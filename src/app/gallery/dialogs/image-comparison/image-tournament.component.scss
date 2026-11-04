@@ -62,6 +62,10 @@
       border-radius: variables.$gap-1;
       cursor: pointer;
 
+      &.unavailable {
+        filter: grayscale(1);
+      }
+
       @media screen and (max-width:1280px) {
         width: 64px;
       }
@@ -69,6 +73,10 @@
       @media screen and (min-width:1280px) {
         width: 96px;
       }
+    }
+
+    .comparison-boundary {
+      flex-shrink: 0;
     }
 
     .active-image-actions {

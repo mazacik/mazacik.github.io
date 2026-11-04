@@ -72,14 +72,20 @@
           @if (winnersRight.length) {
             <div class="side-column winners-column">
               @for (image of winnersRight; track image.id) {
-                <img class="side-image" [src]="image.thumbnailLink" [style.aspect-ratio]="image.aspectRatio" loading="lazy" (click)="compareAgainst(image, $event)" (contextmenu)="onImageContextMenu(image, $event)" (touchstart)="onImageTouchStart(image)" (touchend)="onImageTouchEnd()" (touchcancel)="onImageTouchEnd()" (touchmove)="onImageTouchMove()" />
+                @if ($index > 0 && $index === winnersRightBoundaryIndex) {
+                  <div class="h-separator comparison-boundary" role="separator" aria-label="Comparison bound"></div>
+                }
+                <img class="side-image" [class.unavailable]="winnersRightBoundaryIndex >= 0 && $index >= winnersRightBoundaryIndex" [src]="image.thumbnailLink" [style.aspect-ratio]="image.aspectRatio" loading="lazy" (click)="compareAgainst(image, $event)" (contextmenu)="onImageContextMenu(image, $event)" (touchstart)="onImageTouchStart(image)" (touchend)="onImageTouchEnd()" (touchcancel)="onImageTouchEnd()" (touchmove)="onImageTouchMove()" />
               }
             </div>
           }
           @if (losersRight.length) {
             <div class="side-column losers-column">
               @for (image of losersRight; track image.id) {
-                <img class="side-image" [src]="image.thumbnailLink" [style.aspect-ratio]="image.aspectRatio" loading="lazy" (click)="compareAgainst(image, $event)" (contextmenu)="onImageContextMenu(image, $event)" (touchstart)="onImageTouchStart(image)" (touchend)="onImageTouchEnd()" (touchcancel)="onImageTouchEnd()" (touchmove)="onImageTouchMove()" />
+                @if ($index > 0 && $index === losersRightBoundaryIndex) {
+                  <div class="h-separator comparison-boundary" role="separator" aria-label="Comparison bound"></div>
+                }
+                <img class="side-image" [class.unavailable]="losersRightBoundaryIndex >= 0 && $index >= losersRightBoundaryIndex" [src]="image.thumbnailLink" [style.aspect-ratio]="image.aspectRatio" loading="lazy" (click)="compareAgainst(image, $event)" (contextmenu)="onImageContextMenu(image, $event)" (touchstart)="onImageTouchStart(image)" (touchend)="onImageTouchEnd()" (touchcancel)="onImageTouchEnd()" (touchmove)="onImageTouchMove()" />
               }
             </div>
           }

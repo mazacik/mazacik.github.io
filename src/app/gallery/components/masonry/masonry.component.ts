@@ -120,4 +120,10 @@ export class MasonryComponent {
     return ScreenUtils.isLargeScreen() && !this.stateService.groupEditorGroup;
   }
 
+  protected onImageContextMenu(image: GalleryImage, event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.galleryService.openImageOptions(image);
+  }
+
 }
