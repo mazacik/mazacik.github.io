@@ -42,6 +42,7 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
   private taggerOverlay?: ElementRef<HTMLDivElement>;
 
   protected tournamentSubview: 'comparison' | 'chain' = 'comparison';
+  protected filterRankingResults: boolean = false;
   protected taggerOverlayVisible: boolean = false;
   private fullscreenWasOpen: boolean = false;
   private browserFullscreenActive: boolean = !!document.fullscreenElement;
@@ -195,6 +196,12 @@ export class GalleryComponent implements KeyboardShortcutTarget, OnInit, OnDestr
       classes: 'fa-solid fa-arrows-spin',
       hidden: () => !isFullscreen() || !this.stateService.fullscreenImage().group,
       onClick: () => this.setRandomGroupTarget()
+    }, {
+      id: 'toggle-ranking-filter',
+      tooltip: () => this.filterRankingResults ? 'Show All Ranked Images' : 'Show Only Images Passing Current Filter',
+      classes: () => `fa-solid fa-filter${this.filterRankingResults ? ' active' : ''}`,
+      hidden: () => !isTournament() || this.tournamentSubview !== 'chain',
+      onClick: () => this.filterRankingResults = !this.filterRankingResults
     }, {
       id: 'toggle-ranked-row',
       tooltip: () => this.stateService.settings?.useRankedRow ? 'Switch to Pairwise Comparison' : 'Switch to Ranked-column Placement',

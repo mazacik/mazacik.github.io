@@ -237,8 +237,7 @@ describe('Gallery group filter controls', () => {
     await search('animal');
     expect(listRows().map(element => element.id)).toEqual([
       animals, cats, dogs, aliases, mammals, tigers
-    ].sort((left, right) => left.getNameWithParents().localeCompare(right.getNameWithParents()))
-      .map(tag => 'filter-list-result-' + tag.id));
+    ].map(tag => 'filter-list-result-' + tag.id));
     await search('animal tiger');
     expect(listRows().map(element => element.id)).toEqual(['filter-list-result-tigers']);
   });

@@ -1,5 +1,6 @@
-import { Component, effect } from '@angular/core';
+import { Component, Input, effect } from '@angular/core';
 import { GalleryImage } from 'src/app/gallery/models/gallery-image.class';
+import { GoogleFileUtils } from 'src/app/shared/utils/google-file.utils';
 import { ScreenUtils } from 'src/app/shared/utils/screen.utils';
 import { GallerySerializationService } from '../../services/gallery-serialization.service';
 import { GalleryStateService } from '../../services/gallery-state.service';
@@ -12,6 +13,8 @@ import { GallerySortUtils } from '../../utils/gallery-sort.utils';
   styleUrls: ['./image-tournament-longest-chain.component.scss']
 })
 export class ImageTournamentLongestChainComponent {
+  @Input() public showOnlyFilteredImages: boolean = false;
+
   protected rankedImages: GalleryImage[] = [];
   protected activeRankingControlsImageId: string | null = null;
 
@@ -27,6 +30,15 @@ export class ImageTournamentLongestChainComponent {
 
   private refresh(): void {
     this.rankedImages = this.stateService.imageSort.rankedImageIds.map(id => GallerySortUtils.resolveSubjectImage(id, this.stateService.images, this.stateService.imageGroups)).filter(Boolean);
+  }
+
+  protected get visibleRankedImages(): GalleryImage[] {
+    if (!this.showOnlyFilteredImages) return this.rankedImages;
+
+    return this.rankedImages.map(image => image.group
+      ? image.group.images.find(groupImage => groupImage.passesFilters && GoogleFileUtils.isImage(groupImage))
+      : image.passesFilters ? image : null
+    ).filter(Boolean);
   }
 
   protected openFullscreen(image: GalleryImage): void {

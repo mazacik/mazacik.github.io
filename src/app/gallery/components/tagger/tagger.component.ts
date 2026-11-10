@@ -92,13 +92,15 @@ export class TaggerComponent {
     if (!this.listMode) return { applied, unapplied };
     const images = this.groupMode && this.target?.group ? this.target.group.images : this.target ? [this.target] : [];
     const membership = new Set(images.flatMap(image => image.tags));
-    for (const tag of this.tagService.searchTags('')) {
+    const tags = this.tagService.searchTags('');
+    this.tagService.sort(tags);
+    for (const tag of tags) {
       if (tag.pseudo) continue;
       if (membership.has(tag)) applied.push(tag);
       else if (tag.matchesSearchQuery(this.searchQuery)) unapplied.push(tag);
     }
     const query = this.searchQuery.trim().toLocaleLowerCase();
-    // Stable sort preserves alphabetical full-path ordering within each tier.
+    // Stable sort preserves alphabetical own-name ordering within each tier.
     unapplied.sort((a, b) => Number(b.name.toLocaleLowerCase().startsWith(query)) - Number(a.name.toLocaleLowerCase().startsWith(query)));
     return { applied, unapplied };
   }

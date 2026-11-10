@@ -5,7 +5,7 @@
       <app-masonry></app-masonry>
     </div>
     <app-image-tournament [class.transparent]="viewMode != 'tournament' || tournamentSubview != 'comparison'"></app-image-tournament>
-    <app-image-tournament-longest-chain [class.transparent]="viewMode != 'tournament' || tournamentSubview != 'chain'"></app-image-tournament-longest-chain>
+    <app-image-tournament-longest-chain [showOnlyFilteredImages]="filterRankingResults" [class.transparent]="viewMode != 'tournament' || tournamentSubview != 'chain'"></app-image-tournament-longest-chain>
     <div class="fullscreen-container glass-effect height-100" [class.transparent]="!stateService.fullscreenImage()">
       <app-fullscreen></app-fullscreen>
       <div #taggerOverlay class="tagger-container" [class.tagger-overlay-visible]="taggerOverlayVisible" (scroll)="onTaggerOverlayScroll(taggerOverlay)">
