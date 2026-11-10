@@ -411,7 +411,7 @@ describe('List and Tree tagger modes', () => {
     expect(button('Group Mode').classList).toContain('disabled');
   });
 
-  it('caps long applied lists and scrolls both sections independently within the available viewport', async () => {
+  it('caps long applied lists and preserves both scroll positions when tags are added or removed', async () => {
     const host = fixture.nativeElement as HTMLElement;
     host.style.transition = 'none';
     host.style.height = Math.max(600, Math.min(window.innerHeight, 900)) + 'px';
@@ -436,6 +436,19 @@ describe('List and Tree tagger modes', () => {
     expect(input().getBoundingClientRect().top).toBeGreaterThanOrEqual(applied.getBoundingClientRect().bottom);
     expect(input().getBoundingClientRect().bottom).toBeLessThanOrEqual(lower.getBoundingClientRect().top);
     expect(button('List').getBoundingClientRect().bottom).toBeLessThanOrEqual(host.getBoundingClientRect().bottom);
+
+    const result = rows('unapplied')[3];
+    const tag = tags.tags.find(tag => result.id === 'tagger-search-result-' + tag.id);
+    result.querySelector<HTMLElement>('.cursor-pointer').click();
+    await render();
+    expect(image.tags).toContain(tag);
+    expect(lower.scrollTop).toBeCloseTo(50, 0);
+    expect(applied.scrollTop).toBeCloseTo(50, 0);
+
+    await clickApplied(tag);
+    expect(image.tags).not.toContain(tag);
+    expect(lower.scrollTop).toBeCloseTo(50, 0);
+    expect(applied.scrollTop).toBeCloseTo(50, 0);
   });
 
 });
