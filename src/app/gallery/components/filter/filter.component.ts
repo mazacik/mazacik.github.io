@@ -87,7 +87,7 @@ export class FilterComponent {
 
   protected getListTags(): Tag[] {
     const results = this.tagService.tags.filter(tag => tag.matchesSearchQuery(this.searchQuery));
-    this.tagService.sort(results, true);
+    this.tagService.sort(results);
     return results;
   }
 

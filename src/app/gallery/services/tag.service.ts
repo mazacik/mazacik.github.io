@@ -36,7 +36,7 @@ export class TagService {
       if (useNameWithParents) {
         tags.sort((t1, t2) => t1.getNameWithParents().localeCompare(t2.getNameWithParents()));
       } else {
-        tags.sort((t1, t2) => t1.name.localeCompare(t2.name));
+        tags.sort((t1, t2) => t1.name.localeCompare(t2.name) || t1.getNameWithParents().localeCompare(t2.getNameWithParents()));
       }
     }
   }

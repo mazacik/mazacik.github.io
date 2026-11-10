@@ -1,7 +1,8 @@
 <div class="longest-chain-wrapper">
-  @if (rankedImages.length) {
+  @let visibleImages = visibleRankedImages;
+  @if (visibleImages.length) {
     <div class="longest-chain">
-      @for (image of rankedImages; track image.id) {
+      @for (image of visibleImages; track image.id) {
         <div class="chain-segment" [class.controls-active]="isRankingControlsActive(image)" (focusin)="activateRankingControls(image)">
           <img class="chain-image" [src]="image.thumbnailLink" [style.aspect-ratio]="image.aspectRatio" loading="lazy" (click)="onImageClick(image, $event)" />
           @if (canMoveRankedImage(image, -1)) {
@@ -15,6 +16,6 @@
       }
     </div>
   } @else {
-    <div class="chain-empty">No ranked images yet.</div>
+    <div class="chain-empty">{{ showOnlyFilteredImages && rankedImages.length ? 'No ranked images match the current filter.' : 'No ranked images yet.' }}</div>
   }
 </div>
