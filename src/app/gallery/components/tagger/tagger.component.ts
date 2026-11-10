@@ -81,9 +81,9 @@ export class TaggerComponent {
     this.resetSearchSelection();
   }
 
-  private resetSearchSelection(): void {
+  private resetSearchSelection(scrollIntoView: boolean = true): void {
     this.focusedListTagId = null;
-    this.scrollSelectionAfterRender = true;
+    this.scrollSelectionAfterRender = scrollIntoView;
   }
 
   protected getListTags(): { applied: Tag[]; unapplied: Tag[] } {
@@ -167,11 +167,11 @@ export class TaggerComponent {
     if (!event.shiftKey) {
       this.searchQuery = '';
     }
-    this.resetSearchSelection();
+    this.resetSearchSelection(false);
   }
 
   protected onAppliedTagToggled(): void {
-    this.resetSearchSelection();
+    this.resetSearchSelection(false);
   }
 
   protected hasSearchQuery(): boolean {
