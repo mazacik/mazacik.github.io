@@ -97,7 +97,7 @@ export class GalleryService {
     this.stateService.sortState = this.stateService.imageSort.getState();
     const activeRankingReset = this.didActiveRankingReset(previousSortState, this.stateService.sortState);
 
-    this.filterService.images.set(this.stateService.images.filter(image => image.passesFilters));
+    this.filterService.updateFilters();
 
     this.stateService.fullscreenImage.set(nextTarget);
 

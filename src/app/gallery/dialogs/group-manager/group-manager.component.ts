@@ -49,7 +49,8 @@ export class GroupManagerComponent extends DialogContentBase<void, {}> implement
       disabled: () => this.stateService.groupEditorGroup.images.length < 2,
       click: () => this.submit()
     }],
-    hideClickOverlay: true
+    hideClickOverlay: true,
+    dockAtBottomOnMobile: true
   }
 
   constructor(

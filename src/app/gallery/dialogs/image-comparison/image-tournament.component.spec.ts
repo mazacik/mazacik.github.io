@@ -91,6 +91,146 @@ describe('ImageTournamentComponent ranked-row integration', () => {
     expect(state.settings.useRankedRow).toBeTrue();
   });
 
+  it('keeps a failed pair until it passes and resumes the pending comparison on exit', async () => {
+    const before = sort.getState();
+    const pendingPair = sort.currentComparisonIds;
+    const warning = jasmine.createSpy('createConfirmation').and.resolveTo(false);
+    Object.assign(TestBed.inject(DialogService), { createConfirmation: warning });
+    const navigate = jasmine.createSpy('showInRanking');
+    component.showInRanking.subscribe(navigate);
+    component.toggleConsistencyChecksOnly();
+    const view = component as any;
+    for (const chooseHigher of [false, true]) {
+      const check = view.consistencyCheck;
+      const winner = view.comparison.find((image: GalleryImage) =>
+        (GallerySortUtils.getSortSubjectId(image) === check.higherRankedSubjectId) === chooseHigher);
+      view.comparisonImagesReady = [true, true];
+      await view.onImageClick(winner);
+      expect(view.consistencyCheck).toBeTruthy();
+      if (chooseHigher) expect(view.consistencyCheck).not.toBe(check);
+      else expect(view.consistencyCheck).toBe(check);
+    }
+    expect(warning).toHaveBeenCalledTimes(1);
+    expect(navigate).not.toHaveBeenCalled();
+    component.toggleConsistencyChecksOnly();
+    expect(view.comparison.map((image: GalleryImage) => GallerySortUtils.getSortSubjectId(image))).toEqual(pendingPair);
+    expect(sort.getState()).toEqual(before);
+    expect(save).not.toHaveBeenCalled();
+  });
+
+  it('removes the check images on exit and renders the pending ranking pair on re-entry', () => {
+    const pendingPair = sort.currentComparisonIds;
+    component.toggleConsistencyChecksOnly();
+    fixture.detectChanges();
+    expect(component['isConsistencyCheckActive']).toBeTrue();
+    const checkImage = fixture.nativeElement.querySelector('.comparison-column app-image');
+    expect(checkImage).toBeTruthy();
+
+    state.viewMode = 'masonry';
+    component.onLeaveTournament();
+    component.refreshComparisonRelations();
+    fixture.detectChanges();
+    expect(component.consistencyChecksOnly).toBeFalse();
+    expect(component['isConsistencyCheckActive']).toBeFalse();
+    expect(fixture.nativeElement.querySelector('.comparison-column app-image')).toBeNull();
+
+    state.viewMode = 'tournament';
+    component.onEnterTournament();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.contains(checkImage)).toBeFalse();
+    expect(component['comparison'].map(image => GallerySortUtils.getSortSubjectId(image))).toEqual(pendingPair);
+  });
+
+  it('waits for two ranked images instead of offering a pending comparison in checks-only mode', () => {
+    const ids = state.images.map(image => GallerySortUtils.getSortSubjectId(image));
+    sort.start(ids, { rankedImageIds: ids.slice(0, 1), pendingImageIds: ids.slice(1), activeInsertion: null });
+    component.toggleConsistencyChecksOnly();
+    fixture.detectChanges();
+    expect(sort.currentComparisonIds).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.comparison-empty').textContent).toContain('Rank at least two images');
+  });
+
+  function applyFilter(images: GalleryImage[]): void {
+    state.images.forEach(image => image.passesComparisonFilter = images.includes(image));
+    fixture.componentRef.setInput('matchingImages', images);
+    fixture.detectChanges();
+  }
+
+  it('accepts the previously lower-ranked image after the user corrects the order in Results', async () => {
+    const warning = jasmine.createSpy('createConfirmation').and.resolveTo(true);
+    Object.assign(TestBed.inject(DialogService), { createConfirmation: warning });
+    const navigate = jasmine.createSpy('showInRanking');
+    component.showInRanking.subscribe(navigate);
+    component.toggleConsistencyChecksOnly();
+    applyFilter([state.images[1], state.images[2]]);
+    const view = component as any;
+    const check = view.consistencyCheck;
+    const pair = [...view.comparison];
+    view.comparisonImagesReady = [true, true];
+    await view.onImageClick(state.images[2]);
+    expect(navigate).toHaveBeenCalledOnceWith('image:2');
+    expect(warning).toHaveBeenCalledTimes(1);
+
+    sort.swapRankedImage('image:2', -1);
+    fixture.detectChanges();
+    expect(view.comparison).toEqual(pair);
+    expect(view.consistencyCheck).toBe(check);
+    await view.onImageClick(state.images[2]);
+    expect(warning).toHaveBeenCalledTimes(1);
+    expect(view.consistencyCheck).not.toBe(check);
+  });
+
+  it('draws a matching pending image against the full ranking and keeps excluded images in the queue', () => {
+    const ranking = [...sort.rankedImageIds];
+    applyFilter([state.images[11]]);
+    expect((component as any).comparison[0]).toBe(state.images[11]);
+    expect(ranking).toContain(sort.currentComparisonIds[1]);
+    expect(sort.pendingImageIds).toContain('image:10');
+    expect(sort.rankedImageIds).toEqual(ranking);
+    applyFilter([]);
+    expect(fixture.nativeElement.querySelector('.comparison-empty').textContent).toContain('No unranked images match');
+    fixture.componentRef.setInput('matchingImages', null);
+    fixture.detectChanges();
+    expect((component as any).comparison).toBeTruthy();
+  });
+
+  it('keeps a matching displayed group member and replaces it when the filter excludes it', () => {
+    const [first, second] = state.images.slice(10);
+    const group = { id: 'pair', images: [first, second] };
+    first.group = second.group = group;
+    state.imageGroups.push(group);
+    const rankedImageIds = [...sort.rankedImageIds];
+    const activeInsertion = { imageId: 'group:pair', low: 1, high: 2 };
+    sort.start([...rankedImageIds, activeInsertion.imageId], { rankedImageIds, activeInsertion, pendingImageIds: [] });
+    fixture.detectChanges();
+
+    const view = component as any;
+    view.showNextGroupImage(0, new MouseEvent('click'));
+    applyFilter([first, second]);
+    expect(view.comparison[0]).toBe(second);
+    view.comparisonImagesReady = [true, true];
+    applyFilter([first]);
+    expect(view.comparison[0]).toBe(first);
+    expect(view.comparisonImagesReady[0]).toBeFalse();
+    expect(sort.activeInsertion).toEqual(activeInsertion);
+  });
+
+  it('repeats the only eligible check pair and waits when the filter leaves one ranked entry', async () => {
+    component.toggleConsistencyChecksOnly();
+    applyFilter([state.images[1], state.images[8]]);
+    const before = sort.getState();
+    const view = component as any;
+    for (let answer = 0; answer < 3; answer++) {
+      expect(view.comparison).toEqual(jasmine.arrayWithExactContents([state.images[1], state.images[8]]));
+      view.comparisonImagesReady = [true, true];
+      await view.onImageClick(state.images[1]);
+    }
+    applyFilter([state.images[8]]);
+    expect(view.comparison).toBeNull();
+    expect(fixture.nativeElement.querySelector('.comparison-empty').textContent).toContain('two matching ranked entries');
+    expect(sort.getState()).toEqual(before);
+  });
+
   it('rejects enabling and placement while ranked-column placement is unavailable', () => {
     GalleryFeatures.rankedColumnPlacement = false;
     const before = sort.getState();
@@ -249,14 +389,13 @@ describe('ImageTournamentComponent ranked-row integration', () => {
     expect(sort.activeInsertion.imageId).toBe('image:10');
   });
 
-  it('retains pairwise consistency checks and clears a transient check when entering row mode', async () => {
+  it('advances directly to the next pending image after a pairwise placement', async () => {
     (component as any).comparisonImagesReady = [true, true];
     await (component as any).onImageClick(state.images[10]);
-    expect((component as any).isConsistencyCheckActive).toBeTrue();
-    component.setRankedRowMode(true);
     fixture.detectChanges();
+    expect(sort.rankedImageIds).toContain('image:10');
     expect((component as any).isConsistencyCheckActive).toBeFalse();
-    expect((component as any).rowActiveImage).toBe(state.images[11]);
+    expect(component['comparison'][0]).toBe(state.images[11]);
   });
 
   it('uses pairwise below desktop width while retaining the preferred mode', () => {
@@ -287,8 +426,7 @@ describe('ImageTournamentComponent ranked-row integration', () => {
   it('supports skip and restart and shows completion after the last placement', () => {
     component.setRankedRowMode(true);
     fixture.detectChanges();
-    const event = new MouseEvent('click');
-    (component as any).skipActiveImage(event);
+    component.skipActiveImage();
     expect(sort.activeInsertion.imageId).toBe('image:11');
     component.resetActiveImage();
     expect(sort.activeInsertion).toEqual({ imageId: 'image:11', low: 0, high: 10 });

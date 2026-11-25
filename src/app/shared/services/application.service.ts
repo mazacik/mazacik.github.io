@@ -3,22 +3,21 @@ import { AppConstants } from "../constants/app.constants";
 import { DialogService } from "./dialog.service";
 
 export type HeaderClasses = string | string[];
-export type HeaderSection = 'start' | 'center' | 'end';
+export const HEADER_SECTIONS = ['start', 'start-center', 'center', 'center-end', 'end'] as const;
+export type HeaderSection = typeof HEADER_SECTIONS[number];
 
 export interface HeaderAction {
   id: string;
   classes: HeaderClasses | (() => HeaderClasses);
   tooltip?: string | (() => string);
+  count?: () => number;
   onClick?: () => void;
+  onContextMenu?: () => void;
   disabled?: boolean | (() => boolean);
   hidden?: boolean | (() => boolean);
 }
 
-export interface HeaderConfig {
-  start?: HeaderAction[];
-  center?: HeaderAction[];
-  end?: HeaderAction[];
-}
+export type HeaderConfig = Partial<Record<HeaderSection, HeaderAction[]>>;
 
 export interface SettingsToggle {
   id: string;
@@ -49,6 +48,7 @@ export interface ApplicationSettings extends ModuleSettingsProvider {
 export interface ApplicationSettingsState {
   darkTheme: boolean;
   reduceDataUsage: boolean;
+  mobileHeaderAtBottom: boolean;
 }
 
 @Injectable({
@@ -56,10 +56,10 @@ export interface ApplicationSettingsState {
 })
 export class ApplicationService {
 
-  private readonly headerSections: HeaderSection[] = ['start', 'center', 'end'];
-  private headerState: HeaderConfig = this.createEmptyHeader();
-  private readonly headerCollector: WritableSignal<HeaderConfig> = signal(this.createEmptyHeader());
+  private headerState: HeaderConfig = {};
+  private readonly headerCollector: WritableSignal<HeaderConfig> = signal({});
   public readonly header: Signal<HeaderConfig> = this.headerCollector.asReadonly();
+  public readonly mobileSettingsOpen = signal(false);
 
   private readonly appSettings: WritableSignal<ApplicationSettingsState> = signal(this.loadAppSettings());
   private readonly applicationSettings: ApplicationSettings = {
@@ -77,6 +77,12 @@ export class ApplicationService {
       label: 'Reduce Data Usage',
       getValue: () => this.reduceDataUsage,
       onChange: value => this.reduceDataUsage = value
+    }, {
+      id: 'mobile-header-at-bottom',
+      type: 'toggle',
+      label: 'Show Header at Bottom on Mobile',
+      getValue: () => this.mobileHeaderAtBottom,
+      onChange: value => this.setAppSettings({ mobileHeaderAtBottom: value })
     }, {
       id: 'reset-dialog-positions',
       type: 'action',
@@ -118,6 +124,10 @@ export class ApplicationService {
     this.setAppSettings({ reduceDataUsage });
   }
 
+  public get mobileHeaderAtBottom(): boolean {
+    return this.appSettings().mobileHeaderAtBottom;
+  }
+
   public addHeaderButton(section: HeaderSection, action: HeaderAction, position: 'first' | 'last' = 'last'): void {
     this.addHeaderButtons(section, [action], position);
   }
@@ -138,7 +148,7 @@ export class ApplicationService {
   public removeHeaderButtons(ids: string[]): void {
     let headerChanged: boolean = false;
 
-    this.headerSections.forEach(currentSection => {
+    HEADER_SECTIONS.forEach(currentSection => {
       const existing = this.headerState[currentSection] ?? [];
       const filtered = existing.filter(action => !ids.includes(action.id));
 
@@ -179,15 +189,11 @@ export class ApplicationService {
   }
 
   private updateHeader(): void {
-    this.headerCollector.set({
-      start: [...(this.headerState.start ?? [])],
-      center: [...(this.headerState.center ?? [])],
-      end: [...(this.headerState.end ?? [])]
-    });
-  }
-
-  private createEmptyHeader(): HeaderConfig {
-    return { start: [], center: [], end: [] };
+    const header: HeaderConfig = {};
+    for (const section of HEADER_SECTIONS) {
+      header[section] = [...(this.headerState[section] ?? [])];
+    }
+    this.headerCollector.set(header);
   }
 
   private setAppSettings(settings: Partial<ApplicationSettingsState>): void {
@@ -207,13 +213,14 @@ export class ApplicationService {
         if (parsed) {
           return {
             darkTheme: typeof parsed.darkTheme === 'boolean' ? parsed.darkTheme : fallbackDarkTheme,
-            reduceDataUsage: typeof parsed.reduceDataUsage === 'boolean' ? parsed.reduceDataUsage : false
+            reduceDataUsage: typeof parsed.reduceDataUsage === 'boolean' ? parsed.reduceDataUsage : false,
+            mobileHeaderAtBottom: parsed.mobileHeaderAtBottom === true
           };
         }
       } catch { /* ignore */ }
     }
 
-    return { darkTheme: fallbackDarkTheme, reduceDataUsage: false };
+    return { darkTheme: fallbackDarkTheme, reduceDataUsage: false, mobileHeaderAtBottom: false };
   }
 
   private persistSettings(settings: ApplicationSettingsState): void {

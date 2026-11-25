@@ -2,12 +2,11 @@
   @if (isRankedRowMode && rowActiveImage) {
     <app-image-ranking-row
       [activeImage]="rowActiveImage"
+      [matchingImages]="matchingImages()"
       [rankedSubjects]="rankedSubjects"
       (place)="placeInRankedRow($event)"
       (selectionChange)="selectedPlacementIndex = $event"
-      (fullscreen)="openFullscreen($event)"
-      (restart)="restartActiveImageComparisons($event)"
-      (skip)="skipActiveImage($event)"></app-image-ranking-row>
+      (fullscreen)="openFullscreen($event)"></app-image-ranking-row>
   } @else if (!isRankedRowMode && comparison) {
     <div #comparisonContainer class="comparison" (scroll)="onComparisonScroll(comparisonContainer)">
       <div class="comparison-column" role="group" aria-label="Comparison image A">
@@ -32,12 +31,6 @@
           (click)="showMobileComparisonPage(1, $event)">
           <img class="side-image" [src]="comparison[1].thumbnailLink || comparison[1].contentLink" [style.aspect-ratio]="comparison[1].aspectRatio" alt="" loading="lazy" />
         </button>
-        @if (!isConsistencyCheckActive) {
-          <div class="active-image-actions">
-            <i class="icon-button fa-solid fa-rotate-left" title="Restart Image Comparisons" (click)="restartActiveImageComparisons($event)"></i>
-            <i class="icon-button fa-solid fa-forward-step" title="Skip Image" (click)="skipActiveImage($event)"></i>
-          </div>
-        }
         @if (hasGroupNavigation(comparison[0])) {
           <div class="group-navigation">
             <i class="icon-button fa-solid fa-chevron-left" title="Previous Group Image" (click)="showPreviousGroupImage(0, $event)"></i>
@@ -72,9 +65,6 @@
           @if (winnersRight.length) {
             <div class="side-column winners-column">
               @for (image of winnersRight; track image.id) {
-                @if ($index > 0 && $index === winnersRightBoundaryIndex) {
-                  <div class="h-separator comparison-boundary" role="separator" aria-label="Comparison bound"></div>
-                }
                 <img class="side-image" [class.unavailable]="winnersRightBoundaryIndex >= 0 && $index >= winnersRightBoundaryIndex" [src]="image.thumbnailLink" [style.aspect-ratio]="image.aspectRatio" loading="lazy" (click)="compareAgainst(image, $event)" (contextmenu)="onImageContextMenu(image, $event)" (touchstart)="onImageTouchStart(image)" (touchend)="onImageTouchEnd()" (touchcancel)="onImageTouchEnd()" (touchmove)="onImageTouchMove()" />
               }
             </div>
@@ -82,9 +72,6 @@
           @if (losersRight.length) {
             <div class="side-column losers-column">
               @for (image of losersRight; track image.id) {
-                @if ($index > 0 && $index === losersRightBoundaryIndex) {
-                  <div class="h-separator comparison-boundary" role="separator" aria-label="Comparison bound"></div>
-                }
                 <img class="side-image" [class.unavailable]="losersRightBoundaryIndex >= 0 && $index >= losersRightBoundaryIndex" [src]="image.thumbnailLink" [style.aspect-ratio]="image.aspectRatio" loading="lazy" (click)="compareAgainst(image, $event)" (contextmenu)="onImageContextMenu(image, $event)" (touchstart)="onImageTouchStart(image)" (touchend)="onImageTouchEnd()" (touchcancel)="onImageTouchEnd()" (touchmove)="onImageTouchMove()" />
               }
             </div>
@@ -100,7 +87,13 @@
     </div>
   } @else {
     <div class="comparison comparison-empty">
-      Ranking complete.
+      @if (matchingImages() && consistencyChecksOnly) {
+        Consistency checks need two matching ranked entries. Broaden the filter or turn it off.
+      } @else if (matchingImages() && stateService.imageSort.pendingCountIncludingActive) {
+        No unranked images match. Broaden the filter or turn it off.
+      } @else {
+        {{ consistencyChecksOnly ? 'Rank at least two images to start consistency checks.' : 'Ranking complete.' }}
+      }
     </div>
   }
 
@@ -115,7 +108,7 @@
     </div>
   }
 
-  @if (stateService.settings?.showComparisonProgress) {
+  @if (!consistencyChecksOnly && stateService.settings?.showComparisonProgress) {
     <div class="h-separator"></div>
     <div class="progress-remaining">
       <span class="progress-remaining-bar" [style.width.%]="sortProgressPercent"></span>

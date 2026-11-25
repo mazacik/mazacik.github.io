@@ -194,6 +194,20 @@ export class BinaryInsertionSort {
     this.notify();
   }
 
+  public selectMatchingPendingImage(eligibleIds: ReadonlySet<string>): boolean {
+    const active = this.state.activeInsertion;
+    if (!active || eligibleIds.has(active.imageId)) return false;
+    const index = this.state.pendingImageIds.findIndex(id => eligibleIds.has(id));
+    if (index < 0) return false;
+
+    const [nextId] = this.state.pendingImageIds.splice(index, 1);
+    this.state.pendingImageIds.unshift(active.imageId);
+    this.state.activeInsertion = { imageId: nextId, low: 0, high: this.state.rankedImageIds.length };
+    this.clearComparisonOpponentIndexOverride();
+    this.notify();
+    return true;
+  }
+
   public moveRankedImageToPending(imageId: string): void {
     if (!this.removeFromArray(this.state.rankedImageIds, imageId)) {
       return;

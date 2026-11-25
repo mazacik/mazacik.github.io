@@ -3,6 +3,7 @@ import { ImageComponent } from '../../../shared/components/image/image.component
 import { GalleryUtils } from '../../../shared/utils/gallery.utils';
 import { GalleryImage } from '../../models/gallery-image.class';
 import { GallerySortUtils } from '../../utils/gallery-sort.utils';
+import { GoogleFileUtils } from '../../../shared/utils/google-file.utils';
 
 export interface RankedRowSubject {
   id: string;
@@ -23,12 +24,11 @@ export interface RankedRowPlacement {
 })
 export class ImageRankingRowComponent implements OnChanges, AfterViewInit, OnDestroy {
   @Input({ required: true }) public activeImage: GalleryImage;
+  @Input() public matchingImages: GalleryImage[] | null = null;
   @Input({ required: true }) public rankedSubjects: RankedRowSubject[] = [];
   @Output() public readonly place = new EventEmitter<RankedRowPlacement>();
   @Output() public readonly selectionChange = new EventEmitter<number>();
   @Output() public readonly fullscreen = new EventEmitter<GalleryImage>();
-  @Output() public readonly restart = new EventEmitter<MouseEvent>();
-  @Output() public readonly skip = new EventEmitter<MouseEvent>();
   @ViewChild('rankedScroller') private scroller?: ElementRef<HTMLElement>;
 
   protected readonly galleryUtils = GalleryUtils;
@@ -57,10 +57,10 @@ export class ImageRankingRowComponent implements OnChanges, AfterViewInit, OnDes
   public ngOnChanges(changes: SimpleChanges): void {
     const subjectId = GallerySortUtils.getSortSubjectId(this.activeImage);
     if (subjectId !== this.activeSubjectId) this.confirmedSubjectId = null;
-    if (subjectId !== this.activeSubjectId || (changes['activeImage'] && this.activeImage !== changes['activeImage'].previousValue)) {
-      this.activeSubjectId = subjectId;
+    if (subjectId !== this.activeSubjectId || ((changes['activeImage'] || changes['matchingImages']) && !this.groupImages.includes(this.displayedImage))) {
       this.displayedImage = this.activeImage;
     }
+    this.activeSubjectId = subjectId;
     if (changes['activeImage'] || changes['rankedSubjects']) {
       this.geometryDirty = true;
       this.resetPosition();
@@ -173,8 +173,13 @@ export class ImageRankingRowComponent implements OnChanges, AfterViewInit, OnDes
     if (image) this.fullscreen.emit(image);
   }
 
+  protected get groupImages(): GalleryImage[] {
+    const members = this.activeImage.group?.images ?? [];
+    return this.matchingImages ? members.filter(member => member.passesComparisonFilter && GoogleFileUtils.isImage(member)) : members;
+  }
+
   protected showGroupImage(direction: -1 | 1): void {
-    const images = this.displayedImage.group?.images ?? [];
+    const images = this.groupImages;
     if (images.length < 2) return;
     const index = images.indexOf(this.displayedImage);
     this.displayedImage = images[(index + direction + images.length) % images.length];

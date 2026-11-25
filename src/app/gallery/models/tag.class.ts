@@ -4,6 +4,7 @@ import { GalleryImage } from "./gallery-image.class";
 
 export class Tag extends Filter {
 
+  readonly comparisonFilter = new Filter();
   id: string;
   name: string;
   group: boolean;

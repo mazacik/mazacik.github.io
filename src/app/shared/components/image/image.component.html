@@ -2,6 +2,7 @@
   @for (image of images; track image.trackBy) {
     <img
       [src]="image.src"
+      alt=""
       class="image-layer"
       [class.visible]="image.visible"
       [attr.data-image-track-by]="image.trackBy"

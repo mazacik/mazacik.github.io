@@ -1,10 +1,17 @@
 <div class="longest-chain-wrapper">
   @let visibleImages = visibleRankedImages;
   @if (visibleImages.length) {
-    <div class="longest-chain">
+    <div #mainRow class="longest-chain">
       @for (image of visibleImages; track image.id) {
-        <div class="chain-segment" [class.controls-active]="isRankingControlsActive(image)" (focusin)="activateRankingControls(image)">
-          <img class="chain-image" [src]="image.thumbnailLink" [style.aspect-ratio]="image.aspectRatio" loading="lazy" (click)="onImageClick(image, $event)" />
+        <div class="chain-segment" [style.--image-ratio]="image.aspectRatio || 1">
+          <div class="chain-image" role="img" [attr.aria-label]="image.name || 'Ranked image'" (click)="openFullscreen(image)">
+            @let preview = image.thumbnailLink || image.contentLink;
+            @let original = image.contentLink;
+            <img [rankedSrc]="preview" alt="" loading="lazy" decoding="async" />
+            @if (!applicationService.reduceDataUsage && original && original !== preview) {
+              <img [rankedSrc]="original" alt="" loading="lazy" decoding="async" />
+            }
+          </div>
           @if (canMoveRankedImage(image, -1)) {
             <i class="ranking-action ranking-action-earlier icon-button smaller fa-solid fa-chevron-left" title="Move Earlier" (click)="moveRankedImage(image, -1, $event)"></i>
           }
@@ -15,6 +22,16 @@
         </div>
       }
     </div>
+    @if (horizontal) {
+      <nav #navigator class="rank-navigator" aria-label="Navigate ranked images">
+        @for (image of visibleImages; track image.id; let index = $index) {
+          <button type="button" [style.--image-ratio]="image.aspectRatio || 1"
+            [attr.aria-label]="'Show ' + (image.name || 'image') + ', rank ' + (index + 1)" (click)="centerImage(mainRow, index)">
+            <img [rankedSrc]="image.thumbnailLink || image.contentLink" alt="" loading="lazy" decoding="async" />
+          </button>
+        }
+      </nav>
+    }
   } @else {
     <div class="chain-empty">{{ showOnlyFilteredImages && rankedImages.length ? 'No ranked images match the current filter.' : 'No ranked images yet.' }}</div>
   }

@@ -65,7 +65,7 @@ export class MasonryComponent {
     }
 
     const minColumnWidth: number = ScreenUtils.isLargeScreen() ? 250 : 200;
-    const masonryGap: number = ScreenUtils.isLargeScreen() ? 9.6666666666 : 4.3333333333;
+    const masonryGap = parseFloat(getComputedStyle(this.masonryContainer).columnGap);
 
     const containerWidth: number = this.masonryContainer.clientWidth;
     const columnCount: number = Math.max(Math.floor(containerWidth / minColumnWidth), 2);

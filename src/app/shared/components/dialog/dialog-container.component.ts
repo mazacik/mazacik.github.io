@@ -12,7 +12,8 @@ import { DialogContentBase } from './dialog-content-base.class';
   templateUrl: './dialog-container.component.html',
   styleUrls: ['./dialog-container.component.scss'],
   host: {
-    '[class.display-none]': 'hidden'
+    '[class.display-none]': 'hidden',
+    '[class.mobile-bottom-panel]': 'contentComponentInstance?.configuration?.dockAtBottomOnMobile'
   }
 })
 export class DialogContainerComponent<ResultType, InputsType> implements AfterViewInit, OnDestroy {

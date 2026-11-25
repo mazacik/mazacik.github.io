@@ -59,15 +59,27 @@
     padding: variables.$gap-2;
     column-gap: variables.$gap-1;
     row-gap: variables.$gap-1;
-    grid-template-columns: auto 1fr;
-    position: relative;
+    grid-template-columns: minmax(0, 1fr) auto;
+
+    .file-heading {
+      grid-column: 1 / -1;
+
+      button {
+        flex-shrink: 0;
+      }
+    }
+
+    .file-details {
+      display: grid;
+      gap: variables.$gap-1;
+      grid-template-columns: auto minmax(0, 1fr);
+    }
 
     .file-name {
       font-weight: 600;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      grid-column: 1/3;
     }
 
     .label {
@@ -88,9 +100,7 @@
     }
 
     .tagger-toggles {
-      position: absolute;
-      right: variables.$gap-2;
-      bottom: variables.$gap-2;
+      align-self: end;
     }
   }
 

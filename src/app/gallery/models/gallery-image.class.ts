@@ -14,6 +14,7 @@ export class GalleryImage extends GoogleMetadata {
   public contentLink: string;
   public group: GalleryGroup;
   public passesFilters: boolean;
+  public passesComparisonFilter: boolean;
   public parentFolderId: string;
 
   public masonryTop: number;

@@ -7,27 +7,25 @@ import { Tag } from "../models/tag.class";
 import { GalleryStateService } from "./gallery-state.service";
 import { TagService } from "./tag.service";
 
-@Injectable({
-  providedIn: 'root',
-})
-export class FilterService {
+export class GalleryImageFilter {
 
   public readonly images: WritableSignal<GalleryImage[]> = signal([]);
-  public readonly masonryImages: Signal<GalleryImage[]> = computed(() => this.images().filter(image => image.group ? image == image.group.images.find(groupImage => groupImage.passesFilters) : true));
+  public readonly hasCriteria = signal(false);
 
   public readonly favoritesFilter: Filter = new Filter(0);
   public readonly bookmarksFilter: Filter = new Filter(0);
   public readonly groupsFilter: Filter = new Filter(0);
 
-  private tagFiltersInvert: boolean = false;
+  public tagFiltersInvert = false;
 
   constructor(
     private stateService: GalleryStateService,
-    private tagService: TagService
+    private tagService: TagService,
+    private readonly matchProperty: 'passesFilters' | 'passesComparisonFilter'
   ) { }
 
-  public isTagFiltersInvert(): boolean {
-    return this.tagFiltersInvert;
+  public forTag(tag: Tag): Filter {
+    return this.matchProperty === 'passesFilters' ? tag : tag.comparisonFilter;
   }
 
   public invertTagFilters(value: boolean = !this.tagFiltersInvert): void {
@@ -36,11 +34,14 @@ export class FilterService {
   }
 
   public updateFilters(...images: GalleryImage[]): void {
-    (ArrayUtils.isEmpty(images) ? this.stateService.images : images).forEach(image => image.passesFilters = this.doesPassFilters(image));
-    this.images.set(this.stateService.images.filter(image => image.passesFilters));
+    const activeTags = this.tagService.getRootTags().flatMap(root => [root, ...root.collectChildren()])
+      .filter(tag => this.forTag(tag).state !== 0);
+    this.hasCriteria.set(!!(activeTags.length || this.tagFiltersInvert || this.favoritesFilter.state || this.bookmarksFilter.state || this.groupsFilter.state));
+    (ArrayUtils.isEmpty(images) ? this.stateService.images : images).forEach(image => image[this.matchProperty] = this.doesPassFilters(image, activeTags));
+    this.images.set(this.stateService.images.filter(image => image[this.matchProperty]));
   }
 
-  private doesPassFilters(image: GalleryImage): boolean {
+  private doesPassFilters(image: GalleryImage, activeTags: Tag[]): boolean {
     if (!image) {
       return false;
     }
@@ -61,7 +62,7 @@ export class FilterService {
       return false;
     }
 
-    return this.doesPassTagsCheck(image, this.tagService.getRootTags()) != this.tagFiltersInvert;
+    return this.doesPassTagsCheck(image, activeTags) !== this.tagFiltersInvert;
   }
 
   private doesPassFilter(filter: Filter, value: boolean): boolean {
@@ -76,23 +77,24 @@ export class FilterService {
     return true;
   }
 
-  private doesPassTagsCheck(image: GalleryImage, roots: Tag[]): boolean {
-    const tags = roots.flatMap(root => [root, ...root.collectChildren()]);
+  private doesPassTagsCheck(image: GalleryImage, tags: Tag[]): boolean {
+    if (tags.length === 0) return true;
     const includedTags: Tag[] = [];
 
     // Explicit tag filters use AND semantics. They may narrow or override only
     // their ancestor groups; unrelated group filters still apply.
     for (const tag of tags) {
-      if (tag.group || tag.state === 0) continue;
+      const filter = this.forTag(tag);
+      if (tag.group) continue;
       const matches = tag.pseudo
         ? tag.children.some(child => image.tags.includes(child))
         : image.tags.includes(tag);
-      if (!this.doesPassFilter(tag, matches)) return false;
-      if (tag.state === 1) includedTags.push(tag);
+      if (!this.doesPassFilter(filter, matches)) return false;
+      if (filter.state === 1) includedTags.push(tag);
     }
 
-    const groups = tags.filter(tag => tag.group && tag.state !== 0);
-    const includedGroups = groups.filter(group => group.state === 1);
+    const groups = tags.filter(tag => tag.group);
+    const includedGroups = groups.filter(group => this.forTag(group).state === 1);
     const matchesGroup = (group: Tag): boolean => group.collectChildren()
       .some(child => !child.group && !child.pseudo && image.tags.includes(child));
     const isOverriddenByIncludedTag = (group: Tag): boolean => includedTags
@@ -101,9 +103,9 @@ export class FilterService {
     // A green subgroup narrows its ancestor's inclusion to the more specific
     // selection. Independent green branches still combine with OR.
     const specificIncludes = includedGroups.filter(group =>
-      !group.collectChildren().some(child => child.group && child.state === 1));
+      !group.collectChildren().some(child => child.group && this.forTag(child).state === 1));
 
-    for (const group of groups.filter(group => group.state === -1)) {
+    for (const group of groups.filter(group => this.forTag(group).state === -1)) {
       if (!matchesGroup(group)) continue;
       // Matching green descendants are exceptions to their red ancestors.
       const includedDescendants = specificIncludes.filter(child => child.collectParents().includes(group));
@@ -114,4 +116,22 @@ export class FilterService {
       .some(group => matchesGroup(group) || isOverriddenByIncludedTag(group));
   }
 
+}
+
+@Injectable({ providedIn: 'root' })
+export class FilterService {
+  public readonly masonry: GalleryImageFilter;
+  public readonly comparison: GalleryImageFilter;
+  public readonly masonryImages: Signal<GalleryImage[]> = computed(() => this.masonry.images().filter(image =>
+    !image.group || image === image.group.images.find(member => member.passesFilters)));
+
+  constructor(state: GalleryStateService, tags: TagService) {
+    this.masonry = new GalleryImageFilter(state, tags, 'passesFilters');
+    this.comparison = new GalleryImageFilter(state, tags, 'passesComparisonFilter');
+  }
+
+  public updateFilters(...images: GalleryImage[]): void {
+    this.masonry.updateFilters(...images);
+    this.comparison.updateFilters(...images);
+  }
 }

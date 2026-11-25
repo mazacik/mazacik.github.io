@@ -29,47 +29,38 @@ export class ImageComponent {
     private readonly elementRef: ElementRef<HTMLElement>,
     private readonly changeDetector: ChangeDetectorRef
   ) {
-    this.destroyRef.onDestroy(() => this.clearScheduledCallbacks());
+    this.destroyRef.onDestroy(() => {
+      this.requestTrackBy++;
+      this.clearScheduledCallbacks();
+    });
     effect(() => this.next(this.src(), this.placeholderSrc(), this.sourceWidth(), this.sourceHeight()));
   }
 
   private next(src: string, placeholderSrc: string, sourceWidth?: number, sourceHeight?: number): void {
+    const requestTrackBy = ++this.requestTrackBy;
     if (!src) {
+      this.clearScheduledCallbacks();
+      this.images = [];
+      this.activeTrackBy = undefined;
       return;
     }
 
-    const requestTrackBy = ++this.requestTrackBy;
     let srcLoaded = false;
     this.schedulePendingRequestFadeOut(src, sourceWidth, sourceHeight);
 
     const srcDecoder = new Image();
     srcDecoder.src = src;
 
-    if (srcDecoder.complete) {
-      this.showDecodedImage(requestTrackBy, src, srcDecoder.naturalWidth, srcDecoder.naturalHeight, sourceWidth, sourceHeight);
-      return;
-    }
-
     srcDecoder.decode().then(() => {
       if (requestTrackBy === this.requestTrackBy) {
         srcLoaded = true;
         this.showDecodedImage(requestTrackBy, src, srcDecoder.naturalWidth, srcDecoder.naturalHeight, sourceWidth, sourceHeight);
       }
-    }).catch(() => {
-      if (requestTrackBy === this.requestTrackBy && !placeholderSrc) {
-        srcLoaded = true;
-        this.showDecodedImage(requestTrackBy, src, srcDecoder.naturalWidth, srcDecoder.naturalHeight, sourceWidth, sourceHeight);
-      }
-    });
+    }).catch(() => undefined);
 
-    if (placeholderSrc) {
+    if (placeholderSrc && placeholderSrc !== src) {
       const placeholderDecoder = new Image();
       placeholderDecoder.src = placeholderSrc;
-
-      if (placeholderDecoder.complete) {
-        this.showPlaceholderImage(requestTrackBy, placeholderSrc, placeholderDecoder.naturalWidth, placeholderDecoder.naturalHeight, sourceWidth, sourceHeight);
-        return;
-      }
 
       placeholderDecoder.decode().then(() => {
         if (requestTrackBy === this.requestTrackBy && !srcLoaded) {
@@ -236,6 +227,7 @@ export class ImageComponent {
 
   private emitImageDisplayed(trackBy: number): void {
     window.setTimeout(() => {
+      if (this.destroyRef.destroyed) return;
       const image = this.images.find(current => current.trackBy === trackBy);
       if (image && image.trackBy === this.activeTrackBy && image.visible) {
         this.imageDisplayed.emit(image.src);

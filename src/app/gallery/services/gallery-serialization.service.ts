@@ -44,9 +44,15 @@ export class GallerySerializationService {
     stateService.settings.useRankedRow ??= false;
 
     const filterService: FilterService = this.injector.get(FilterService);
-    filterService.favoritesFilter.state = data.heartsFilter || 0;
-    filterService.bookmarksFilter.state = data.bookmarksFilter || 0;
-    filterService.groupsFilter.state = data.filterGroups || 0;
+    filterService.masonry.favoritesFilter.state = data.heartsFilter || 0;
+    filterService.masonry.bookmarksFilter.state = data.bookmarksFilter || 0;
+    filterService.masonry.groupsFilter.state = data.filterGroups || 0;
+    filterService.masonry.tagFiltersInvert = data.invertTagFilters ?? false;
+    const comparison = filterService.comparison;
+    comparison.favoritesFilter.state = data.comparisonFilter?.favorites ?? 0;
+    comparison.bookmarksFilter.state = data.comparisonFilter?.bookmarks ?? 0;
+    comparison.groupsFilter.state = data.comparisonFilter?.groups ?? 0;
+    comparison.tagFiltersInvert = data.comparisonFilter?.invertTags ?? false;
 
     if (!data.imageProperties) data.imageProperties = [];
     if (!data.groupProperties) data.groupProperties = [];
@@ -142,7 +148,8 @@ export class GallerySerializationService {
     tag.id = data.id;
     tag.name = data.name;
     tag.group = data.group;
-    tag.state = data.state;
+    tag.state = data.state ?? 0;
+    tag.comparisonFilter.state = data.comparisonState ?? 0;
     tag.open = false;
     return tag;
   }
@@ -174,9 +181,17 @@ export class GallerySerializationService {
     const data: Data = {} as Data;
     data.dataFolderId = stateService.dataFolderId;
     data.archiveFolderId = stateService.archiveFolderId;
-    data.heartsFilter = filterService.favoritesFilter.state;
-    data.bookmarksFilter = filterService.bookmarksFilter.state;
-    data.filterGroups = filterService.groupsFilter.state;
+    data.heartsFilter = filterService.masonry.favoritesFilter.state;
+    data.bookmarksFilter = filterService.masonry.bookmarksFilter.state;
+    data.filterGroups = filterService.masonry.groupsFilter.state;
+    data.invertTagFilters = filterService.masonry.tagFiltersInvert;
+    const comparison = filterService.comparison;
+    data.comparisonFilter = {
+      favorites: comparison.favoritesFilter.state,
+      bookmarks: comparison.bookmarksFilter.state,
+      groups: comparison.groupsFilter.state,
+      invertTags: comparison.tagFiltersInvert
+    };
     data.settings = stateService.settings;
     data.sortState = stateService.sortState;
     data.imageProperties = stateService.images.map(image => this.serializeImage(image));
@@ -219,6 +234,7 @@ export class GallerySerializationService {
     tagData.name = tag.name;
     tagData.group = tag.group;
     tagData.state = tag.state;
+    if (tag.comparisonFilter.state) tagData.comparisonState = tag.comparisonFilter.state;
     tagData.childIds = tag.children.map(c => c.id);
     return tagData;
   }
