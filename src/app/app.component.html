@@ -4,7 +4,7 @@
     <span class="loading-spinner"></span>
   </div>
 }
-<app-header></app-header>
-<div class="app-content center">
+<app-header [class.mobile-footer]="applicationService.mobileHeaderAtBottom" [inert]="applicationService.mobileSettingsOpen()"></app-header>
+<div class="app-content center" [inert]="applicationService.mobileSettingsOpen()">
   <router-outlet></router-outlet>
 </div>

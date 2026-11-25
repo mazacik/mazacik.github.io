@@ -21,19 +21,29 @@
   <div class="overflow-hidden">
     @if (target) {
       <div class="file-information">
-        <div class="file-name" [title]="target.name">{{ target.name }}</div>
-        @if (getFileType(target); as fileType) {
-          <span class="label">Type</span>
-          <span class="value">{{ fileType }}</span>
-        }
-        @if (getFileSize(target); as fileSize) {
-          <span class="label">Size</span>
-          <span class="value">{{ fileSize }}</span>
-        }
-        @if (getResolution(target); as resolution) {
-          <span class="label">Resolution</span>
-          <span class="value">{{ resolution }}</span>
-        }
+        <div class="file-heading flex align-items-center space-between gap">
+          <div class="file-name" [title]="target.name">{{ target.name }}</div>
+          @if (target.group; as group) {
+            <button type="button" class="sidebar-toggle hover-brighten" title="Open Image Group Manager" aria-label="Open Image Group Manager"
+              [disabled]="!!stateService.groupEditorGroup" [class.disabled]="!!stateService.groupEditorGroup" (click)="galleryService.openImageGroupEditor(group)">
+              <i class="fa-solid fa-object-group" aria-hidden="true"></i>
+            </button>
+          }
+        </div>
+        <div class="file-details">
+          @if (getFileType(target); as fileType) {
+            <span class="label">Type</span>
+            <span class="value">{{ fileType }}</span>
+          }
+          @if (getFileSize(target); as fileSize) {
+            <span class="label">Size</span>
+            <span class="value">{{ fileSize }}</span>
+          }
+          @if (getResolution(target); as resolution) {
+            <span class="label">Resolution</span>
+            <span class="value">{{ resolution }}</span>
+          }
+        </div>
         <div class="tagger-toggles flex gap" role="group" aria-label="Image properties">
           <button type="button" class="tagger-toggle sidebar-toggle hover-brighten" title="Favorite" aria-label="Favorite" [class.positive]="target.heart" (click)="galleryService.toggleFavorite(target)">
             <i class="fa-heart" [ngClass]="target.heart ? 'fa-solid' : 'fa-regular'" aria-hidden="true"></i>

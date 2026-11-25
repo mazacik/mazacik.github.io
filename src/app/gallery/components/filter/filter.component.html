@@ -2,16 +2,16 @@
 @let focusedTag = getFocusedTag(listTags);
 <div class="filter-container">
   <div class="flex space-between align-items-center padding-2-l padding-1-r padding-half-v">
-    <span class="filter-count">Filter • {{ filterService.images().length }}</span>
+    <span class="filter-count">Filter • {{ filter.images().length }}</span>
     <div class="filter-toggles flex center" role="group" aria-label="Image filters">
-      <button type="button" class="filter-toggle hover-brighten" title="Favorites" aria-label="Favorites" (click)="toggleFilter(filterService.favoritesFilter)">
-        <i class="fa-heart" [ngClass]="getFilterIconClass(filterService.favoritesFilter)" aria-hidden="true"></i>
+      <button type="button" class="filter-toggle hover-brighten" title="Favorites" aria-label="Favorites" (click)="toggleFilter(filter.favoritesFilter)">
+        <i class="fa-heart" [ngClass]="getFilterIconClass(filter.favoritesFilter)" aria-hidden="true"></i>
       </button>
-      <button type="button" class="filter-toggle hover-brighten" title="Bookmarks" aria-label="Bookmarks" (click)="toggleFilter(filterService.bookmarksFilter)">
-        <i class="fa-bookmark" [ngClass]="getFilterIconClass(filterService.bookmarksFilter)" aria-hidden="true"></i>
+      <button type="button" class="filter-toggle hover-brighten" title="Bookmarks" aria-label="Bookmarks" (click)="toggleFilter(filter.bookmarksFilter)">
+        <i class="fa-bookmark" [ngClass]="getFilterIconClass(filter.bookmarksFilter)" aria-hidden="true"></i>
       </button>
-      <button type="button" class="filter-toggle hover-brighten" title="Groups" aria-label="Groups" (click)="toggleFilter(filterService.groupsFilter)">
-        <i class="fa-object-group" [ngClass]="getFilterIconClass(filterService.groupsFilter)" aria-hidden="true"></i>
+      <button type="button" class="filter-toggle hover-brighten" title="Groups" aria-label="Groups" (click)="toggleFilter(filter.groupsFilter)">
+        <i class="fa-object-group" [ngClass]="getFilterIconClass(filter.groupsFilter)" aria-hidden="true"></i>
       </button>
     </div>
   </div>
@@ -49,14 +49,14 @@
               role="option"
               [class.search-focused]="tag === focusedTag"
               [attr.aria-selected]="tag === focusedTag"
-              [tag]="tag"
+              [filter]="filter" [tag]="tag"
               [showFullName]="true"
               [flatMode]="true"></app-filter-row>
           }
         </div>
       } @else {
         @for (tag of tagService.getRootTags(); track tag.id) {
-          <app-filter-row [tag]="tag"></app-filter-row>
+          <app-filter-row [filter]="filter" [tag]="tag"></app-filter-row>
         }
       }
     </div>
@@ -64,7 +64,6 @@
   <div class="h-separator margins"></div>
   <div class="filter-actions sidebar-actions flex gap center padding-1" role="group" aria-label="Filter actions">
     <div class="flex gap">
-      <button type="button" class="icon-button fa-solid fa-bars" title="List" aria-label="List" [class.active]="listMode" [attr.aria-pressed]="listMode" (click)="setFilterMode('list')"></button>
       <button
         type="button"
         class="icon-button fa-solid fa-folder-tree"
@@ -73,6 +72,7 @@
         [class.active]="!listMode"
         [attr.aria-pressed]="!listMode"
         (click)="setFilterMode('tree')"></button>
+      <button type="button" class="icon-button fa-solid fa-bars" title="List" aria-label="List" [class.active]="listMode" [attr.aria-pressed]="listMode" (click)="setFilterMode('list')"></button>
       <div class="v-separator"></div>
     </div>
     <div class="flex gap">
@@ -81,9 +81,9 @@
         class="icon-button badged-action"
         title="Invert Tag Filters"
         aria-label="Invert Tag Filters"
-        [class.active]="filterService.isTagFiltersInvert()"
-        [attr.aria-pressed]="filterService.isTagFiltersInvert()"
-        (click)="filterService.invertTagFilters()">
+        [class.active]="filter.tagFiltersInvert"
+        [attr.aria-pressed]="filter.tagFiltersInvert"
+        (click)="invertTagFilters()">
         <i class="fa-solid fa-filter" aria-hidden="true"></i>
         <i class="action-badge fa-solid fa-exclamation" aria-hidden="true"></i>
       </button>
@@ -92,17 +92,19 @@
         <i class="action-badge fa-solid fa-xmark" aria-hidden="true"></i>
       </button>
     </div>
-    <div class="flex gap">
-      <div class="v-separator"></div>
-      <button type="button" class="icon-button badged-action" title="Create Tag" aria-label="Create Tag" (click)="tagService.openTagCreate()">
-        <i class="fa-solid fa-tag" aria-hidden="true"></i>
-        <i class="action-badge fa-solid fa-plus" aria-hidden="true"></i>
-      </button>
-      <button type="button" class="icon-button badged-action" title="Create Tag Group" aria-label="Create Tag Group" (click)="tagService.openTagGroupCreate()">
-        <i class="fa-solid fa-folder" aria-hidden="true"></i>
-        <i class="action-badge fa-solid fa-plus" aria-hidden="true"></i>
-      </button>
-    </div>
+    @if (filter === filterService.masonry) {
+      <div class="flex gap">
+        <div class="v-separator"></div>
+        <button type="button" class="icon-button badged-action" title="Create Tag" aria-label="Create Tag" (click)="tagService.openTagCreate()">
+          <i class="fa-solid fa-tag" aria-hidden="true"></i>
+          <i class="action-badge fa-solid fa-plus" aria-hidden="true"></i>
+        </button>
+        <button type="button" class="icon-button badged-action" title="Create Tag Group" aria-label="Create Tag Group" (click)="tagService.openTagGroupCreate()">
+          <i class="fa-solid fa-folder" aria-hidden="true"></i>
+          <i class="action-badge fa-solid fa-plus" aria-hidden="true"></i>
+        </button>
+      </div>
+    }
   </div>
 </div>
 <div class="v-separator desktop-only"></div>

@@ -5,7 +5,32 @@
   height: 100%;
   overflow: hidden;
 
+  display: grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+
+  > * {
+    grid-area: 1 / 1 / 2 / -1;
+  }
+
+  @media screen and (width > 1280px) {
+    grid-template-columns: calc(variables.$sidebar-width + 1px) minmax(0, 1fr);
+
+    app-filter {
+      grid-column: 1;
+    }
+
+    // Each view keeps its sidebar space even while the other view is visible.
+    .with-filter {
+      grid-column: 2;
+    }
+  }
+
+  .comparison-views {
+    isolation: isolate;
+  }
+
   .fullscreen-container {
+    position: relative;
     display: flex;
     overflow: hidden;
     transition: variables.$transition-duration;

@@ -21,18 +21,18 @@ $thumbnail-width: 320px;
   app-image { cursor: pointer; }
 }
 
-.active-actions, .group-navigation {
+.group-navigation {
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
   display: flex;
   gap: variables.$gap-1;
   z-index: 1;
 
+  bottom: variables.$gap-2;
+  left: 50%;
+  transform: translateX(-50%);
+
   button { color: inherit; padding: 0; }
 }
-.active-actions { top: variables.$gap-2; }
-.group-navigation { bottom: variables.$gap-2; }
 
 .ranked-column {
   display: flex;

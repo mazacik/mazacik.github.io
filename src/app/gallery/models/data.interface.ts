@@ -17,6 +17,13 @@ export interface Data {
   heartsFilter: number;
   bookmarksFilter: number;
   filterGroups: number;
+  invertTagFilters?: boolean;
+  comparisonFilter?: {
+    favorites: number;
+    bookmarks: number;
+    groups: number;
+    invertTags: boolean;
+  };
 
   sortState: SortState;
 

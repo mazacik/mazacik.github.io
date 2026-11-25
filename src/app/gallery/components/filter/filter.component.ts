@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, QueryList, ViewChild, ViewChildren, afterEveryRender } from '@angular/core';
+import { Component, ElementRef, Input, QueryList, ViewChild, ViewChildren, afterEveryRender } from '@angular/core';
+import { DialogService } from '../../../shared/services/dialog.service';
 import { Filter } from '../../models/filter.class';
 import { Tag } from '../../models/tag.class';
-import { FilterService } from '../../services/filter.service';
+import { FilterService, GalleryImageFilter } from '../../services/filter.service';
 import { GallerySerializationService } from '../../services/gallery-serialization.service';
 import { GalleryStateService } from '../../services/gallery-state.service';
 import { TagService } from '../../services/tag.service';
@@ -12,13 +13,11 @@ import { FilterRowComponent } from './filter-row/filter-row.component';
   selector: 'app-filter',
   imports: [CommonModule, FilterRowComponent],
   templateUrl: './filter.component.html',
-  styleUrls: ['./filter.component.scss'],
-  host: {
-    '[class.hidden]': '!stateService.filterVisible'
-  }
+  styleUrls: ['./filter.component.scss']
 })
 export class FilterComponent {
 
+  @Input() filter: GalleryImageFilter;
   protected searchQuery: string = '';
   private focusedTagId: string | null = null;
   private scrollSelectionAfterRender = false;
@@ -27,11 +26,13 @@ export class FilterComponent {
   @ViewChildren('listRow') private listRows: QueryList<FilterRowComponent>;
 
   constructor(
+    private dialogService: DialogService,
     private serializationService: GallerySerializationService,
     protected tagService: TagService,
     protected filterService: FilterService,
     protected stateService: GalleryStateService
   ) {
+    this.filter = filterService.masonry;
     afterEveryRender(() => {
       if (!this.scrollSelectionAfterRender) return;
       const focused = this.getFocusedTag(this.getListTags());
@@ -65,7 +66,7 @@ export class FilterComponent {
 
   protected toggleFilter(filter: Filter): void {
     filter.state = filter.state == 0 ? 1 : filter.state == 1 ? -1 : 0;
-    this.filterService.updateFilters();
+    this.filter.updateFilters();
     this.serializationService.save();
   }
 
@@ -117,14 +118,28 @@ export class FilterComponent {
     this.scrollTagIntoView(nextTag);
   }
 
-  protected clearFilters(): void {
-    this.tagService.tags.forEach(tag => tag.state = 0);
-    this.filterService.updateFilters();
+  protected async clearFilters(): Promise<void> {
+    const filter = this.filter;
+    const view = filter === this.filterService.masonry ? 'Masonry' : 'Comparison';
+    const confirmed = await this.dialogService.createConfirmation({
+      title: 'Clear Tag Filters',
+      messages: [`Clear all included and excluded tags in ${view}?`],
+      positiveButtonText: 'Clear'
+    });
+    if (!confirmed) return;
+
+    this.tagService.tags.forEach(tag => filter.forTag(tag).state = 0);
+    filter.updateFilters();
     this.serializationService.save();
   }
 
   protected canClear(): boolean {
-    return this.tagService.tags.some(tag => tag.state != 0);
+    return this.tagService.tags.some(tag => this.filter.forTag(tag).state != 0);
+  }
+
+  protected invertTagFilters(): void {
+    this.filter.invertTagFilters();
+    this.serializationService.save();
   }
 
   private resetListSelection(): void {

@@ -8,14 +8,21 @@
   justify-content: center;
   padding: variables.$gap-1;
   flex: 1;
+  min-width: 0;
 
   .order-container {
     height: 120px;
     min-height: 120px;
-    display: flex;
-    gap: variables.$gap-1;
+    direction: rtl;
     overflow-x: auto;
     overflow-y: hidden;
+
+    .thumbnail-row {
+      direction: ltr;
+      display: flex;
+      width: max-content;
+      gap: variables.$gap-1;
+    }
 
     .image-container {
       display: flex;

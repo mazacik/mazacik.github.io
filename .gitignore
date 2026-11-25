@@ -18,5 +18,6 @@
 /.angular/cache
 
 # custom
+/downloads/
 *.bat
 todo.txt

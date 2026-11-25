@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { Tag } from 'src/app/gallery/models/tag.class';
-import { FilterService } from 'src/app/gallery/services/filter.service';
+import { GalleryImageFilter } from 'src/app/gallery/services/filter.service';
 import { GallerySerializationService } from 'src/app/gallery/services/gallery-serialization.service';
 import { GalleryStateService } from 'src/app/gallery/services/gallery-state.service';
 import { GalleryService } from 'src/app/gallery/services/gallery.service';
@@ -16,11 +16,11 @@ import { TagService } from 'src/app/gallery/services/tag.service';
 export class FilterRowComponent {
 
   @Input() tag: Tag;
+  @Input({ required: true }) filter: GalleryImageFilter;
   @Input() showFullName: boolean = false;
   @Input() flatMode: boolean = false;
   constructor(
     private tagService: TagService,
-    private filterService: FilterService,
     private serializationService: GallerySerializationService,
     protected galleryService: GalleryService,
     protected stateService: GalleryStateService
@@ -35,27 +35,23 @@ export class FilterRowComponent {
   }
 
   public activate(): void {
-    this.tag.state = this.tag.state == 0 ? 1 : this.tag.state == 1 ? -1 : 0;
-    this.filterService.updateFilters();
+    const selection = this.filter.forTag(this.tag);
+    selection.state = selection.state == 0 ? 1 : selection.state == 1 ? -1 : 0;
+    this.filter.updateFilters();
     this.serializationService.save();
   }
 
   protected getGroupFilterLabel(): string {
-    const state = this.tag.state === 1 ? 'included' : this.tag.state === -1 ? 'excluded' : 'neutral';
-    const next = this.tag.state === 1 ? 'exclude' : this.tag.state === -1 ? 'clear filter for' : 'include';
+    const selected = this.filter.forTag(this.tag).state;
+    const state = selected === 1 ? 'included' : selected === -1 ? 'excluded' : 'neutral';
+    const next = selected === 1 ? 'exclude' : selected === -1 ? 'clear filter for' : 'include';
     return `${this.tag.getNameWithParents()}: ${state}. Click to ${next} this group.`;
   }
 
   protected getTextClass(): string {
-    const classes: string[] = [];
+    const classes = [this.filter.forTag(this.tag).colorClass];
 
-    if (this.tag.state == 1) {
-      classes.push('positive');
-    } else if (this.tag.state == -1) {
-      classes.push('negative');
-    }
-
-    if (this.tag.collectChildren().some(t => t.state)) {
+    if (this.tag.collectChildren().some(t => this.filter.forTag(t).state)) {
       classes.push('underline-dashed');
     }
 

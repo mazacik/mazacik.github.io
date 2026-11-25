@@ -480,6 +480,14 @@ describe('ImageRankingRowComponent', () => {
     expect(fixture.nativeElement.querySelector('.group-navigation')).not.toBeNull();
     (component as any).showGroupImage(1);
     expect((component as any).displayedImage).toBe(sibling);
+    active.passesComparisonFilter = sibling.passesComparisonFilter = true;
+    fixture.componentRef.setInput('matchingImages', [active, sibling]);
+    fixture.detectChanges();
+    expect((component as any).displayedImage).toBe(sibling);
+    sibling.passesComparisonFilter = false;
+    fixture.componentRef.setInput('matchingImages', [active]);
+    fixture.detectChanges();
+    expect((component as any).displayedImage).toBe(active);
     expect((fixture.nativeElement.querySelector('.placement-button') as HTMLButtonElement).disabled).toBeFalse();
   });
 });

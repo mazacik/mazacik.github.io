@@ -29,7 +29,7 @@ describe('Tag group filtering', () => {
 
   function visible(): string[] {
     filters.updateFilters();
-    return filters.images().map(image => image.id);
+    return filters.masonry.images().map(image => image.id);
   }
 
   beforeEach(() => {
@@ -214,9 +214,9 @@ describe('Tag group filtering', () => {
   it('inverts the combined tag result while preserving other filters', () => {
     animals.state = 1;
     cats.state = -1;
-    filters.invertTagFilters(true);
+    filters.masonry.invertTagFilters(true);
     expect(visible()).toEqual(['cat', 'both', 'cloud', 'untagged']);
-    filters.favoritesFilter.state = 1;
+    filters.masonry.favoritesFilter.state = 1;
     state.images.find(image => image.id === 'cloud').heart = true;
     expect(visible()).toEqual(['cloud']);
   });
@@ -227,12 +227,28 @@ describe('Tag group filtering', () => {
     const target = state.images.find(image => image.id === 'untagged');
     target.tags.push(dogs);
     filters.updateFilters(target);
-    expect(filters.images().map(image => image.id)).toEqual(['cat', 'dog', 'both', 'untagged']);
+    expect(filters.masonry.images().map(image => image.id)).toEqual(['cat', 'dog', 'both', 'untagged']);
+  });
+
+  it('updates both filters after an image changes while preserving separate criteria', () => {
+    cats.state = 1;
+    dogs.comparisonFilter.state = 1;
+    filters.comparison.favoritesFilter.state = 1;
+    filters.updateFilters();
+    expect(filters.comparison.images()).toEqual([]);
+    const dog = state.images.find(image => image.id === 'dog');
+    dog.heart = true;
+    filters.updateFilters(dog);
+    expect(filters.comparison.images()).toEqual([dog]);
+    expect(filters.masonry.images().map(image => image.id)).toEqual(['cat', 'both']);
+    expect(dog.passesComparisonFilter).toBeTrue();
+    expect(dog.passesFilters).toBeFalse();
   });
 
   it('restores group and child filter states through the existing tag serialization', () => {
     animals.state = 1;
     cats.state = -1;
+    cats.comparisonFilter.state = 1;
     const serializer = new GallerySerializationService(null, null, null, null);
     const saved = JSON.parse(JSON.stringify(tags.tags.map(tag => serializer.serializeTag(tag))));
     const restored: Tag[] = saved.map(data => serializer['parseTag'](data));
@@ -240,6 +256,7 @@ describe('Tag group filtering', () => {
     for (const image of state.images) image.tags = image.tags.map(tag => restored.find(item => item.id === tag.id));
     tags.tags.splice(0, tags.tags.length, ...restored);
     expect(visible()).toEqual(['dog']);
+    expect(filters.comparison.images().map(image => image.id)).toEqual(['cat', 'both']);
     expect(tags.getRootTags()[0].state).toBe(1);
   });
 });

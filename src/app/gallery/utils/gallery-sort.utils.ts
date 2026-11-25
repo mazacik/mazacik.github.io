@@ -40,6 +40,13 @@ export abstract class GallerySortUtils {
     return this.imageSubjectId(image.id);
   }
 
+  public static getMatchingRepresentative(image: GalleryImage): GalleryImage | undefined {
+    if (image?.group) {
+      return image.group.images.find(member => member.passesComparisonFilter && GoogleFileUtils.isImage(member));
+    }
+    return image?.passesComparisonFilter ? image : undefined;
+  }
+
   public static resolveSubjectImage(subjectId: string, images: GalleryImage[], groups: GalleryGroup[]): GalleryImage {
     if (subjectId?.startsWith(this.IMAGE_PREFIX)) {
       const imageId = subjectId.slice(this.IMAGE_PREFIX.length);

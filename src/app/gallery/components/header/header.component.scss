@@ -1,28 +1,117 @@
 ﻿@use 'src/styles/variables.scss';
 
 :host {
-  padding: variables.$gap-1;
+  padding-block: variables.$gap-1;
   border-bottom: 1px solid var(--color-border);
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  flex-shrink: 0;
+  overflow-x: auto;
+  container-type: inline-size;
+  grid-template-columns: repeat(5, 1fr);
 
-  .header-start,
-  .header-center,
-  .header-end {
+  .header-region {
+    --header-gap: #{variables.$gap-1};
     display: flex;
+    min-width: 0;
+    flex-wrap: nowrap;
     align-items: center;
-    gap: variables.$gap-1;
+    justify-content: center;
+    gap: var(--header-gap);
+
+    &:empty { pointer-events: none; }
   }
 
   .header-start {
+    padding-inline-start: variables.$gap-1;
     justify-content: start;
   }
 
-  .header-center {
-    justify-content: center;
+  .header-end {
+    padding-inline-end: variables.$gap-1;
+    justify-content: end;
   }
 
-  .header-end {
-    justify-content: end;
+  // The inner columns are centered at 30% and 70%. Shift their buttons
+  // by a quarter of a column to center each group in its half of the header.
+  .header-start-center > .icon-button {
+    position: relative;
+    inset-inline-end: 25%;
+  }
+
+  .header-center-end > .icon-button {
+    position: relative;
+    inset-inline-start: 25%;
+  }
+
+  .header-start:has(+ .header-start-center > .icon-button) {
+    // Leave room for half the Restart/Skip group at the quarter-width mark.
+    padding-inline-end: max(0px, calc(variables.$button-height + 1.5 * var(--header-gap) - 5cqw));
+  }
+
+  @container (width > 30rem) {
+    .header-center-end:has(> .icon-button) + .header-end {
+      padding-inline-start: max(0px, calc(variables.$button-height * 0.5 + var(--header-gap) - 5cqw));
+    }
+    .header-center-end:has(> .icon-button + .icon-button) + .header-end {
+      padding-inline-start: max(0px, calc(variables.$button-height + 1.5 * var(--header-gap) - 5cqw));
+    }
+  }
+
+  .icon-button[data-count] {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 1px;
+
+    &::after {
+      content: attr(data-count);
+      font: 500 0.675rem/1 "Montserrat", sans-serif;
+      font-variant-numeric: tabular-nums;
+      pointer-events: none;
+    }
+  }
+
+  @container (max-width: 30rem) {
+    .wide-header-shortcut {
+      display: none;
+    }
+  }
+
+  @container (max-width: 54rem) {
+    .header-region {
+      --header-gap: #{variables.$gap-1 * 0.5};
+    }
+  }
+}
+
+// When neighboring regions both have actions, reserve their button widths before
+// distributing spare space. The header can scroll if the whole row cannot fit.
+:host:has(.header-start-center > .icon-button) .header-region {
+  min-width: max-content;
+}
+
+@container (width > 30rem) {
+  :host:has(.header-center-end > .icon-button) .header-region {
+    min-width: max-content;
+  }
+}
+
+@container (max-width: 48rem) {
+  :host {
+    .header-start-center > .icon-button,
+    .header-center-end > .icon-button {
+      inset-inline: auto;
+    }
+
+    .header-start:has(+ .header-start-center > .icon-button) { padding-inline-end: var(--header-gap); }
+    .header-center-end:has(> .icon-button) + .header-end { padding-inline-start: var(--header-gap); }
+  }
+}
+
+@media screen and (max-width: 1280px) {
+  :host(.mobile-footer) {
+    order: 1;
+    border-bottom: 0;
+    border-top: 1px solid var(--color-border);
+    padding-bottom: calc(variables.$gap-1 + env(safe-area-inset-bottom));
   }
 }

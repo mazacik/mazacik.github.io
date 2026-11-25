@@ -14,12 +14,12 @@
 
     .masonry-container {
       position: relative;
+      gap: variables.$gap-1;
 
       .masonry-brick {
         position: absolute;
         transition-property: top, left, width, height, opacity;
         transition-duration: variables.$transition-duration;
-        padding-bottom: variables.$gap-1;
         cursor: pointer;
 
         .brick-container {

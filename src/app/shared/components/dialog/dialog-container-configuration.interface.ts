@@ -8,6 +8,7 @@ export interface DialogContainerConfiguration {
 
   waitForContent?: Promise<void>;
   hideClickOverlay?: boolean;
+  dockAtBottomOnMobile?: boolean;
   allowMultiple?: boolean;
 
 }

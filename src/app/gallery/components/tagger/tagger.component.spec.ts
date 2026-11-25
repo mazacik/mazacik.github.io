@@ -26,6 +26,7 @@ describe('List and Tree tagger modes', () => {
   let state: GalleryStateService;
   let save: jasmine.Spy;
   let updateFilters: jasmine.Spy;
+  let openImageGroupEditor: jasmine.Spy;
   let fullscreenImage: ReturnType<typeof signal<GalleryImage>>;
 
   beforeEach(async () => {
@@ -38,6 +39,7 @@ describe('List and Tree tagger modes', () => {
     state = { fullscreenImage, images: [image, sibling], settings: {} } as GalleryStateService;
     save = jasmine.createSpy('save');
     updateFilters = jasmine.createSpy('updateFilters');
+    openImageGroupEditor = jasmine.createSpy('openImageGroupEditor');
     tags = new TagService(null, null, state as unknown as GalleryStateService, null);
     const animals = Object.assign(new Tag(), { id: 'animals', name: 'Animals', group: true, children: [], open: true });
     large = Object.assign(new Tag(), { id: 'large', name: 'Dog large', group: false, parent: animals, children: [] });
@@ -51,7 +53,7 @@ describe('List and Tree tagger modes', () => {
       providers: [
         { provide: TagService, useValue: tags },
         { provide: GalleryStateService, useValue: state },
-        { provide: GalleryService, useValue: {} },
+        { provide: GalleryService, useValue: { openImageGroupEditor } },
         { provide: GalleryGoogleDriveService, useValue: {} },
         { provide: GallerySerializationService, useValue: { save } },
         { provide: FilterService, useValue: { updateFilters } }
@@ -399,6 +401,26 @@ describe('List and Tree tagger modes', () => {
     expect((fixture.nativeElement as HTMLElement).querySelectorAll('.tagger-actions').length).toBe(1);
   });
 
+  it('opens the image group from the top right of image info and disables the shortcut during editing', async () => {
+    const manager = button('Open Image Group Manager');
+    const bounds = manager.getBoundingClientRect();
+    const bookmark = button('Bookmark').getBoundingClientRect();
+    expect(bounds.width).toBe(bookmark.width);
+    expect(bounds.height).toBe(bookmark.height);
+    expect(bounds.right).toBeCloseTo(bookmark.right, 0);
+    expect(bounds.bottom).toBeLessThanOrEqual(bookmark.top);
+    manager.click();
+    expect(openImageGroupEditor).toHaveBeenCalledOnceWith(image.group);
+    state.groupEditorGroup = image.group;
+    await render();
+    expect(manager.disabled).toBeTrue();
+    manager.click();
+    expect(openImageGroupEditor).toHaveBeenCalledTimes(1);
+    state.groupEditorGroup = null;
+    await render();
+    expect(manager.disabled).toBeFalse();
+  });
+
   it('keeps Group Mode visible but disabled when the current image has no group', async () => {
     fullscreenImage.set(null);
     await render();
@@ -407,6 +429,7 @@ describe('List and Tree tagger modes', () => {
     await render();
 
     expect(button('Group Mode')).not.toBeNull();
+    expect(button('Open Image Group Manager')).toBeNull();
     expect(button('Group Mode').disabled).toBeTrue();
     expect(button('Group Mode').classList).toContain('disabled');
   });

@@ -1,6 +1,6 @@
 import { NgClass } from '@angular/common';
 import { Component } from '@angular/core';
-import { ApplicationService, HeaderAction, HeaderClasses } from 'src/app/shared/services/application.service';
+import { ApplicationService, HEADER_SECTIONS, HeaderAction, HeaderClasses } from 'src/app/shared/services/application.service';
 
 @Component({
   selector: 'app-header',
@@ -11,6 +11,8 @@ import { ApplicationService, HeaderAction, HeaderClasses } from 'src/app/shared/
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent {
+
+  protected readonly sections = HEADER_SECTIONS;
 
   constructor(
     protected applicationService: ApplicationService
@@ -28,6 +30,7 @@ export class HeaderComponent {
   }
 
   protected isDisabled(action: HeaderAction): boolean {
+    if (this.applicationService.mobileSettingsOpen()) return true;
     const disabled = action.disabled;
     return typeof disabled === 'function' ? disabled() : !!disabled;
   }
@@ -44,6 +47,12 @@ export class HeaderComponent {
 
   protected onClick(action: HeaderAction): void {
     if (action.onClick && !this.isDisabled(action) && !this.isHidden(action)) action.onClick();
+  }
+
+  protected onContextMenu(action: HeaderAction, event: MouseEvent): void {
+    if (!action.onContextMenu || this.isDisabled(action) || this.isHidden(action)) return;
+    event.preventDefault();
+    action.onContextMenu();
   }
 
 }

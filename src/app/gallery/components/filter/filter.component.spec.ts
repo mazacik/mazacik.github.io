@@ -99,6 +99,42 @@ describe('Gallery group filter controls', () => {
     return input().getAttribute('aria-activedescendant');
   }
 
+  async function answerClearPrompt(view: string, answer: 'Clear' | 'Cancel'): Promise<void> {
+    button('Clear Tag Filters').click();
+    await render();
+    const dialog = document.querySelector('app-dialog-container');
+    expect(dialog.textContent).toContain(`Clear all included and excluded tags in ${view}?`);
+    Array.from(dialog.querySelectorAll<HTMLElement>('.buttons .button'))
+      .find(action => action.textContent.trim() === answer).click();
+    await render();
+  }
+
+  it('edits, inverts and clears comparison tags independently of Masonry', async () => {
+    cats.state = 1;
+    filters.masonry.updateFilters();
+    fixture.componentRef.setInput('filter', filters.comparison);
+    await render();
+    expect(button('Clear Tag Filters').disabled).toBeTrue();
+    groupButton().click();
+    await render();
+    expect(animals.comparisonFilter.state).toBe(1);
+    expect(animals.state).toBe(0);
+    expect(filters.comparison.images().map(image => image.id)).toEqual(['cats', 'dogs']);
+    button('Invert Tag Filters').click();
+    await render();
+    expect(filters.comparison.images()).toEqual([]);
+    expect(filters.comparison.tagFiltersInvert).toBeTrue();
+    expect(filters.masonry.tagFiltersInvert).toBeFalse();
+    await answerClearPrompt('Comparison', 'Cancel');
+    expect(animals.comparisonFilter.state).toBe(1);
+    expect(save).toHaveBeenCalledTimes(2);
+    await answerClearPrompt('Comparison', 'Clear');
+    expect(animals.comparisonFilter.state).toBe(0);
+    expect(save).toHaveBeenCalledTimes(3);
+    expect(cats.state).toBe(1);
+    expect(filters.masonry.images().map(image => image.id)).toEqual(['cats']);
+  });
+
   it('cycles the group state without changing expansion or child filters and saves each change', async () => {
     cats.state = -1;
     await render();
@@ -107,7 +143,7 @@ describe('Gallery group filter controls', () => {
     expect(animals.state).toBe(1);
     expect(animals.open).toBeTrue();
     expect(cats.state).toBe(-1);
-    expect(filters.images().map(image => image.id)).toEqual(['dogs']);
+    expect(filters.masonry.images().map(image => image.id)).toEqual(['dogs']);
     expect(groupButton().classList).toContain('positive');
     expect(row(animals).querySelector('.flex-1.overflow-hidden').classList).toContain('positive');
     expect(groupButton().getAttribute('aria-label')).toContain('Animals: included. Click to exclude');
@@ -115,13 +151,13 @@ describe('Gallery group filter controls', () => {
     await render();
     expect(animals.state).toBe(-1);
     expect(groupButton().classList).toContain('negative');
-    expect(filters.images()).toEqual([]);
+    expect(filters.masonry.images()).toEqual([]);
     groupButton().click();
     await render();
     expect(animals.state).toBe(0);
     expect(animals.open).toBeTrue();
     expect(cats.state).toBe(-1);
-    expect(filters.images().map(image => image.id)).toEqual(['dogs']);
+    expect(filters.masonry.images().map(image => image.id)).toEqual(['dogs']);
     expect(save).toHaveBeenCalledTimes(3);
   });
 
@@ -139,7 +175,7 @@ describe('Gallery group filter controls', () => {
 
     toggles[0].click();
     await render();
-    expect(filters.favoritesFilter.state).toBe(1);
+    expect(filters.masonry.favoritesFilter.state).toBe(1);
     expect(toggles[0].querySelector('.fa-heart').classList).toContain('positive');
     expect(save).toHaveBeenCalledTimes(1);
   });
@@ -149,12 +185,12 @@ describe('Gallery group filter controls', () => {
     groupButton().click();
     await render();
     expect(animals.state).toBe(-1);
-    expect(filters.images()).toEqual([]);
+    expect(filters.masonry.images()).toEqual([]);
     row(dogs).querySelector<HTMLElement>('.align-items-center').click();
     await render();
     expect(dogs.state).toBe(1);
     expect(animals.state).toBe(-1);
-    expect(filters.images().map(image => image.id)).toEqual(['dogs']);
+    expect(filters.masonry.images().map(image => image.id)).toEqual(['dogs']);
     expect(save).toHaveBeenCalledTimes(3);
   });
 
@@ -188,7 +224,6 @@ describe('Gallery group filter controls', () => {
 
   it('defaults to Tree without search and saves an independent List preference', async () => {
     expect(input()).toBeNull();
-    expect([button('List').title, button('Tree').title]).toEqual(['List', 'Tree']);
     expect(button('Tree').getAttribute('aria-pressed')).toBe('true');
 
     await mode('List');
@@ -280,11 +315,14 @@ describe('Gallery group filter controls', () => {
     cats.state = -1;
     filters.updateFilters();
     await render();
-    button('Clear Tag Filters').click();
-    await render();
+    await answerClearPrompt('Masonry', 'Cancel');
+    expect(animals.state).toBe(1);
+    expect(cats.state).toBe(-1);
+    expect(save).not.toHaveBeenCalled();
+    await answerClearPrompt('Masonry', 'Clear');
     expect(animals.state).toBe(0);
     expect(cats.state).toBe(0);
-    expect(filters.images().length).toBe(2);
+    expect(filters.masonry.images().length).toBe(2);
     expect(save).toHaveBeenCalledTimes(1);
   });
 
@@ -292,7 +330,7 @@ describe('Gallery group filter controls', () => {
     const actions = Array.from((fixture.nativeElement as HTMLElement)
       .querySelectorAll<HTMLButtonElement>('.filter-actions > button, .filter-actions > .flex > button'));
     expect(actions.map(action => action.getAttribute('aria-label'))).toEqual([
-      'List', 'Tree', 'Invert Tag Filters', 'Clear Tag Filters', 'Create Tag', 'Create Tag Group'
+      'Tree', 'List', 'Invert Tag Filters', 'Clear Tag Filters', 'Create Tag', 'Create Tag Group'
     ]);
     expect(actions.every(action => action.classList.contains('icon-button') &&
       (action.classList.contains('fa-solid') || action.querySelector('.fa-solid')))).toBeTrue();
@@ -319,7 +357,7 @@ describe('Gallery group filter controls', () => {
     const mobile = matchMedia('(max-width:1280px)').matches;
     expect(getComputedStyle(button).opacity).toBe(mobile ? '1' : '0');
     expect(getComputedStyle(button).pointerEvents).toBe(mobile ? 'auto' : 'none');
-    expect(getComputedStyle(button).justifyContent).toBe('flex-end');
+    expect(button.querySelector('i').getBoundingClientRect().right).toBeCloseTo(button.getBoundingClientRect().right, 0);
     button.focus();
     expect(document.activeElement).toBe(button);
     const bounds = button.getBoundingClientRect();

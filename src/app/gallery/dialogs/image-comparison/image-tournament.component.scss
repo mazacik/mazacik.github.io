@@ -75,20 +75,6 @@
       }
     }
 
-    .comparison-boundary {
-      flex-shrink: 0;
-    }
-
-    .active-image-actions {
-      display: flex;
-      gap: variables.$gap-1;
-      position: absolute;
-      left: 50%;
-      top: variables.$gap-2;
-      transform: translateX(-50%);
-      z-index: 10;
-    }
-
     .group-navigation {
       display: flex;
       gap: variables.$gap-1;
@@ -220,7 +206,7 @@
 
     .placement-range {
       bottom: 0;
-      height: 1px;
+      height: 2px;
       opacity: 0.7;
       z-index: 1;
       background-color: var(--color-highlight);

@@ -3,6 +3,7 @@ export interface TagData {
   name: string;
   group: boolean;
   state: number;
+  comparisonState?: number;
 
   // Tag
   pseudo: boolean;

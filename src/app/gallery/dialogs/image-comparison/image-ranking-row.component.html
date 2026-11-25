@@ -6,11 +6,7 @@
     [sourceHeight]="displayedImage.imageMediaMetadata?.height || displayedImage.videoMediaMetadata?.height"
     (click)="openFullscreen(displayedImage)"
     (contextmenu)="openFullscreen(displayedImage, $event)"></app-image>
-  <div class="active-actions">
-    <button type="button" class="icon-button fa-solid fa-rotate-left" title="Restart Image Placement" aria-label="Restart image placement" (click)="restart.emit($event)"></button>
-    <button type="button" class="icon-button fa-solid fa-forward-step" title="Skip Image" aria-label="Skip image" (click)="skip.emit($event)"></button>
-  </div>
-  @if ((displayedImage.group?.images.length ?? 0) > 1) {
+  @if (groupImages.length > 1) {
     <div class="group-navigation">
       <button type="button" class="icon-button fa-solid fa-chevron-left" title="Previous Group Image" aria-label="Previous group image" (click)="showGroupImage(-1)"></button>
       <button type="button" class="icon-button fa-solid fa-chevron-right" title="Next Group Image" aria-label="Next group image" (click)="showGroupImage(1)"></button>
