@@ -4,12 +4,15 @@
   <app-filter [filter]="comparing ? filterService.comparison : filterService.masonry"
     [class.hidden]="!filterVisible" [inert]="!filterVisible || !!stateService.fullscreenImage()"></app-filter>
   <app-masonry [class.with-filter]="stateService.filterVisible" [class.transparent]="comparing"></app-masonry>
-  <div class="comparison-views stack-container-alt" [class.with-filter]="comparisonFilterOpen" [class.transparent]="!comparing">
+  <div class="comparison-views stack-container-alt" [class.with-filter]="comparisonFilterOpen" [class.transparent]="!comparing"
+    [inert]="comparisonFilterCoversView">
     <app-image-tournament
-      (showInRanking)="openRankingAt($event, ranking)"
+      (showInRanking)="openRanking($event)"
       [matchingImages]="filterService.comparison.hasCriteria() && comparing && tournamentSubview === 'comparison' ? filterService.comparison.images() : null"
       [class.transparent]="tournamentSubview != 'comparison'"></app-image-tournament>
-    <app-image-tournament-longest-chain #ranking [showOnlyFilteredImages]="filterService.comparison.hasCriteria()" [class.transparent]="tournamentSubview != 'chain'"></app-image-tournament-longest-chain>
+    @if (rankingOpened) {
+      <app-image-tournament-longest-chain [showOnlyFilteredImages]="filterService.comparison.hasCriteria()" [class.transparent]="tournamentSubview != 'chain'"></app-image-tournament-longest-chain>
+    }
   </div>
   <div class="fullscreen-container glass-effect" [class.transparent]="!stateService.fullscreenImage()">
     <app-fullscreen></app-fullscreen>

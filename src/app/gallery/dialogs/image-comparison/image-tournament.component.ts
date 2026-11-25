@@ -381,17 +381,19 @@ export class ImageTournamentComponent implements OnDestroy {
       return null;
     }
 
-    let activeImage = GallerySortUtils.resolveSubjectImage(comparisonIds[0], this.stateService.images, this.stateService.imageGroups);
-    let opponentImage = GallerySortUtils.resolveSubjectImage(comparisonIds[1], this.stateService.images, this.stateService.imageGroups);
     const filterActive = this.matchingImages() !== null;
-    const current = this.comparison?.[0];
-    if (activeImage?.group?.images.includes(current) && (!filterActive || (current.passesComparisonFilter && GoogleFileUtils.isImage(current)))) {
-      activeImage = current;
-    } else if (filterActive) {
-      activeImage = GallerySortUtils.getMatchingRepresentative(activeImage);
-    }
-    if (filterActive && this.consistencyCheck) opponentImage = GallerySortUtils.getMatchingRepresentative(opponentImage);
+    const activeImage = this.resolveComparisonImage(comparisonIds[0], this.comparison?.[0], filterActive);
+    const opponentImage = this.resolveComparisonImage(comparisonIds[1], this.comparison?.[1], filterActive && !!this.consistencyCheck);
     return activeImage && opponentImage ? [activeImage, opponentImage] : null;
+  }
+
+  private resolveComparisonImage(subjectId: string, displayed: GalleryImage | undefined, filtered: boolean): GalleryImage | undefined {
+    const image = GallerySortUtils.resolveSubjectImage(subjectId, this.stateService.images, this.stateService.imageGroups);
+    if (displayed && image?.group?.images.includes(displayed)
+      && (!filtered || (displayed.passesComparisonFilter && GoogleFileUtils.isImage(displayed)))) {
+      return displayed;
+    }
+    return filtered ? GallerySortUtils.getMatchingRepresentative(image) : image;
   }
 
   private isMobileComparisonLayout(): boolean {
