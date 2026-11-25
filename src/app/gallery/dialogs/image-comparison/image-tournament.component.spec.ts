@@ -11,6 +11,48 @@ import { GallerySortUtils } from '../../utils/gallery-sort.utils';
 import { ImageRankingRowComponent } from './image-ranking-row.component';
 import { GalleryFeatures } from '../../constants/gallery-features';
 
+it('allows a vote after returning to a decoded group image while another is loading', fakeAsync(() => {
+  TestBed.configureTestingModule({
+    imports: [ImageTournamentComponent],
+    providers: [{ provide: GallerySerializationService, useValue: { save() {} } }]
+  });
+  const state = TestBed.inject(GalleryStateService);
+  state.viewMode = 'tournament';
+  const source = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"/>';
+  const [first, slow, opponent] = ['first', 'slow', 'opponent'].map(id => Object.assign(new GalleryImage(), {
+    id, size: 100, mimeType: 'image/png', aspectRatio: 1, imageMediaMetadata: { width: 20, height: 20 },
+    contentLink: source + '#' + id, thumbnailLink: source + '#' + id
+  }));
+  const group = { id: 'pair', images: [first, slow] };
+  first.group = slow.group = group;
+  state.images.push(first, slow, opponent);
+  state.imageGroups.push(group);
+  state.imageSort.start(['image:opponent', 'group:pair'], {
+    rankedImageIds: ['image:opponent'], pendingImageIds: [], activeInsertion: { imageId: 'group:pair', low: 0, high: 1 }
+  });
+  let finishSlow: () => void;
+  spyOn(HTMLImageElement.prototype, 'decode').and.callFake(function (this: HTMLImageElement) {
+    return this.src === slow.contentLink ? new Promise<void>(resolve => finishSlow = resolve) : Promise.resolve();
+  });
+  const fixture = TestBed.createComponent(ImageTournamentComponent);
+  const root: HTMLElement = fixture.nativeElement;
+  const render = () => { fixture.detectChanges(); tick(100); fixture.detectChanges(); };
+  render();
+  const vote = root.querySelector<HTMLButtonElement>('.mobile-comparison-choice');
+  expect(vote.disabled).toBeFalse();
+  root.querySelector<HTMLElement>('[title="Next Group Image"]').click();
+  render();
+  expect(vote.disabled).toBeTrue();
+  root.querySelector<HTMLElement>('[title="Previous Group Image"]').click();
+  render();
+  finishSlow();
+  render();
+  expect(root.querySelector('.comparison-column img.visible').getAttribute('src')).toBe(first.contentLink);
+  expect(vote.disabled).toBeFalse();
+  vote.click();
+  expect(state.imageSort.rankedImageIds).toEqual(['group:pair', 'image:opponent']);
+}));
+
 @Component({
   selector: 'app-image',
   template: '',
@@ -213,6 +255,30 @@ describe('ImageTournamentComponent ranked-row integration', () => {
     expect(view.comparison[0]).toBe(first);
     expect(view.comparisonImagesReady[0]).toBeFalse();
     expect(sort.activeInsertion).toEqual(activeInsertion);
+  });
+
+  it('preserves both displayed group members across Results and replaces only excluded members', () => {
+    const [a1, a2, b1, b2] = state.images;
+    const groups = [{ id: 'a', images: [a1, a2] }, { id: 'b', images: [b1, b2] }];
+    for (const group of groups) {
+      state.imageGroups.push(group);
+      group.images.forEach(image => image.group = group);
+    }
+    const rankedImageIds = groups.map(group => GallerySortUtils.groupSubjectId(group.id));
+    sort.start(rankedImageIds, { rankedImageIds, pendingImageIds: [], activeInsertion: null });
+    spyOn(Math, 'random').and.returnValue(0);
+    applyFilter([a1, a2, b1, b2]);
+    component.toggleConsistencyChecksOnly();
+    fixture.detectChanges();
+    for (const button of fixture.nativeElement.querySelectorAll('[title="Next Group Image"]')) button.click();
+    expect(component['comparison']).toEqual([a2, b2]);
+
+    fixture.componentRef.setInput('matchingImages', null);
+    fixture.detectChanges();
+    applyFilter([a1, a2, b1, b2]);
+    expect(component['comparison']).toEqual([a2, b2]);
+    applyFilter([a1, a2, b1]);
+    expect(component['comparison']).toEqual([a2, b1]);
   });
 
   it('repeats the only eligible check pair and waits when the filter leaves one ranked entry', async () => {

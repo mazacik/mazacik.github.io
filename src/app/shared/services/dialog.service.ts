@@ -1,4 +1,4 @@
-import { ApplicationRef, ComponentRef, EnvironmentInjector, Injectable, Type, createComponent } from '@angular/core';
+import { ApplicationRef, ComponentRef, EnvironmentInjector, Injectable, Type, createComponent, signal } from '@angular/core';
 import { DialogContainerComponent } from '../components/dialog/dialog-container.component';
 import { DialogContentBase } from '../components/dialog/dialog-content-base.class';
 import { ConfirmationDialogComponent } from '../dialogs/confirmation/confirmation-dialog.component';
@@ -15,6 +15,7 @@ import { MultiInputDialogComponent } from '../dialogs/multi-input/multi-input-di
 export class DialogService {
 
   public containerComponentInstances: DialogContainerComponent<any, any>[] = [];
+  public readonly mobileSettingsOpen = signal(false);
 
   constructor(
     private applicationRef: ApplicationRef,

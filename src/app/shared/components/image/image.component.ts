@@ -39,14 +39,22 @@ export class ImageComponent {
   private next(src: string, placeholderSrc: string, sourceWidth?: number, sourceHeight?: number): void {
     const requestTrackBy = ++this.requestTrackBy;
     if (!src) {
-      this.clearScheduledCallbacks();
-      this.images = [];
-      this.activeTrackBy = undefined;
+      this.clearImages();
       return;
     }
 
     let srcLoaded = false;
-    this.schedulePendingRequestFadeOut(src, sourceWidth, sourceHeight);
+    const active = this.getActiveImage();
+    if (active && (active.src === src || active.src === placeholderSrc)) {
+      this.showOnly({
+        ...active, requestTrackBy,
+        sourceWidth: sourceWidth ?? active.naturalWidth,
+        sourceHeight: sourceHeight ?? active.naturalHeight
+      });
+      if (active.src === src) return;
+    } else {
+      this.schedulePendingRequestFadeOut(src, sourceWidth, sourceHeight);
+    }
 
     const srcDecoder = new Image();
     srcDecoder.src = src;
@@ -56,9 +64,14 @@ export class ImageComponent {
         srcLoaded = true;
         this.showDecodedImage(requestTrackBy, src, srcDecoder.naturalWidth, srcDecoder.naturalHeight, sourceWidth, sourceHeight);
       }
-    }).catch(() => undefined);
+    }).catch(() => {
+      const displayed = this.getActiveImage();
+      if (requestTrackBy === this.requestTrackBy && displayed && displayed.src !== placeholderSrc && displayed.src !== src) {
+        this.clearImages();
+      }
+    });
 
-    if (placeholderSrc && placeholderSrc !== src) {
+    if (placeholderSrc && placeholderSrc !== src && placeholderSrc !== active?.src) {
       const placeholderDecoder = new Image();
       placeholderDecoder.src = placeholderSrc;
 
@@ -400,6 +413,13 @@ export class ImageComponent {
 
   private getActiveImage(): DisplayImage | undefined {
     return this.images.find(image => image.trackBy === this.activeTrackBy);
+  }
+
+  private clearImages(): void {
+    this.clearScheduledCallbacks();
+    this.images = [];
+    this.activeTrackBy = undefined;
+    this.changeDetector.markForCheck();
   }
 
 }

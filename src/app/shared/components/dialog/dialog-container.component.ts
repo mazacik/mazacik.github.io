@@ -12,6 +12,7 @@ import { DialogContentBase } from './dialog-content-base.class';
   templateUrl: './dialog-container.component.html',
   styleUrls: ['./dialog-container.component.scss'],
   host: {
+    '[inert]': 'backgroundWhileSettingsOpen',
     '[class.display-none]': 'hidden',
     '[class.mobile-bottom-panel]': 'contentComponentInstance?.configuration?.dockAtBottomOnMobile'
   }
@@ -34,6 +35,10 @@ export class DialogContainerComponent<ResultType, InputsType> implements AfterVi
   public result: Promise<ResultType>;
   protected resolve: (values: ResultType) => void;
   public contentComponentInstance: DialogContentBase<ResultType, InputsType>;
+
+  protected get backgroundWhileSettingsOpen(): boolean {
+    return this.dialogService.mobileSettingsOpen() && this.dialogService.containerComponentInstances.at(-1) !== this;
+  }
 
   constructor(
     private elementRef: ElementRef<HTMLElement>,

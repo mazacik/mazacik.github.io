@@ -59,7 +59,7 @@ export class ApplicationService {
   private headerState: HeaderConfig = {};
   private readonly headerCollector: WritableSignal<HeaderConfig> = signal({});
   public readonly header: Signal<HeaderConfig> = this.headerCollector.asReadonly();
-  public readonly mobileSettingsOpen = signal(false);
+  public readonly mobileSettingsOpen = this.dialogService.mobileSettingsOpen;
 
   private readonly appSettings: WritableSignal<ApplicationSettingsState> = signal(this.loadAppSettings());
   private readonly applicationSettings: ApplicationSettings = {
@@ -132,7 +132,7 @@ export class ApplicationService {
     this.addHeaderButtons(section, [action], position);
   }
 
-  public addHeaderButtons(section: HeaderSection, actions: HeaderAction[], position: 'first' | 'last' = section === 'end' ? 'first' : 'last'): void {
+  public addHeaderButtons(section: HeaderSection, actions: HeaderAction[], position: 'first' | 'last' = section === 'end' ? 'first' : 'last'): () => void {
     const existing = this.headerState[section] ?? [];
     const filteredExisting = existing.filter(action => !actions.some(newAction => newAction.id === action.id));
 
@@ -143,6 +143,10 @@ export class ApplicationService {
     }
 
     this.updateHeader();
+    return () => {
+      this.headerState[section] = this.headerState[section].filter(action => !actions.includes(action));
+      this.updateHeader();
+    };
   }
 
   public removeHeaderButtons(ids: string[]): void {

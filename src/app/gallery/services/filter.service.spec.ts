@@ -22,7 +22,7 @@ describe('Tag group filtering', () => {
   }
 
   function image(id: string, ...imageTags: Tag[]): GalleryImage {
-    const result = Object.assign(new GalleryImage(), { id, tags: imageTags, mimeType: 'image/jpeg' });
+    const result = Object.assign(new GalleryImage(), { id, tags: imageTags, mimeType: 'image/jpeg', thumbnailLink: 'preview' });
     state.images.push(result);
     return result;
   }

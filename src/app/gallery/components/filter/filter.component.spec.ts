@@ -27,7 +27,7 @@ describe('Gallery group filter controls', () => {
     animals.children = [cats, dogs];
     state = {
       filterVisible: true, settings: {},
-      images: [cats, dogs].map(tag => Object.assign(new GalleryImage(), { id: tag.id, tags: [tag], mimeType: 'image/jpeg' }))
+      images: [cats, dogs].map(tag => Object.assign(new GalleryImage(), { id: tag.id, tags: [tag], mimeType: 'image/jpeg', thumbnailLink: 'preview' }))
     } as GalleryStateService;
     tags = new TagService(null, null, state, null);
     tags.tags.push(animals, cats, dogs);

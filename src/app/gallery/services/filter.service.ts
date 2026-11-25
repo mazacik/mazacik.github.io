@@ -42,7 +42,7 @@ export class GalleryImageFilter {
   }
 
   private doesPassFilters(image: GalleryImage, activeTags: Tag[]): boolean {
-    if (!image) {
+    if (!image || (this.matchProperty === 'passesComparisonFilter' && !GoogleFileUtils.isImage(image))) {
       return false;
     }
 

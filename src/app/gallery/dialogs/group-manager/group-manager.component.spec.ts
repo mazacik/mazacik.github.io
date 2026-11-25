@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { AppComponent } from '../../../app.component';
+import { ApplicationSettingsComponent } from '../../../shared/dialogs/application-settings/application-settings.component';
 import { DialogService } from '../../../shared/services/dialog.service';
 import { GalleryImage } from '../../models/gallery-image.class';
 import { FilterService } from '../../services/filter.service';
@@ -86,6 +87,19 @@ describe('Group Manager layout', () => {
     const cancel = Array.from(panel.querySelectorAll<HTMLElement>('.buttons .button'))
       .find(button => button.textContent.trim() === 'Cancel');
     expect(cancel.getBoundingClientRect().height).toBeGreaterThan(0);
+    const settingsClosed = TestBed.inject(DialogService).create(ApplicationSettingsComponent);
+    TestBed.tick();
+    const settings = root.querySelector('app-application-settings').closest<HTMLElement>('app-dialog-container');
+    expect(settings.inert).toBeFalse();
+    expect(panel.closest<HTMLElement>('app-dialog-container').inert).toBe(mobile);
+    if (mobile) {
+      const rect = cancel.getBoundingClientRect();
+      expect(document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2)).not.toBe(cancel);
+    }
+    settings.querySelector<HTMLElement>('.buttons .button').click();
+    await settingsClosed;
+    TestBed.tick();
+    expect(panel.closest<HTMLElement>('app-dialog-container').inert).toBeFalse();
     cancel.click();
     await closed;
     expect(gallery.clientHeight).toBe(galleryHeight);

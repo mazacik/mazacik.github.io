@@ -1,5 +1,6 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 import { AppComponent } from '../../../app.component';
 import { ApplicationSettingsComponent } from '../../../shared/dialogs/application-settings/application-settings.component';
@@ -9,6 +10,7 @@ import { DialogService } from '../../../shared/services/dialog.service';
 import { ScreenUtils } from '../../../shared/utils/screen.utils';
 import { GalleryComponent } from '../../gallery.component';
 import { ImageTournamentComponent } from '../../dialogs/image-comparison/image-tournament.component';
+import { ImageTournamentLongestChainComponent } from '../../dialogs/image-comparison/image-tournament-longest-chain.component';
 import { GalleryImage } from '../../models/gallery-image.class';
 import { FilterService } from '../../services/filter.service';
 import { GalleryGoogleDriveService } from '../../services/gallery-google-drive.service';
@@ -142,7 +144,8 @@ describe('Comparison header layout', () => {
 
     const state = TestBed.inject(GalleryStateService);
     state.filterVisible = false;
-    TestBed.createComponent(GalleryComponent).detectChanges();
+    const gallery = TestBed.createComponent(GalleryComponent);
+    gallery.detectChanges();
     const fixture = TestBed.createComponent(HeaderComponent);
     fixture.detectChanges();
     const header: HTMLElement = fixture.nativeElement;
@@ -211,6 +214,16 @@ describe('Comparison header layout', () => {
     expect(visibleTitles('start')).toEqual(['Back to Gallery', 'Open Ranking', 'Consistency Checks Only']);
     expect(visibleTitles('center')).toEqual(filterTitles);
     expect(header.querySelector<HTMLElement>('[title="Open Filter Editor"]').getAttribute('data-count')).toBe('0');
+    const video = Object.assign(new GalleryImage(), { id: 'movie', mimeType: 'video/mp4', thumbnailLink: 'preview', heart: true });
+    state.images.push(video);
+    state.settings.showVideos = true;
+    const filters = TestBed.inject(FilterService);
+    filters.comparison.favoritesFilter.state = 1;
+    filters.updateFilters();
+    fixture.detectChanges();
+    expect(filters.masonry.images()).toContain(video);
+    expect(filters.comparison.images()).toEqual([]);
+    expect(header.querySelector<HTMLElement>('[title="Open Filter Editor"]').getAttribute('data-count')).toBe('0');
     expect(visibleTitles('end')).toEqual(right);
     const settings = TestBed.inject(ApplicationService).getRegisteredModuleSettings().find(module => module.id === 'comparison-settings');
     expect(settings.items.map(item => item.id)).toEqual(jasmine.arrayContaining(['show-comparison-relations', 'show-comparison-progress']));
@@ -224,6 +237,13 @@ describe('Comparison header layout', () => {
     expect(visibleTitles('start')).toEqual(['Back to Comparison']);
     expect(visibleTitles('center')).toEqual(filterTitles);
     expect(visibleTitles('end')).toEqual(right);
+
+    const app = TestBed.inject(ApplicationService);
+    app.addHeaderButton('end', { id: 'open-settings', tooltip: 'Other screen settings', classes: 'fa-gear' });
+    gallery.destroy();
+    fixture.detectChanges();
+    expect(Object.values(app.header()).flat().map(action => action.id)).toEqual(['open-settings']);
+    expect(visibleTitles('end')).toEqual(['Other screen settings']);
   });
 
   it('applies edits immediately in Comparison and Results while the filter stays open', async () => {
@@ -233,7 +253,7 @@ describe('Comparison header layout', () => {
         { provide: GallerySerializationService, useValue: { processData: async () => {}, save: () => {} } },
         { provide: GalleryService, useValue: {} }
       ]
-    }).overrideComponent(GalleryComponent, { set: { imports: [FilterComponent, ImageTournamentComponent], schemas: [NO_ERRORS_SCHEMA] } }).compileComponents();
+    }).overrideComponent(GalleryComponent, { set: { imports: [FilterComponent, ImageTournamentComponent, ImageTournamentLongestChainComponent], schemas: [NO_ERRORS_SCHEMA] } }).compileComponents();
     const state = TestBed.inject(GalleryStateService);
     const desktop = ScreenUtils.isLargeScreen();
     state.filterVisible = desktop;
@@ -258,12 +278,14 @@ describe('Comparison header layout', () => {
       activeInsertion: { imageId: 'image:other', low: 0, high: 1 }
     };
     filters.updateFilters();
-    const results = gallery.nativeElement.querySelector('app-image-tournament-longest-chain');
+    const findResults = () => gallery.debugElement.query(By.directive(ImageTournamentLongestChainComponent));
+    expect(findResults()).toBeNull();
     const initialWidth = panel.getBoundingClientRect().width;
     if (desktop) expect(initialWidth).toBeGreaterThan(0);
     state.settings.showComparisonProgress = true;
     action('[title="Open Comparison"]').click();
     render();
+    expect(findResults()).toBeNull();
     const placement = (title: string) => action(`.header-start-center [title="${title}"]`);
     const restart = placement('Restart Image Comparisons');
     const skip = placement('Skip Image');
@@ -309,11 +331,13 @@ describe('Comparison header layout', () => {
       expect(panel.getBoundingClientRect().width).toBe(0);
       expect(panel.getAnimations().length).toBe(0);
     }
+    const comparisonViews: HTMLElement = gallery.nativeElement.querySelector('.comparison-views');
     const open = () => {
       action('[title="Open Filter Editor"]').click();
       render();
       expect(action('[title="Close Filter Editor"]').classList.contains('active')).toBeTrue();
       expect(panel.inert).toBeFalse();
+      expect(comparisonViews.inert).toBe(!desktop);
       expect(gallery.nativeElement.querySelector('app-filter')).toBe(panel);
       expect(panel.querySelector('[title="Create Tag"], [title="Create Tag Group"], [aria-label="Apply"]')).toBeNull();
       if (!desktop) {
@@ -328,7 +352,19 @@ describe('Comparison header layout', () => {
       expect(action('[title="Close Filter Editor"]')).toBeTruthy();
       expect(state.filterVisible).toBe(desktop);
     };
+    const preview = comparisonViews.querySelector<HTMLButtonElement>('[title="View comparison image B"]');
+    const portraitComparison = preview.getBoundingClientRect().width > 0;
+    if (portraitComparison) {
+      preview.focus();
+      expect(document.activeElement).toBe(preview);
+    }
     open();
+    if (!desktop) {
+      await gallery.whenStable();
+      expect(panel.contains(document.activeElement)).toBeTrue();
+      preview.focus();
+      expect(panel.contains(document.activeElement)).toBeTrue();
+    }
     expect(state.imageSort.activeInsertion.imageId).toBe('image:other');
     expect(action('[title="Close Filter Editor"]').getAttribute('data-count')).toBe('3');
     toggleFavorites();
@@ -336,10 +372,19 @@ describe('Comparison header layout', () => {
     expect(state.imageSort.currentComparisonIds).toEqual(['image:favorite', 'image:ranked']);
     expect(state.imageSort.pendingImageIds).toContain('image:other');
     expect(filters.masonry.images()).toEqual([favorite, other, ranked]);
-    const close = () => { action('[title="Close Filter Editor"]').click(); render(); };
+    const close = () => {
+      action('[title="Close Filter Editor"]').click();
+      render();
+      expect(comparisonViews.inert).toBeFalse();
+    };
     close();
+    if (portraitComparison) {
+      preview.focus();
+      expect(document.activeElement).toBe(preview);
+    }
     action('[title="Open Ranking"]').click();
     render();
+    const results = findResults().componentInstance;
     expect(placement('Restart Image Comparisons')).toBeNull();
     open();
     toggleFavorites();
@@ -355,6 +400,7 @@ describe('Comparison header layout', () => {
     expect(action('[title="Back to Comparison"]')).toBeTruthy();
     action('[title="Back to Comparison"]').click();
     render();
+    expect(findResults().componentInstance).toBe(results);
     action('[title="Back to Gallery"]').click();
     render();
     expect(panel.inert).toBe(!desktop);
@@ -414,6 +460,15 @@ describe('Comparison header layout', () => {
     expectGridInPlace();
     const comparison = host.querySelector<HTMLElement>('app-image-tournament');
     expect(comparison.clientWidth).toBe(host.clientWidth);
+    const tournament: ImageTournamentComponent = gallery.debugElement.query(By.directive(ImageTournamentComponent)).componentInstance;
+    const rankedId = state.imageSort.rankedImageIds[0];
+    const scrollTo = spyOn(ImageTournamentLongestChainComponent.prototype, 'scrollToSubject').and.callThrough();
+    tournament.showInRanking.emit(rankedId);
+    render();
+    expect(scrollTo).toHaveBeenCalledOnceWith(rankedId);
+    expect(host.querySelector('.longest-chain .chain-image')).toBeTruthy();
+    action('[title="Back to Comparison"]').click();
+    render();
     const headerTitles = () => Array.from((header.nativeElement as HTMLElement).querySelectorAll<HTMLElement>('[title]'), el => el.title);
     const comparisonTitles = headerTitles().filter(title => title !== 'Open Filter Editor');
     action('[title="Open Filter Editor"]').click();
