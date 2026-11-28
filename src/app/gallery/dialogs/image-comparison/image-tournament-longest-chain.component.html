@@ -2,33 +2,37 @@
   @let visibleImages = visibleRankedImages;
   @if (visibleImages.length) {
     <div #mainRow class="longest-chain">
-      @for (image of visibleImages; track image.id) {
-        <div class="chain-segment" [style.--image-ratio]="image.aspectRatio || 1">
-          <div class="chain-image" role="img" [attr.aria-label]="image.name || 'Ranked image'" (click)="openFullscreen(image)">
-            @let preview = image.thumbnailLink || image.contentLink;
-            @let original = image.contentLink;
-            <img [rankedSrc]="preview" alt="" loading="lazy" decoding="async" />
-            @if (!applicationService.reduceDataUsage && original && original !== preview) {
-              <img [rankedSrc]="original" alt="" loading="lazy" decoding="async" />
+      @for (image of visibleImages; track image.id; let index = $index) {
+        <div class="rank-slot" [style.--image-ratio]="image.aspectRatio || 1">
+          <div class="chain-segment">
+            <div class="chain-image" role="img" [attr.aria-label]="image.name || 'Ranked image'" (click)="openFullscreen(image)">
+              @let preview = image.thumbnailLink || image.contentLink;
+              @let original = image.contentLink;
+              <img [rankedSrc]="preview" alt="" loading="lazy" decoding="async" />
+              @if (!applicationService.reduceDataUsage && original && original !== preview) {
+                <img [rankedSrc]="original" alt="" loading="lazy" decoding="async" />
+              }
+            </div>
+            @if (canMoveRankedImage(image, -1)) {
+              <i class="ranking-action ranking-action-earlier icon-button smaller fa-solid fa-chevron-left" title="Move Earlier" (click)="moveRankedImage(image, index, -1, $event)"></i>
             }
+            @if (canMoveRankedImage(image, 1)) {
+              <i class="ranking-action ranking-action-later icon-button smaller fa-solid fa-chevron-right" title="Move Later" (click)="moveRankedImage(image, index, 1, $event)"></i>
+            }
+            <i class="rank-again-button icon-button smaller fa-solid fa-times" title="Rank Image Again" (click)="moveImageToPending(image, $event)"></i>
           </div>
-          @if (canMoveRankedImage(image, -1)) {
-            <i class="ranking-action ranking-action-earlier icon-button smaller fa-solid fa-chevron-left" title="Move Earlier" (click)="moveRankedImage(image, -1, $event)"></i>
-          }
-          @if (canMoveRankedImage(image, 1)) {
-            <i class="ranking-action ranking-action-later icon-button smaller fa-solid fa-chevron-right" title="Move Later" (click)="moveRankedImage(image, 1, $event)"></i>
-          }
-          <i class="rank-again-button icon-button smaller fa-solid fa-times" title="Rank Image Again" (click)="moveImageToPending(image, $event)"></i>
         </div>
       }
     </div>
     @if (horizontal) {
       <nav #navigator class="rank-navigator" aria-label="Navigate ranked images">
         @for (image of visibleImages; track image.id; let index = $index) {
-          <button type="button" [style.--image-ratio]="image.aspectRatio || 1"
-            [attr.aria-label]="'Show ' + (image.name || 'image') + ', rank ' + (index + 1)" (click)="centerImage(mainRow, index)">
-            <img [rankedSrc]="image.thumbnailLink || image.contentLink" alt="" loading="lazy" decoding="async" />
-          </button>
+          <div class="rank-slot" [style.--image-ratio]="image.aspectRatio || 1">
+            <button type="button"
+              [attr.aria-label]="'Show ' + (image.name || 'image') + ', rank ' + (index + 1)" (click)="centerImage(mainRow, index)">
+              <img [rankedSrc]="image.thumbnailLink || image.contentLink" alt="" loading="lazy" decoding="async" />
+            </button>
+          </div>
         }
       </nav>
     }

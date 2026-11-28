@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, Input, NgZone, afterRenderEffect, effect, viewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, Injector, Input, NgZone, afterNextRender, afterRenderEffect, effect, inject, viewChild } from '@angular/core';
 import { ApplicationService } from 'src/app/shared/services/application.service';
 import { GalleryImage } from 'src/app/gallery/models/gallery-image.class';
 import { GallerySerializationService } from '../../services/gallery-serialization.service';
@@ -17,6 +17,7 @@ export class ImageTournamentLongestChainComponent {
   @Input() public showOnlyFilteredImages: boolean = false;
   private readonly mainRow = viewChild<ElementRef<HTMLElement>>('mainRow');
   private readonly navigator = viewChild<ElementRef<HTMLElement>>('navigator');
+  private readonly injector = inject(Injector);
   private readonly horizontalLayout = window.matchMedia('(width > 1280px), (orientation: landscape)');
   protected horizontal = this.horizontalLayout.matches;
   private follower?: HTMLElement;
@@ -24,6 +25,8 @@ export class ImageTournamentLongestChainComponent {
   private frame = 0;
   private destinationIndex = 0;
   private wheelTarget?: { left: number; direction: number };
+  private pointer?: PointerEvent;
+  private hoveredCard?: Element;
 
   protected rankedImages: GalleryImage[] = [];
 
@@ -52,13 +55,26 @@ export class ImageTournamentLongestChainComponent {
           }).catch(() => undefined);
         };
         row.addEventListener('load', reveal, { capture: true, signal: listeners.signal });
+        const trackPointer = (event: PointerEvent) => {
+          if (event.pointerType === 'touch') return;
+          this.pointer = event;
+          this.setHoveredCard(event.target as Element);
+        };
+        row.addEventListener('pointerover', trackPointer, { signal: listeners.signal });
+        row.addEventListener('pointermove', trackPointer, { signal: listeners.signal });
+        row.addEventListener('pointerleave', () => {
+          this.pointer = undefined;
+          this.setHoveredCard(null);
+        }, { signal: listeners.signal });
         if (!nav) return;
         nav.addEventListener('load', reveal, { capture: true, signal: listeners.signal });
         for (const [source, target] of [[row, nav], [nav, row]]) {
           const options = { signal: listeners.signal };
           source.addEventListener('scroll', () => this.syncRows(source, target), options);
           for (const event of ['pointerdown', 'keydown']) {
-            source.addEventListener(event, () => {
+            source.addEventListener(event, input => {
+              if ((input.target as Element).closest('.ranking-action')) return;
+              this.resumeSnapping(row, nav);
               this.stopMotion();
               this.driveWith(source, target);
             }, options);
@@ -68,6 +84,7 @@ export class ImageTournamentLongestChainComponent {
             const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
             if (!delta) return;
             event.preventDefault();
+            this.resumeSnapping(row, nav);
             const unit = event.deltaMode === WheelEvent.DOM_DELTA_PAGE ? source.clientWidth :
               event.deltaMode === WheelEvent.DOM_DELTA_LINE ? parseFloat(getComputedStyle(source).fontSize) : 1;
             this.driveWith(source, target);
@@ -77,6 +94,9 @@ export class ImageTournamentLongestChainComponent {
       });
       onCleanup(() => {
         listeners.abort();
+        this.pointer = undefined;
+        this.setHoveredCard(null);
+        if (nav) this.resumeSnapping(row, nav);
         this.stopMotion();
         this.follower?.classList.remove('following-scroll');
         this.follower = undefined;
@@ -87,6 +107,8 @@ export class ImageTournamentLongestChainComponent {
   @HostListener('window:resize')
   protected updateLayout(): void {
     this.horizontal = this.horizontalLayout.matches;
+    const nav = this.navigator()?.nativeElement;
+    if (nav) this.resumeSnapping(this.mainRow().nativeElement, nav);
   }
 
   public scrollToSubject(subjectId: string): void {
@@ -103,6 +125,7 @@ export class ImageTournamentLongestChainComponent {
 
   protected centerImage(row: HTMLElement, index: number, behavior: ScrollBehavior = 'smooth'): void {
     const nav = this.navigator().nativeElement;
+    this.resumeSnapping(row, nav);
     this.stopMotion();
     this.driveWith(row, nav);
     this.animateTo(row, nav, index, behavior);
@@ -123,7 +146,8 @@ export class ImageTournamentLongestChainComponent {
   }
 
   private syncRows(source: HTMLElement, target: HTMLElement): void {
-    if (source === this.follower && Math.abs(source.scrollLeft - this.mirroredLeft) < 1) return;
+    if (source.classList.contains('holding-position')) return;
+    if (source === this.follower && (this.frame || Math.abs(source.scrollLeft - this.mirroredLeft) < 1)) return;
     this.driveWith(source, target);
     if (!source.clientWidth || !source.children.length) return;
     // Equal gaps occupy a different fraction of each row. Match progress between image centers.
@@ -136,6 +160,24 @@ export class ImageTournamentLongestChainComponent {
     const targetStart = this.centerOffset(target, lower);
     target.scrollTo({ left: targetStart + fraction * (this.centerOffset(target, upper) - targetStart), behavior: 'instant' });
     this.mirroredLeft = target.scrollLeft;
+  }
+
+  private setHoveredCard(target: Element | null): void {
+    const card = target?.closest('.chain-segment');
+    if (card === this.hoveredCard) return;
+    this.hoveredCard?.classList.remove('hovered');
+    card?.classList.add('hovered');
+    this.hoveredCard = card;
+  }
+
+  private resumeSnapping(row: HTMLElement, nav: HTMLElement): void {
+    if (!row.classList.contains('holding-position')) return;
+    for (const strip of [row, nav]) {
+      strip.classList.remove('holding-position');
+      strip.style.removeProperty('--start-margin');
+      strip.style.removeProperty('--end-margin');
+    }
+    if (this.follower) this.mirroredLeft = this.follower.scrollLeft;
   }
 
   private firstCenterAtOrAfter(row: HTMLElement, left: number): number {
@@ -223,15 +265,58 @@ export class ImageTournamentLongestChainComponent {
     return GallerySortUtils.getSortSubjectId(image) !== boundary;
   }
 
-  protected moveRankedImage(image: GalleryImage, direction: -1 | 1, event: MouseEvent): void {
+  protected moveRankedImage(image: GalleryImage, index: number, direction: -1 | 1, event: MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
     if (!image) return;
 
     if (this.stateService.imageSort.swapRankedImage(GallerySortUtils.getSortSubjectId(image), direction)) {
+      this.animateSwap(index, index + direction);
       this.stateService.sortState = this.stateService.imageSort.getState();
       this.serializationService.save(true);
     }
+  }
+
+  private animateSwap(from: number, to: number): void {
+    const row = this.mainRow().nativeElement;
+    const slots = [from, to];
+    const moved = row.children[from];
+    if (!row.children[to]) return;
+
+    const nav = this.navigator()?.nativeElement;
+    if (nav && !row.classList.contains('holding-position')) {
+      this.stopMotion();
+      // Keep the surrounding images stationary, including when an end margin changes width.
+      for (const strip of [row, nav]) {
+        strip.style.setProperty('--start-margin', getComputedStyle(strip.firstElementChild).marginInlineStart);
+        strip.style.setProperty('--end-margin', getComputedStyle(strip.lastElementChild).marginInlineEnd);
+        strip.classList.add('holding-position');
+      }
+    }
+    const cards = matchMedia('(prefers-reduced-motion: reduce)').matches ? [] :
+      (nav ? [row, nav] : [row]).flatMap(strip => slots.map(index => {
+        const slot = strip.children[index];
+        const card = slot.firstElementChild;
+        return { slot, card, before: card.getBoundingClientRect() };
+      }));
+
+    afterNextRender(() => {
+      // Swapping past a filtered-out neighbor leaves the visible order unchanged.
+      if (row.children[to] !== moved) return;
+      const refreshHover = () => {
+        if (this.pointer) this.setHoveredCard(document.elementFromPoint(this.pointer.clientX, this.pointer.clientY));
+      };
+      if (!cards.length) refreshHover();
+      for (const { slot, card, before } of cards) {
+        const after = slot.getBoundingClientRect();
+        const x = before.left - after.left;
+        const y = before.top - after.top;
+        card.getAnimations().forEach(animation => animation.cancel());
+        const animation = card.animate([{ transform: `translate(${x}px, ${y}px)` }, { transform: 'none' }],
+          { duration: 250, easing: 'ease-out' });
+        if (slot === moved) animation.onfinish = refreshHover;
+      }
+    }, { injector: this.injector });
   }
 
 }
