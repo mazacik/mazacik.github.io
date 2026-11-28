@@ -85,7 +85,7 @@
     right: variables.$gap-1;
   }
 
-  .chain-segment:is(:hover, :focus-within) :is(.ranking-action, .rank-again-button) {
+  .chain-segment:is(.hovered, :focus-within) :is(.ranking-action, .rank-again-button) {
     opacity: 1;
     pointer-events: auto;
   }
@@ -104,8 +104,7 @@
       overflow: hidden;
     }
 
-    .longest-chain,
-    .rank-navigator {
+    :is(.longest-chain, .rank-navigator) {
       position: relative;
       overflow-x: auto;
       overflow-y: hidden;
@@ -114,16 +113,16 @@
 
       overflow-anchor: none;
 
-      &.following-scroll, &.moving { scroll-snap-type: none; }
+      &:is(.following-scroll, .moving, .holding-position) { scroll-snap-type: none; }
 
-      > * {
+      .rank-slot {
         --card-width: min(100%, calc(var(--row-height) * var(--image-ratio)));
         flex: 0 0 var(--card-width);
         min-width: 0;
         scroll-snap-align: center;
       }
-      > :first-child { margin-inline-start: calc((100% - var(--card-width)) / 2); }
-      > :last-child { margin-inline-end: calc((100% - var(--card-width)) / 2); }
+      > :first-child { margin-inline-start: var(--start-margin, calc((100% - var(--card-width)) / 2)); }
+      > :last-child { margin-inline-end: var(--end-margin, calc((100% - var(--card-width)) / 2)); }
 
       @media (prefers-reduced-motion: no-preference) {
         scroll-behavior: smooth;
@@ -151,6 +150,7 @@
       button {
         content-visibility: auto;
         display: block;
+        width: 100%;
         height: var(--row-height);
         padding: 0;
         overflow: hidden;
@@ -192,6 +192,7 @@
       padding-inline: variables.$gap-1;
       overflow-x: hidden;
       overflow-y: auto;
+      overflow-anchor: none;
     }
 
     .longest-chain {
@@ -201,8 +202,11 @@
       align-items: center;
     }
 
-    .chain-segment {
+    .rank-slot {
       width: 100%;
+    }
+
+    .chain-segment {
       flex-direction: column;
       justify-content: center;
     }

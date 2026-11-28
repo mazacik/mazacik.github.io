@@ -62,6 +62,42 @@ describe('comparison results', () => {
     }
   });
 
+  it('slides both cards from their previous positions without shifting the surrounding images', async () => {
+    fixture.componentInstance.scrollToSubject('image:2');
+    const strips = nav ? [row, nav] : [row];
+    const surrounding = strips.map(strip => strip.children[1].getBoundingClientRect());
+    const cards = strips.flatMap(strip => [strip.children[2], strip.children[3]].map(slot => {
+      const card = slot.firstElementChild;
+      return { card, before: card.getBoundingClientRect() };
+    }));
+    row.children[2].querySelector<HTMLElement>('.ranking-action-later').click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(row.children[3].firstElementChild).toBe(cards[0].card);
+    for (const { card, before } of cards) {
+      const animation = card.getAnimations()[0];
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        expect(animation).toBeUndefined();
+        continue;
+      }
+      expect(animation).toBeDefined();
+      animation.pause();
+      animation.currentTime = 0;
+      const start = card.getBoundingClientRect();
+      expect(start.left).toBeCloseTo(before.left, 0);
+      expect(start.top).toBeCloseTo(before.top, 0);
+      animation.finish();
+      const end = card.getBoundingClientRect();
+      expect(Math.abs(nav ? end.left - start.left : end.top - start.top)).toBeGreaterThan(5);
+    }
+    await new Promise(requestAnimationFrame);
+    strips.forEach((strip, index) => {
+      const rect = strip.children[1].getBoundingClientRect();
+      expect(rect.left).toBeCloseTo(surrounding[index].left, 0);
+      expect(rect.top).toBeCloseTo(surrounding[index].top, 0);
+    });
+  });
+
   it('reveals the decoded preview before fading in the full image', async () => {
     const image = state.images[0];
     image.contentLink = state.images[1].contentLink;
@@ -105,6 +141,40 @@ describe('comparison results', () => {
   });
 
   if (ScreenUtils.isLargeScreen()) {
+    it('shows the controls of the image under a stationary pointer after a swap', async () => {
+      fixture.componentInstance.scrollToSubject('image:3');
+      const clicked = row.children[3].querySelector<HTMLElement>('.ranking-action-later');
+      const incoming = row.children[4].querySelector<HTMLElement>('.ranking-action-later');
+      const bounds = clicked.getBoundingClientRect();
+      const point = { clientX: bounds.left + bounds.width / 2, clientY: bounds.top + bounds.height / 2 };
+      clicked.dispatchEvent(new PointerEvent('pointermove', { bubbles: true, pointerType: 'mouse', ...point }));
+      expect(getComputedStyle(clicked).pointerEvents).toBe('auto');
+      clicked.click();
+      fixture.detectChanges();
+      await fixture.whenStable();
+      await Promise.all(row.getAnimations({ subtree: true }).map(animation => animation.finished));
+      await new Promise(requestAnimationFrame);
+      expect(document.elementFromPoint(point.clientX, point.clientY)?.closest('.chain-segment')).toBe(incoming.parentElement);
+      expect(getComputedStyle(clicked).pointerEvents).toBe('none');
+      expect(getComputedStyle(incoming).pointerEvents).toBe('auto');
+    });
+
+    it('keeps both strips still at unequal-width ends and resumes thumbnail navigation', async () => {
+      for (const [from, neighbor] of [[0, 1], [19, 18]]) {
+        fixture.componentInstance.scrollToSubject('image:' + from);
+        const strips = [row, nav];
+        const stationary = from === 0 ? 2 : 17;
+        const before = strips.map(strip => strip.children[stationary].getBoundingClientRect().left);
+        row.children[from].querySelector<HTMLElement>(from < neighbor ? '.ranking-action-later' : '.ranking-action-earlier').click();
+        fixture.detectChanges();
+        await fixture.whenStable();
+        await new Promise(requestAnimationFrame);
+        strips.forEach((strip, index) => expect(strip.children[stationary].getBoundingClientRect().left).toBeCloseTo(before[index], 0));
+      }
+      nav.children[12].querySelector('button').click();
+      await Promise.all([waitForCenter(row, 12), waitForCenter(nav, 12)]);
+    });
+
     async function waitForCenter(strip: HTMLElement, index: number): Promise<void> {
       const deadline = performance.now() + 2500;
       const offset = () => {
@@ -159,7 +229,7 @@ describe('comparison results', () => {
           frame = requestAnimationFrame(sample);
         };
         sample();
-        (nav.children[index] as HTMLButtonElement).click();
+        nav.children[index].querySelector('button').click();
         fixture.detectChanges();
         try {
           await Promise.all(strips.map(strip => waitForCenter(strip, index)));
@@ -246,7 +316,7 @@ describe('comparison results', () => {
     });
 
     it('lets the wheel interrupt a thumbnail click and reverse an unfinished wheel movement', async () => {
-      (nav.lastElementChild as HTMLButtonElement).click();
+      nav.lastElementChild.querySelector('button').click();
       const deadline = performance.now() + 1500;
       while (nav.scrollLeft < 100 && performance.now() < deadline) await new Promise(resolve => setTimeout(resolve, 16));
       expect(nav.scrollLeft).toBeGreaterThan(0);
